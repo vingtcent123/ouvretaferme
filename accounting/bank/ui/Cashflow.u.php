@@ -307,7 +307,14 @@ class CashflowUi {
 
 								} else if($eCashflow['status'] !== Cashflow::DELETED) {
 
-									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eCashflow['cOperationHash']->first()['financialYear']).'/livre-journal?hash='.$eCashflow['cOperationHash']->first()['hash'].'">'.p("{value} écriture", "{value} écritures", $eCashflow['cOperationHash']->count()).'</a>';
+									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eCashflow['cOperationHash']->first()['financialYear']).'/livre-journal?hash='.$eCashflow['cOperationHash']->first()['hash'].'">';
+										$h .= p("{value} écriture", "{value} écritures", $eCashflow['cOperationHash']->count());
+									$h .= '</a>';
+									if($eCashflow['cOperationHash']->first()['number'] !== NULL) {
+											$h .= ' <span style="color: #00000050" title="'.p("Écriture verrouillée", "Écritures verrouillées", $eCashflow['cOperationHash']->count()).'">';
+												$h .= \Asset::icon('lock-fill');
+											$h .= '</span>';
+									}
 
 								}
 							$h .= '</td>';
@@ -343,6 +350,8 @@ class CashflowUi {
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
 
 				$nOperation = $eCashflow['cOperationHash']->count();
+				$canWrite = $eCashflow['cOperationHash']->first()->acceptWrite();
+
 				$isLinkedToAsset = $eCashflow['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->notEmpty();
 
 				$h .= '<div class="dropdown-title">';
@@ -360,7 +369,7 @@ class CashflowUi {
 						$h .= '<div class="operations-action-more">'.s("(Supprimez d'abord l'<b>immobilisation</b> liée)").'</div>';
 					$h .= '</a>';
 
-				} else {
+				} else if($canWrite) {
 
 					$h .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate?id='.$eCashflow['id'].'&action=delete" class="dropdown-item">';
 					$h .= p(
@@ -411,8 +420,12 @@ class CashflowUi {
 
 				$h .= $reconciliate;
 
-				$deleteText = s("Supprimer l'opération bancaire<div>(Supprimez d'abord les <b>écritures comptables</b> liées)</div>", ['div' => '<div class="operations-action-more">']);
-				$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
+				if($canWrite) {
+
+					$deleteText = s("Supprimer l'opération bancaire<div>(Supprimez d'abord les <b>écritures comptables</b> liées)</div>", ['div' => '<div class="operations-action-more">']);
+					$h .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
+
+				}
 
 			} else {
 

@@ -289,7 +289,7 @@ new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t)
 
 	$t->mainTitle = '<h1>'.$navigation.s("Importer les factures dans le logiciel comptable").($data->nInvoice > 0 ? '<span class="util-counter ml-1">'.$data->nInvoice.'</span>' : '').'</h1>';
 
-	echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cInvoice, $data->nInvoice, $data->search);
+	echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cInvoice, $data->nInvoice, $data->lastValidationDate, $data->search);
 
 });
 

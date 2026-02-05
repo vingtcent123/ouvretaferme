@@ -398,6 +398,8 @@ new Page(function($data) {
 
 		$data->cInvoice = \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search);
 
+		$data->lastValidationDate = \journal\OperationLib::getLastValidationDate($data->eFarm['eFinancialYear']);
+
 		throw new ViewAction($data);
 
 	})

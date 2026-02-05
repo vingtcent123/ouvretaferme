@@ -339,8 +339,12 @@ class JournalUi {
 		\Asset::js('journal', 'journal.js');
 
 		$canUpdateFinancialYear = ($readonly === FALSE and $selectedJournalCode !== JournalSetting::JOURNAL_CODE_BANK);
+		$showLockColumn = ($eFinancialYearSelected->isClosed() === FALSE and $cOperation->find(fn($e) => $e['number'] !== NULL)->count() > 0);
 
 		$columns = 6;
+		if($showLockColumn !== FALSE) {
+			$columns++;
+		}
 		if($selectedJournalCode === NULL) {
 			$columns++;
 		}
@@ -358,6 +362,11 @@ class JournalUi {
 					$h .= '<tr>';
 
 						if($canUpdateFinancialYear) {
+							$h .= '<th>';
+							$h .= '</th>';
+						}
+
+						if($showLockColumn) {
 							$h .= '<th>';
 							$h .= '</th>';
 						}
@@ -455,6 +464,14 @@ class JournalUi {
 								$h .= '</td>';
 							}
 
+							if($showLockColumn) {
+								$h .= '<td class="td-vertical-align-top" style="color: #00000050" title="'.s("Écriture verrouillée").'">';
+									if($eOperation['number'] !== NULL) {
+										$h .= \Asset::icon('lock-fill');
+									}
+								$h .= '</td>';
+							}
+
 							$h .= '<td class="td-vertical-align-top">';
 								$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
 									if($eOperation['accountLabel'] !== NULL) {
@@ -480,6 +497,7 @@ class JournalUi {
 								$h .= '</td>';
 
 							}
+
 							if($selectedJournalCode === NULL and $readonly === FALSE) {
 
 								$h .= '<td class="td-vertical-align-top">';
@@ -556,7 +574,12 @@ class JournalUi {
 								$h .= '<td class="td-min-content">';
 									$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary btn-xs">'.\Asset::icon('gear-fill').'</a>';
 									$h .= '<div class="dropdown-list">';
-										$h .= '<div class="dropdown-title">'.new OperationUi()->getTitle($eOperation).'</div>';
+										$h .= '<div class="dropdown-title">';
+											if($eOperation['number'] !== NULL) {
+												$h .= \Asset::icon('lock-fill').' ';
+											}
+											$h .= new OperationUi()->getTitle($eOperation);
+										$h .= '</div>';
 										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'?'.http_build_query($args).'" class="dropdown-item" data-view-operation="'.$eOperation['id'].'">'.s("Voir l'écriture").'</a>';
 										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?hash='.$eOperation['hash'].'" class="dropdown-item" data-view-operation="'.$eOperation['id'].'">'.s("Filtrer sur le groupe d'écritures").'</a>';
 
@@ -565,6 +588,9 @@ class JournalUi {
 											if($eOperation->isNotLinkedToAsset()) {
 												
 												$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier l'écriture").'</a>';
+
+												$h .= '<div class="dropdown-divider"></div>';
+												$h .= '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doLock" post-id="'.$eOperation['id'].'" class="dropdown-item" data-confirm="'.s("En verrouillant l'écriture, vous ne pourrez plus la modifier ni modifier les écritures chronologiquement antérieures. On verrouille ?").'">'.s("Verrouiller les écritures jusqu'à celle-ci").'</a>';
 
 											} else {
 
@@ -650,6 +676,9 @@ class JournalUi {
 
 						$colspan = 0;
 						$colspan++; // account
+						if($showLockColumn) {
+							$colspan++;
+						}
 						if(in_array('document', $columnsSelected)) {
 							$colspan++;
 						}

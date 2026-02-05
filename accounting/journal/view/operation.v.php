@@ -128,18 +128,21 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 	$results = [];
 	$found = FALSE;
+	$notLinked = FALSE;
 
 	$nThirdParty = $data->cOperation->find(fn($e) => $e['isThirdParty'] === TRUE)->count();
 
 	foreach($data->cOperation as $eOperation) {
 
-		if($nThirdParty === 0) {
+		if($nThirdParty === 0 and $notLinked === FALSE) {
 
 			$results[] = [
 				'type' => 'title',
 				'itemHtml' => '<div>'.s("Toutes les écritures comptables (non liées au tiers)").'</div>',
 				'itemText' => s("Toutes les écritures comptables (non liées au tiers)"),
 			];
+
+			$notLinked = TRUE;
 
 		} else if($found === FALSE and $eOperation['isThirdParty'] === TRUE) {
 

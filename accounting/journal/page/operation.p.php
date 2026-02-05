@@ -297,7 +297,14 @@ new \journal\OperationPage(function($data) {
 		$fw->validate();
 
 		throw new ReloadAction('journal', 'Operations::updated');
-	}, validate: []);
+	}, validate: [])
+	->write('doLock', function($data) {
+
+		$nOperationLocked = \journal\OperationLib::lockUntil($data->e);
+
+		throw new ReloadAction('journal', ($nOperationLocked > 1 ? 'Operation::groups.locked' : 'Operation::group.locked'));
+
+	});
 
 new Page()
 	->post('query', function($data) {
@@ -336,5 +343,6 @@ new Page()
 
 		throw new \ViewAction($data);
 
-	});
+	})
+;
 ?>

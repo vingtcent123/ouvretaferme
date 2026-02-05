@@ -60,7 +60,7 @@ class CashflowLib extends CashflowCrud {
 		self::applySearch($search)
 			->select(Cashflow::getSelection() + [
 				'cOperationHash' => \journal\Operation::model()
-					->select('id', 'hash', 'accountLabel', 'financialYear', 'asset')
+					->select(['id', 'hash', 'accountLabel', 'asset', 'type', 'amount', 'number', 'financialYear' => ['id', 'status', 'closeDate']])
 					->delegateCollection('hash', propertyParent: 'hash'),
 				'invoice' => ['id', 'number', 'document', 'customer' => ['id', 'name']],
 				'sale' => ['id', 'document', 'customer' => ['id', 'name']],

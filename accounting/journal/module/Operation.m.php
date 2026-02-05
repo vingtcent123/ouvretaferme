@@ -73,11 +73,12 @@ class OperationModel extends \ModuleModel {
 			'isSelfConsumption' => ['bool', 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
+			'validatedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'paymentDate', 'paymentMethod', 'vatRule', 'isSelfConsumption', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'hash', 'number', 'financialYear', 'journalCode', 'account', 'accountLabel', 'thirdParty', 'date', 'description', 'document', 'documentDate', 'invoice', 'amount', 'type', 'vatRate', 'vatAccount', 'operation', 'asset', 'paymentDate', 'paymentMethod', 'vatRule', 'isSelfConsumption', 'createdAt', 'updatedAt', 'validatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -118,6 +119,9 @@ class OperationModel extends \ModuleModel {
 				return new \Sql('NOW()');
 
 			case 'updatedAt' :
+				return new \Sql('NOW()');
+
+			case 'validatedAt' :
 				return new \Sql('NOW()');
 
 			case 'createdBy' :
@@ -253,6 +257,10 @@ class OperationModel extends \ModuleModel {
 
 	public function whereUpdatedAt(...$data): OperationModel {
 		return $this->where('updatedAt', ...$data);
+	}
+
+	public function whereValidatedAt(...$data): OperationModel {
+		return $this->where('validatedAt', ...$data);
 	}
 
 	public function whereCreatedBy(...$data): OperationModel {

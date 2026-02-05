@@ -27,6 +27,22 @@ new Page(function($data) {
 			throw new ViewAction($data, ':onboarding');
 		}
 
+		// Check if we should validate operations
+		$data->lastValidation = NULL;
+		if($data->eFarm['eFinancialYear']->isClosed() === FALSE) {
+
+			$eOperationLastValidated = \journal\Operation::model()
+				->select('date')
+				->whereFinancialYear($data->eFarm['eFinancialYear'])
+				->whereNumber('!=', NULL)
+				->sort(['date' => SORT_DESC])
+				->get();
+
+			if($eOperationLastValidated->notEmpty()) {
+				$data->lastValidation = $eOperationLastValidated['date'];
+			}
+		}
+
 		$data->eCashflow = \bank\CashflowLib::getById(GET('cashflow'));
 		$data->eThirdParty = account\ThirdPartyLib::getById(GET('thirdParty', 'int'));
 

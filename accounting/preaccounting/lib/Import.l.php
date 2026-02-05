@@ -203,30 +203,46 @@ Class ImportLib {
 			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();
 
 			if(\account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::BANK_ACCOUNT_CLASS) === FALSE) {
-				$vatRule = new \Set(\account\AccountUi::getVatRuleByAccount($eAccount, $eFinancialYear));
+				$vatRule = \account\AccountUi::getVatRuleByAccount($eAccount, $eFinancialYear);
 			} else {
 				$vatRule = NULL;
 			}
 
-			$eOperation = new \journal\Operation(array_merge($eOperationBase->getArrayCopy(), [
-				'id' => NULL,
-				'financialYear' => $eFinancialYear,
-				'account' => $eAccount,
+			$fw = new \FailWatch();
+
+			$eOperation = new \journal\Operation();
+
+			$eOperation->build([
+				'financialYear', 'date',
+				'account', 'accountLabel',
+				'description', 'journalCode',
+				'document', 'documentDate',
+				'amount', 'type',
+				'vatRate', 'vatAccount', 'vatRule',
+				'operation', 'paymentDate', 'paymentMethod',
+				'thirdParty', 'hash',
+			], [
+				'financialYear' => $eFinancialYear['id'],
+				'date' => $date,
+				'account' => $eAccount['id'],
 				'accountLabel' => $data[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL],
 				'description' => $data[\preaccounting\AccountingLib::FEC_COLUMN_DESCRIPTION],
-				'journalCode' => $eJournalCode,
-				'date' => $date,
+				'journalCode' => $eJournalCode['id'] ?? NULL,
 				'document' => $data[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT],
 				'documentDate' => $date,
 				'amount' => abs($data[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]),
 				'type' => $data[\preaccounting\AccountingLib::FEC_COLUMN_DEBIT] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
-				'vatRate' => 0,
-				'vatAccount' => new \account\Account(),
-				'operation' => new \journal\Operation(),
+				'vatRate' => 0.0,
+				'vatAccount' => NULL,
+				'operation' => NULL,
 				'paymentDate' => $date,
-				'paymentMethod' => $ePaymentMethod,
+				'paymentMethod' => $ePaymentMethod['id'] ?? NULL,
 				'vatRule' => $vatRule,
-			]));
+				'thirdParty' => $eOperationBase['thirdParty']['id'] ?? NULL,
+				'hash' => $eOperationBase['hash'],
+			]);
+
+			$fw->validate();
 
 			// On essaie de rattacher les opérations liées (type TVA) à leurs copines
 			if(strpos($data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER], '-') !== FALSE) {

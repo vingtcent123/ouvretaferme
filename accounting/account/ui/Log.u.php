@@ -139,6 +139,7 @@ class LogUi {
 			'reopen' => s("Réouverture de l'exercice #{value}", $params['id']),
 			'reclose' => s("Refermeture de l'exercice #{value}", $params['id']),
 			'generatefec' => s("Génération du FEC de l'exercice #{value}", $params['id']),
+			'lock' => s("Validation d'écritures pour l'exercice #{value}", $params['id']),
 		};
 
 	}

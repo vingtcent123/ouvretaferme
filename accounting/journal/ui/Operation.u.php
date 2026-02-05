@@ -320,7 +320,15 @@ class OperationUi {
 	}
 	public function getSummary(Operation $eOperation): string {
 
-		$h = '<table class="tr-even">';
+		$h = '';
+
+		if($eOperation['number'] !== NULL) {
+			$h .= '<div class="util-info">';
+				$h .= \Asset::icon('lock-fill').' '.s("Ces écritures sont verrouillées");
+			$h .= '</div>';
+		}
+
+		$h .= '<table class="tr-even">';
 
 			$h .= '<tr>';
 				$h .= '<th>'.s("Date d'écriture").'</th>';

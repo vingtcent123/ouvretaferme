@@ -1,8 +1,6 @@
 <?php
 namespace journal;
 
-use account\ThirdPartyLib;
-
 class Operation extends OperationElement {
 
 	public static function getSelection(): array {
@@ -10,7 +8,7 @@ class Operation extends OperationElement {
 		return parent::getSelection() + [
 			'operation' => ['id', 'asset', 'accountLabel'],
 			'account' => \account\Account::getSelection(),
-			'journalCode' => fn($e) => $e->notEmpty() ? \journal\JournalCodeLib::ask($e, \farm\Farm::getConnected()) : new JournalCode(),
+			'journalCode' => fn($e) => $e->notEmpty() ? \journal\JournalCodeLib::ask($e['journalCode'], \farm\Farm::getConnected()) : new JournalCode(),
 			'vatAccount' => ['class', 'vatRate', 'description'],
 			'thirdParty' => \account\ThirdParty::getSelection(),
 			'paymentMethod' => \payment\Method::getSelection(),
@@ -21,7 +19,7 @@ class Operation extends OperationElement {
 				->select(\bank\Cashflow::getSelection())
 				->delegateElement('hash', propertyParent: 'hash'),
 			'cOperationHash' => \journal\Operation::model()
-			->select('id', 'hash', 'accountLabel', 'asset', 'type', 'amount')
+			->select(['id', 'hash', 'accountLabel', 'asset', 'type', 'amount', 'number', 'financialYear' => ['id', 'status', 'closeDate']])
 			->delegateCollection('hash', propertyParent: 'hash'),
 		];
 
@@ -59,7 +57,8 @@ class Operation extends OperationElement {
 
 		return $this['id'] === NULL or (
 			mb_substr($this['hash'], -1) !== JournalSetting::HASH_LETTER_RETAINED and
-			$this['financialYear']->acceptUpdate()
+			$this['financialYear']->acceptUpdate() and
+			$this['number'] === NULL
 		);
 
 	}
@@ -151,6 +150,20 @@ class Operation extends OperationElement {
 				return $date !== NULL;
 
 			})
+			->setCallback('date.locked', function(?string &$date) use ($p): bool {
+
+				if($p->isBuilt('financialYear') === FALSE) {
+					return TRUE;
+				}
+
+				$lastValidatedDate = OperationLib::getLastValidationDate($this['financialYear']);
+				if($lastValidatedDate === NULL or $lastValidatedDate <= $date) {
+					return TRUE;
+				}
+
+				throw new \FailException('journal\Operation::date.locked', [$lastValidatedDate]);
+
+			})
 			->setCallback('description.empty', function(?string $description): bool {
 
 				return $description !== NULL;
@@ -192,7 +205,7 @@ class Operation extends OperationElement {
 					return TRUE;
 				}
 
-				$eThirdParty = ThirdPartyLib::getById($eThirdParty['id']);
+				$eThirdParty = \account\ThirdPartyLib::getById($eThirdParty['id']);
 				return $eThirdParty->notEmpty();
 
 			})

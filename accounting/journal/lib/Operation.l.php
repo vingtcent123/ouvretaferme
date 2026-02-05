@@ -248,9 +248,6 @@ class OperationLib extends OperationCrud {
 
 	public static function getAllForJournal(?int $page, \Search $search = new \Search(), bool $hasSort = FALSE): array {
 
-		$eFinancialYear = $search->get('financialYear');
-		$defaultOrder = ($eFinancialYear !== NULL and $eFinancialYear->isCashAccounting()) ? ['date' => SORT_ASC, 'm1.id' => SORT_ASC] : ['date' => SORT_ASC, 'm1.id' => SORT_ASC];
-
 		$selection = array_merge(Operation::getSelection(),
 			['account' => ['class', 'description']],
 			['thirdParty' => ['id', 'name']]
@@ -259,7 +256,7 @@ class OperationLib extends OperationCrud {
 		self::applySearch($search)
 			->select($selection)
 			->option('count')
-			->sort($hasSort === TRUE ? $search->buildSort() : $defaultOrder);
+			->sort($hasSort === TRUE ? $search->buildSort() : ['date' => SORT_ASC, 'm1.id' => SORT_ASC]);
 
 		if($page === NULL) {
 			$cOperation = Operation::model()->getCollection();
@@ -896,6 +893,7 @@ class OperationLib extends OperationCrud {
 	public static function getForAttachQuery(\bank\Cashflow $eCashflow, \Search $search): \Collection {
 
 		$selection = Operation::getSelection();
+
 		if($search->get('thirdParty')->notEmpty()) {
 			$selection['isThirdParty'] = new \Sql('IF(thirdParty = '.$search->get('thirdParty')['id'].', 1, 0)', 'bool');
 			$sort = ['m1_isThirdParty' => SORT_DESC];
@@ -933,14 +931,13 @@ class OperationLib extends OperationCrud {
 			}
 		}
 
-		$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
-		$eFinancialYear = \account\FinancialYearLib::getFinancialYearForDate($eCashflow['date'], $cFinancialYear);
+		$eFinancialYear = \account\FinancialYearLib::getOpenFinancialYearByDate($eCashflow['date']);
 
 		$cOperationNotBalanced = Operation::model()
 			->select([
 				'hash',
-				'totalBank' => new \Sql('SUM(IF(accountLabel LIKE "512%", IF(type = "credit", -amount, amount), 0))'),
-				'totalOther' => new \Sql('SUM(IF(accountLabel NOT LIKE "512%", IF(type = "credit", -amount, amount), 0))'),
+				'totalBank' => new \Sql('SUM(IF(accountLabel LIKE "'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'%", IF(type = "credit", -amount, amount), 0))'),
+				'totalOther' => new \Sql('SUM(IF(accountLabel NOT LIKE "'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'%", IF(type = "credit", -amount, amount), 0))'),
 			])
 			->whereFinancialYear($eFinancialYear)
 			->group('hash')
@@ -1274,19 +1271,50 @@ class OperationLib extends OperationCrud {
 
 	}
 
+	public static function getLastValidationNumber(\account\FinancialYear $eFinancialYear): int {
+
+		$eOperationLastValidation = Operation::model()
+			->select(['number' => new \Sql('MAX(number)')])
+			->whereNumber('!=', NULL)
+			->whereFinancialYear($eFinancialYear)
+			->get();
+
+		if($eOperationLastValidation['number'] === NULL) {
+			return 0;
+		} else {
+			return $eOperationLastValidation['number'];
+		}
+
+	}
+
+	public static function getLastValidationDate(\account\FinancialYear $eFinancialYear): ?string {
+
+		$eOperationLastValidation = Operation::model()
+			->select(['date' => new \Sql('MAX(date)')])
+			->whereNumber('!=', NULL)
+			->whereFinancialYear($eFinancialYear)
+			->get();
+
+		if($eOperationLastValidation['date'] === NULL) {
+			return NULL;
+		} else {
+			return $eOperationLastValidation['date'];
+		}
+
+	}
+
 	/**
 	 * Chaque groupe d'écriture a le même numéro
 	 */
 	public static function setNumbers(\account\FinancialYear $eFinancialYear): void {
 
-		$search = new \Search(['financialYear' => $eFinancialYear]);
-
-		$cOperation = self::applySearch($search)
+		$cOperation = Operation::model()
 			->select('hash')
+			->whereFinancialYear($eFinancialYear)
 			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection();
 
-		$number = 0;
+		$number = self::getLastValidationNumber($eFinancialYear);
 		$hashTreated = [];
 		foreach($cOperation as $eOperation) {
 
@@ -1407,6 +1435,50 @@ class OperationLib extends OperationCrud {
 			->select(['paymentMethod'])
 			->where('id IN ('.join(', ', $cOperation->getIds()).') OR operation IN ('.join(', ', $cOperation->getIds()).')')
 			->update(new Operation(['paymentMethod' => $ePaymentMethod]));
+
+	}
+
+	public static function lockUntil(Operation $eOperation): int {
+
+		Operation::model()->beginTransaction();
+
+			// On récupère le dernier numéro
+			$number = self::getLastValidationNumber($eOperation['financialYear']);
+
+			$cOperation = Operation::model()
+				->select('id', 'hash')
+				->whereNumber(NULL)
+				->whereDate('<=', $eOperation['date'])
+				->whereFinancialYear($eOperation['financialYear'])
+				->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
+				->getCollection();
+
+			// On incrémente
+			$hashTreated = [];
+			foreach($cOperation as $eOperationToNumber) {
+
+				if(in_array($eOperationToNumber['hash'], $hashTreated)) {
+					continue;
+				}
+
+				$hashTreated[] = $eOperationToNumber['hash'];
+				Operation::model()
+					->select('number')
+					->whereHash($eOperationToNumber['hash'])
+					->update(['number' => ++$number, 'validatedAt' => new \Sql('NOW()'), 'updatedAt' => new \Sql('NOW()')]);
+
+				// On a atteint l'écriture demandée (nécessaire au cas où des écritures datent du même jour)
+				if($eOperation['id'] === $eOperationToNumber['id']) {
+					break;
+				}
+
+			}
+
+		Operation::model()->commit();
+
+		\account\LogLib::save('lock', 'FinancialYear', ['id' => $eOperation['financialYear']['id'], 'until' => $eOperation['date']]);
+
+		return count($hashTreated);
 
 	}
 

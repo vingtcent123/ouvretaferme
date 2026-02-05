@@ -23,18 +23,9 @@ new Page()
 
 			\farm\FarmLib::connectDatabase($eFarm);
 
-			$cFinancialYear = \account\FinancialYearLib::getAll();
-
-			foreach($cFinancialYear as $eFinancialYear) {
-
-				if(\account\Import::model()->whereFinancialYear($eFinancialYear)->count() > 0) {
-					continue;
-				}
-
-				if($eFinancialYear['closeDate'] !== NULL) {
-					\journal\OperationLib::setNumbers($eFinancialYear);
-				}
-
+			$nFinancialYear = \account\FinancialYear::model()->whereLegalCategory(NULL)->count();
+			if($nFinancialYear > 0) {
+				d('ya pa');
 			}
 		}
 

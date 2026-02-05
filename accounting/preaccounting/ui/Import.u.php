@@ -9,7 +9,7 @@ Class ImportUi {
 		\Asset::js('preaccounting', 'invoicing.js');
 	}
 
-	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cInvoice, int $nInvoice, \Search $search): string {
+	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cInvoice, int $nInvoice, ?string $lastValidationDate, \Search $search): string {
 
 		if($cInvoice->empty() and $search->empty(['id'])) {
 			return '<div class="util-empty">'.s("Il n'y a aucune facture à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
@@ -70,6 +70,12 @@ Class ImportUi {
 		$h .= '<div class="util-info">';
 			$h .= s("Vous ne pouvez importer automatiquement dans le logiciel comptable de {siteName} que les factures avec un moyen de paiement défini, des numéros de compte renseignés pour chaque article, et qui sont rapprochées avec une opération bancaire.");
 		$h .= '</div>';
+
+		if($lastValidationDate !== NULL) {
+			$h .= '<div class="util-info">';
+				$h .= s("Attention, vous avez déjà verrouillé des écritures jusqu'au {value}. Vous ne pouvez pas importer d'écritures antérieures à cette date pour respecter la numérotation chronologique des dates de vos écritures.", '<b>'.\util\DateUi::numeric($lastValidationDate).'</b>');
+			$h .= '</div>';
+		}
 
 		$h .= '<div class="stick-sm util-overflow-lg">';
 

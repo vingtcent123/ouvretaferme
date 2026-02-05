@@ -83,10 +83,10 @@ tr[name^="operation"]:has(input[name="batch[]"]:checked) {
 
 .journal-margin-credit {
 	@media (max-width: 767px) {
-		margin-left: 2rem;
+		margin-left: 1.5rem;
 	}
 	@media (min-width: 768px) {
-		margin-left: 3rem;
+		margin-left: 2.5rem;
 	}
 }
 .journal-margin-debit {

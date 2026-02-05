@@ -68,7 +68,7 @@ class FinancialYearModel extends \ModuleModel {
 			'vatChargeability' => ['enum', [\account\FinancialYear::CASH, \account\FinancialYear::DEBIT], 'null' => TRUE, 'cast' => 'enum'],
 			'taxSystem' => ['enum', [\account\FinancialYear::MICRO_BA, \account\FinancialYear::BA_REEL_SIMPLIFIE, \account\FinancialYear::BA_REEL_NORMAL], 'cast' => 'enum'],
 			'accountingType' => ['enum', [\account\FinancialYear::CASH, \account\FinancialYear::ACCRUAL], 'cast' => 'enum'],
-			'legalCategory' => ['int16', 'min' => 1000, 'max' => 9999, 'null' => TRUE, 'cast' => 'int'],
+			'legalCategory' => ['int16', 'min' => 1000, 'max' => 9999, 'cast' => 'int'],
 			'accountingMode' => ['enum', [\account\FinancialYear::ACCOUNTING, \account\FinancialYear::CASH_RECEIPTS], 'cast' => 'enum'],
 			'associates' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'openDate' => ['date', 'null' => TRUE, 'cast' => 'string'],

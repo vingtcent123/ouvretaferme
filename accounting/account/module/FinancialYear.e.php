@@ -299,15 +299,6 @@ class FinancialYear extends FinancialYearElement {
 
 				return in_array($vatFrequency, FinancialYear::model()->getPropertyEnum('vatFrequency'));
 			})
-			->setCallback('legalCategory.check', function(?int $legalCategory) use ($p): bool {
-
-				if($p->isBuilt('hasVat') === FALSE or $this['hasVat'] === FALSE) {
-					return TRUE;
-				}
-
-				return in_array($legalCategory, array_keys(FinancialYearUi::p('legalCategory')->values));
-
-			})
 			->setCallback('associates.check', function(?int $associates) use ($p): bool {
 
 				if($p->isBuilt('legalCategory') === FALSE or $this['legalCategory'] !== \company\CompanySetting::CATEGORIE_GAEC) {

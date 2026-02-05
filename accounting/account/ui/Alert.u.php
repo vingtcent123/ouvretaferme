@@ -23,6 +23,7 @@ class AlertUi {
 			'FinancialYear::endDate.intervalMin' => s("L'exercice comptable doit durer au minimum 1 mois"),
 			'FinancialYear::endDate.intervalMax' => s("L'exercice comptable ne peut pas durer plus de 24 mois."),
 			'FinancialYear::notClosed' => s("L'exercice comptable n'a pas pu être clôturé. Veuillez vérifier les points listés sur la page de clôture."),
+			'FinancialYear::legalCategory.check' => s("Veuillez choisir la forme juridique de votre exploitation."),
 
 			'ThirdParty::name.duplicate' => s("Ce tiers existe déjà, utilisez-le directement ?"),
 
