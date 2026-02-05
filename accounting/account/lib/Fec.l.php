@@ -200,7 +200,7 @@ class FecLib  {
 				$eOperation['type'] === \journal\OperationElement::CREDIT ? $eOperation['amount'] : 0,
 				'',
 				'',
-				date('Ymd', strtotime($eOperation['date'])),
+				$eOperation['validatedAt'] !== NULL ? date('Ymd', strtotime($eOperation['validatedAt'])) : date('Ymd', strtotime($eOperation['date'])),
 				$eOperation['type'] === \journal\OperationElement::DEBIT ? $eOperation['amount'] : -$eOperation['amount'],
 				'EUR',
 			];

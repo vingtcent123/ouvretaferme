@@ -487,7 +487,7 @@ Class ImportLib extends ImportCrud {
 				'journalCode' => $eJournalCode,
 				'account' => $eAccount,
 				'accountLabel' => $compteNum,
-				'date' => $ecritureDate,
+				'date' => new \preaccounting\SaleUi()->toDate($ecritureDate),
 				'description' => $ecritureLib,
 				'document' => $pieceRef,
 				'documentDate' => new \preaccounting\SaleUi()->toDate($pieceDate),
@@ -495,6 +495,7 @@ Class ImportLib extends ImportCrud {
 				'type' => $debit > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
 				'paymentDate' => $dateRglt ? new \preaccounting\SaleUi()->toDate($dateRglt) : NULL,
 				'paymentMethod' => $eMethod,
+				'validatedAt' => new \preaccounting\SaleUi()->toDate($validDate),
 			]);
 			$cOperation->append($eOperation);
 
