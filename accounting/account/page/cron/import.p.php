@@ -3,7 +3,7 @@ new Page()
 	->cron('index', function($data) {
 
 		$cCompanyCron = \company\CompanyCron::model()
-			->select(\company\CompanyCron::getSelection())
+			->select(\company\CompanyCron::getSelection() + ['farm' => \farm\Farm::getSelection()])
 			->whereAction(\company\CompanyCronLib::FEC_IMPORT)
 			->whereStatus(\company\CompanyCron::WAITING)
 			->getCollection();

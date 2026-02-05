@@ -185,20 +185,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function getLastClosedFinancialYear(): FinancialYear {
-
-		$eFinancialYear = new FinancialYear();
-
-		FinancialYear::model()
-			->select(FinancialYear::getSelection())
-			->whereStatus(FinancialYearElement::CLOSE)
-			->sort(['endDate' => SORT_DESC])
-			->get($eFinancialYear);
-
-		return $eFinancialYear;
-
-	}
-
 	public static function getByDate(string $date): FinancialYear {
 
 		return FinancialYear::model()

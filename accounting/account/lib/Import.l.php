@@ -296,7 +296,7 @@ Class ImportLib extends ImportCrud {
 			->getCollection();
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
-		$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
+		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 		$cJournalCode = \journal\JournalCodeLib::deferred();
 
 		$journaux = [];
@@ -415,10 +415,11 @@ Class ImportLib extends ImportCrud {
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
 
-		$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
+		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 		$cMethod = \payment\MethodLib::getByFarm($eFarm, FALSE);
 
 		$update = ['status' => Import::DONE, 'updatedAt' => new \Sql('NOW()')];
+		$numberHash = [];
 
 		foreach($lines as $line) {
 			[
@@ -474,8 +475,13 @@ Class ImportLib extends ImportCrud {
 			$debit = (float)str_replace(',', '.', $debit);
 			$credit = (float)str_replace(',', '.', $credit);
 
+			if(isset($numberHash[$ecritureNum]) === FALSE) {
+				$numberHash[$ecritureNum] = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_FEC_IMPORT;
+			}
+			$hash = $numberHash[$ecritureNum];
+
 			$eOperation = new \journal\Operation([
-				'hash' => \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_FEC_IMPORT,
+				'hash' => $hash,
 				'number' => $ecritureNum,
 				'financialYear' => $eImport['financialYear'],
 				'journalCode' => $eJournalCode,
@@ -494,11 +500,60 @@ Class ImportLib extends ImportCrud {
 
 		}
 
+		$vatRates = \selling\SellingSetting::getVatRates($eFarm);
+
 		Import::model()->beginTransaction();
 
 			Import::model()->update($eImport, $update);
 
 			\journal\Operation::model()->insert($cOperation);
+
+			// On va ensuite regarder si on peut grouper les écritures de TVA avec leur copine
+			$ccOperation = \journal\Operation::model()
+				->select(['id', 'accountLabel', 'hash', 'type', 'amount', 'vatRate', 'account' => ['id', 'vatAccount', 'class'], 'vatAccount' => ['id', 'class']])
+				->whereFinancialYear($eImport['financialYear'])
+				->getCollection(index: ['hash', 'id']);
+
+			foreach($ccOperation as $cOperation) {
+				foreach($cOperation as $eOperation) {
+
+					if(
+						\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::VAT_BUY_CLASS_ACCOUNT) or
+						\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)
+					) {
+						// On cherche la copine
+						$cOperationOrigin = $cOperation->find(fn($e) => $e['account']['vatAccount']->notEmpty());
+						if($cOperationOrigin->count() === 1) {
+
+							$eOperationOrigin = $cOperationOrigin->first();
+							if($eOperationOrigin['type'] !== $eOperation['type']) {
+								continue;
+							}
+							$vatRate = $eOperation['amount'] / $eOperationOrigin['amount'] * 100;
+
+							\journal\Operation::model()->update($eOperation, ['operation' => $eOperationOrigin]);
+							\journal\Operation::model()->update($eOperationOrigin, ['vatAccount' => $eOperation['account'], 'vatRate' => $vatRate]);
+
+						} else if($cOperationOrigin->count() > 1) {
+
+							foreach($cOperationOrigin as $eOperationOrigin) {
+
+								$vatRate = $eOperation['amount'] / $eOperationOrigin['amount'] * 100;
+
+								foreach($vatRates as $vatRateTheoric) {
+
+									if(abs($vatRate - $vatRateTheoric) < 0.5) {
+
+										\journal\Operation::model()->update($eOperation, ['operation' => $eOperationOrigin]);
+										\journal\Operation::model()->update($eOperationOrigin, ['vatAccount' => $eOperation['account'], 'vatRate' => $vatRate]);
+
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 
 			LogLib::save('open', 'FinancialYear', ['id' => $eImport['financialYear']['id']]);
 

@@ -31,6 +31,7 @@ new AdaptativeView('import', function($data, FarmTemplate $t) {
 				\account\Import::FEEDBACK_REQUESTED => s("Un import est en cours. Une action de votre part est nécessaire pour continuer."),
 				\account\Import::FEEDBACK_TO_TREAT => s("Un import est en cours. Le traitement suite à votre action va bientôt être effectué."),
 				\account\Import::IN_PROGRESS => s("L'import est en cours de traitement."),
+				\account\Import::WAITING => s("L'import est en attente de traitement."),
 			};
 		echo '</div>';
 

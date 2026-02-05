@@ -1274,30 +1274,27 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function countByAccount(\account\Account $eAccount): int {
-
-		$eAccount->expects(['id']);
-
-		return Operation::model()
-			->whereAccount($eAccount)
-			->count();
-
-	}
-
+	/**
+	 * Chaque groupe d'écriture a le même numéro
+	 */
 	public static function setNumbers(\account\FinancialYear $eFinancialYear): void {
 
 		$search = new \Search(['financialYear' => $eFinancialYear]);
 
 		$cOperation = self::applySearch($search)
-			->select('id')
-			->sort(['date' => SORT_ASC, 'm1.id' => SORT_ASC])
+			->select('hash')
+			->sort(['date' => SORT_ASC, 'id' => SORT_ASC])
 			->getCollection();
 
 		$number = 0;
+		$hashTreated = [];
 		foreach($cOperation as $eOperation) {
 
-			$eOperation['number'] = ++$number;
-			Operation::model()->select('number')->update($eOperation);
+			if(in_array($eOperation['hash'], $hashTreated)) {
+				continue;
+			}
+			$hashTreated[] = $eOperation['hash'];
+			Operation::model()->select('number')->whereHash($eOperation['hash'])->update(['number' => ++$number]);
 
 		}
 
