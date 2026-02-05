@@ -7,7 +7,7 @@ new \account\ImportPage()
 	})
 	->post('check', function($data) {
 
-		if(\account\ImportLib::countWaiting() === 0) {
+		if(OTF_DEMO or \account\ImportLib::countWaiting() === 0) {
 			throw new \ReloadLayerAction();
 		}
 

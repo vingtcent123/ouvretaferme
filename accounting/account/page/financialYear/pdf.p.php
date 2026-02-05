@@ -9,13 +9,13 @@ new \account\FinancialYearPage(function($data) {
 	}
 
 	if(\company\CompanySetting::BETA and in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA) === FALSE) {
-		throw new RedirectAction('/comptabilite/beta?farm='.$data->eFarm['id']);
+		throw new \RedirectAction('/comptabilite/beta?farm='.$data->eFarm['id']);
 	}
 
 })
 	->post('check', function($data) {
 
-		if(FinancialYearDocumentLib::countWaiting($data->eFarm['eFinancialYear']) === 0) {
+		if(OTF_DEMO or FinancialYearDocumentLib::countWaiting($data->eFarm['eFinancialYear']) === 0) {
 			throw new \ReloadLayerAction();
 		}
 
