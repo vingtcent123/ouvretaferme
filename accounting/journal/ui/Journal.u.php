@@ -589,8 +589,10 @@ class JournalUi {
 												
 												$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update" class="dropdown-item">'.s("Modifier l'écriture").'</a>';
 
-												$h .= '<div class="dropdown-divider"></div>';
-												$h .= '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doLock" post-id="'.$eOperation['id'].'" class="dropdown-item" data-confirm="'.s("En verrouillant l'écriture, vous ne pourrez plus la modifier ni modifier les écritures chronologiquement antérieures. On verrouille ?").'">'.s("Verrouiller les écritures jusqu'à celle-ci").'</a>';
+												if($search->empty(['financialYear']) and $search->getSort() === 'date') {
+													$h .= '<div class="dropdown-divider"></div>';
+													$h .= '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doLock" post-id="'.$eOperation['id'].'" class="dropdown-item" data-confirm="'.s("En verrouillant l'écriture, vous ne pourrez plus la modifier ni modifier les écritures chronologiquement antérieures. On verrouille ?").'">'.s("Verrouiller les écritures jusqu'à celle-ci").'</a>';
+												}
 
 											} else {
 
