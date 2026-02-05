@@ -324,7 +324,7 @@ class OperationUi {
 
 		if($eOperation['number'] !== NULL) {
 			$h .= '<div class="util-info">';
-				$h .= \Asset::icon('lock-fill').' '.s("Ces écritures sont verrouillées");
+				$h .= \Asset::icon('lock-fill').' '.s("Ces écritures sont validées");
 			$h .= '</div>';
 		}
 

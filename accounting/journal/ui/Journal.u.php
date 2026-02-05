@@ -465,7 +465,7 @@ class JournalUi {
 							}
 
 							if($showLockColumn) {
-								$h .= '<td class="td-vertical-align-top" style="color: #00000050" title="'.s("Écriture verrouillée").'">';
+								$h .= '<td class="td-vertical-align-top" style="color: #00000050" title="'.s("Écriture validée").'">';
 									if($eOperation['number'] !== NULL) {
 										$h .= \Asset::icon('lock-fill');
 									}
@@ -591,7 +591,7 @@ class JournalUi {
 
 												if($search->empty(['financialYear']) and $search->getSort() === 'date') {
 													$h .= '<div class="dropdown-divider"></div>';
-													$h .= '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doLock" post-id="'.$eOperation['id'].'" class="dropdown-item" data-confirm="'.s("En verrouillant l'écriture, vous ne pourrez plus la modifier ni modifier les écritures chronologiquement antérieures. On verrouille ?").'">'.s("Verrouiller les écritures jusqu'à celle-ci").'</a>';
+													$h .= '<a data-ajax="'.\company\CompanyUi::urlJournal($eFarm).'/operation:doLock" post-id="'.$eOperation['id'].'" class="dropdown-item" data-confirm="'.s("En validant l'écriture, vous ne pourrez plus la modifier ni modifier les écritures chronologiquement antérieures. On valide ?").'">'.\Asset::icon('lock-fill').' '.s("Valider les écritures jusqu'à celle-ci").'</a>';
 												}
 
 											} else {

@@ -26,7 +26,7 @@ class AlertUi {
 			'Operation::amount.negative' => s("Le montant doit être positif. Utilisez le type débit / crédit pour modifier le sens de l'écriture."),
 
 			'Operation::date.check' => s("La date doit correspondre à l'exercice comptable actuellement ouvert."),
-			'Operation::date.locked' => s("Vous devez respecter la numérotation chronologique des dates de vos écritures. Compte tenu des écritures déjà validées et verrouillées, vous ne pouvez pas créer d'écriture antérieurement au {value}.", \util\DateUi::numeric(encode($options[0]))),
+			'Operation::date.locked' => s("Vous devez respecter la numérotation chronologique des dates de vos écritures. Compte tenu des écritures déjà validées, vous ne pouvez pas créer d'écriture antérieurement au {value}.", \util\DateUi::numeric(encode($options[0]))),
 			'Operation::account.check' => s("N'oubliez pas de choisir un numéro de compte !"),
 			'Operation::account.notExists' => s("Le compte n'existe pas"),
 			'Operation::accountLabel.inconsistency' => s("Le numéro de compte doit commencer par les mêmes chiffres que le compte."),
@@ -69,8 +69,8 @@ class AlertUi {
 			'Operation::attached' => s("L'écriture a bien été rattachée."),
 
 			'Operations::updated' => s("Les opérations ont été modifiées."),
-			'Operation::groups.locked' => s("Les groupes d'opérations ont bien été verrouillés."),
-			'Operation::group.locked' => s("Le groupe d'opérations a bien été verrouillé."),
+			'Operation::groups.validated' => s("Les groupes d'opérations ont bien été validés."),
+			'Operation::group.validated' => s("Le groupe d'opérations a bien été validé."),
 
 			'VatDeclaration:created' => s("La déclaration de TVA a bien été créée."),
 

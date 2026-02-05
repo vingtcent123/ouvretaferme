@@ -302,7 +302,7 @@ new \journal\OperationPage(function($data) {
 
 		$nOperationLocked = \journal\OperationLib::lockUntil($data->e);
 
-		throw new ReloadAction('journal', ($nOperationLocked > 1 ? 'Operation::groups.locked' : 'Operation::group.locked'));
+		throw new ReloadAction('journal', ($nOperationLocked > 1 ? 'Operation::groups.validated' : 'Operation::group.validated'));
 
 	});
 

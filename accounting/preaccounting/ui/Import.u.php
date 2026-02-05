@@ -73,7 +73,7 @@ Class ImportUi {
 
 		if($lastValidationDate !== NULL) {
 			$h .= '<div class="util-info">';
-				$h .= s("Attention, vous avez déjà verrouillé des écritures jusqu'au {value}. Vous ne pouvez pas importer d'écritures antérieures à cette date pour respecter la numérotation chronologique des dates de vos écritures.", '<b>'.\util\DateUi::numeric($lastValidationDate).'</b>');
+				$h .= s("Attention, vous avez déjà validé des écritures jusqu'au {value}. Vous ne pouvez pas importer d'écritures antérieures à cette date pour respecter la numérotation chronologique des dates de vos écritures.", '<b>'.\util\DateUi::numeric($lastValidationDate).'</b>');
 			$h .= '</div>';
 		}
 

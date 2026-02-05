@@ -311,7 +311,7 @@ class CashflowUi {
 										$h .= p("{value} écriture", "{value} écritures", $eCashflow['cOperationHash']->count());
 									$h .= '</a>';
 									if($eCashflow['cOperationHash']->first()['number'] !== NULL) {
-											$h .= ' <span style="color: #00000050" title="'.p("Écriture verrouillée", "Écritures verrouillées", $eCashflow['cOperationHash']->count()).'">';
+											$h .= ' <span style="color: #00000050" title="'.p("Écriture validée", "Écritures validées", $eCashflow['cOperationHash']->count()).'">';
 												$h .= \Asset::icon('lock-fill');
 											$h .= '</span>';
 									}
