@@ -118,7 +118,7 @@ Class FinancialYearDocumentUi {
 			}
 		$h .= '</div>';
 
-		if($hasDocumentGenerating === TRUE) {
+		if($hasDocumentGenerating === TRUE and OTF_DEMO === FALSE) {
 
 			$attributes = [
 				'onrender' => 'FinancialYearDocument.checkGeneration("'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/pdf:check")',
