@@ -2976,7 +2976,10 @@ abstract class ModuleModel {
 
 					foreach($this->getPropertiesToElement() as $property => $element) {
 
-						if(empty($selection[$property]) === FALSE) {
+						if(
+							empty($selection[$property]) === FALSE and
+							is_array($selection[$property])
+						) {
 
 							if($eElement[$property]->notEmpty()) {
 
@@ -3402,7 +3405,10 @@ abstract class ModuleModel {
 
 			foreach($mElement->getPropertiesToElement() as $property => $element) {
 
-				if(empty($selection[$property]) === FALSE) {
+				if(
+					empty($selection[$property]) === FALSE and
+					is_array($selection[$property])
+				) {
 					$subProperties[$position][$property] = [];
 				}
 
