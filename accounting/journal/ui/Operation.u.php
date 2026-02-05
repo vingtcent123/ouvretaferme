@@ -1037,7 +1037,7 @@ class OperationUi {
 				$vatValueField .= '</div>';
 
 				$vatRateField = '<fieldset>';
-					$vatRateField .= '<legend>'.s("Taux").'</legend>';
+					$vatRateField .= '<legend>'.s("Taux de TVA").'</legend>';
 					$vatRateField .= $form->inputGroup(
 						$form->number(
 							'vatRate'.$suffix,
@@ -1079,7 +1079,7 @@ class OperationUi {
 				$amountIncludingVatField .= '</div>';
 
 				$vatRuleField = '<fieldset>';
-					$vatRuleField .= '<legend>'.s('Règle TVA').'&nbsp;<a href="/doc/accounting:vat" target="_blank" title="'.s("Plus d'informations sur les règles de TVA").'">'.\Asset::icon('info-circle').'</a>'.'</legend>';
+					$vatRuleField .= '<legend>'.s('Règle de TVA').'&nbsp;<a href="/doc/accounting:vat" target="_blank" title="'.s("Plus d'informations sur les règles de TVA").'">'.\Asset::icon('info-circle').'</a>'.'</legend>';
 					$vatRuleField .= $form->dynamicField($eOperation, 'vatRule'.$suffix);
 				$vatRuleField .= '</fieldset>';
 
@@ -1596,7 +1596,7 @@ class OperationUi {
 			'description' => s("Libellé"),
 			'document' => s("Pièce comptable"),
 			'documentDate' => s("Date de la pièce comptable"),
-			'amount' => s("Montant (HT)"),
+			'amount' => s("Montant HT"),
 			'type' => s("Type (débit / crédit)"),
 			'thirdParty' => s("Tiers"),
 			'paymentMethod' => s("Mode de paiement"),

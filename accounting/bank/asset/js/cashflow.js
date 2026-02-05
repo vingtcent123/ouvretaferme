@@ -320,18 +320,16 @@ class CashflowAttach {
 
     static reloadFooter() {
 
-        if(!qs('form [name="thirdParty"]')) {
-            return;
-        }
-
         CashflowAttach.replaceState();
         CashflowAttach.emptyOperationAutocomplete();
 
         const url = new URL(document.location.href);
         url.pathname = url.pathname.replace('attach', 'calculateAttach')
 
-        const thirdParty = qs('form [name="thirdParty"]').getAttribute('value');
-        url.searchParams.set('thirdParty', thirdParty);
+				if(qs('form [name="thirdParty"]')) {
+					const thirdParty = qs('form [name="thirdParty"]').getAttribute('value');
+					url.searchParams.set('thirdParty', thirdParty);
+				}
         url.searchParams.delete('operations[]');
         qsa('form [name="operations[]"]', node => url.searchParams.append('operations[]', node.value));
 

@@ -341,7 +341,10 @@ class JournalUi {
 		$canUpdateFinancialYear = ($readonly === FALSE and $selectedJournalCode !== JournalSetting::JOURNAL_CODE_BANK);
 		$showLockColumn = ($eFinancialYearSelected->isClosed() === FALSE and $cOperation->find(fn($e) => ($e['number'] ?? NULL) !== NULL)->count() > 0);
 
-		$columns = 6;
+		$columns = 5;
+		if($canUpdateFinancialYear) {
+			$columns++;
+		}
 		if($showLockColumn !== FALSE) {
 			$columns++;
 		}
@@ -429,7 +432,7 @@ class JournalUi {
 								if($readonly === FALSE) {
 									$h .= '<td></td>';
 								}
-								$h .= '<td colspan="'.$columns.'">';
+								$h .= '<td colspan="'.($columns - 3).'">';
 									$dateDisplay = \util\DateUi::numeric($referenceDate);
 									if($currentDate === NULL and $readonly === FALSE) {
 										$h .= $search->linkSort('date', $dateDisplay, SORT_DESC);
@@ -437,6 +440,13 @@ class JournalUi {
 										$h .= $dateDisplay;
 									}
 								$h .= '</td>';
+								$h .= '<td class="text-end highlight-stick-right hide-sm-down">';
+								$h .= '</td>';
+								$h .= '<td class="text-end highlight-stick-left hide-sm-down">';
+								$h .= '</td>';
+								if($readonly === FALSE) {
+									$h .= '<td></td>';
+								}
 							$h .= '</tr>';
 						}
 

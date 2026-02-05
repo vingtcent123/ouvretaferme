@@ -85,8 +85,8 @@ Class VatUi {
 
 						if($showInitialColumns) {
 							$h .= '<th class="td-min-content text-end rowspaned-center">'.s("Taux TVA").'</th>';
-							$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center">'.s("Montant (TTC)").'</th>';
-							$h .= '<th class="text-end td-min-content highlight-stick-left rowspaned-center">'.s("Montant (HT)").'</th>';
+							$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center">'.s("Montant TTC").'</th>';
+							$h .= '<th class="text-end td-min-content highlight-stick-left rowspaned-center">'.s("Montant HT").'</th>';
 						}
 
 						$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center">'.s("TVA").'</th>';

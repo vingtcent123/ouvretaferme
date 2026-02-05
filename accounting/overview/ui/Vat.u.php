@@ -191,8 +191,8 @@ Class VatUi {
 								$h .= '<th rowspan="2">'.s("Description").'</th>';
 								$h .= '<th rowspan="2">'.s("Tiers").'</th>';
 								$h .= '<th colspan="2" class="text-center">'.s("Taux TVA (%)").'</th>';
-								$h .= '<th rowspan="2" class="text-center">'.s("Montant (TTC)").'</th>';
-								$h .= '<th rowspan="2" class="text-center">'.s("Montant (HT)").'</th>';
+								$h .= '<th rowspan="2" class="text-center">'.s("Montant TTC").'</th>';
+								$h .= '<th rowspan="2" class="text-center">'.s("Montant HT").'</th>';
 								$h .= '<th rowspan="2" class="text-center">'.s("TVA (€)").'</th>';
 							$h .= '</tr>';
 							$h .= '<tr>';

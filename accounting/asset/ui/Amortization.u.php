@@ -326,7 +326,7 @@ Class AmortizationUi {
 
 		$d = \journal\Operation::model()->describer($property, [
 			'asset' => s("Immobilisation"),
-			'amount' => s("Montant (HT)"),
+			'amount' => s("Montant HT"),
 			'type' => s("Type d'amortissement"),
 			'date' => s("Date"),
 			'financialYear' => s("Exercice comptable"),
