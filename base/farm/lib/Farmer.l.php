@@ -353,11 +353,45 @@ class FarmerLib extends FarmerCrud {
 
 		Farmer::model()->beginTransaction();
 
-		parent::delete($e);
+			parent::delete($e);
 
-		Invite::model()
-			->whereFarmer($e)
-			->delete();
+			Invite::model()
+				->whereFarmer($e)
+				->delete();
+
+			\hr\Presence::model()
+				->whereFarm($e['farm'])
+				->whereUser($e['user'])
+				->whereFrom('>=', new \Sql('CURRENT_DATE'))
+				->delete();
+
+			\hr\Presence::model()
+				->whereFarm($e['farm'])
+				->whereUser($e['user'])
+				->or(
+					fn() => $this->whereTo(NULL),
+					fn() => $this->whereTo('>=', new \Sql('CURRENT_DATE'))
+				)
+				->update([
+					'to' => new \Sql('CURRENT_DATE')
+				]);
+
+			\hr\Absence::model()
+				->whereFarm($e['farm'])
+				->whereUser($e['user'])
+				->whereFrom('>=', new \Sql('NOW()'))
+				->delete();
+
+			\hr\Absence::model()
+				->whereFarm($e['farm'])
+				->whereUser($e['user'])
+				->or(
+					fn() => $this->whereTo(NULL),
+					fn() => $this->whereTo('>=', new \Sql('CURRENT_DATE'))
+				)
+				->update([
+					'to' => new \Sql('CURRENT_DATE')
+				]);
 
 		Farmer::model()->commit();
 
