@@ -18,6 +18,9 @@ Class SaleUi {
 		if($nOperations > 100) {
 			$operations = array_slice($operations, 0, 100);
 		}
+
+		$showEcritLib = count(array_filter($operations, fn($operation) => $operation[AccountingLib::EXTRA_FEC_COLUMN_ORIGIN] === 'register')) > 0;
+
 		$h = '<table class="tr-hover tr-even">';
 
 			$h .= '<thead>';
@@ -27,6 +30,9 @@ Class SaleUi {
 					$h .= '<th rowspan="2">'.s("Numéro de <br />compte").'</th>';
 					$h .= '<th rowspan="2">'.s("Libellé du <br />compte").'</th>';
 					$h .= '<th colspan="2" class="text-center">'.s("Pièce justificative").'</th>';
+					if($showEcritLib) {
+						$h .= '<th rowspan="2">'.s("Libellé de l'écriture").'</th>';
+					}
 					$h .= '<th rowspan="2" class="highlight-stick-right text-end">'.s("Débit").'</th>';
 					$h .= '<th rowspan="2" class="highlight-stick-left text-end">'.s("Crédit").'</th>';
 					$h .= '<th rowspan="2">'.s("Date de <br />paiement").'</th>';
@@ -53,24 +59,45 @@ Class SaleUi {
 						$h .= '</td>';
 						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_JOURNAL_CODE]).'</td>';
 						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_JOURNAL_TEXT]).'</td>';
-						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]).'</td>';
+						$h .= '<td>';
+							if($operation[AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] === '') {
+								$h .= '<span class="color-danger" title="'.s("Information manquante").'"><b>'.\Asset::icon('three-dots').'</b></span>';
+							} else {
+								$h .= encode($operation[AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
+							}
+						$h .= '</td>';
 						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]).'</td>';
 						$h .= '<td>';
-							if($cInvoice->offsetExists($operation[AccountingLib::FEC_COLUMN_DOCUMENT])) {
+							if($operation[AccountingLib::EXTRA_FEC_COLUMN_ORIGIN] === 'invoice' and $cInvoice->offsetExists($operation[AccountingLib::FEC_COLUMN_DOCUMENT])) {
 								$eInvoice = $cInvoice[$operation[AccountingLib::FEC_COLUMN_DOCUMENT]];
 								$url = \farm\FarmUi::urlSellingInvoices($eFarm).'?name='.$eInvoice['document'].'&customer='.urlencode($eInvoice['customer']['name']);
-							} else {
+							} else if($operation[AccountingLib::EXTRA_FEC_COLUMN_ORIGIN] === 'sale') {
 								$url = \farm\FarmUi::urlSellingSalesAll($eFarm).'?document='.$operation[AccountingLib::FEC_COLUMN_DOCUMENT];
+							} else {
+								$url = NULL;
 							}
-							$h .= '<a href="'.$url.'">';
+							if($url) {
+								$h .= '<a href="'.$url.'">';
+									$h .= encode($operation[AccountingLib::FEC_COLUMN_DOCUMENT]);
+								$h .= '</a>';
+							} else {
 								$h .= encode($operation[AccountingLib::FEC_COLUMN_DOCUMENT]);
-							$h .= '</a>';
+							}
 						$h .= '</td>';
 						$h .= '<td>';
 						if($operation[AccountingLib::FEC_COLUMN_DOCUMENT_DATE]) {
 							$h .= \util\DateUi::numeric($this->toDate($operation[AccountingLib::FEC_COLUMN_DOCUMENT_DATE]));
 						}
 						$h .= '</td>';
+
+						if($showEcritLib) {
+							$h .= '<td>';
+							if($operation[AccountingLib::FEC_COLUMN_DESCRIPTION]) {
+								$h .= encode($operation[AccountingLib::FEC_COLUMN_DESCRIPTION]);
+							}
+							$h .= '</td>';
+						}
+
 						$h .= '<td class="highlight-stick-right text-end">';
 						if($operation[AccountingLib::FEC_COLUMN_DEBIT]) {
 							$h .= \util\TextUi::money($operation[AccountingLib::FEC_COLUMN_DEBIT]);

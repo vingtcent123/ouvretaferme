@@ -10,7 +10,7 @@ Class PreaccountingUi {
 
 	}
 
-	public function summarize(int $nInvoice, int $nSale): string {
+	public function summarize(int $nInvoice, int $nSale, int $nCash): string {
 
 		$h = '<ul class="util-summarize">';
 
@@ -28,6 +28,16 @@ Class PreaccountingUi {
 				$h .= '</div>';
 			$h .= '</li>';
 
+			if(CashLib::isActive()) {
+
+				$h .= '<li>';
+					$h .= '<div>';
+						$h .= '<h5>'.p("Opération de caisse", "Opérations de caisse", $nCash).'</h5>';
+						$h .= '<div>'.$nCash.'</div>';
+					$h .= '</div>';
+				$h .= '</li>';
+
+			}
 		$h .= '</ul>';
 
 		return $h;
@@ -82,7 +92,7 @@ Class PreaccountingUi {
 				$h .= '</fieldset>';
 
 
-				if(\preaccounting\CashLib::isActive() and $search->get('cRegister')->count() > 0) {
+				if(\preaccounting\CashLib::isActive() and $search->has('cRegister') and $search->get('cRegister')->count() > 0) {
 					$values = [[
 						'label' => s("Factures"),
 						'values' => [

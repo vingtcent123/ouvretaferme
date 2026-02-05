@@ -11,7 +11,7 @@ Class CashLib {
 
 	public static function getForAccounting(\farm\Farm $eFarm, \Search $search): \Collection {
 
-		$selectRegister = \cash\Cash::getSelection();
+		$selectRegister = \cash\Cash::getSelection() + ['sourceBankAccount' => \bank\BankAccount::getSelection()];
 
 		return self::filterForAccounting($eFarm, $search)
 			->select($selectRegister)
@@ -21,9 +21,15 @@ Class CashLib {
 
 	}
 
+	public static function countEligible(\farm\Farm $eFarm, \Search $search): int {
+
+		return self::filterForAccounting($eFarm, $search)->count();
+
+	}
+
 	private static function filterForAccounting(\farm\Farm $eFarm, \Search $search): \cash\CashModel {
 
-		if($search->get('register')->notEmpty()) {
+		if($search->has('register') and $search->get('register')->notEmpty()) {
 
 			\cash\Cash::model()
         ->whereRegister($search->get('register'))
@@ -32,7 +38,9 @@ Class CashLib {
 		}
 
 		return \cash\Cash::model()
+			->whereSource('!=', \cash\Cash::INITIAL)
 			->where('date BETWEEN '.\cash\Cash::model()->format($search->get('from')).' AND '.\cash\Cash::model()->format($search->get('to')))
+			->where(fn() => 'register IN ('.join(', ', $search->get('cRegisterFilter')->getIds()).')', if: $search->has('cRegisterFilter') and $search->get('cRegisterFilter')->notEmpty())
 			// Ajouter un filtre sur le client
 		;
 		/*

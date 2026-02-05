@@ -55,6 +55,12 @@ new Page(function($data) {
 			$data->nSale = \preaccounting\SaleLib::countEligible($data->eFarm, $data->search);
 			$data->nInvoice = \preaccounting\InvoiceLib::countEligible($data->eFarm, $data->search);
 
+			if(\preaccounting\CashLib::isActive()) {
+				$data->nCash = \preaccounting\CashLib::countEligible($data->eFarm, $data->search);
+			} else {
+				$data->nCash = 0;
+			}
+
 		} else {
 
 			$data->nProductToCheck = 0;
@@ -64,6 +70,7 @@ new Page(function($data) {
 
 			$data->nSale = 0;
 			$data->nInvoice = 0;
+			$data->nCash = 0;
 
 		}
 
@@ -177,9 +184,54 @@ new Page(function($data) {
 				$eRegister = (GET('filter', 'int') !== 0) ? $data->search->get('cRegister')->offsetGet(GET('filter', 'int')) : new \cash\Register();
 				$data->search->set('register', $eRegister);
 
-				// Ventes des journaux de caisse
-				$data->cCash = \preaccounting\CashLib::getForAccounting($data->eFarm, $data->search);
-				[$fecCash, $data->nCash] = \preaccounting\AccountingLib::generateCashFec($data->cCash, $data->eFarm['cFinancialYear'], $cAccount, $data->search->get('account'), $eRegister);
+				if($data->search->get('cRegister')->notEmpty() and $hasInvoice === NULL) {
+
+					// Préfiltre Caisse et Moyen de paiement
+					if($eRegister->empty()) {
+						if($data->search->get('method')->empty()) {
+							// Pas de filtre caisse / moyen de paiement
+							$cRegisterFiltered = $data->search->get('cRegister');
+						} else {
+							// On filtre les caisses sur le moyen de paiement
+							$cRegisterFiltered = $data->search->get('cRegister')->find(fn($e) => $e['paymentMethod']->is($data->search->get('method')));
+						}
+					} else {
+						if($data->search->get('method')->empty()) {
+							$cRegisterFiltered = new Collection([$eRegister]);
+						} else {
+							$cRegisterFiltered = $eRegister['paymentMethod']->is($data->search->get('method')) ? new Collection([$eRegister]) : new Collection();
+						}
+					}
+
+					$data->search->set('cRegisterFilter', $cRegisterFiltered);
+
+					// Ventes des journaux de caisse
+					if(
+						$data->search->get('method')->empty() or
+						$data->search->get('filter') === NULL or
+						($eRegister->notEmpty() and ($data->search->get('method')->empty() or $data->search->get('method')->is($eRegister['paymentMethod'])))
+					) {
+
+						$data->cCash = \preaccounting\CashLib::getForAccounting($data->eFarm, $data->search);
+						[$fecCash, $data->nCash] = \preaccounting\AccountingLib::generateCashFec(
+							cCash: $data->cCash,
+							cFinancialYear: $data->eFarm['cFinancialYear'],
+							cAccount: $cAccount,
+							search: $data->search
+						);
+					} else {
+
+						$fecCash = [];
+						$data->nCash = 0;
+
+					}
+
+				} else {
+
+					$fecCash = [];
+					$data->nCash = 0;
+
+				}
 
 			} else {
 
@@ -187,7 +239,6 @@ new Page(function($data) {
 				$data->nCash = 0;
 
 			}
-
 
 			// Ventes non facturées
 			if($data->search->get('filter') === NULL or $hasInvoice === FALSE) {
@@ -241,39 +292,69 @@ new Page(function($data) {
 
 		if($data->isSearchValid) {
 
+			$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
+			$cMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
+
 			$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
+			$data->search->set('cMethod', $cMethod);
 			$data->search->set('method', \payment\MethodLib::getById(GET('method')));
 			$data->search->set('account', \account\AccountLib::getById(GET('account')));
 			$data->search->set('hasInvoice', GET('hasInvoice', '?int'));
 
+			$hasInvoice = in_array(GET('filter', '?string'), ['hasInvoice', 'noInvoice']) ? GET('filter', '?string') === 'hasInvoice' : NULL;
+			$data->search->set('filter', GET('filter', '?string'));
 
-			$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
+			if(\preaccounting\CashLib::isActive()) {
 
-			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 0) {
+				$data->search->set('cRegister', \cash\RegisterLib::getAll());
+				$eRegister = (GET('filter', 'int') !== 0) ? $data->search->get('cRegister')->offsetGet(GET('filter', 'int')) : new \cash\Register();
+				$data->search->set('register', $eRegister);
+
+				if($data->search->get('cRegister')->notEmpty() and $hasInvoice === NULL) {
+
+					// Ventes des journaux de caisse
+					$data->cCash = \preaccounting\CashLib::getForAccounting($data->eFarm, $data->search);
+					[$cashOperations, ] = \preaccounting\AccountingLib::generateCashFec(
+						cCash: $data->cCash,
+						cFinancialYear: $data->eFarm['cFinancialYear'],
+						cAccount: $cAccount,
+						search: $data->search
+					);
+
+				} else {
+					$cashOperations = [];
+				}
+
+			} else {
+				$cashOperations = [];
+			}
+
+			if($data->search->get('filter') === NULL or $hasInvoice === FALSE) {
 
 				$cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
-				[$saleOperations,] = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search);
+				[$saleOperations,] = \preaccounting\AccountingLib::generateSalesFec($cSale, $data->eFarm['cFinancialYear'], $cAccount, $data->search->get('account'));
 
 			} else {
 				$saleOperations = [];
 			}
 
-			if($data->search->get('hasInvoice') === NULL or $data->search->get('hasInvoice') === 1) {
+			if($data->search->get('filter') === NULL or $hasInvoice === TRUE) {
 
 				$cInvoice = \preaccounting\InvoiceLib::getForAccounting($data->eFarm, $data->search, FALSE);
-				$invoiceOperations = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $data->eFarm['cFinancialYear'], $cAccount, FALSE, $data->search->get('account'));
+				[$invoiceOperations, ] = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $data->eFarm['cFinancialYear'], $cAccount, FALSE, $data->search->get('account'));
 
 			} else {
 				$invoiceOperations = [];
 			}
 
-			$operations = \preaccounting\AccountingLib::sortOperations(array_merge($saleOperations, $invoiceOperations));
+			$operations = \preaccounting\AccountingLib::sortOperations(array_merge($cashOperations, $saleOperations, $invoiceOperations));
 
 			if((GET('format') ?? 'csv') === 'csv') {
 
 				// Formattage des nombres
 				foreach($operations as &$lineFec) {
 
+					\preaccounting\AccountingLib::unsetExtraColumns($lineFec);
 					foreach([\preaccounting\AccountingLib::FEC_COLUMN_DEBIT, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT, \preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
 						$lineFec[$column] = \util\TextUi::csvNumber($lineFec[$column]);
 					}

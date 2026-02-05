@@ -146,14 +146,6 @@ class FinancialYearLib extends FinancialYearCrud {
 		return $eFinancialYear;
 
 	}
-	public static function selectDefaultFinancialYear(): FinancialYear {
-
-		return FinancialYear::model()
-			->select(FinancialYear::getSelection())
-			->whereStatus(FinancialYearElement::OPEN)
-			->get();
-
-	}
 
 	public static function getAll(): \Collection {
 
@@ -242,6 +234,10 @@ class FinancialYearLib extends FinancialYearCrud {
 	}
 
 	public static function getFinancialYearForDate(string $date, \Collection $cFinancialYear): FinancialYear {
+
+		if($cFinancialYear->empty()) {
+			$cFinancialYear = self::getAll();
+		}
 
 		foreach($cFinancialYear as $eFinancialYear) {
 			if($date >= $eFinancialYear['startDate'] and $date <= $eFinancialYear['endDate']) {

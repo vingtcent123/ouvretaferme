@@ -23,7 +23,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	if($data->eFarm['hasSales']) {
 
 		echo new \preaccounting\PreaccountingUi()->getSearchPeriod($data->search);
-		echo new \preaccounting\PreaccountingUi()->summarize($data->nInvoice, $data->nSale);
+		echo new \preaccounting\PreaccountingUi()->summarize($data->nInvoice, $data->nSale, $data->nCash);
 
 		if($data->nInvoice === 0 and $data->nSale === 0) {
 
@@ -176,13 +176,10 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 
 	if(count($data->operations) > 0) {
 
-		// On exclut les lignes de banque du total
+		// Attention, le calcul est credit - debit car on va compter les contreparties pour les avoir toutes (et non pas la banque ni la caisse).
 		$filteredOperations = array_filter(
 			$data->operations,
-			fn($operation) => \account\AccountLabelLib::isFromClass(
-				$operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL],
-				\account\AccountSetting::BANK_ACCOUNT_CLASS
-			) === FALSE
+			fn($operation) => $operation[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_IS_SUMMED] === 1
 		);
 
 		$totalDebit = array_sum(array_column($filteredOperations, \preaccounting\AccountingLib::FEC_COLUMN_DEBIT));
@@ -200,19 +197,36 @@ new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
 			echo '<li>';
 				echo '<div>';
 					echo '<h5>';
+
 						echo match($data->search->get('filter')) {
 							NULL => s("Ventes et factures"),
 							'hasInvoice' => p("Facture", "Factures", $data->nInvoice),
 							'noInvoice' => p("Vente", "Ventes", $data->nSale),
+							default => p("Opération de caisse", "Opérations de caisse", $data->nCash)
 						};
+
 					echo '</h5>';
 						echo '<div>';
 
-							echo match($data->search->get('filter')) {
-								NULL => min($data->nSale + $data->nInvoice, 100),
-								'hasInvoice' => min($data->nInvoice, 100),
-								'noInvoice' => min($data->nSale, 100),
-							};
+						$salesAndInvoicesOperations = array_filter(
+							$data->operations,
+							fn($operation) => in_array($operation[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_ORIGIN], ['invoice', 'sale'])
+						);
+						$cashOperations = array_filter(
+							$data->operations,
+							fn($operation) => $operation[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_ORIGIN] === 'register'
+						);
+
+						$nSalesAndInvoices = count(array_unique(array_column($salesAndInvoicesOperations, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT)));
+						$nCash = count(array_unique(array_column($cashOperations, \preaccounting\AccountingLib::FEC_COLUMN_DESCRIPTION)));
+
+						echo match($data->search->get('filter')) {
+							NULL => $nSalesAndInvoices + $nCash,
+							'hasInvoice' => $nSalesAndInvoices,
+							'noInvoice' => $nSalesAndInvoices,
+							default => $nCash,
+						};
+
 					echo '</div>';
 				echo '</div>';
 			echo '</li>';

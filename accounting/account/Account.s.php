@@ -112,6 +112,7 @@ class AccountSetting extends \Settings {
 	const VAT_SELL_CLASS_ACCOUNT = '44571'; // TVA collectée
 	const TAXES_TO_PAY_CLASS = '438'; // État - charges à payer
 	const TAXES_TO_GET_CLASS = '439'; // État - produits à recevoir
+	const ASSOCIATE_ACCOUNT_CLASS = '455'; // Compte courant d'associé
 
 	// BANQUE
 	const FINANCIAL_INTERNAL_TRANSFER_CLASS = 58; // Virements internes

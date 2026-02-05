@@ -18,13 +18,214 @@ Class AccountingLib {
 	const FEC_COLUMN_PAYMENT_DATE = 18;
 	const FEC_COLUMN_PAYMENT_METHOD = 19;
 	const FEC_COLUMN_OPERATION_NATURE = 20;
+	const EXTRA_FEC_COLUMN_IS_SUMMED = 21; /* Colonne pour savoir si on compte la valeur dans le total (affiché en précompta) */
+	const EXTRA_FEC_COLUMN_ORIGIN = 22; /* Colonne pour savoir d'où vient l'écriture */
 
-	public static function generateCashFec(\Collection $cCash, \Collection $cFinancialYear, \Collection $cAccount, \account\Account $eAccountFilter, \cash\Register $eRegister): array {
+	public static function generateCashFec(\Collection $cCash, \Collection $cFinancialYear, \Collection $cAccount, \Search $search): array {
+
+		$eAccountFilter = $search->get('account');
+		$cRegister = $search->get('cRegister');
+		$cMethod = $search->get('cMethod');
 
 		$fecData = [];
 		$nCash = 0;
 
+		foreach($cCash as $eCash) {
+
+			$items = [];
+			$eRegister = $cRegister->offsetGet($eCash['register']['id']);
+			$eRegister['paymentMethod'] = $cMethod->offsetGet($eRegister['paymentMethod']['id']);
+
+			//source: enum(OTHER, SELL_INVOICE, SELL_SALE)
+			$fecLines = [];
+
+			switch($eCash['source']) {
+
+				case \cash\Cash::BANK:
+					$fecLines = self::generateCashBankLines($eCash, $eRegister, $cAccount);
+					break;
+
+				case \cash\Cash::PRIVATE:
+					$fecLines = self::generateCashPrivateLines($eCash, $eRegister, $cAccount);
+					break;
+
+				case \cash\Cash::BALANCE:
+					if($eCash['type'] === \cash\Cash::DEBIT) {
+						$eAccount = $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::CHARGES_OTHER_CLASS)->first();
+					} else if($eCash['type'] === \cash\Cash::CREDIT) {
+						$eAccount = $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::PRODUCT_OTHER_CLASS)->first();
+					}
+					$fecLines = self::generateCashLines($eCash, $eRegister, $eAccount);
+					break;
+
+				case \cash\Cash::BUY_MANUAL:
+				case \cash\Cash::SELL_MANUAL:
+				case \cash\Cash::OTHER:
+					if($eCash['account']->empty()) {
+						break;
+					}
+					$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['account']['id'])->first();
+					$fecLines = self::generateCashLines($eCash, $eRegister, $eAccount);
+					break;
+
+				case \cash\Cash::SELL_INVOICE:
+				case \cash\Cash::SELL_SALE:
+			}
+
+			if(count($fecLines) > 0) {
+				foreach($fecLines as $fecLine) {
+					self::mergeFecLineIntoItemData($items, $fecLine);
+				}
+			}
+
+			if(count($items) > 0) {
+				$nCash++;
+			}
+			$fecData = array_merge($fecData, $items);
+
+		}
+
 		return [$fecData, $nCash];
+
+	}
+
+	/**
+	 * écritures en 108 ou 455 / Caisse
+	 */
+	public static function generateCashPrivateLines(\cash\Cash $eCash, \cash\Register $eRegister, \Collection $cAccount): array {
+
+		if($eCash['account']->notEmpty()) {
+
+			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['account']['id'])->first();
+
+		} else {
+
+			$eFinancialYear = \account\FinancialYearLib::getFinancialYearForDate($eCash['date'], new \Collection());
+			if($eFinancialYear->notEmpty()) {
+
+				if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) {
+
+					$eAccount = $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::FARMER_S_ACCOUNT_CLASS)->first();
+
+				} else {
+
+					$eAccount = $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::ASSOCIATE_ACCOUNT_CLASS)->first();
+
+				}
+
+			} else {
+
+				$eAccount = new \account\Account();
+
+			}
+
+		}
+
+		return self::generateCashLines($eCash, $eRegister, $eAccount);
+
+	}
+
+	/**
+	 * écritures en 512 / Caisse
+	 */
+	public static function generateCashBankLines(\cash\Cash $eCash, \cash\Register $eRegister, \Collection $cAccount): array {
+
+		// On cherche la contrepartie par ordre de priorité
+		if($eCash['sourceBankAccount']->notEmpty()) {
+
+			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['sourceBankAccount']['account']['id'])->first();
+
+		} else if($eCash['sourceCashflow']->notEmpty()) {
+
+			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['sourceCashflow']['account']['id'])->first();
+
+		} else if($eCash['account']->notEmpty()) {
+
+			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['account']['id'])->first();
+
+		} else {
+
+			$eAccount = $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
+
+		}
+
+		return self::generateCashLines($eCash, $eRegister, $eAccount);
+
+	}
+
+	public static function generateCashLines(\cash\Cash $eCash, \cash\Register $eRegister, \account\Account $eAccount): array {
+
+		$lines = [];
+
+		if($eCash['type'] === \cash\Cash::DEBIT) { // L'argent sort de la caisse
+
+			$counterpartType = \journal\Operation::DEBIT;
+			$cashType = \journal\Operation::CREDIT;
+
+		} else {
+
+			$counterpartType = \journal\Operation::CREDIT;
+			$cashType = \journal\Operation::DEBIT;
+
+		}
+
+		$document = '';
+		$compAuxNum = '';
+		$compAuxLib = '';
+
+		$lines[] = self::getFecLine(
+			eAccount    : $eAccount,
+			date        : $eCash['date'],
+			eCode       : new \journal\JournalCode(),
+			ecritureLib : $eCash['description'],
+			document    : $document,
+			documentDate: $eCash['date'],
+			amount      : $eCash['amountExcludingVat'],
+			type        : $counterpartType,
+			payment     : $eRegister['paymentMethod']['name'],
+			compAuxNum  : $compAuxNum,
+			compAuxLib  : $compAuxLib,
+			isSummed    : TRUE,
+			origin      : 'register',
+		);
+
+		if($eCash['vat'] > 0) {
+
+			$lines[] = self::getFecLine(
+				eAccount    : $eAccount['vatAccount'],
+				date        : $eCash['date'],
+				eCode       : new \journal\JournalCode(),
+				ecritureLib : $eCash['description'],
+				document    : $document,
+				documentDate: $eCash['date'],
+				amount      : $eCash['vat'],
+				type        : $counterpartType,
+				payment     : $eRegister['paymentMethod']['name'],
+				compAuxNum  : $compAuxNum,
+				compAuxLib  : $compAuxLib,
+				isSummed    : TRUE,
+				origin      : 'register',
+			);
+
+		}
+
+		$lines[] = self::getFecLine(
+			eAccount    : $eRegister['account'],
+			date        : $eCash['date'],
+			eCode       : new \journal\JournalCode(),
+			ecritureLib : $eCash['description'],
+			document    : $document,
+			documentDate: $eCash['date'],
+			amount      : $eCash['amountIncludingVat'],
+			type        : $cashType,
+			payment     : $eRegister['paymentMethod']['name'],
+			compAuxNum  : $compAuxNum,
+			compAuxLib  : $compAuxLib,
+			isSummed    : FALSE,
+			origin      : 'register',
+		);
+
+		return $lines;
 
 	}
 
@@ -85,6 +286,8 @@ Class AccountingLib {
 							payment     : $payment['label'] ?? '',
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
+							isSummed    : TRUE,
+							origin      : 'sale',
 						);
 
 						self::mergeFecLineIntoItemData($items, $fecDataExcludingVat);
@@ -112,6 +315,8 @@ Class AccountingLib {
 								payment     : $payment['label'],
 								compAuxNum  : $compAuxNum,
 								compAuxLib  : $compAuxLib,
+								isSummed    : TRUE,
+								origin      : 'sale',
 							);
 
 							self::mergeFecLineIntoItemData($items, $fecDataVat);
@@ -142,6 +347,8 @@ Class AccountingLib {
 						payment     : first($payments)['label'] ?? '',
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
+						isSummed    : TRUE,
+						origin      : 'sale',
 					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataShipping);
@@ -171,6 +378,8 @@ Class AccountingLib {
 							payment     : first($payments)['label'] ?? '',
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
+							isSummed    : TRUE,
+							origin      : 'sale',
 						);
 
 						self::mergeFecLineIntoItemData($items, $fecDataVat);
@@ -290,6 +499,8 @@ Class AccountingLib {
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
 							number      : $forImport ? ++$number : NULL,
+							isSummed    : TRUE,
+							origin      : 'invoice',
 						);
 
 						$numberWithoutVat = $number;
@@ -321,6 +532,8 @@ Class AccountingLib {
 								compAuxLib  : $compAuxLib,
 								number      : $forImport ? ++$number : NULL,
 								for         : $eAccount['class'],
+								isSummed    : TRUE,
+								origin      : 'invoice',
 							);
 							if($forImport) {
 								$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
@@ -353,6 +566,8 @@ Class AccountingLib {
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
 							number      : $forImport ? ++$number : NULL,
+							isSummed    : TRUE,
+							origin      : 'invoice',
 						);
 						$numberShipping = $number;
 
@@ -383,6 +598,8 @@ Class AccountingLib {
 								compAuxNum  : $compAuxNum,
 								compAuxLib  : $compAuxLib,
 								number      : $forImport ? ++$number : NULL,
+								isSummed    : TRUE,
+								origin      : 'invoice',
 							);
 							if($forImport) {
 								$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberShipping;
@@ -416,6 +633,8 @@ Class AccountingLib {
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
 						number      : $forImport ? ++$number : NULL,
+						isSummed    : FALSE,
+						origin      : 'invoice',
 					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataBank);
@@ -454,6 +673,8 @@ Class AccountingLib {
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
 							number      : $forImport ? ++$number : NULL,
+							isSummed    : TRUE,
+							origin      : 'invoice',
 						);
 
 						self::mergeFecLineIntoItemData($items, $fecDataRegul);
@@ -491,6 +712,15 @@ Class AccountingLib {
     });
 
 		return $operations;
+
+	}
+
+	public static function unsetExtraColumns(array &$fecLine): array {
+
+		unset($fecLine[self::EXTRA_FEC_COLUMN_ORIGIN]);
+		unset($fecLine[self::EXTRA_FEC_COLUMN_IS_SUMMED]);
+
+		return $fecLine;
 
 	}
 
@@ -553,10 +783,16 @@ Class AccountingLib {
 		]);
 	}
 
+	/**
+	 * isSummed : champ utilisé à l'affichage de précompta pour connaître le total par le filtre utilisé.
+	 * Doit sommer les montants du point de vue de l'exploitation, donc la somme sera credit - debit
+	 * - si on est sur le logiciel de caisse = toutes les contreparties à la caisse
+	 * - si on est sur des ventes = toutes les contreparties de la banque (permet de sommer même si on n'a pas de contrepartie en banque)
+	 */
 	private static function getFecLine(
 		\account\Account $eAccount, string $date, \journal\JournalCode $eCode, string $ecritureLib,
 		string $document, string $documentDate, float $amount, string $type, string $payment, string $compAuxNum, string $compAuxLib,
-		?int $number = NULL, ?string $for = NULL
+		?int $number = NULL, ?string $for = NULL, bool $isSummed = TRUE, string $origin = '',
 	): array {
 
 		return [
@@ -564,8 +800,8 @@ Class AccountingLib {
 			$eCode['name'] ?? '',
 			$number, // Utilisé pour l'import (pour rattacher la TVA à son écriture d'origine)
 			date('Ymd', strtotime($date)),
-			$eAccount['class'] === '' ? '' : \account\AccountLabelLib::pad($eAccount['class']),
-			$eAccount['description'],
+			$eAccount->empty() ? '' : \account\AccountLabelLib::pad($eAccount['class']),
+			$eAccount->empty() ? '' : $eAccount['description'],
 			$compAuxNum,
 			$compAuxLib,
 			$document,
@@ -581,6 +817,8 @@ Class AccountingLib {
 			date('Ymd', strtotime($date)),
 			$payment,
 			$for,
+			(int)$isSummed,
+			$origin
 		];
 	}
 
@@ -622,9 +860,10 @@ Class AccountingLib {
 		$added = FALSE;
 		foreach($items as &$item) {
 			if(
-				$item[self::FEC_COLUMN_ACCOUNT_LABEL] === $fecLine[self::FEC_COLUMN_ACCOUNT_LABEL]
-				and $item[self::FEC_COLUMN_PAYMENT_METHOD] === $fecLine[self::FEC_COLUMN_PAYMENT_METHOD]
-				and $item[self::FEC_COLUMN_OPERATION_NATURE] === $fecLine[self::FEC_COLUMN_OPERATION_NATURE]
+				$fecLine[self::FEC_COLUMN_ACCOUNT_LABEL] !== '' and // On ne regroupe pas si on n'a pas le numéro de compte
+				$item[self::FEC_COLUMN_ACCOUNT_LABEL] === $fecLine[self::FEC_COLUMN_ACCOUNT_LABEL] and
+				$item[self::FEC_COLUMN_PAYMENT_METHOD] === $fecLine[self::FEC_COLUMN_PAYMENT_METHOD] and
+				$item[self::FEC_COLUMN_OPERATION_NATURE] === $fecLine[self::FEC_COLUMN_OPERATION_NATURE]
 			) {
 				$item[self::FEC_COLUMN_DEBIT] = round($item[self::FEC_COLUMN_DEBIT] + $fecLine[self::FEC_COLUMN_DEBIT], 2);
 				$item[self::FEC_COLUMN_CREDIT] = round($item[self::FEC_COLUMN_CREDIT] + $fecLine[self::FEC_COLUMN_CREDIT], 2);
