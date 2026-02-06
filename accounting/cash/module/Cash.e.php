@@ -51,7 +51,7 @@ class Cash extends CashElement {
 		]);
 
 		if(
-			$this['source'] !== Cash::OTHER or
+			in_array($this['source'], [Cash::BANK, Cash::BUY_MANUAL, Cash::SELL_MANUAL, Cash::OTHER]) === FALSE or
 			$this['date'] === NULL
 		) {
 			return FALSE;
@@ -70,7 +70,7 @@ class Cash extends CashElement {
 	public function requireVat(): bool {
 
 		if(
-			$this['source'] !== Cash::OTHER or
+			in_array($this['source'], [Cash::BUY_MANUAL, Cash::SELL_MANUAL, Cash::OTHER]) === FALSE or
 			$this['date'] === NULL
 		) {
 			return FALSE;
@@ -88,20 +88,9 @@ class Cash extends CashElement {
 
 	public function requireDescription(): bool {
 
-		if(
-			in_array($this['source'], [Cash::PRIVATE, Cash::OTHER]) === FALSE or
-			$this['date'] === NULL
-		) {
-			return FALSE;
-		}
-
-		$this->expects([
-			'financialYear'
-		]);
-
 		return (
-			($this['source'] === Cash::PRIVATE and $this->requireAssociateAccount() === FALSE) or
-			($this['source'] === Cash::OTHER)
+			$this['source'] === Cash::OTHER and
+			$this['date'] !== NULL
 		);
 
 	}

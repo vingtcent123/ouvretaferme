@@ -8,7 +8,9 @@ class RegisterLib extends RegisterCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['color', 'account'];
+
+		return ['color', 'account', 'bankAccount'];
+
 	}
 
 	public static function getAll(): \Collection {

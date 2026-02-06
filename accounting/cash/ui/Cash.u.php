@@ -61,20 +61,20 @@ class CashUi {
 				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('journal-plus').'</div>'.s("Créditer la caisse").'</a>';
 				$h .= '<div class="dropdown-list">';
 					$h .= '<div class="dropdown-title">'.s("Créditer la caisse").'</div>';
-					if($eRegister['paymentMethod']['fqn'] === 'cash') {
-						$h .= '<a href="" class="dropdown-item">'.\Asset::icon('bank').'  '.s("Retrait depuis la banque").'</a>';
+					foreach([Cash::BANK, Cash::SELL_MANUAL, Cash::PRIVATE, Cash::OTHER] as $source) {
+						if($eRegister->acceptOperation($source, Cash::CREDIT)) {
+							$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.$source.'&type='.Cash::CREDIT.'" class="dropdown-item">'.self::getOperation($source, Cash::CREDIT).'</a>';
+						}
 					}
-					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('wallet').'  '.s("Vente à un client").'</a>';
-					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.Cash::PRIVATE.'&type='.Cash::CREDIT.'" class="dropdown-item">'.self::getOperation(Cash::PRIVATE, Cash::CREDIT).'</a>';
-					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.Cash::OTHER.'&type='.Cash::CREDIT.'" class="dropdown-item">'.self::getOperation(Cash::OTHER, Cash::CREDIT).'</a>';
 				$h .= '</div>';
 				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('journal-minus').'</div>'.s("Débiter la caisse").'</a>';
 				$h .= '<div class="dropdown-list">';
 					$h .= '<div class="dropdown-title">'.s("Débiter la caisse").'</div>';
-					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('bank').'  '.s("Dépôt à la banque").'</a>';
-					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('wallet').'  '.s("Achat à un fournisseur").'</a>';
-					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.Cash::PRIVATE.'&type='.Cash::DEBIT.'" class="dropdown-item">'.self::getOperation(Cash::PRIVATE, Cash::DEBIT).'</a>';
-					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.Cash::OTHER.'&type='.Cash::DEBIT.'" class="dropdown-item">'.self::getOperation(Cash::OTHER, Cash::DEBIT).'</a>';
+					foreach([Cash::BANK, Cash::BUY_MANUAL, Cash::PRIVATE, Cash::OTHER] as $source) {
+						if($eRegister->acceptOperation($source, Cash::DEBIT)) {
+							$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.$source.'&type='.Cash::DEBIT.'" class="dropdown-item">'.self::getOperation($source, Cash::DEBIT).'</a>';
+						}
+					}
 				$h .= '</div>';
 				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('plus-slash-minus').'</div>'.s("Corriger le solde").'</a>';
 			$h .= '</div>';
@@ -99,10 +99,18 @@ class CashUi {
 				Cash::DEBIT => \Asset::icon('person-fill').'  '.s("Prélèvement par l'exploitant dans la caisse"),
 			},
 
+			Cash::BANK => match($type) {
+				Cash::CREDIT => \Asset::icon('bank').'  '.s("Retrait depuis la banque"),
+				Cash::DEBIT => \Asset::icon('bank').'  '.s("Dépôt à la banque"),
+			},
+
 			Cash::OTHER => match($type) {
 				Cash::CREDIT => \Asset::icon('three-dots').'  '.s("Autre opération créditrice"),
 				Cash::DEBIT => \Asset::icon('three-dots').'  '.s("Autre opération débitrice"),
-			}
+			},
+
+			Cash::BUY_MANUAL => \Asset::icon('wallet').'  '.s("Achat à un fournisseur"),
+			Cash::SELL_MANUAL => \Asset::icon('wallet').'  '.s("Vente à un client")
 
 		};
 
@@ -114,186 +122,188 @@ class CashUi {
 			return '<div class="util-empty">'.s("Il n'y a aucune opération à afficher.").'</div>';
 		}
 
-		$h = '<table class="cash-item-table tr-even stick-xs">';
+		$h = '<div class="util-overflow-md">';
+			$h .= '<table class="cash-item-table tr-even">';
 
-		$hasVat = $ccCash->contains(fn($cCash) => $cCash->contains(fn($eCash) => $eCash['vat'] !== NULL));
+			$hasVat = $ccCash->contains(fn($cCash) => $cCash->contains(fn($eCash) => $eCash['vat'] !== NULL));
 
-		foreach($ccCash as $status => $cCash) {
+			foreach($ccCash as $status => $cCash) {
 
-			$eCashLast = $cCash->first();
-			$columns = 4 + ($hasVat ? 2 : 0) + ($search->empty() ? 1 : 0);
+				$eCashLast = $cCash->first();
+				$columns = 4 + ($hasVat ? 2 : 0) + ($search->empty() ? 1 : 0);
 
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<td colspan="'.$columns.'" style="padding: 0">';
-						$h .= '<div class="util-title">';
-							$h .= '<h2 class="mt-2">';
-								$h .= match($status) {
-									Cash::DRAFT => s("Opérations non validées").' <span class="util-counter">'.$cCash->count().'</span>',
-									Cash::VALID => s("Journal de caisse"),
-								};
-							$h .= '</h2>';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<td colspan="'.$columns.'" style="padding: 0">';
+							$h .= '<div class="util-title">';
+								$h .= '<h2 class="mt-2">';
+									$h .= match($status) {
+										Cash::DRAFT => s("Opérations non validées").' <span class="util-counter">'.$cCash->count().'</span>',
+										Cash::VALID => s("Journal de caisse"),
+									};
+								$h .= '</h2>';
+
+								if($status === Cash::DRAFT) {
+
+									if($eCashLast['balanceNegative'] === FALSE) {
+										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCashLast['id'].'" data-confirm="'.s("Toutes les opérations seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="btn btn-secondary">'.s("Tout valider maintenant").'</a>';
+									}
+
+								}
+
+							$h .= '</div>';
 
 							if($status === Cash::DRAFT) {
 
-								if($eCashLast['balanceNegative'] === FALSE) {
-									$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCashLast['id'].'" data-confirm="'.s("Toutes les opérations seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="btn btn-secondary">'.s("Tout valider maintenant").'</a>';
+								if($eCashLast['balanceNegative']) {
+									$h .= '<div class="util-block-danger">'.\Asset::icon('exclamation-circle').' '.s("Le solde de votre journal de caisse doit toujours être positif. </h3>Veuillez corriger vos saisies afin de pouvoir valider vos opérations.").'</div>';
 								}
 
 							}
 
-						$h .= '</div>';
-
-						if($status === Cash::DRAFT) {
-
-							if($eCashLast['balanceNegative']) {
-								$h .= '<div class="util-block-danger">'.\Asset::icon('exclamation-circle').' '.s("Le solde de votre journal de caisse doit toujours être positif. </h3>Veuillez corriger vos saisies afin de pouvoir valider vos opérations.").'</div>';
-							}
-
-						}
-
-					$h .= '</td>';
-				$h .= '</tr>';
-				$h .= '<tr>';
-					$h .= '<th></th>';
-					$h .= '<th class="text-end highlight-stick-right">'.s("Crédit").'</th>';
-					$h .= '<th class="text-end highlight-stick-left">'.s("Débit").'</th>';
-
-					if($hasVat) {
-						$h .= '<th class="text-center" colspan="2">'.s("TVA").'</th>';
-					}
-
-					if($search->empty()) {
-
-						$h .= '<th colspan="2">';
-							$h .= match($status) {
-								Cash::DRAFT => s("Solde théorique"),
-								Cash::VALID => s("Solde"),
-							};
-						$h .= '</th>';
-
-					} else {
-						$h .= '<th></th>';
-					}
-
-				$h .= '</tr>';
-			$h .= '</thead>';
-			$h .= '<tbody>';
-
-				$previousSubtitle = NULL;
-
-				foreach($cCash as $eCash) {
-
-					$currentSubtitle = $eCash['date'];
-
-					if($currentSubtitle !== $previousSubtitle) {
-
-						if($previousSubtitle !== NULL) {
-							$h .= '</tbody>';
-							$h .= '<tbody>';
-						}
-
-								$h .= '<tr class="tr-title">';
-									$h .= '<td>';
-										$h .= \util\DateUi::textual($currentSubtitle);
-									$h .= '</td>';
-									$h .= '<td class="text-end highlight-stick-right"></td>';
-									$h .= '<td class="text-end highlight-stick-left"></td>';
-									$h .= '<th colspan="'.($columns - 3).'"></th>';
-								$h .= '</tr>';
-							$h .= '</tbody>';
-							$h .= '<tbody>';
-
-						$previousSubtitle = $currentSubtitle;
-
-					}
-
+						$h .= '</td>';
+					$h .= '</tr>';
 					$h .= '<tr>';
-
-						$h .= '<td>';
-
-							$h .= CashUi::getOperation($eCash['source'], $eCash['type']);
-
-							if($eCash['status'] === Cash::DRAFT) {
-								$h .= '<span class="util-badge bg-muted ml-1">'.s("Non validé").'</span>';
-							}
-
-							$h .= '<div class="cash-item-details">'.$this->getDetails($eCash).'</div>';
-						$h .= '</td>';
-
-						$h .= '<td class="td-min-content highlight-stick-right text-end">';
-							if($eCash['type'] === Cash::CREDIT) {
-								$h .= \util\TextUi::money($eCash['amountIncludingVat']);
-							}
-						$h .= '</td>';
-
-						$h .= '<td class="td-min-content highlight-stick-left text-end">';
-							if($eCash['type'] === Cash::DEBIT) {
-								$h .= \util\TextUi::money($eCash['amountIncludingVat']);
-							}
-						$h .= '</td>';
+						$h .= '<th></th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Crédit").'</th>';
+						$h .= '<th class="text-end highlight-stick-left">'.s("Débit").'</th>';
 
 						if($hasVat) {
-
-							$h .= '<td class="td-min-content text-end">';
-								if($eCash['vat'] !== NULL) {
-									$h .= \util\TextUi::money($eCash['vat']);
-								}
-							$h .= '</td>';
-
-							$h .= '<td class="td-min-content font-sm color-muted">';
-								if($eCash['vatRate'] !== NULL) {
-									$h .= ' '.s("{value} %", $eCash['vatRate']);
-								}
-							$h .= '</td>';
-
+							$h .= '<th class="text-center" colspan="2">'.s("TVA").'</th>';
 						}
 
 						if($search->empty()) {
 
-							$h .= '<td class="td-min-content cash-item-balance">';
+							$h .= '<th colspan="2">';
+								$h .= match($status) {
+									Cash::DRAFT => s("Solde théorique"),
+									Cash::VALID => s("Solde"),
+								};
+							$h .= '</th>';
 
-								if($eCash['balance'] !== NULL) {
+						} else {
+							$h .= '<th></th>';
+						}
 
-									$balance = \util\TextUi::money($eCash['balance']);
+					$h .= '</tr>';
+				$h .= '</thead>';
+				$h .= '<tbody>';
 
-									$h .= match($eCash['status']) {
-										Cash::DRAFT => '<span class="'.($eCash['balanceNegative'] ? 'util-badge bg-danger' : 'cash-item-balance-waiting').'">'.$balance.'</span>',
-										Cash::VALID => $balance
-									};
+					$previousSubtitle = NULL;
+
+					foreach($cCash as $eCash) {
+
+						$currentSubtitle = $eCash['date'];
+
+						if($currentSubtitle !== $previousSubtitle) {
+
+							if($previousSubtitle !== NULL) {
+								$h .= '</tbody>';
+								$h .= '<tbody>';
+							}
+
+									$h .= '<tr class="tr-title">';
+										$h .= '<td>';
+											$h .= \util\DateUi::textual($currentSubtitle);
+										$h .= '</td>';
+										$h .= '<td class="text-end highlight-stick-right"></td>';
+										$h .= '<td class="text-end highlight-stick-left"></td>';
+										$h .= '<th colspan="'.($columns - 3).'"></th>';
+									$h .= '</tr>';
+								$h .= '</tbody>';
+								$h .= '<tbody>';
+
+							$previousSubtitle = $currentSubtitle;
+
+						}
+
+						$h .= '<tr>';
+
+							$h .= '<td>';
+
+								$h .= CashUi::getOperation($eCash['source'], $eCash['type']);
+
+								if($eCash['status'] === Cash::DRAFT) {
+									$h .= '<span class="util-badge bg-muted ml-1">'.s("Non validé").'</span>';
+								}
+
+								$h .= '<div class="cash-item-details">'.$this->getDetails($eCash).'</div>';
+							$h .= '</td>';
+
+							$h .= '<td class="td-min-content highlight-stick-right text-end">';
+								if($eCash['type'] === Cash::CREDIT) {
+									$h .= \util\TextUi::money($eCash['amountIncludingVat']);
+								}
+							$h .= '</td>';
+
+							$h .= '<td class="td-min-content highlight-stick-left text-end">';
+								if($eCash['type'] === Cash::DEBIT) {
+									$h .= \util\TextUi::money($eCash['amountIncludingVat']);
+								}
+							$h .= '</td>';
+
+							if($hasVat) {
+
+								$h .= '<td class="td-min-content text-end">';
+									if($eCash['vat'] !== NULL) {
+										$h .= \util\TextUi::money($eCash['vat']);
+									}
+								$h .= '</td>';
+
+								$h .= '<td class="td-min-content font-sm color-muted">';
+									if($eCash['vatRate'] !== NULL) {
+										$h .= ' '.s("{value} %", $eCash['vatRate']);
+									}
+								$h .= '</td>';
+
+							}
+
+							if($search->empty()) {
+
+								$h .= '<td class="td-min-content cash-item-balance">';
+
+									if($eCash['balance'] !== NULL) {
+
+										$balance = \util\TextUi::money($eCash['balance']);
+
+										$h .= match($eCash['status']) {
+											Cash::DRAFT => '<span class="'.($eCash['balanceNegative'] ? 'util-badge bg-danger' : 'cash-item-balance-waiting').'">'.$balance.'</span>',
+											Cash::VALID => $balance
+										};
+
+									}
+
+								$h .= '</td>';
+
+							}
+
+							$h .= '<td class="text-end">';
+
+								if($eCash['status'] === Cash::DRAFT) {
+
+									$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
+									$h .= '<div class="dropdown-list">';
+										$h .= '<div class="dropdown-title">'.s("Opération de caisse").'</div>';
+										$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:update?id='.$eCash['id'].'" class="dropdown-item">'.s("Modifier l'opération").'</a>';
+										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCash['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="dropdown-item '.($eCash['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
+										$h .= '<div class="dropdown-divider"></div>';
+										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doDelete" data-confirm="'.s("Vous allez supprimer cette opération. Continuer ?").'" post-id="'.$eCash['id'].'" class="dropdown-item">'.s("Supprimer l'opération").'</a>';
+									$h .= '</div>';
 
 								}
 
 							$h .= '</td>';
 
-						}
+						$h .= '</tr>';
 
-						$h .= '<td class="text-end">';
+					}
 
-							if($eCash['status'] === Cash::DRAFT) {
+				$h .= '</tbody>';
 
-								$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
-								$h .= '<div class="dropdown-list">';
-									$h .= '<div class="dropdown-title">'.s("Opération de caisse").'</div>';
-									$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:update?id='.$eCash['id'].'" class="dropdown-item">'.s("Modifier l'opération").'</a>';
-									$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCash['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="dropdown-item '.($eCash['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
-									$h .= '<div class="dropdown-divider"></div>';
-									$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doDelete" data-confirm="'.s("Vous allez supprimer cette opération. Continuer ?").'" post-id="'.$eCash['id'].'" class="dropdown-item">'.s("Supprimer l'opération").'</a>';
-								$h .= '</div>';
+			}
 
-							}
-
-						$h .= '</td>';
-
-					$h .= '</tr>';
-
-				}
-
-			$h .= '</tbody>';
-
-		}
-
-		$h .= '</table>';
+			$h .= '</table>';
+		$h .= '</div>';
 
 		if($cCash->getFound() !== NULL and $page !== NULL) {
 			$h .= \util\TextUi::pagination($page, $cCash->getFound() / 100);
@@ -491,8 +501,10 @@ class CashUi {
 		if($eCash->requireVat()) {
 
 			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->group(content: '<h4>'.s("Montants").'</h4><p class="util-info">'.s("Les montants de TVA sont HT sont automatiquement calculés lorsque vous tapez le montant TTC et le taux de TVA.").'</p>');
-				$h .= $form->dynamicGroups($eCash, ['amountIncludingVat', 'vatRate', 'vat', 'amountExcludingVat']);
+				$h .= $form->group(content: '<h4>'.s("Montants").'</h4>');
+				$h .= $form->dynamicGroups($eCash, ['amountIncludingVat', 'vatRate']);
+				$h .= $form->group(content: '<p class="util-empty mb-0">'.\Asset::icon('info-circle').' '.s("Les montants de TVA et HT sont automatiquement calculés lorsque vous tapez le montant TTC et le taux de TVA.").'</p>');
+				$h .= $form->dynamicGroups($eCash, ['vat', 'amountExcludingVat']);
 			$h .= '</div>';
 
 		} else {
@@ -586,10 +598,20 @@ class CashUi {
 			case 'account':
 				$d->autocompleteBody = function(\util\FormUi $form, Cash $e) {
 					return [
+						'query' => ['classPrefix' => '7']
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \account\AccountUi()->query($d, \farm\Farm::getConnected());
+				new \account\AccountUi()->query($d, \farm\Farm::getConnected(), query: function(Cash $e) {
+
+					return match($e['source']) {
+						Cash::BANK => ['classPrefix' => \account\AccountSetting::BANK_ACCOUNT_CLASS],
+						Cash::BUY_MANUAL => ['classPrefixes[0]' => '2', 'classPrefixes[1]' => '6'],
+						Cash::SELL_MANUAL => ['classPrefixes[0]' => '7'],
+						default => []
+					};
+
+				});
 				break;
 
 		}

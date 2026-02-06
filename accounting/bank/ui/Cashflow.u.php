@@ -512,7 +512,7 @@ class CashflowUi {
 			mb_strpos(mb_strtolower($description), 'espèce') !== FALSE
 			or mb_strpos(mb_strtolower($description), 'espece') !== FALSE
 		) {
-			return $cPaymentMethod->find(fn($e) => $e['fqn'] === 'cash')->first();
+			return $cPaymentMethod->find(fn($e) => $e['fqn'] === \payment\MethodLib::CASH)->first();
 		}
 
 		return new \payment\Method();

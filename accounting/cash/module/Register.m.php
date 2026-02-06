@@ -45,6 +45,7 @@ class RegisterModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
+			'bankAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'paymentMethod' => ['element32', 'payment\Method', 'cast' => 'element'],
 			'color' => ['color', 'cast' => 'string'],
 			'balance' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => -99999999.99, 'max' => 99999999.99, 'cast' => 'float'],
@@ -55,11 +56,12 @@ class RegisterModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'paymentMethod', 'color', 'balance', 'operations', 'lastOperation', 'status', 'createdAt'
+			'id', 'account', 'bankAccount', 'paymentMethod', 'color', 'balance', 'operations', 'lastOperation', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'account' => 'account\Account',
+			'bankAccount' => 'account\Account',
 			'paymentMethod' => 'payment\Method',
 		];
 
@@ -119,6 +121,10 @@ class RegisterModel extends \ModuleModel {
 
 	public function whereAccount(...$data): RegisterModel {
 		return $this->where('account', ...$data);
+	}
+
+	public function whereBankAccount(...$data): RegisterModel {
+		return $this->where('bankAccount', ...$data);
 	}
 
 	public function wherePaymentMethod(...$data): RegisterModel {

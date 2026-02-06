@@ -60,7 +60,13 @@ class CashLib extends CashCrud {
 				Cash::OTHER => match($eCash['type']) {
 					Cash::CREDIT => \account\AccountLib::getByClass(\account\AccountSetting::PRODUCT_OTHER_CLASS),
 					Cash::DEBIT => \account\AccountLib::getByClass(\account\AccountSetting::CHARGES_OTHER_CLASS),
-				}
+				},
+
+				Cash::BANK => $eCash['register']['bankAccount']->notEmpty() ?
+					$eCash['register']['bankAccount'] :
+					\account\AccountLib::getByClass(\account\AccountSetting::BANK_ACCOUNT_CLASS),
+
+				default => new \account\Account()
 
 			};
 
@@ -172,8 +178,8 @@ class CashLib extends CashCrud {
 			match($e['source']) {
 
 				Cash::INITIAL => self::createInitial($e),
-				Cash::PRIVATE => self::createPrivate($e),
-				Cash::OTHER => self::createOther($e),
+				Cash::PRIVATE, Cash::BANK => self::createWithoutVat($e),
+				Cash::OTHER, Cash::BUY_MANUAL, Cash::SELL_MANUAL => self::createWithVat($e),
 
 			};
 
@@ -220,7 +226,7 @@ class CashLib extends CashCrud {
 
 	}
 
-	private static function createPrivate(Cash $e): void {
+	private static function createWithoutVat(Cash $e): void {
 
 		$e->expects(['amountIncludingVat']);
 
@@ -231,7 +237,7 @@ class CashLib extends CashCrud {
 
 	}
 
-	private static function createOther(Cash $e): void {
+	private static function createWithVat(Cash $e): void {
 
 		$e['status'] = Cash::DRAFT;
 

@@ -34,7 +34,8 @@ class AlertUi {
 			'Cash::validated' => s("Les opérations ont bien été validées"),
 			'Cash::deleted' => s("L'opération a bien été supprimée"),
 
-			'Register::created' => s("Le journal de caisse a bien été configuré"),
+			'Register::created' => s("Le journal de caisse a bien été créé"),
+			'Register::updated' => s("Le journal de caisse a bien été paramétré"),
 			'Register::deleted' => s("Le journal de caisse a bien été supprimé"),
 
 			default => null

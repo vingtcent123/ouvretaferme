@@ -452,7 +452,7 @@ class AccountUi {
 
 	}
 
-	public function query(\PropertyDescriber $d, \farm\Farm $eFarm, bool $multiple = FALSE, array $query = []): void {
+	public function query(\PropertyDescriber $d, \farm\Farm $eFarm, bool $multiple = FALSE, array|\Closure $query = []): void {
 
 		$d->prepend = \Asset::icon('journal-text');
 		$d->field = 'autocomplete';
@@ -461,9 +461,15 @@ class AccountUi {
 		$d->multiple = $multiple;
 
 		$d->autocompleteUrl = function(\util\FormUi $form, $e) use ($eFarm, $query) {
+
 			if($eFarm->empty()) {
 				$eFarm = $e['farm'];
 			}
+
+			if($query instanceof \Closure) {
+				$query = $query($e);
+			}
+
 			return \company\CompanyUi::urlAccount($eFarm).'/account:query?'.http_build_query($query);
 		};
 

@@ -19,6 +19,10 @@ new \cash\CashPage()
 
 		}
 
+		if($eCash['register']->acceptOperation($eCash['source'], $eCash['type']) === FALSE) {
+			throw new NotExpectedAction();
+		}
+
 		return $eCash;
 
 	})

@@ -1,6 +1,7 @@
 Register:
   id: serial32
   account: ?account\Account
+  bankAccount: ?account\Account
   paymentMethod: payment\Method
   color: color = PHP('#AAAAAA')
   balance: decimal(10, 2) = 0.0

@@ -113,7 +113,7 @@ class RegisterUi {
 
 		$eRegister->expects(['cPaymentMethod']);
 
-		$eRegister['paymentMethod'] = $eRegister['cPaymentMethod']->find(fn($ePaymentMethod) => $ePaymentMethod['fqn'] === 'cash', limit: 1);
+		$eRegister['paymentMethod'] = $eRegister['cPaymentMethod']->find(fn($ePaymentMethod) => $ePaymentMethod['fqn'] === \payment\MethodLib::CASH, limit: 1);
 
 		$form = new \util\FormUi();
 
@@ -149,11 +149,11 @@ class RegisterUi {
 
 		$h = '';
 
-		$h .= $form->openAjax('/cash/register:doUpdate');
+		$h .= $form->openAjax(\farm\FarmUi::urlConnected().'/cash/register:doUpdate');
 
 			$h .= $form->hidden('id', $eRegister['id']);
 
-			$h .= $form->dynamicGroups($eRegister, ['color', 'account']);
+			$h .= $form->dynamicGroups($eRegister, ['color', 'account', 'bankAccount']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -173,7 +173,8 @@ class RegisterUi {
 
 		$d = \cash\Register::model()->describer($property, [
 			'paymentMethod' => s("Moyen de paiement"),
-			'account' => s("Numéro de compte lié"),
+			'account' => s("Numéro de compte lié à la caisse"),
+			'bankAccount' => s("Numéro de compte par défaut pour les dépôts et retraits bancaires"),
 			'color' => s("Couleur du journal"),
 		]);
 
@@ -199,6 +200,17 @@ class RegisterUi {
 				}
 
 				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: $query);
+
+				break;
+
+			case 'bankAccount':
+
+				$d->labelAfter = \util\FormUi::info(s("Si vous tenez une comptabilité selon le plan comptable agricole, indiquez le numéro de compte par défaut auquel seront liées les opérations bancaires."));
+
+				$d->group += ['wrapper' => 'bankAccount'];
+				$d->autocompleteDefault = fn(Register $e) => $e[$property] ?? NULL;
+
+				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: ['classPrefix' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
 
 				break;
 
