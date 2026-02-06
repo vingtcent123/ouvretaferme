@@ -23,5 +23,22 @@ class RegisterLib extends RegisterCrud {
 
 	}
 
+	public static function update(Register $e, array $properties): void {
+
+		Register::model()->beginTransaction();
+
+			parent::update($e, $properties);
+
+			if(
+				in_array('status', $properties) and
+				$e['status'] === Register::INACTIVE
+			) {
+				CashLib::deleteWaiting($e);
+			}
+
+		Register::model()->commit();
+
+	}
+
 }
 ?>

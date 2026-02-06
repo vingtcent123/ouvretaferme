@@ -279,6 +279,20 @@ class CashLib extends CashCrud {
 
 	}
 
+	public static function deleteWaiting(Register $e): void {
+
+		$cCash = Cash::model()
+			->select(Cash::getSelection())
+			->whereStatus(Cash::DRAFT)
+			->getCollection();
+
+		foreach($cCash as $eCash) {
+			self::delete($eCash);
+		}
+
+
+	}
+
 	public static function delete(Cash $e): void {
 
 		Cash::model()->beginTransaction();

@@ -86,7 +86,12 @@ class RegisterUi {
 							}
 
 						} else {
-							$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doUpdateStatus" post-id="'.$eRegisterCurrent['id'].'" post-status="'.Register::INACTIVE.'" class="dropdown-item">'.s("Désactiver le journal").'</a>';
+
+							$h .= match($eRegisterCurrent['status']) {
+								Register::ACTIVE => '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doUpdateStatus" post-id="'.$eRegisterCurrent['id'].'" post-status="'.Register::INACTIVE.'" class="dropdown-item" data-confirm="'.s("Vous ne pourrez plus ajouter de nouvelles opérations dans ce journal et les éventuelles opérations non validées seront supprimées. Continuer ?").'">'.s("Désactiver le journal").'</a>',
+								Register::INACTIVE => '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doUpdateStatus" post-id="'.$eRegisterCurrent['id'].'" post-status="'.Register::ACTIVE.'" class="dropdown-item">'.s("Réactiver le journal").'</a>'
+							};
+
 						}
 
 					$h .= '</div>';

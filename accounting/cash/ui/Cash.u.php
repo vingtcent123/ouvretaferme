@@ -38,6 +38,21 @@ class CashUi {
 
 	public function getChoice(Register $eRegister): string {
 
+		$eCash = new Cash([
+			'register' => $eRegister
+		]);
+
+		if($eCash->acceptCreate() === FALSE) {
+
+			$h = '<div class="util-block-info">';
+				$h .= '<h3>'.s("Ce journal de caisse est désactivé").'</h3>';
+				$h .= '<p>'.s("Vous ne pouvez pas ajouter de nouvelles opérations.").'</p>';
+			$h .= '</div>';
+
+			return $h;
+
+		}
+
 		$h = '<div class="util-block">';
 
 			$h .= '<h3>'.s("Saisir une opération de caisse").'</h3>';

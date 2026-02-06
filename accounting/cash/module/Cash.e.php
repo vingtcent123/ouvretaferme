@@ -12,6 +12,10 @@ class Cash extends CashElement {
 
 	}
 
+	public function acceptCreate(): bool {
+		return ($this['register']['status'] === Register::ACTIVE);
+	}
+
 	public function acceptUpdate(): bool {
 		return ($this['status'] === Cash::DRAFT);
 	}
