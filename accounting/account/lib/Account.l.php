@@ -4,7 +4,7 @@ namespace account;
 class AccountLib extends AccountCrud {
 
 	public static function getPropertiesCreate(): array {
-		return self::getPropertiesUpdate();
+		return ['class', 'description', 'vatAccount', 'vatRate', 'thirdParty'];
 	}
 
 	public static function getPropertiesUpdate(): array {
