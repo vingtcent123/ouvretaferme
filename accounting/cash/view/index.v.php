@@ -21,7 +21,7 @@ new AdaptativeView('/journal-de-caisse', function($data, FarmTemplate $t) {
 
 			echo new \cash\CashUi()->getChoice($data->eRegisterCurrent);
 			echo new \cash\CashUi()->getSearch($data->eRegisterCurrent, $data->search);
-			echo new \cash\CashUi()->getList($data->ccCash, $data->search, $data->page);
+			echo new \cash\CashUi()->getList($data->eRegisterCurrent, $data->ccCash, $data->search, $data->page);
 
 		} else {
 

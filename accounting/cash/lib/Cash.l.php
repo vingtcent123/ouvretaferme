@@ -150,7 +150,7 @@ class CashLib extends CashCrud {
 			$eRegister = $e['register'];
 
 			Register::model()
-				->select('balance', 'operations', 'lastOperation')
+				->select('balance', 'operations', 'closedAt')
 				->get($eRegister);
 
 			// La première opération est nécessairement le solde initial
@@ -167,7 +167,7 @@ class CashLib extends CashCrud {
 					// IL n'y a pas encore de solde initial
 					$eRegister['operations'] === 0 or
 					// L'opération est placée avant la dernière opération validée
-					$e['date'] < $eRegister['lastOperation']
+					$e['date'] < $eRegister['closedAt']
 				) {
 					Cash::model()->rollBack();
 					return;
@@ -178,7 +178,8 @@ class CashLib extends CashCrud {
 			match($e['source']) {
 
 				Cash::INITIAL => self::createInitial($e),
-				Cash::PRIVATE, Cash::BANK => self::createWithoutVat($e),
+				Cash::PRIVATE => self::createPrivate($e),
+				Cash::BANK => self::createWithoutVat($e),
 				Cash::OTHER, Cash::BUY_MANUAL, Cash::SELL_MANUAL => self::createWithVat($e),
 
 			};
@@ -223,6 +224,16 @@ class CashLib extends CashCrud {
 		$e['vatRate'] = NULL;
 		$e['description'] = NULL;
 		$e['status'] = Cash::VALID;
+
+	}
+
+	private static function createPrivate(Cash $e): void {
+
+		self::createWithoutVat($e);
+
+		if($e['financialYear']->isIndividual()) {
+			$e['account'] = \account\AccountLib::getByClass(\account\AccountSetting::FARMER_S_ACCOUNT_CLASS);
+		}
 
 	}
 
@@ -272,7 +283,7 @@ class CashLib extends CashCrud {
 				}
 
 				Register::model()
-					->select('balance', 'operations', 'lastOperation')
+					->select('balance', 'operations', 'closedAt')
 					->get($eRegister);
 
 				$eCash['status'] = Cash::VALID;
@@ -296,7 +307,7 @@ class CashLib extends CashCrud {
 		};
 
 		$eRegister['balance'] += $additional;
-		$eRegister['lastOperation'] = $e['date'];
+		$eRegister['closedAt'] = $e['date'];
 		$eRegister['operations']++;
 
 		if($eRegister['balance'] < 0) {
@@ -304,7 +315,7 @@ class CashLib extends CashCrud {
 		}
 
 		Register::model()
-			->select('balance', 'lastOperation', 'operations')
+			->select('balance', 'closedAt', 'operations')
 			->update($eRegister);
 
 		$e['balance'] = $eRegister['balance'];

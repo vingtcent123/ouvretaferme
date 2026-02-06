@@ -221,7 +221,8 @@ class Sale extends SaleElement {
 		return (
 			$this->isComposition() === FALSE and
 			$this['closed'] === FALSE and
-			$this['shopShared'] === FALSE
+			$this['shopShared'] === FALSE and
+			$this['invoice']->empty()
 		);
 	}
 

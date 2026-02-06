@@ -136,8 +136,8 @@ class Cash extends CashElement {
 			->setCallback('date.past', function(string $date) {
 
 				return (
-					$this['register']['lastOperation'] === NULL or
-					$date >= $this['register']['lastOperation']
+					$this['register']['closedAt'] === NULL or
+					$date >= $this['register']['closedAt']
 				);
 
 			})

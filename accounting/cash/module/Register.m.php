@@ -50,13 +50,13 @@ class RegisterModel extends \ModuleModel {
 			'color' => ['color', 'cast' => 'string'],
 			'balance' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => -99999999.99, 'max' => 99999999.99, 'cast' => 'float'],
 			'operations' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'lastOperation' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'closedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\cash\Register::ACTIVE, \cash\Register::INACTIVE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'bankAccount', 'paymentMethod', 'color', 'balance', 'operations', 'lastOperation', 'status', 'createdAt'
+			'id', 'account', 'bankAccount', 'paymentMethod', 'color', 'balance', 'operations', 'closedAt', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -143,8 +143,8 @@ class RegisterModel extends \ModuleModel {
 		return $this->where('operations', ...$data);
 	}
 
-	public function whereLastOperation(...$data): RegisterModel {
-		return $this->where('lastOperation', ...$data);
+	public function whereclosedAt(...$data): RegisterModel {
+		return $this->where('closedAt', ...$data);
 	}
 
 	public function whereStatus(...$data): RegisterModel {

@@ -116,7 +116,7 @@ class CashUi {
 
 	}
 
-	public function getList(\Collection $ccCash, \Search $search, ?int $page = NULL) {
+	public function getList(Register $eRegister, \Collection $ccCash, \Search $search, ?int $page = NULL) {
 
 		if($ccCash->empty()) {
 			return '<div class="util-empty">'.s("Il n'y a aucune opération à afficher.").'</div>';
@@ -143,11 +143,23 @@ class CashUi {
 									};
 								$h .= '</h2>';
 
-								if($status === Cash::DRAFT) {
+								switch($status) {
 
-									if($eCashLast['balanceNegative'] === FALSE) {
-										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCashLast['id'].'" data-confirm="'.s("Toutes les opérations seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="btn btn-secondary">'.s("Tout valider maintenant").'</a>';
-									}
+									case Cash::DRAFT :
+
+										if($eCashLast['balanceNegative'] === FALSE) {
+											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCashLast['id'].'" data-confirm="'.s("Toutes les opérations seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="btn btn-secondary">'.s("Tout valider maintenant").'</a>';
+										}
+
+										break;
+
+									case Cash::VALID :
+/*
+										if(str_starts_with($eRegister[''], date('Y-m') === FALSE) {
+											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCashLast['id'].'" data-confirm="'.s("Toutes les opérations seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="btn btn-secondary">'.s("Clôturer au ").'</a>';
+										}
+*/
+										break;
 
 								}
 
