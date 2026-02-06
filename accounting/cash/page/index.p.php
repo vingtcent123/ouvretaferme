@@ -22,12 +22,20 @@ new Page()
 				$register !== NULL and
 				$data->cRegister->offsetExists($register)
 			) {
+
 				$data->eRegisterCurrent = $data->cRegister[$register];
+
+				\farm\FarmerLib::setView('viewAccountingCashRegister', $data->eFarm, $data->eRegisterCurrent);
+
+			} else if($data->eFarm->getView('viewAccountingCashRegister')->notEmpty()) {
+
+				$data->eRegisterCurrent = $data->cRegister[$data->eFarm->getView('viewAccountingCashRegister')['id']] ?? $data->cRegister->first();
+
 			} else {
 				$data->eRegisterCurrent = $data->cRegister->first();
 			}
 
-			if($data->eRegisterCurrent['lines'] > 0) {
+			if($data->eRegisterCurrent['operations'] > 0) {
 
 				$data->page = GET('page', 'int');
 
@@ -35,7 +43,7 @@ new Page()
 					'type' => GET('type'),
 				]);
 
-				$data->cCash = \cash\CashLib::getByRegister($data->eRegisterCurrent, $data->page, $data->search);
+				$data->ccCash = \cash\CashLib::getByRegister($data->eRegisterCurrent, $data->page, $data->search);
 
 			}
 

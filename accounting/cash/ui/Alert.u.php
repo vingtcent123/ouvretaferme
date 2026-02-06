@@ -25,6 +25,10 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Cash::created' => s("L'opération a bien été ajoutée"),
+			'Cash::updated' => s("L'opération a bien été mise à jour"),
+			'Cash::deleted' => s("L'opération a bien été supprimée"),
+
 			'Register::created' => s("Le journal de caisse a bien été configuré"),
 			'Register::deleted' => s("Le journal de caisse a bien été supprimé"),
 

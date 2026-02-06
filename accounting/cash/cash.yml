@@ -4,7 +4,8 @@ Register:
   paymentMethod: payment\Method
   color: color = PHP('#AAAAAA')
   balance: decimal(10, 2) = 0.0
-  lines: int8(0, null) = 0
+  operations: int8(0, null) = 0
+  lastOperation: date
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   createdAt: datetime = SPECIAL(now)
 

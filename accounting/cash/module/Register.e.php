@@ -20,9 +20,9 @@ class Register extends RegisterElement {
 
 	public function acceptDelete(): bool {
 
-		$this->expects(['lines']);
+		$this->expects(['operations']);
 
-		return ($this['lines'] === 0);
+		return ($this['operations'] === 0);
 
 	}
 

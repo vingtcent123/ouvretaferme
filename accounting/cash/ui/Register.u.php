@@ -93,7 +93,7 @@ class RegisterUi {
 
 				}
 
-				if($eRegisterCurrent['lines'] > 0) {
+				if($eRegisterCurrent['operations'] > 0) {
 					$h .= ' <a '.attr('onclick', 'Lime.Search.toggle("#cash-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a>';
 				}
 

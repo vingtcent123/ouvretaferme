@@ -48,13 +48,14 @@ class RegisterModel extends \ModuleModel {
 			'paymentMethod' => ['element32', 'payment\Method', 'cast' => 'element'],
 			'color' => ['color', 'cast' => 'string'],
 			'balance' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => -99999999.99, 'max' => 99999999.99, 'cast' => 'float'],
-			'lines' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'operations' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'lastOperation' => ['date', 'cast' => 'string'],
 			'status' => ['enum', [\cash\Register::ACTIVE, \cash\Register::INACTIVE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'paymentMethod', 'color', 'balance', 'lines', 'status', 'createdAt'
+			'id', 'account', 'paymentMethod', 'color', 'balance', 'operations', 'lastOperation', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -74,7 +75,7 @@ class RegisterModel extends \ModuleModel {
 			case 'balance' :
 				return 0;
 
-			case 'lines' :
+			case 'operations' :
 				return 0;
 
 			case 'status' :
@@ -132,8 +133,12 @@ class RegisterModel extends \ModuleModel {
 		return $this->where('balance', ...$data);
 	}
 
-	public function whereLines(...$data): RegisterModel {
-		return $this->where('lines', ...$data);
+	public function whereOperations(...$data): RegisterModel {
+		return $this->where('operations', ...$data);
+	}
+
+	public function whereLastOperation(...$data): RegisterModel {
+		return $this->where('lastOperation', ...$data);
 	}
 
 	public function whereStatus(...$data): RegisterModel {

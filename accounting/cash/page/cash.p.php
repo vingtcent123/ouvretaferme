@@ -20,31 +20,24 @@ new \cash\CashPage()
 
 			$fw->validate();
 
-			switch($data->e['source']) {
-
-				case \cash\Cash::PRIVATE :
-
-					if($data->e->requireAssociateAccount()) {
-
-						$data->e['cAccount'] = \account\AccountLib::getAssociates();
-
-					}
-
-					break;
-
-			}
+			\cash\CashLib::fill($data->e);
 
 		}
 
 		throw new ViewAction($data);
 
 	}, method: ['get', 'post'])
-	->doCreate(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e['register']).'&success=cash\\Register::created'));
+	->doCreate(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e['register']).'&success=cash\\Cash::created'));
 
-/*
+
 new \cash\CashPage()
-	->update()
-	->doUpdate(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e).'&success=cash\\Register::updated'))
+	->update(function($data) {
+
+		\cash\CashLib::fill($data->e);
+
+		throw new ViewAction($data);
+
+	})
+	->doUpdate(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e['register']).'&success=cash\\Cash::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ReloadAction())
-	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e).'&success=cash\\Register::deleted'));
-*/
+	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e['register']).'&success=cash\\Cash::deleted'));

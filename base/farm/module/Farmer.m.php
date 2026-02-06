@@ -137,13 +137,14 @@ class FarmerModel extends \ModuleModel {
 			'viewAnalyzeComposition' => ['enum', [\farm\Farmer::COMPOSITION, \farm\Farmer::INGREDIENT], 'cast' => 'enum'],
 			'viewAnalyzeYear' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewAccountingYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
+			'viewAccountingCashRegister' => ['element32', 'cash\Register', 'null' => TRUE, 'cast' => 'element'],
 			'viewSeason' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'viewShopCurrent' => ['element32', 'shop\Shop', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSoilColor', 'viewSoilOverlay', 'viewSoilTasks', 'viewSellingSales', 'viewSellingProducts', 'viewSellingCustomers', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewSellingPreparing', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewSeason', 'viewShopCurrent', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningSearch', 'viewPlanningUser', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSoilColor', 'viewSoilOverlay', 'viewSoilTasks', 'viewSellingSales', 'viewSellingProducts', 'viewSellingCustomers', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewSellingPreparing', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewAccountingCashRegister', 'viewSeason', 'viewShopCurrent', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -153,6 +154,7 @@ class FarmerModel extends \ModuleModel {
 			'viewSellingCategoryCurrent' => 'selling\Category',
 			'viewShopCatalogCurrent' => 'shop\Catalog',
 			'viewAccountingYear' => 'account\FinancialYear',
+			'viewAccountingCashRegister' => 'cash\Register',
 			'viewShopCurrent' => 'shop\Shop',
 		];
 
@@ -468,6 +470,10 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewAccountingYear(...$data): FarmerModel {
 		return $this->where('viewAccountingYear', ...$data);
+	}
+
+	public function whereViewAccountingCashRegister(...$data): FarmerModel {
+		return $this->where('viewAccountingCashRegister', ...$data);
 	}
 
 	public function whereViewSeason(...$data): FarmerModel {

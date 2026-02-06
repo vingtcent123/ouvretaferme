@@ -3,6 +3,23 @@
 	color: var(--muted);
 }
 
+.cash-item-balance {
+	font-weight: bold;
+	text-align: end;
+}
+
+.cash-item-balance-waiting {
+	font-style: italic;
+	font-weight: normal;
+	color: var(--muted);
+}
+
+.cash-item-details {
+	color: var(--muted);
+	margin-left: 3rem;
+	font-size: .9rem;
+}
+
 .cash-actions {
 	display: flex;
 	gap: 0.5rem;
