@@ -13,7 +13,12 @@ class Cash extends CashElement {
 	}
 
 	public function acceptCreate(): bool {
-		return ($this['register']['status'] === Register::ACTIVE);
+		return (
+			$this['register']['status'] === Register::ACTIVE and
+			Cash::model()
+				->whereRegister($this['register'])
+				->count() < CashSetting::DRAFT_LIMIT
+		);
 	}
 
 	public function acceptUpdate(): bool {

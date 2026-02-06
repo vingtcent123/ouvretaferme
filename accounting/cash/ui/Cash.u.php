@@ -42,11 +42,20 @@ class CashUi {
 			'register' => $eRegister
 		]);
 
-		if($eCash->acceptCreate() === FALSE) {
+		if($eRegister['status'] !== Register::ACTIVE) {
 
 			$h = '<div class="util-block-info">';
 				$h .= '<h3>'.s("Ce journal de caisse est désactivé").'</h3>';
 				$h .= '<p>'.s("Vous ne pouvez pas ajouter de nouvelles opérations.").'</p>';
+			$h .= '</div>';
+
+			return $h;
+
+		} else if($eCash->acceptCreate() === FALSE) {
+
+			$h = '<div class="util-block-info">';
+				$h .= '<h3>'.s("Vous ne pouvez plus saisir de nouvelle opération").'</h3>';
+				$h .= '<p>'.s("Vous ne pouvez pas avoir plus de {value} opérations non validées simultanément.<br/>Veuillez valider certaines opérations afin de pouvoir saisir une nouvelle opération de caisse.", CashSetting::DRAFT_LIMIT).'</p>';
 			$h .= '</div>';
 
 			return $h;
@@ -81,6 +90,7 @@ class CashUi {
 
 			$h .= '<br/>';
 			$h .= '<h3>'.s("Opérations automatiquement trouvées depuis le XXX").'</h3>';
+			// Doit passer par acceptCreate
 
 		$h .= '</div>';
 
