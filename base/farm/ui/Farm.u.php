@@ -1052,7 +1052,7 @@ class FarmUi {
 				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
 				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
 				'assets' => \farm\FarmUi::urlConnected($eFarm).'/immobilisations',
-				'analyze' => \farm\FarmUi::urlFinancialYear($eFarm['eFinancialYear']).'/etats-financiers/',
+				'analyze' => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/',
 			},
 
 		};
