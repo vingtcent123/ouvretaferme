@@ -3,8 +3,18 @@ new Page(
 )
 	->get('/banque/imports', function($data) {
 
-		$data->imports = \bank\ImportLib::formatCurrentFinancialYearImports($data->eFarm['eFinancialYear']);
-		$data->cImport = \bank\ImportLib::getAll($data->eFarm['eFinancialYear']);
+		$data->cBankAccount = \bank\BankAccountLib::getAll('id');
+
+		$selectedBankAccount = NULL;
+		if($data->cBankAccount->count() > 1) {
+			$selectedBankAccount = GET('bankAccount', 'int');
+			if(in_array($selectedBankAccount, $data->cBankAccount->getIds()) === FALSE) {
+				$selectedBankAccount = $data->cBankAccount->first()['id'];
+			}
+		}
+
+		$data->cImport = \bank\ImportLib::getAll($data->eFarm['eFinancialYear'], $selectedBankAccount);
+		$data->imports = \bank\ImportLib::formatCurrentFinancialYearImports($data->eFarm['eFinancialYear'], $data->cImport);
 
 		$data->cImportLonely = \bank\ImportLib::getLonely($data->eFarm['eFinancialYear']);
 
@@ -56,7 +66,9 @@ new \bank\ImportPage()
 
 		throw new ViewAction($data);
 
-	}, validate: ['acceptUpdateAccount']);
+	}, validate: ['acceptUpdateAccount'])
+	->doDelete(fn($data) => throw new ReloadAction('bank', 'Import::deleted'))
+;
 
 new \bank\ImportPage()
 	->applyElement(function($data, \bank\Import $e) {

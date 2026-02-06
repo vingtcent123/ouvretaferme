@@ -74,7 +74,7 @@ new \account\ImportPage()
 
 		throw new ReloadAction();
 
-	}, validate: ['acceptUdpate']);
+	}, validate: ['acceptUpdate']);
 
 new \account\FinancialYearPage()
 	->get('view', function($data) {

@@ -879,7 +879,7 @@ Class AssetUi {
 
 			$h .= '<div class="mt-1 mb-1">';
 
-				if($eAsset->acceptUdpate()) {
+				if($eAsset->acceptUpdate()) {
 					$h .= '<a href="'.\company\CompanyUi::urlAsset($eFarm).'/:update?id='.$eAsset['id'].'" class="btn btn-primary mr-1">'.s("Modifier l'immobilisation").'</a>';
 					$h .= '<a data-ajax="'.\company\CompanyUi::urlAsset($eFarm).'/:doDelete" post-id='.$eAsset['id'].'" class="btn btn-danger mr-1" data-confirm="'.s("Confirmez-vous la suppression ? La ou les écritures comptables liées n'auront plus de fiche d'immobilisation.").'">';
 						$h .= \Asset::icon('trash').' '.s("Supprimer l'immobilisation");

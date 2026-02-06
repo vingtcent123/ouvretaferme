@@ -17,6 +17,10 @@ new AdaptativeView('/banque/imports', function($data, FarmTemplate $t) {
 
 	}
 
+	if($data->cBankAccount->count() > 1) {
+		echo new \bank\ImportUi()->getTabs($data->eFarm, $data->cBankAccount);
+	}
+
 	echo new \bank\ImportUi()->getImport($data->eFarm, $data->cImport, $data->imports);
 
 });

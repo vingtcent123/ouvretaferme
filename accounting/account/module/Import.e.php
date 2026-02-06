@@ -17,10 +17,5 @@ class Import extends ImportElement {
 
 	}
 
-	public function acceptUdpate(): bool {
-
-		return in_array($this['status'], [Import::FEEDBACK_REQUESTED, Import::CREATED, Import::WAITING]);
-
-	}
 }
 ?>

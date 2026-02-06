@@ -11,7 +11,7 @@ class Asset extends AssetElement {
 		return TRUE;
 	}
 
-	public function acceptUdpate(): bool {
+	public function acceptUpdate(): bool {
 
 		return (AssetLib::hasAmortization($this) === FALSE);
 
@@ -25,7 +25,7 @@ class Asset extends AssetElement {
 
 	public function acceptDelete(): bool {
 
-		return $this->acceptUdpate();
+		return $this->acceptUpdate();
 
 	}
 

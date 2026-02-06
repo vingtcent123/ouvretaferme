@@ -7,9 +7,7 @@ class ImportLib extends ImportCrud {
 		return ['account'];
 	}
 
-	public static function formatCurrentFinancialYearImports(\account\FinancialYear $eFinancialYear): array {
-
-		$cImport = self::getAll($eFinancialYear);
+	public static function formatCurrentFinancialYearImports(\account\FinancialYear $eFinancialYear, \Collection $cImport): array {
 
 		if($eFinancialYear->empty()) {
 
@@ -137,15 +135,26 @@ class ImportLib extends ImportCrud {
 			->get();
 	}
 
-	public static function getAll(\account\FinancialYear $eFinancialYear): \Collection {
+	public static function getAll(\account\FinancialYear $eFinancialYear, ?int $selectedBankAccount): \Collection {
 
 		if($eFinancialYear->notEmpty()) {
 			Import::model()
 				->whereStartDate('<=', $eFinancialYear['endDate'].' 00:00:00')
 				->whereEndDate('>=', $eFinancialYear['startDate'].' 23:59:59');
 		}
+
+		if($selectedBankAccount) {
+			Import::model()->whereAccount($selectedBankAccount);
+		}
+
 		return Import::model()
-			->select(Import::getSelection() + ['account' => BankAccount::getSelection()])
+			->select(Import::getSelection() + [
+				'account' => BankAccount::getSelection(),
+				'nCashflowAllocated' => Cashflow::model()
+					->select('id', 'status')
+					->whereStatus(Cashflow::ALLOCATED)
+					->delegateCollection('import', callback: fn(\Collection $cCashflow) => $cCashflow->count())
+			])
 			->whereStatus('IN', [Import::PARTIAL, Import::FULL])
 			->sort(['startDate' => SORT_ASC])
 			->getCollection();
@@ -307,6 +316,18 @@ class ImportLib extends ImportCrud {
 
 		// On lance les rapprochements
 		\preaccounting\SuggestionLib::calculateSuggestionsByFarm($eFarm);
+
+	}
+
+	public static function delete(Import $e): void {
+
+		Import::model()->beginTransaction();
+
+			parent::delete($e);
+
+			Cashflow::model()->whereImport($e)->delete();
+
+		Import::model()->commit();
 
 	}
 

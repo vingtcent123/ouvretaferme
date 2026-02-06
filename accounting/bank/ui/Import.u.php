@@ -46,6 +46,41 @@ class ImportUi {
 		return \util\DateUi::numeric($period, \util\DateUi::DATE);
 	}
 
+	public function getTabs(\farm\Farm $eFarm, \Collection $cBankAccount): string {
+
+		if(get_exists('bankAccount') === FALSE or in_array(GET('bankAccount', 'int'), $cBankAccount->getIds()) === FALSE) {
+			$selectedBankAccount = $cBankAccount->first()['id'];
+		} else {
+			$selectedBankAccount = GET('bankAccount', 'int');
+		}
+
+		$h = '<div class="tabs-item">';
+
+			foreach($cBankAccount as $eBankAccount) {
+
+				$isSelected = ($eBankAccount['id'] === $selectedBankAccount);
+
+				$h .= '<a class="tab-item'.($isSelected ? ' selected' : '').'" data-tab="'.$eBankAccount['id'].'" href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/imports?bankAccount='.$eBankAccount['id'].'">';
+					$label = '<div class="text-center">';
+						if($eBankAccount['account']->notEmpty()) {
+							$label .= s("Compte {value}", $eBankAccount['account']['class']);
+						} else {
+							$label .= s("Compte");
+						}
+						if($eBankAccount['description']) {
+							$label .= '<br/><small><span style="font-weight: lighter" class="opacity-75">'.encode($eBankAccount['description']).'</span></small>';
+						}
+					$label .= '</div>';
+					$h .= $label;
+				$h .= '</a>';
+
+			}
+
+		$h .= '</div>';
+
+		return $h;
+	}
+
 	public function getImport(
 		\farm\Farm $eFarm,
 		\Collection $cImport,
@@ -140,7 +175,12 @@ class ImportUi {
 		});
 
 		$h .= '<div class="'.$status['class'].'">';
-			$h .= '<h4>'.encode($status['text']).'</h4>';
+			$h .= '<h4>';
+				$h .= encode($status['text']);
+				if($eImport['nCashflowAllocated'] === 0) {
+					$h .= ' <a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/import:doDelete" post-id="'.$eImport['id'].'" class="btn btn-primary" data-confirm="'.s("Cette opération va supprimer l'import et les opérations bancaires liées. Confirmez-vous cette suppression ?").'">'.\Asset::icon('trash').'</a>';
+				}
+			$h .= '</h4>';
 
 			$h .= '<div>';
 				$h .= \Asset::icon('chevron-right', ['class' => 'mr-1']);
