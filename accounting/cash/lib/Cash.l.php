@@ -99,6 +99,17 @@ class CashLib extends CashCrud {
 
 	}
 
+	private static function getReverseOrder(): array {
+
+		return [
+			'status' => new \Sql('FIELD(status, "'.Cash::VALID.'", "'.Cash::DRAFT.'")'),
+			'date' => SORT_ASC,
+			'type' => new \Sql('FIELD(type, "'.Cash::CREDIT.'", "'.Cash::DEBIT.'")'),
+			'id' => SORT_ASC
+		];
+
+	}
+
 	public static function create(Cash $e): void {
 
 		$e->expects([
@@ -164,7 +175,7 @@ class CashLib extends CashCrud {
 
 			// Mise à jour de la balance et du nombre de lignes
 			if($e['status'] === Cash::VALID) {
-				self::validate($e);
+				self::validateInternal($e);
 			}
 
 			// Signature de l'opération
@@ -197,47 +208,43 @@ class CashLib extends CashCrud {
 
 	}
 
-	public static function validationFromCash(Cash $e): \Collection {
+	public static function validateUntil(Cash $eCashUntil): void {
 
-		$eRegister = $e['register'];
+		$eCashUntil->expects(['register']);
 
-		$ccCash = Cash::model()
-			->select(Cash::getSelection())
-			->option('count')
-			->whereRegister($eRegister)
-			->whereStatus(Cash::DRAFT)
-			->sort(self::getOrder())
-			->getCollection();
+		do {
 
-		if($ccCash->offsetExists(Cash::DRAFT)) {
+			Cash::model()->beginTransaction();
 
-			$balance = $eRegister['balance'];
-			$balanceNegative = FALSE;
+				$eCash = Cash::model()
+					->select(Cash::getSelection())
+					->whereRegister($eCashUntil['register'])
+					->whereStatus(Cash::DRAFT)
+					->sort(self::getReverseOrder())
+					->get();
 
-			foreach($ccCash[Cash::DRAFT]->reverse() as $eCash) {
+				$eRegister = $eCash['register'];
 
-				$balance += match($eCash['type']) {
-					Cash::DEBIT => -1,
-					Cash::CREDIT => 1
-				} * $eCash['amountIncludingVat'];
-				$balance = round($balance, 2);
-
-				if($balance < 0) {
-					$balanceNegative = TRUE;
+				if($eCash->empty()) {
+					return;
 				}
 
-				$eCash['balance'] = $balance;
-				$eCash['balanceNegative'] = $balanceNegative;
+				Register::model()
+					->select('balance', 'operations', 'lastOperation')
+					->get($eRegister);
 
-			}
+				$eCash['status'] = Cash::VALID;
+				self::update($eCash, ['status']);
 
-		}
+				self::validateInternal($eCash);
 
-		return $ccCash;
+			Cash::model()->commit();
+
+		} while($eCashUntil->is($eCash) === FALSE);
 
 	}
 
-	private static function validate(Cash $e): void {
+	private static function validateInternal(Cash $e): void {
 
 		$eRegister = $e['register'];
 
@@ -249,6 +256,10 @@ class CashLib extends CashCrud {
 		$eRegister['balance'] += $additional;
 		$eRegister['lastOperation'] = $e['date'];
 		$eRegister['operations']++;
+
+		if($eRegister['balance'] < 0) {
+			throw new \Exception('Balance is negative');
+		}
 
 		Register::model()
 			->select('balance', 'lastOperation', 'operations')

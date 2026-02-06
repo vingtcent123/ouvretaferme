@@ -259,7 +259,7 @@ class CashUi {
 
 								$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
 								$h .= '<div class="dropdown-list">';
-									$h .= '<div class="dropdown-title">'.s("Opération").'</div>';
+									$h .= '<div class="dropdown-title">'.s("Opération de caisse").'</div>';
 									$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:update?id='.$eCash['id'].'" class="dropdown-item">'.s("Modifier l'opération").'</a>';
 									$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCash['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="dropdown-item '.($eCash['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
 									$h .= '<div class="dropdown-divider"></div>';

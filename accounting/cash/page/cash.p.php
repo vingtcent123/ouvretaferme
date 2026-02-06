@@ -39,5 +39,11 @@ new \cash\CashPage()
 
 	})
 	->doUpdate(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e['register']).'&success=cash\\Cash::updated'))
-	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ReloadAction())
+	->write('doValidate', function($data) {
+
+		\cash\CashLib::validateUntil($data->e);
+
+		throw new RedirectAction(\farm\FarmUi::urlCash($data->e['register']).'&success=cash\\Cash::validated');
+
+	}, validate: ['canWrite', 'acceptValidate'])
 	->doDelete(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e['register']).'&success=cash\\Cash::deleted'));

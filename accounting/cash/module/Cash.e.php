@@ -20,6 +20,10 @@ class Cash extends CashElement {
 		return ($this['status'] === Cash::DRAFT);
 	}
 
+	public function acceptValidate(): bool {
+		return ($this['status'] === Cash::DRAFT);
+	}
+
 	public function requireAssociateAccount(): bool {
 
 		$this->expects([

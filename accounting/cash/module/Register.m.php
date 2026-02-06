@@ -49,7 +49,7 @@ class RegisterModel extends \ModuleModel {
 			'color' => ['color', 'cast' => 'string'],
 			'balance' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => -99999999.99, 'max' => 99999999.99, 'cast' => 'float'],
 			'operations' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'lastOperation' => ['date', 'cast' => 'string'],
+			'lastOperation' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\cash\Register::ACTIVE, \cash\Register::INACTIVE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
