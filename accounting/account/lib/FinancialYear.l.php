@@ -13,15 +13,21 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	public static function getPreviousFinancialYear(FinancialYear $eFinancialYear): FinancialYear {
 
-		$eFinancialYearPrevious = new FinancialYear();
-
-		FinancialYear::model()
+		return FinancialYear::model()
 			->select(FinancialYear::getSelection())
 			->whereEndDate('<=', $eFinancialYear['startDate'])
 			->sort(['endDate' => SORT_DESC])
-			->get($eFinancialYearPrevious);
+			->get();
 
-		return $eFinancialYearPrevious;
+	}
+
+	public static function getNextFinancialYear(FinancialYear $eFinancialYear): FinancialYear {
+
+		return FinancialYear::model()
+			->select(FinancialYear::getSelection())
+			->whereStartDate('>=', $eFinancialYear['endDate'])
+			->sort(['endDate' => SORT_ASC])
+			->get();
 
 	}
 

@@ -138,13 +138,13 @@ class FinancialYear extends FinancialYearElement {
 
 	public function acceptReOpen(): bool {
 
-		$eLast = FinancialYearLib::getPreviousFinancialYear($this);
+		$eNext = FinancialYearLib::getNextFinancialYear($this);
 
 		return (
 			$this['closeDate'] !== NULL and
 			$this['status'] === FinancialYear::CLOSE and
 			FinancialYear::model()->whereStatus(FinancialYear::OPEN)->count() < 2 and
-			($eLast->empty() or $eLast->isOpen() === FALSE)
+			($eNext->empty() or ($eNext->isOpen() === FALSE and $eNext->isClosed() === FALSE))
 		);
 
 	}
