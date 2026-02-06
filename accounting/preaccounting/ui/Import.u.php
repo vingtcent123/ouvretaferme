@@ -71,7 +71,7 @@ Class ImportUi {
 			$h .= s("Vous ne pouvez importer automatiquement dans le logiciel comptable de {siteName} que les factures avec un moyen de paiement défini, des numéros de compte renseignés pour chaque article, et qui sont rapprochées avec une opération bancaire.");
 		$h .= '</div>';
 
-		if($lastValidationDate !== NULL) {
+		if(empty($lastValidationDate) === FALSE) {
 			$h .= '<div class="util-info">';
 				$h .= s("Attention, vous avez déjà validé des écritures jusqu'au {value}. Vous ne pouvez pas importer d'écritures antérieures à cette date pour respecter la numérotation chronologique des dates de vos écritures.", '<b>'.\util\DateUi::numeric($lastValidationDate).'</b>');
 			$h .= '</div>';

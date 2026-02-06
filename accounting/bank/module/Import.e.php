@@ -12,9 +12,12 @@ class Import extends ImportElement {
 	public function acceptDelete(): bool {
 
 		return (\bank\Cashflow::model()
-			->whereStatus(\bank\Cashflow::ALLOCATED)
+			->or(
+				fn() => $this->whereStatus(\bank\Cashflow::ALLOCATED),
+				fn() => $this->whereIsReconciliated(TRUE)
+			)
 			->whereImport($this)
-			->count() === 0);
+			->exists() === FALSE);
 
 	}
 
