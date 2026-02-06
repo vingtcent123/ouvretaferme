@@ -32,7 +32,7 @@ class BalanceSheetUi {
 					$h .= '<fieldset>';
 						$h .= '<legend>'.s("Comparer avec un autre exercice").'</legend>';
 						$h .= $form->select('financialYearComparison', $cFinancialYear
-							->filter(fn($e) => !$e->is($eFinancialYear))
+							->find(fn($e) => !$e->is($eFinancialYear))
 							->makeArray(function($e, &$key) {
 								$key = $e['id'];
 								return s("Exercice {value}", $e->getLabel());
