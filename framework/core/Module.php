@@ -5221,7 +5221,7 @@ abstract class ModulePage extends Page {
 
 	protected function getPropertiesCreate(Element $e, ?array $propertiesCreate): array {
 		$propertiesCreate ??= $this->propertiesCreate;
-		return is_closure($propertiesCreate) ? $propertiesCreate->call($this, $e) : $propertiesCreate;
+			return is_closure($propertiesCreate) ? $propertiesCreate->call($this, $e) : $propertiesCreate;
 	}
 
 	protected function getPropertiesUpdate(Element $e, ?array $propertiesUpdate): array {
@@ -5236,8 +5236,6 @@ abstract class ModulePage extends Page {
 			$data->e = $this->createElement->call($this, $data);
 
 			$data->e->validate(...$validate);
-
-			$data->properties = $this->getPropertiesCreate($data->e, $propertiesCreate);
 
 			if($action === NULL) {
 				throw new \ViewAction($data);

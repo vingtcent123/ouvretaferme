@@ -137,6 +137,18 @@ function round(value, precision = 2) {
 
 }
 
+function calculateVatFromIncluding(amount, vatRate) {
+
+	return Math.round((amount / (1 + vatRate / 100)) * (vatRate / 100) * 100) / 100;
+
+}
+
+function calculateExcludingFromIncluding(amount, vatRate) {
+
+	return amount - calculateVatFromIncluding(amount, vatRate);
+
+}
+
 function doCopy(target) {
 
 	const fromElement = qs(target.dataset.selector);

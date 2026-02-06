@@ -26,26 +26,82 @@ class Cash extends CashElement {
 
 	public function requireAssociateAccount(): bool {
 
+		if(
+			$this['source'] !== Cash::PRIVATE or
+			$this['date'] === NULL
+		) {
+			return FALSE;
+		}
+
 		$this->expects([
-			'source', 'financialYear'
+			'financialYear'
 		]);
 
 		return (
-			$this['source'] === Cash::PRIVATE and
 			$this['financialYear']->isCompany() and
 			$this['financialYear']->isAccounting()
 		);
 
 	}
 
-	public function requireDescription(): bool {
+	public function requireAccount(): bool {
 
 		$this->expects([
 			'source'
 		]);
 
+		if(
+			$this['source'] !== Cash::OTHER or
+			$this['date'] === NULL
+		) {
+			return FALSE;
+		}
+
+		$this->expects([
+			'financialYear'
+		]);
+
 		return (
-			($this['source'] === Cash::PRIVATE and $this->requireAssociateAccount() === FALSE)
+			$this['financialYear']->isAccounting()
+		);
+
+	}
+
+	public function requireVat(): bool {
+
+		if(
+			$this['source'] !== Cash::OTHER or
+			$this['date'] === NULL
+		) {
+			return FALSE;
+		}
+
+		$this->expects([
+			'financialYear'
+		]);
+
+		return (
+			$this['financialYear']->hasVat()
+		);
+
+	}
+
+	public function requireDescription(): bool {
+
+		if(
+			in_array($this['source'], [Cash::PRIVATE, Cash::OTHER]) === FALSE or
+			$this['date'] === NULL
+		) {
+			return FALSE;
+		}
+
+		$this->expects([
+			'financialYear'
+		]);
+
+		return (
+			($this['source'] === Cash::PRIVATE and $this->requireAssociateAccount() === FALSE) or
+			($this['source'] === Cash::OTHER)
 		);
 
 	}
@@ -62,7 +118,14 @@ class Cash extends CashElement {
 				}
 
 			})
-			->setCallback('date.financialYear', function(string $date) {
+			->setCallback('date.financialYear', function(string $date) use ($p) {
+
+				if($p->isInvalid('date')) {
+
+					$this['financialYear'] = new \account\FinancialYear();
+					return TRUE;
+
+				}
 
 				$this->expects(['source']);
 
@@ -94,7 +157,7 @@ class Cash extends CashElement {
 				return ($date <= currentDate());
 
 			})
-			->setCallback('description.empty', function(?string $description = NULL) {
+			->setCallback('description.empty', function(?string &$description = NULL) {
 
 				if($this->requireDescription()) {
 					return ($description !== NULL);
@@ -104,9 +167,58 @@ class Cash extends CashElement {
 				}
 
 			})
+			->setCallback('amountExcludingVat.empty', function(?float &$amount) {
+
+				if($this->requireVat() === FALSE) {
+					$amount = NULL;
+					return TRUE;
+				}
+
+				return ($amount !== NULL);
+
+			})
+			->setCallback('vatRate.empty', function(?float &$vatRate) {
+
+				if($this->requireVat() === FALSE) {
+					$vatRate = NULL;
+					return TRUE;
+				}
+
+				return ($vatRate !== NULL);
+
+			})
+			->setCallback('vat.empty', function(?float &$amount) {
+
+				if($this->requireVat() === FALSE) {
+					$amount = NULL;
+					return TRUE;
+				}
+
+				return ($amount !== NULL and $amount >= 0.0);
+
+			})
+			->setCallback('vat.consistency', function(?float $vat) use ($p) {
+
+				if(
+					$this->requireVat() === FALSE or
+					$p->isInvalid('amountIncludingVat') or
+					$p->isInvalid('amountExcludingVat') or
+					$p->isInvalid('vat')
+				) {
+					return TRUE;
+				}
+
+				if(round($vat + $this['amountExcludingVat'], 2) !== round($this['amountIncludingVat'], 2)) {
+					throw new \FailException('cash\Cash::amountConsistency');
+				}
+
+			})
 			->setCallback('account.empty', function(\account\Account &$eAccount) {
 
-				if($this->requireAssociateAccount()) {
+				if(
+					$this->requireAssociateAccount() or
+					$this->requireAccount()
+				) {
 					return $eAccount->notEmpty();
 				} else {
 					$eAccount = new \account\Account();
@@ -128,6 +240,8 @@ class Cash extends CashElement {
 
 				if($this->requireAssociateAccount()) {
 					return $eAccount->isAssociatePrincipal();
+				} else if($this->requireAccount()) {
+					return $eAccount->notEmpty();
 				} else {
 					return TRUE;
 				}

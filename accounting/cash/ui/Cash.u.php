@@ -66,7 +66,7 @@ class CashUi {
 					}
 					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('wallet').'  '.s("Vente à un client").'</a>';
 					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.Cash::PRIVATE.'&type='.Cash::CREDIT.'" class="dropdown-item">'.self::getOperation(Cash::PRIVATE, Cash::CREDIT).'</a>';
-					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('three-dots').'  '.s("Autre opération créditrice").'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.Cash::OTHER.'&type='.Cash::CREDIT.'" class="dropdown-item">'.self::getOperation(Cash::OTHER, Cash::CREDIT).'</a>';
 				$h .= '</div>';
 				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('journal-minus').'</div>'.s("Débiter la caisse").'</a>';
 				$h .= '<div class="dropdown-list">';
@@ -74,7 +74,7 @@ class CashUi {
 					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('bank').'  '.s("Dépôt à la banque").'</a>';
 					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('wallet').'  '.s("Achat à un fournisseur").'</a>';
 					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.Cash::PRIVATE.'&type='.Cash::DEBIT.'" class="dropdown-item">'.self::getOperation(Cash::PRIVATE, Cash::DEBIT).'</a>';
-					$h .= '<a href="" class="dropdown-item">'.\Asset::icon('three-dots').'  '.s("Autre opération débitrice").'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.Cash::OTHER.'&type='.Cash::DEBIT.'" class="dropdown-item">'.self::getOperation(Cash::OTHER, Cash::DEBIT).'</a>';
 				$h .= '</div>';
 				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('plus-slash-minus').'</div>'.s("Corriger le solde").'</a>';
 			$h .= '</div>';
@@ -97,6 +97,11 @@ class CashUi {
 			Cash::PRIVATE => match($type) {
 				Cash::CREDIT => \Asset::icon('person-fill').'  '.s("Apport de l'exploitant à la caisse"),
 				Cash::DEBIT => \Asset::icon('person-fill').'  '.s("Prélèvement par l'exploitant dans la caisse"),
+			},
+
+			Cash::OTHER => match($type) {
+				Cash::CREDIT => \Asset::icon('three-dots').'  '.s("Autre opération créditrice"),
+				Cash::DEBIT => \Asset::icon('three-dots').'  '.s("Autre opération débitrice"),
 			}
 
 		};
@@ -111,13 +116,16 @@ class CashUi {
 
 		$h = '<table class="cash-item-table tr-even stick-xs">';
 
+		$hasVat = $ccCash->contains(fn($cCash) => $cCash->contains(fn($eCash) => $eCash['vat'] !== NULL));
+
 		foreach($ccCash as $status => $cCash) {
 
 			$eCashLast = $cCash->first();
+			$columns = 4 + ($hasVat ? 2 : 0) + ($search->empty() ? 1 : 0);
 
 			$h .= '<thead>';
 				$h .= '<tr>';
-					$h .= '<td colspan="'.($search->empty() ? 7 : 6).'" style="padding: 0">';
+					$h .= '<td colspan="'.$columns.'" style="padding: 0">';
 						$h .= '<div class="util-title">';
 							$h .= '<h2 class="mt-2">';
 								$h .= match($status) {
@@ -150,7 +158,10 @@ class CashUi {
 					$h .= '<th></th>';
 					$h .= '<th class="text-end highlight-stick-right">'.s("Crédit").'</th>';
 					$h .= '<th class="text-end highlight-stick-left">'.s("Débit").'</th>';
-					$h .= '<th class="text-center" colspan="2">'.s("TVA").'</th>';
+
+					if($hasVat) {
+						$h .= '<th class="text-center" colspan="2">'.s("TVA").'</th>';
+					}
 
 					if($search->empty()) {
 
@@ -188,7 +199,7 @@ class CashUi {
 									$h .= '</td>';
 									$h .= '<td class="text-end highlight-stick-right"></td>';
 									$h .= '<td class="text-end highlight-stick-left"></td>';
-									$h .= '<th colspan="'.($search->empty() ? 4 : 3).'"></th>';
+									$h .= '<th colspan="'.($columns - 3).'"></th>';
 								$h .= '</tr>';
 							$h .= '</tbody>';
 							$h .= '<tbody>';
@@ -222,17 +233,21 @@ class CashUi {
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="td-min-content text-end">';
-							if($eCash['vat'] !== NULL) {
-								$h .= \util\TextUi::money($eCash['vat']);
-							}
-						$h .= '</td>';
+						if($hasVat) {
 
-						$h .= '<td class="td-min-content">';
-							if($eCash['vatRate'] !== NULL) {
-								$h .= s("({value} %)", $eCash['vatRate']);
-							}
-						$h .= '</td>';
+							$h .= '<td class="td-min-content text-end">';
+								if($eCash['vat'] !== NULL) {
+									$h .= \util\TextUi::money($eCash['vat']);
+								}
+							$h .= '</td>';
+
+							$h .= '<td class="td-min-content font-sm color-muted">';
+								if($eCash['vatRate'] !== NULL) {
+									$h .= ' '.s("{value} %", $eCash['vatRate']);
+								}
+							$h .= '</td>';
+
+						}
 
 						if($search->empty()) {
 
@@ -292,7 +307,10 @@ class CashUi {
 
 		$list = [];
 
-		if($eCash->requireAssociateAccount()) {
+		if(
+			$eCash->requireAssociateAccount() or
+			$eCash->requireAccount()
+		) {
 			$list[] = encode($eCash['account']['name']);
 		}
 
@@ -306,7 +324,9 @@ class CashUi {
 
 	public function start(Register $eRegister): string {
 
-		$eCash = new Cash();
+		$eCash = new Cash([
+			'source' => Cash::INITIAL
+		]);
 
 		$h = '<h3>'.s("Indiquez le solde initial de la caisse").'</h3>';
 
@@ -427,46 +447,62 @@ class CashUi {
 
 		$h = '';
 
-		switch($eCash['source']) {
+		if($eCash->requireAssociateAccount()) {
 
-			case Cash::PRIVATE :
+			$label = s("Numéro de compte associé");
 
-				if($eCash->requireAssociateAccount()) {
+			if($eCash['cAccount']->notEmpty()) {
 
-					$label = s("Numéro de compte associé");
+				$label .= \util\FormUi::info(s("Vous pouvez ajouter les associés manquants depuis le <link>paramétrage des numéros de compte</link>.", ['link' => '<a href="'.\farm\FarmUi::urlConnected().'/account/account">']));
 
-					if($eCash['cAccount']->notEmpty()) {
-
-						$label .= \util\FormUi::info(s("Vous pouvez ajouter les associés manquants depuis le <link>paramétrage des numéros de compte</link>.", ['link' => '<a href="'.\farm\FarmUi::urlConnected().'/account/account">']));
-
-						$field = $form->radios('account', $eCash['cAccount'], $eCash['account'] ?? new \account\Account(), attributes: [
-							'mandatory' => TRUE,
-							'callbackRadioContent' => fn($eAccount) => $eAccount['name']
-						]);
-
-					} else {
-						$field = '<div class="util-block-info">';
-							$field .= '<h3>'.s("Vous n'avez pas enregistré de compte associé").'</h3>';
-							$field .= '<p>'.s("Vous devez enregistrer au moins un compte associé pour saisir une opération de caisse en lien avec un apport ou un prélèvement de l'exploitant.").'</p>';
-							$field .= '<a href="'.\farm\FarmUi::urlConnected().'/account/account" class="btn btn-transparent">'.s("Paramétrer mes numéros de compte").'</a>';
-						$field .= '</div>';
-					}
-
-					$h .= $form->group(
-						$label,
-						$field,
-						['wrapper' => 'account']
-					);
-
+				if(($eCash['account'] ?? new \account\Account())->notEmpty()) {
+					$eCashDefault = $eCash['account'];
+				} else if($eCash['cAccount']->count() === 1) {
+					$eCashDefault = $eCash['cAccount']->first();
+				} else {
+					$eCashDefault = new \account\Account();
 				}
 
-				$h .= $form->dynamicGroup($eCash, 'amountIncludingVat');
+				$field = $form->radios('account', $eCash['cAccount'], $eCashDefault, attributes: [
+					'mandatory' => TRUE,
+					'callbackRadioContent' => fn($eAccount) => $eAccount['name']
+				]);
 
-				$h .= $form->dynamicGroup($eCash, 'description');
+			} else {
+				$field = '<div class="util-block-info">';
+					$field .= '<h3>'.s("Vous n'avez pas enregistré de compte associé").'</h3>';
+					$field .= '<p>'.s("Vous devez enregistrer au moins un compte associé pour saisir une opération de caisse en lien avec un apport ou un prélèvement de l'exploitant.").'</p>';
+					$field .= '<a href="'.\farm\FarmUi::urlConnected().'/account/account" class="btn btn-transparent">'.s("Paramétrer mes numéros de compte").'</a>';
+				$field .= '</div>';
+			}
 
-				break;
+			$h .= $form->group(
+				$label,
+				$field,
+				['wrapper' => 'account']
+			);
 
 		}
+
+		if($eCash->requireAccount()) {
+			$h .= $form->dynamicGroup($eCash, 'account');
+		}
+
+		if($eCash->requireVat()) {
+
+			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->group(content: '<h4>'.s("Montants").'</h4><p class="util-info">'.s("Les montants de TVA sont HT sont automatiquement calculés lorsque vous tapez le montant TTC et le taux de TVA.").'</p>');
+				$h .= $form->dynamicGroups($eCash, ['amountIncludingVat', 'vatRate', 'vat', 'amountExcludingVat']);
+			$h .= '</div>';
+
+		} else {
+			$h .= $form->group(
+				s("Montant"),
+				$form->dynamicField($eCash, 'amountIncludingVat')
+			);
+		}
+
+		$h .= $form->dynamicGroup($eCash, 'description');
 
 		return $h;
 
@@ -512,19 +548,48 @@ class CashUi {
 
 		$d = Cash::model()->describer($property, [
 			'date' => s("Date de l'opération"),
-			'amountIncludingVat' => s("Montant"),
-			'description' => s("Motif")
+			'amountIncludingVat' => s("Montant TTC"),
+			'amountExcludingVat' => s("Montant HT"),
+			'vat' => s("Montant de TVA"),
+			'vatRate' => s("Taux de TVA"),
+			'description' => s("Motif"),
+			'account' => s("Numéro de compte")
 		]);
 
 		switch($property) {
 
-			case 'amountIncludingVat' :
+			case 'description' :
+				$d->placeholder = fn(Cash $eCash) => $eCash->requireDescription() ? s("Saisissez le motif de l'opération") : '';
+				break;
+
+			case 'amountExcludingVat' :
+			case 'vat' :
 				$d->type = 'float';
 				$d->append = fn(\util\FormUi $form, Cash $eCash) => $form->addon(s("€"));
 				break;
 
-			case 'description' :
-				$d->placeholder = fn(Cash $eCash) => $eCash->requireDescription() ? s("Saisissez le motif de l'opération") : '';
+			case 'amountIncludingVat' :
+				$d->type = 'float';
+				$d->append = fn(\util\FormUi $form, Cash $eCash) => $form->addon(s("€"));
+				$d->attributes = fn(\util\FormUi $form, Cash $eCash) => $eCash->requireVat() ? [
+					'onchange' => 'Cash.recalculateAmount(this)'
+				] : [];
+				break;
+
+			case 'vatRate' :
+				$d->append = s("%");
+				$d->attributes = [
+					'onchange' => 'Cash.recalculateAmount(this)'
+				];
+				break;
+
+			case 'account':
+				$d->autocompleteBody = function(\util\FormUi $form, Cash $e) {
+					return [
+					];
+				};
+				$d->group += ['wrapper' => 'account'];
+				new \account\AccountUi()->query($d, \farm\Farm::getConnected());
 				break;
 
 		}

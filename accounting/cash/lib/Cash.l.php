@@ -7,12 +7,29 @@ class CashLib extends CashCrud {
 
 		return function(Cash $e) {
 
-			return match($e['source']) {
+			// La date doit être vérifiée en amont
+			$e->expects(['date']);
 
-				Cash::INITIAL => ['type', 'date', 'amountIncludingVat'],
-				Cash::PRIVATE => ['type', 'date', 'amountIncludingVat', 'account', 'description'],
+			$properties = ['type', 'amountIncludingVat'];
 
-			};
+			if(
+				$e->requireAssociateAccount() or
+				$e->requireAccount()
+			) {
+				$properties[] = 'account';
+			}
+
+			if($e->requireVat()) {
+				$properties[] = 'amountExcludingVat';
+				$properties[] = 'vatRate';
+				$properties[] = 'vat'; // En dernier pour les contrôles de cohérence
+			}
+
+			if($e['source'] !== NULL) {
+				$properties[] = 'description';
+			}
+
+			return $properties;
 
 		};
 
@@ -30,17 +47,22 @@ class CashLib extends CashCrud {
 
 	public static function fill(Cash $eCash): void {
 
-		switch($eCash['source']) {
+		if($eCash->requireAssociateAccount()) {
 
-			case \cash\Cash::PRIVATE :
+			$eCash['cAccount'] = \account\AccountLib::getAssociates();
 
-				if($eCash->requireAssociateAccount()) {
+		}
 
-					$eCash['cAccount'] = \account\AccountLib::getAssociates();
+		if($eCash->requireAccount()) {
 
+			$eCash['account'] = match($eCash['source']) {
+
+				Cash::OTHER => match($eCash['type']) {
+					Cash::CREDIT => \account\AccountLib::getByClass(\account\AccountSetting::PRODUCT_OTHER_CLASS),
+					Cash::DEBIT => \account\AccountLib::getByClass(\account\AccountSetting::CHARGES_OTHER_CLASS),
 				}
 
-				break;
+			};
 
 		}
 
@@ -151,6 +173,7 @@ class CashLib extends CashCrud {
 
 				Cash::INITIAL => self::createInitial($e),
 				Cash::PRIVATE => self::createPrivate($e),
+				Cash::OTHER => self::createOther($e),
 
 			};
 
@@ -189,7 +212,7 @@ class CashLib extends CashCrud {
 
 		$e->expects(['amountIncludingVat']);
 
-		$e['amountExcludingVat'] = $e['amountIncludingVat'];
+		$e['amountExcludingVat'] = NULL;
 		$e['vat'] = NULL;
 		$e['vatRate'] = NULL;
 		$e['description'] = NULL;
@@ -201,10 +224,22 @@ class CashLib extends CashCrud {
 
 		$e->expects(['amountIncludingVat']);
 
-		$e['amountExcludingVat'] = $e['amountIncludingVat'];
+		$e['amountExcludingVat'] = NULL;
 		$e['vat'] = NULL;
 		$e['vatRate'] = NULL;
 		$e['status'] = Cash::DRAFT;
+
+	}
+
+	private static function createOther(Cash $e): void {
+
+		$e['status'] = Cash::DRAFT;
+
+		if($e->requireVat() === FALSE) {
+			$e['amountExcludingVat'] = NULL;
+			$e['vat'] = NULL;
+			$e['vatRate'] = NULL;
+		}
 
 	}
 
@@ -214,6 +249,7 @@ class CashLib extends CashCrud {
 
 		do {
 
+			// Chaque validation est indépendante
 			Cash::model()->beginTransaction();
 
 				$eCash = Cash::model()

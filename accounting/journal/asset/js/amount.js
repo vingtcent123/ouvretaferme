@@ -49,18 +49,6 @@ class OperationAmount {
 
 	}
 
-	static calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate) {
-
-		return Math.round((amountIncludingVAT / (1 + vatRate / 100)) * (vatRate / 100) * 100) / 100;
-
-	}
-
-	static calculateAmountFromAmountIncludingVAT(amountIncludingVAT, vatRate) {
-
-		return Math.round(amountIncludingVAT / (1 + vatRate/100) * 100) / 100;
-
-	}
-
 	static updateAmount(index, field, amount) {
 
 		if(isNaN(amount)) {
@@ -132,7 +120,7 @@ class OperationAmount {
 		// Check TVA = HT * VatRate OU formule depuis TTC avec taux de TVA
 		if(
 			round(Math.abs(vatValue - amount * vatRate / 100, 2)) > 0.01 &&
-			round(Math.abs(vatValue - OperationAmount.calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate)), 2) > 0.01
+			round(Math.abs(vatValue - calculateVatFromIncluding(amountIncludingVAT, vatRate)), 2) > 0.01
 		) {
 
 			qs('[data-vat-value-warning][data-index="' + index + '"]').removeHide();
@@ -151,7 +139,7 @@ class OperationAmount {
 
 		// If cashflow = Check the integrity
 		if(typeof Cashflow !== 'undefined') {
-				Cashflow.checkValidationValues();
+			Cashflow.checkValidationValues();
 		}
 
 	}
@@ -229,8 +217,8 @@ class OperationAmount {
 		const targetAmountIncludingVAT = qs('[name="amountIncludingVAT[' + index + ']"');
 		const amountIncludingVAT = CalculationField.getValue(targetAmountIncludingVAT);
 
-		const amount = OperationAmount.calculateAmountFromAmountIncludingVAT(amountIncludingVAT, vatRate);
-		const vatValue = OperationAmount.calculateVatValueFromAmountIncludingVAT(amountIncludingVAT, vatRate);
+		const amount = calculateExcludingFromIncluding(amountIncludingVAT, vatRate);
+		const vatValue = calculateVatFromIncluding(amountIncludingVAT, vatRate);
 
 		OperationAmount.updateAmount(index, 'amount', amount);
 		OperationAmount.updateAmount(index, 'vatValue', vatValue);

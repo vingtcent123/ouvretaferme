@@ -14,10 +14,10 @@ Cash:
   register: cash\Register
   date: date
   balance: ?decimal(10, 2)
-  amountIncludingVat: decimal(10, 2, 0, null)
-  amountExcludingVat: decimal(10, 2, 0, null)
+  amountIncludingVat: decimal(10, 2, 0.0, null)
+  amountExcludingVat: ?decimal(10, 2, 0.0, null)
   type: enum(DEBIT, CREDIT)
-  vat: ?decimal(10, 2)
+  vat: ?decimal(10, 2, 0.0, null)
   vatRate: ?decimal(5, 2)
   description: ?text8(1, null)
   source: enum(BANK, PRIVATE, OTHER, INITIAL, BALANCE, BUY_MANUAL, SELL_MANUAL, SELL_INVOICE, SELL_SALE)

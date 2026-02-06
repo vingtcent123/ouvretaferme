@@ -28,7 +28,10 @@ class FinancialYear extends FinancialYearElement {
 
 	}
 
-	// Comptabilité à l'engagement
+	public function hasVat() {
+		return $this['hasVat'];
+	}
+
 	public function isAccounting() {
 		return $this['accountingMode'] === FinancialYear::ACCOUNTING;
 	}

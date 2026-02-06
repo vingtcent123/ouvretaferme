@@ -13,7 +13,11 @@ class AlertUi {
 			'Cash::date.future' => s("La date de l'opération ne peut pas être dans le futur"),
 			'Cash::account.empty' => s("Vous n'avez pas indiqué de numéro de compte"),
 			'Cash::description.empty' => s("Vous n'avez pas indiqué le motif de l'opération"),
-			'Cash::amountIncludingVat.check' => s("Vous devez saisir un montant positif ou nul"),
+			'Cash::amountIncludingVat.check' => s("Vous devez saisir un montant"),
+			'Cash::amountExcludingVat.empty' => s("Vous devez saisir un montant"),
+			'Cash::vat.empty' => s("Vous devez saisir un montant de TVA"),
+			'Cash::vatRate.empty' => s("Vous devez saisir un taux de TVA"),
+			'Cash::amountConsistency' => s("Le total HT + TVA doit être égal au total TTC"),
 
 			default => null
 
