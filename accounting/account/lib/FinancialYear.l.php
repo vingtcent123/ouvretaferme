@@ -210,9 +210,9 @@ class FinancialYearLib extends FinancialYearCrud {
 			parent::delete($e);
 
 			\company\CompanyCron::model()
-        ->whereAction(\company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_DOCUMENT)
+				->whereAction(\company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_DOCUMENT)
 				->whereFarm($eFarm)
-        ->delete();
+				->delete();
 
 			Import::model()->whereFinancialYear($e)->delete();
 			Pdf::model()->whereFinancialYear($e)->delete();
