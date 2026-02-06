@@ -51,10 +51,11 @@ class FinancialYearDocumentModel extends \ModuleModel {
 			'generation' => ['enum', [\account\FinancialYearDocument::WAITING, \account\FinancialYearDocument::NOW, \account\FinancialYearDocument::PROCESSING, \account\FinancialYearDocument::FAIL, \account\FinancialYearDocument::SUCCESS], 'null' => TRUE, 'cast' => 'enum'],
 			'generationAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'content' => ['element32', 'account\PdfContent', 'null' => TRUE, 'cast' => 'element'],
+			'createdAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'financialYear', 'type', 'generation', 'generationAt', 'content'
+			'financialYear', 'type', 'generation', 'generationAt', 'content', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -65,6 +66,20 @@ class FinancialYearDocumentModel extends \ModuleModel {
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
 			['financialYear', 'type']
 		]);
+
+	}
+
+	public function getDefaultValue(string $property) {
+
+		switch($property) {
+
+			case 'createdAt' :
+				return new \Sql('NOW()');
+
+			default :
+				return parent::getDefaultValue($property);
+
+		}
 
 	}
 
@@ -108,6 +123,10 @@ class FinancialYearDocumentModel extends \ModuleModel {
 
 	public function whereContent(...$data): FinancialYearDocumentModel {
 		return $this->where('content', ...$data);
+	}
+
+	public function whereCreatedAt(...$data): FinancialYearDocumentModel {
+		return $this->where('createdAt', ...$data);
 	}
 
 

@@ -581,6 +581,7 @@ Class ImportLib extends ImportCrud {
 
 		return Import::model()
 			->whereStatus('IN', [Import::CREATED, Import::WAITING, Import::FEEDBACK_TO_TREAT])
+			->where('createdAt >= NOW() - INTERVAL 10 MINUTE')
 			->count();
 
 	}

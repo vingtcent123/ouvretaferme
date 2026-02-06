@@ -52,7 +52,7 @@ class FinancialYearUi {
 		$h = '<div class="util-action">';
 
 			$h .= '<h1>';
-				$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+				$h .= '<a href="'.\farm\FarmUi::urlFinancialYear($eFarm['eFinancialYear']).'/etats-financiers/"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 				$h .= s("Créer un bilan d'ouverture");
 			$h .= '</h1>';
 
@@ -100,6 +100,59 @@ class FinancialYearUi {
 			id: 'panel-account-financialYear-create',
 			title: s("Créer un exercice comptable"),
 			body: new FinancialYearUi()->createForm($eFarm, $eFinancialYear),
+		);
+	}
+
+	public function reclose(\farm\Farm $eFarm, FinancialYear $eFinancialYear, array $data): \Panel {
+
+		$h = '<div class="util-block-help">';
+			$h .= '<h3>'.s("Attention !").'</h3>';
+			$h .= s("La refermeture de l'exercice <u>ne créera aucune opération automatiquement</u>. Pensez à écrire vous-mêmes toutes les écritures nécessaires à la bonne clôture de votre exercice.");
+		$h .= '</div>';
+
+		$h .= '<div>';
+			$h .= s("L'exercice ne peut pas être refermé, veuillez vérifier les points listés ci-dessous : ");
+		$h .= '</div>';
+
+		if($data['farmersAccountValue'] !== 0.0) {
+
+			$h .= '<h3 class="mt-1">'.s("Comptes de l'exploitant").'</h3>';
+
+			$h .= '<p>';
+				if($data['farmersAccountValue'] > 0) {
+					$detail = s("Ce compte est créditeur de {value}.", \util\TextUi::money($data['farmersAccountValue']));
+				} else {
+					$detail = s("Ce compte est débiteur de {value}.", \util\TextUi::money($data['farmersAccountValue']));
+				}
+				$h .= s("Veuillez solder le compte {farmersAccount}. {details}", ['farmersAccount' => '<b>'.AccountSetting::FARMER_S_ACCOUNT_CLASS.'</b>', 'details' => $detail]);
+			$h .= '</p>';
+
+			$h .= '<p>';
+				$h .= '<a class="btn btn-md btn-secondary" href="'.\company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/balance?accountLabel='.AccountSetting::FARMER_S_ACCOUNT_CLASS.'">'.s("Voir la balance du compte {value}", AccountSetting::FARMER_S_ACCOUNT_CLASS).'</a>';
+			$h .= '</p>';
+
+		}
+
+		[$html, ] = $this->showWaitingAccounts($eFarm, $eFinancialYear, $data['waitingAccounts']);
+		$h .= $html;
+
+		if($data['isBalanced'] === FALSE) {
+
+			$eFinancialYear['isBalanced'] = $data['isBalanced'];
+			[$html, ] = $this->showUnbalanced($eFinancialYear);
+			$h .= $html;
+
+		}
+
+		[$html, ] = $this->showInternalAccount($eFarm, $eFinancialYear, $data['internalAccount']);
+		$h .= $html;
+
+		$h .= '<a onclick="Lime.Panel.closeLast();" class="btn btn-primary mt-2">'.s("J'ai compris").'</a>';
+
+		return new \Panel(
+			id: 'panel-account-financialYear-reclose',
+			title: s("Refermer l'exercice comptable {value}", FinancialYearUi::getYear($eFinancialYear)),
+			body: $h,
 		);
 
 	}
@@ -528,6 +581,118 @@ class FinancialYearUi {
 		return s("Solde compte de l'exploitant {value}", $eFinancialYear->getLabel());
 	}
 
+	protected function getBlockingIcon(): string {
+
+		return '<span class="color-danger" title="'.s("Étape bloquante pour la clôture").'" >'.\Asset::icon('exclamation-triangle').'</span>';
+
+	}
+	protected function showWaitingAccounts(\farm\Farm $eFarm, FinancialYear $eFinancialYear, array $waitingAccounts): array {
+
+		$h = '';
+
+		if((float)array_reduce($waitingAccounts, function($sum, $waitingAccount) {
+			return $waitingAccount['total'] + $sum;
+		}, 0) !== 0.0) {
+
+			$isBlocked = TRUE;
+
+			$h .= '<h3 class="mt-1">'.$this->getBlockingIcon().' '.s("Compte {waitingAccount} - Compte d'attente", ['waitingAccount' => AccountSetting::WAITING_ACCOUNT_CLASS]).'</h3>';
+
+			$h .= '<p>';
+				$h .= s("Les comptes d'attente doivent être soldés avant la clôture.");
+			$h .= '</p>';
+
+			$h .= '<ul>';
+				foreach($waitingAccounts as $waitingAccount) {
+
+					$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/grand-livre?accountLabel='.$waitingAccount['accountLabel'];
+
+					$h .= '<li>';
+
+					if($waitingAccount['total'] < 0) {
+						$h .= s("<link>Solde <b>débiteur</b></link> du compte n°{accountNumber} de {value}", [
+							'accountNumber' => $waitingAccount['accountLabel'],
+							'value' => \util\TextUi::money(abs($waitingAccount['total'])),
+							'link' => '<a href="'.$url.'">',
+						]);
+					} else {
+						$h .= s("<link>Solde <b>créditeur</b></link> du compte n°{accountNumber} de {value}", [
+							'accountNumber' => $waitingAccount['accountLabel'],
+							'value' => \util\TextUi::money(abs($waitingAccount['total'])),
+							'link' => '<a href="'.$url.'">',
+						]);
+					}
+					$h .= '</li>';
+				}
+			$h .= '</ul>';
+			$h .= s("Attention, un ou plusieurs comptes d'attente, dont le numéro de compte commence par <b>{accounts}</b>, ne sont pas soldés. Soldez-les avant la clôture de l'exercice !", ['accounts' => join('</b>, <b>', AccountSetting::WAITING_ACCOUNT_CLASSES)]);
+
+		} else {
+
+			$isBlocked = FALSE;
+
+		}
+
+		return [$h, $isBlocked];
+	}
+	protected function showInternalAccount(\farm\Farm $eFarm, FinancialYear $eFinancialYear, array $internalAccount): array {
+
+		$h = '';
+
+		if(empty($internalAccount) === FALSE and $internalAccount['total'] !== 0.0) {
+
+			$isBlocked = TRUE;
+
+			$h .= '<h3 class="mt-1">'.$this->getBlockingIcon().' '.s("Compte {internalTransferAccount} - Virements internes", ['internalTransferAccount' => \account\AccountSetting::FINANCIAL_INTERNAL_TRANSFER_CLASS]).'</h3>';
+
+			$h .= '<p>';
+				$h .= s("Les comptes de virement interne doivent être soldés avant la clôture.");
+			$h .= '</p>';
+
+			$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/grand-livre?accountLabel='.\account\AccountSetting::FINANCIAL_INTERNAL_TRANSFER_CLASS;
+
+			$h .= '<ul>';
+				$h .= '<li>';
+					if($internalAccount < 0) {
+						$h .= s("<link>Solde <b>débiteur</b></link> de {amount}.", [
+							'amount' => \util\TextUi::money(abs($internalAccount['total'])),
+							'link' => '<a href="'.$url.'">',
+						]);
+					} else {
+						$h .= s("<link>Solde <b>créditeur</b></link> de {amount}.", [
+							'amount' => \util\TextUi::money(abs($internalAccount['total'])),
+							'link' => '<a href="'.$url.'">',
+						]);
+					}
+				$h .= '</li>';
+			$h .= '</ul>';
+
+		} else {
+			$isBlocked = FALSE;
+		}
+
+		return [$h, $isBlocked];
+
+	}
+	protected function showUnbalanced(FinancialYear $eFinancialYear): array {
+
+		$h = '<h3 class="mt-1">'.s("Équilibre de la balance").'</h3>';
+
+		if($eFinancialYear['isBalanced']) {
+
+			$isBlocked = FALSE;
+
+			$h .= '<p><span class="color-success">'.\Asset::icon('check-lg').'</span> '.s("La <link>balance de l'exercice</link> est équilibrée.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear($eFinancialYear).'/journal/balance">']).'</p>';
+
+		} else {
+
+			$isBlocked = TRUE;
+			$h .= '<p>'.$this->getBlockingIcon().' '.s("La <link>balance de l'exercice</link> n'est pas équilibrée.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear($eFinancialYear).'/journal/balance">']).'</p>';
+
+		}
+
+		return [$h, $isBlocked];
+	}
 	public function close(\farm\Farm $eFarm, FinancialYear $eFinancialYear, \Collection $cDeferral, \Collection $cAssetGrant, \Collection $cAsset, array $accountsToSettle): string {
 
 		$form = new \util\FormUi();
@@ -568,57 +733,13 @@ class FinancialYearUi {
 
 			$h .= s("Avant de procéder à la clôture de votre exercice comptable, certaines vérifications doivent être effectuées.");
 
-			if((float)array_reduce($accountsToSettle['waitingAccounts'], function($sum, $waitingAccount) {
-				return $waitingAccount['total'] + $sum;
-			}, 0) !== 0.0) {
+			list($html, $isBlockedTmp) = $this->showWaitingAccounts($eFarm, $eFinancialYear, $accountsToSettle['waitingAccounts']);
+			$h .= $html;
+			$isBlocked &= $isBlockedTmp;
 
-				$isBlocked = TRUE;
-
-				$h .= '<h3 class="mt-1">'.$blockingIcon.' '.s("Compte {waitingAccount} - Compte d'attente", ['waitingAccount' => AccountSetting::WAITING_ACCOUNT_CLASS]).'</h3>';
-
-				$h .= '<p>';
-					$h .= s("Les comptes d'attente doivent être soldés avant la clôture.");
-				$h .= '</p>';
-
-				$h .= '<ul>';
-					foreach($accountsToSettle['waitingAccounts'] as $waitingAccount) {
-
-						$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/grand-livre?accountLabel='.$waitingAccount['accountLabel'];
-
-						$h .= '<li>';
-
-						if($waitingAccount['total'] < 0) {
-							$h .= s("<link>Solde <b>débiteur</b></link> du compte n°{accountNumber} de {value}", [
-								'accountNumber' => $waitingAccount['accountLabel'],
-								'value' => \util\TextUi::money(abs($waitingAccount['total'])),
-								'link' => '<a href="'.$url.'">',
-							]);
-						} else {
-							$h .= s("<link>Solde <b>créditeur</b></link> du compte n°{accountNumber} de {value}", [
-								'accountNumber' => $waitingAccount['accountLabel'],
-								'value' => \util\TextUi::money(abs($waitingAccount['total'])),
-								'link' => '<a href="'.$url.'">',
-							]);
-						}
-						$h .= '</li>';
-					}
-				$h .= '</ul>';
-				$h .= s("Attention, un ou plusieurs comptes d'attente, dont le numéro de compte commence par <b>{accounts}</b>, ne sont pas soldés. Soldez-les avant la clôture de l'exercice !", ['accounts' => join('</b>, <b>', AccountSetting::WAITING_ACCOUNT_CLASSES)]);
-
-			}
-
-			$h .= '<h3 class="mt-1">'.s("Équilibre de la balance").'</h3>';
-
-			if($eFinancialYear['isBalanceOK']) {
-
-				$h .= '<p><span class="color-success">'.\Asset::icon('check-lg').'</span> '.s("La <link>balance de l'exercice</link> est équilibrée.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear($eFinancialYear).'/journal/balance">']).'</p>';
-
-			} else {
-
-				$isBlocked = TRUE;
-				$h .= '<p>'.$blockingIcon.' '.s("La <link>balance de l'exercice</link> n'est pas équilibrée.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear($eFinancialYear).'/journal/balance">']).'</p>';
-
-			}
+			list($html, $isBlockedTmp) = $this->showUnbalanced($eFinancialYear);
+			$h .= $html;
+			$isBlocked &= $isBlockedTmp;
 
 			$h .= '<h3 class="mt-1">'.s("Compte {bankAccount} - Solde de banque", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</h3>';
 
@@ -678,35 +799,9 @@ class FinancialYearUi {
 				$h .= \Asset::icon('info-circle').' '.s("Notez que cette vérification n'est valable que si toutes les opérations bancaires ont été traitées en comptabilité sur {siteName}.");
 			$h .= '</p>';
 
-			if(empty($accountsToSettle['internalAccount']) === FALSE and $accountsToSettle['internalAccount']['total'] !== 0.0) {
-
-				$isBlocked = TRUE;
-
-				$h .= '<h3 class="mt-1">'.$blockingIcon.' '.s("Compte {internalTransferAccount} - Virements internes", ['internalTransferAccount' => \account\AccountSetting::FINANCIAL_INTERNAL_TRANSFER_CLASS]).'</h3>';
-
-				$h .= '<p>';
-					$h .= s("Les comptes de virement interne doivent être soldés avant la clôture.");
-				$h .= '</p>';
-
-				$url = \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/grand-livre?accountLabel='.\account\AccountSetting::FINANCIAL_INTERNAL_TRANSFER_CLASS;
-
-				$h .= '<ul>';
-					$h .= '<li>';
-						if($accountsToSettle['internalAccount'] < 0) {
-							$h .= s("<link>Solde <b>débiteur</b></link> de {amount}.", [
-								'amount' => \util\TextUi::money(abs($accountsToSettle['internalAccount']['total'])),
-								'link' => '<a href="'.$url.'">',
-							]);
-						} else {
-							$h .= s("<link>Solde <b>créditeur</b></link> de {amount}.", [
-								'amount' => \util\TextUi::money(abs($accountsToSettle['internalAccount']['total'])),
-								'link' => '<a href="'.$url.'">',
-							]);
-						}
-					$h .= '</li>';
-				$h .= '</ul>';
-
-			}
+			list($html, $isBlockedTmp) = $this->showInternalAccount($eFarm, $eFinancialYear, $accountsToSettle['internalAccount']);
+			$h .= $html;
+			$isBlocked &= $isBlockedTmp;
 
 			// Écritures automatiques
 
@@ -719,7 +814,6 @@ class FinancialYearUi {
 				$h .= s("Le compte {farmersAccount} n'étant pas soldé, les écritures de solde avec le compte de capital {capitalAccount} seront créées à la clôture :", ['farmersAccount' => '<b>'.AccountSetting::FARMER_S_ACCOUNT_CLASS.'</b>', 'capitalAccount' => '<b>'.AccountSetting::CAPITAL_CLASS.'</b>']);
 
 				$h .= $this->displayOperationFarmersAccount($eFinancialYear, $accountsToSettle['farmersAccount'], $accountsToSettle['cOperationFarmersAccount']);
-
 
 			}
 
@@ -884,11 +978,6 @@ class FinancialYearUi {
 			$icon = \Asset::icon('lock-fill');
 			$label = s("Clôturé");
 
-			/*if($eFinancialYear->acceptReOpen()) {
-				$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReopen" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et, de préférence, pour une durée limitée.").'" class="dropdown-item">';
-					$h .= '<span class="bg-danger btn color-white">'.\Asset::icon('exclamation-triangle').' '.s("Rouvrir").'</span>';
-				$h .= '</a>';
-			}*/
 		}
 
 		$h = '<div class="financial-year-details-element">';
@@ -902,6 +991,16 @@ class FinancialYearUi {
 							$h .= \Asset::icon('gear-fill');
 						$h .= '</a>';
 
+					} else if($eFinancialYear->acceptReOpen()) {
+
+						$h .= '<a class="btn btn-primary dropdown-toggle"  data-dropdown="bottom">';
+							$h .= \Asset::icon('gear-fill');
+						$h .= '</a>';
+						$h .= '<div class="dropdown-list bg-danger">';
+							$h .= '<a class="bg-danger dropdown-item" data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReopen" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et pour une durée très limitée. Notez qu'aucune écriture ne sera enregistrée automatiquement à la refermeture.").'">';
+								$h .= \Asset::icon('exclamation-triangle').' '.s("Rouvrir");
+							$h .= '</a>';
+						$h .= '</div>';
 					}
 
 				$h .= '</div>';

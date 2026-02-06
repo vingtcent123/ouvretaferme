@@ -1052,9 +1052,7 @@ class FarmUi {
 				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
 				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
 				'assets' => \farm\FarmUi::urlConnected($eFarm).'/immobilisations',
-				'analyze' => \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/',
-				'financials' => \farm\FarmUi::urlConnected($eFarm).'/gestion',
-				'summary' => \farm\FarmUi::urlConnected($eFarm).'/synthese',
+				'analyze' => \farm\FarmUi::urlFinancialYear($eFarm['eFinancialYear']).'/etats-financiers/',
 			},
 
 		};
@@ -1115,7 +1113,6 @@ class FarmUi {
 				'balance' => s("Balance"),
 				'assets' => s("Immobilisations"),
 				'analyze' => s("Exercice comptable"),
-				'financials' => s("Gestion"),
 				'summary' => s("Synthèse"),
 			},
 

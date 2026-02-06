@@ -5,6 +5,12 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 });
 
+new AdaptativeView('reclose', function($data, PanelTemplate $t) {
+
+	return new \account\FinancialYearUi()->reclose($data->eFarm, $data->e, $data->reclose);
+
+});
+
 new AdaptativeView('open', function($data, FarmTemplate $t) {
 
 	$t->nav = 'accounting';

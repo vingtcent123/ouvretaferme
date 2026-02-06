@@ -12,13 +12,12 @@ class ImportUi {
 
 	public function history(\Collection $cImport): string {
 
-		$hasImportWaiting = ($cImport->find(fn($e) => in_array($e['status'], [Import::CREATED, Import::WAITING, Import::FEEDBACK_TO_TREAT]))->count() > 0);
-		if($hasImportWaiting === TRUE and OTF_DEMO === FALSE) {
+		$hasImportWaiting = ($cImport->find(fn($e) => (in_array($e['status'], [Import::CREATED, Import::WAITING, Import::FEEDBACK_TO_TREAT]) and $e['createdAt'] > date('Y-m-d H:i', strtotime('10 minutes ago'))))->count() > 0);
 
+		if($hasImportWaiting === TRUE and OTF_DEMO === FALSE) {
 			$attributes = [
 				'onrender' => 'Import.check("'.\farm\FarmUi::urlFinancialYear().'/account/financialYear/fec:check")',
 			];
-
 		} else {
 			$attributes = [];
 		}

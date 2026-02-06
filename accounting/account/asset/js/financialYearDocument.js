@@ -8,7 +8,13 @@ class FinancialYearDocument {
 				.method('post')
 				.url(url)
 				.fetch()
-				.then((response) => (!response.result ? clearInterval(intervalId) : null)), 1000);
+				.then((response) => {
+					if(response.result === 'not-finished') {
+						return;
+					}
+					clearInterval(intervalId);
+					window.location.reload();
+				}), 2000);
 	}
 
 }

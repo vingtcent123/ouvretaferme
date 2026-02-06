@@ -45,6 +45,7 @@ FinancialYearDocument:
   generation: ?enum(WAITING, NOW, PROCESSING, FAIL, SUCCESS)
   generationAt: ?datetime
   content: ?account\PdfContent
+  createdAt: datetime = SPECIAL(now)
   UNIQUE: [
     ["financialYear", "type"]
   ]

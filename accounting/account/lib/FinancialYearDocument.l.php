@@ -111,6 +111,7 @@ Class FinancialYearDocumentLib extends FinancialYearDocumentCrud {
 		return FinancialYearDocument::model()
 			->whereFinancialYear($eFinancialYear)
 			->whereGeneration('IN', [FinancialYearDocument::PROCESSING, FinancialYearDocument::NOW, FinancialYearDocument::WAITING])
+			->where('createdAt >= NOW() - INTERVAL 10 MINUTE')
 			->count();
 
 	}

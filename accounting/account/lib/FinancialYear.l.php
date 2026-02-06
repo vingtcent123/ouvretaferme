@@ -80,56 +80,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	public static function closeFinancialYear(\farm\Farm $eFarm, FinancialYear $eFinancialYear): bool {
-
-		// Check waiting accounts, and balance
-		if(
-			count(\journal\OperationLib::getInternalTransferAccountValues($eFinancialYear)) > 0 or
-			count(\journal\OperationLib::getWaitingAccountValues($eFinancialYear)) > 0 or
-			\journal\TrialBalanceLib::isBalanced($eFinancialYear) === FALSE
-		) {
-			return FALSE;
-		}
-
-		FinancialYear::model()->beginTransaction();
-
-		// 0- Annuler tous les imports FEC en attente
-		ImportLib::cancelAll($eFinancialYear);
-
-		// 1- Calcul des amortissements classe 2. + des étalements de subvention
-		\asset\AssetLib::amortizeAll($eFinancialYear);
-
-		// 2- Charges et Produits constatés d'avance
-		if($eFinancialYear->isCashAccounting() === FALSE) {
-			\journal\DeferralLib::recordDeferralIntoFinancialYear($eFinancialYear);
-		}
-
-		// 3- Solder le compte de l'exploitant si nécessaire
-		$balanceFarmerAccount = \journal\OperationLib::getFarmersAccountValue($eFinancialYear);
-		if($balanceFarmerAccount !== 0.0) {
-			$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_INVENTORY;
-			$cOperation = ClosingLib::getFarmersAccountCloseOperation($eFinancialYear, $hash, $balanceFarmerAccount);
-			\journal\Operation::model()->insert($cOperation);
-		}
-
-		// Mettre les numéros d'écritures
-		\journal\OperationLib::setNumbers($eFinancialYear);
-
-		FinancialYear::model()->update($eFinancialYear, [
-			'status' => FinancialYear::CLOSE,
-			'closeDate' => new \Sql('NOW()'),
-		]);
-
-		LogLib::save('close', 'FinancialYear', ['id' => $eFinancialYear['id']]);
-
-		FinancialYear::model()->commit();
-
-		// Met à jour tous les fichiers de l'exercice
-		FinancialYearDocumentLib::regenerateAll($eFarm, $eFinancialYear);
-
-		return TRUE;
-
-	}
 
 	public static function getFinancialYearSurroundingDate(string $date, ?int $excludedId): FinancialYear {
 
@@ -218,22 +168,6 @@ class FinancialYearLib extends FinancialYearCrud {
 		return new FinancialYear();
 	}
 
-	public static function isDateInOpenFinancialYear(string $date, \Collection $cFinancialYear = new \Collection()): FinancialYear {
-
-		if($cFinancialYear->empty()) {
-			$cFinancialYear = self::getOpenFinancialYears();
-		}
-
-		foreach($cFinancialYear as $eFinancialYear) {
-			if($date >= $eFinancialYear['startDate'] and $date <= $eFinancialYear['endDate']) {
-				return $eFinancialYear;
-			}
-		}
-
-		return new FinancialYear();
-
-	}
-
 	public static function isDateInFinancialYear(string $date, FinancialYear $eFinancialYear): bool {
 
 		return($date >= $eFinancialYear['startDate'] and $date <= $eFinancialYear['endDate']);
@@ -286,19 +220,9 @@ class FinancialYearLib extends FinancialYearCrud {
 	public static function reopen(FinancialYear $eFinancialYear): void {
 
 		// On ne réinitialise pas closeDate car le bilan de clôture a déjà été réalisé
-		FinancialYear::model()
-			->update($eFinancialYear, ['status' => FinancialYear::OPEN]);
+		FinancialYear::model()->update($eFinancialYear, ['status' => FinancialYear::OPEN]);
 
 		LogLib::save('reopen', 'FinancialYear', ['id' => $eFinancialYear['id']]);
-
-	}
-
-	public static function reclose(FinancialYear $eFinancialYear): void {
-
-		FinancialYear::model()
-			->update($eFinancialYear, ['status' => FinancialYear::CLOSE]);
-
-		LogLib::save('reclose', 'FinancialYear', ['id' => $eFinancialYear['id']]);
 
 	}
 

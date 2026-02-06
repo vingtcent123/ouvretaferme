@@ -150,7 +150,7 @@ new \account\FinancialYearPage(function($data) {
 		$search = new Search(['accountLabel' => \account\AccountSetting::BANK_ACCOUNT_CLASS, 'precision' => 8]);
 		$data->e['trialBalanceBank'] = \journal\TrialBalanceLib::extractByAccounts($search, $data->e);
 
-		$data->e['isBalanceOK'] = \journal\TrialBalanceLib::isBalanced($data->e);
+		$data->e['isBalanced'] = \journal\TrialBalanceLib::isBalanced($data->e);
 
 		throw new ViewAction($data);
 	})
@@ -158,7 +158,7 @@ new \account\FinancialYearPage(function($data) {
 
 		$data->e->validate('acceptClose');
 
-		$isDone = \account\FinancialYearLib::closeFinancialYear($data->eFarm, $data->e);
+		$isDone = \account\ClosingLib::closeFinancialYear($data->eFarm, $data->e);
 
 		if($isDone) {
 			throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/?success=account\\FinancialYear::closed');
@@ -190,9 +190,41 @@ new \account\FinancialYearPage(function($data) {
 
 		$data->e->validate('acceptReClose');
 
-		\account\FinancialYearLib::reclose($data->e);
+		$dataReclose = \account\ClosingLib::checkReclose($data->e);
 
-		throw new ReloadAction('account', 'FinancialYear::reclose');
+		if($dataReclose === NULL) {
+
+			\account\ClosingLib::reclose($data->e);
+			throw new ReloadAction('account', 'FinancialYear::reclose');
+
+		} else {
+			throw new RedirectAction(\farm\FarmUi::urlFinancialYear($data->e).'/account/financialYear/:reclose?id='.$data->e['id']);
+		}
+
+	});
+
+new \account\FinancialYearPage(function($data) {
+
+	$data->eFarm->validate('canManage');
+
+	if($data->eFarm->usesAccounting() === FALSE) {
+		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
+	}
+
+})
+	->read('reclose', function($data) {
+
+		$data->e->validate('acceptReClose');
+
+		$dataReclose = \account\ClosingLib::checkReclose($data->e);
+
+		if(empty($dataReclose)) {
+			throw new NotExistsAction();
+		}
+
+		$data->reclose = $dataReclose;
+
+		throw new ViewAction($data);
 	});
 
 new \account\FinancialYearPage(function($data) {

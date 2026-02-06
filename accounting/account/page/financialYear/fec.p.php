@@ -8,11 +8,13 @@ new \account\ImportPage()
 	->post('check', function($data) {
 
 		if(OTF_DEMO or \account\ImportLib::countWaiting() === 0) {
-			throw new \ReloadLayerAction();
+			$result = 'finished';
+		} else {
+			$result = 'not-finished';
 		}
 
 		throw new \JsonAction([
-			 'result' => 'not-finished',
+			 'result' => $result,
 		]);
 
 	})

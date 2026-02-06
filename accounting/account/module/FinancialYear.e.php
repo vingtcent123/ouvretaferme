@@ -68,6 +68,10 @@ class FinancialYear extends FinancialYearElement {
 
 	}
 
+	public function acceptAdd(): bool {
+		return ($this['status'] === FinancialYearElement::OPEN);
+	}
+
 	public function acceptUpdate(): bool {
 		return ($this['status'] === FinancialYearElement::OPEN and $this['closeDate'] === NULL);
 	}
@@ -106,33 +110,6 @@ class FinancialYear extends FinancialYearElement {
 
 	}
 
-	public function acceptDownloadOpen(): bool {
-		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::OPENING);
-	}
-
-	public function acceptDownloadOpenDetailed(): bool {
-		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::OPENING_DETAILED);
-	}
-
-	public function acceptDownloadClose(): bool {
-		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::CLOSING);
-	}
-
-	public function acceptDownloadCloseDetailed(): bool {
-		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::CLOSING_DETAILED);
-	}
-
-	public function acceptDownloadIncomeStatement(): bool {
-		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::INCOME_STATEMENT);
-	}
-	public function acceptDownloadIncomeStatementDetailed(): bool {
-		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED);
-	}
-
-	public function acceptDownloadSig(): bool {
-		return FinancialYearDocumentLib::hasDocument($this, FinancialYearDocumentLib::SIG);
-	}
-
 	public function acceptGenerateOpen(): bool {
 
 		return ($this['openDate'] !== NULL and FinancialYearDocumentLib::canGenerate($this, FinancialYearDocumentLib::OPENING));
@@ -161,7 +138,14 @@ class FinancialYear extends FinancialYearElement {
 
 	public function acceptReOpen(): bool {
 
-		return $this['closeDate'] !== NULL and $this['status'] === FinancialYear::CLOSE;
+		$eLast = FinancialYearLib::getPreviousFinancialYear($this);
+
+		return (
+			$this['closeDate'] !== NULL and
+			$this['status'] === FinancialYear::CLOSE and
+			FinancialYear::model()->whereStatus(FinancialYear::OPEN)->count() < 2 and
+			($eLast->empty() or $eLast->isOpen() === FALSE)
+		);
 
 	}
 

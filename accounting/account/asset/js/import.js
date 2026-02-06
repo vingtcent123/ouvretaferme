@@ -22,7 +22,7 @@ class Import {
 				.method('post')
 				.url(url)
 				.fetch()
-				.then((response) => (!response.result ? clearInterval(intervalId) : null)), 1000);
+				.then((response) => (response.result === 'finished' ? clearInterval(intervalId) && window.location.reload() : null)), 1000);
 	}
 
 	static updatePayment(target) {

@@ -16,11 +16,13 @@ new \account\FinancialYearPage(function($data) {
 	->post('check', function($data) {
 
 		if(OTF_DEMO or FinancialYearDocumentLib::countWaiting($data->eFarm['eFinancialYear']) === 0) {
-			throw new \ReloadLayerAction();
+			$result = 'finished';
+		} else {
+			$result = 'not-finished';
 		}
 
 		throw new \JsonAction([
-			 'result' => 'not-finished',
+			 'result' => $result,
 		]);
 
 	})

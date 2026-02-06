@@ -465,10 +465,20 @@ class OperationLib extends OperationCrud {
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
 		$hash = self::generateHash().($eCashflow->empty() ? JournalSetting::HASH_LETTER_WRITE : JournalSetting::HASH_LETTER_CASHFLOW);
 
-		if($eFinancialYear->acceptUpdate() === FALSE) {
+		if($eFinancialYear->acceptAdd() === FALSE) {
 
-			\Fail::log('Operation::FinancialYear.notUpdatable');
-			return new \Collection();
+			if($for === 'create') {
+				\Fail::log('Operation::FinancialYear.notUpdatable');
+				return new \Collection();
+			}
+
+			$eOperation = OperationLib::getById($input['id'][0] ?? NULL);
+
+			if($eOperation->empty() or $eOperation['number'] !== NULL) {
+				\Fail::log('Operation::FinancialYear.notUpdatable');
+				return new \Collection();
+			}
+
 		}
 
 		$isFromCashflow = $eCashflow->notEmpty();
@@ -1356,6 +1366,7 @@ class OperationLib extends OperationCrud {
 			->whereFinancialYear($eFinancialYear)
 			->where(new \Sql('SUBSTRING(accountLabel, 1, 3) IN ('.join(',', \account\AccountSetting::WAITING_ACCOUNT_CLASSES).')'))
 			->group('accountLabel')
+			->having('total != 0.0')
 			->getCollection(NULL, NULL, 'accountLabel')
 			->getArrayCopy();
 
@@ -1374,6 +1385,7 @@ class OperationLib extends OperationCrud {
 			->whereFinancialYear($eFinancialYear)
 			->where(new \Sql('SUBSTRING(accountLabel, 1, 2) = "'.\account\AccountSetting::FINANCIAL_INTERNAL_TRANSFER_CLASS.'"'))
 			->group('accountLabel')
+			->having('total != 0.0')
 			->get()
 			->getArrayCopy();
 

@@ -57,8 +57,10 @@ class Operation extends OperationElement {
 
 		return $this['id'] === NULL or (
 			mb_substr($this['hash'], -1) !== JournalSetting::HASH_LETTER_RETAINED and
-			$this['financialYear']->acceptUpdate() and
-			$this['number'] === NULL
+			(
+				($this['financialYear']->acceptUpdate()) or
+				($this['number'] === NULL and $this['financialYear']->acceptAdd())
+			)
 		);
 
 	}

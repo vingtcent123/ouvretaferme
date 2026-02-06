@@ -24,6 +24,7 @@ class AlertUi {
 			'FinancialYear::endDate.intervalMax' => s("L'exercice comptable ne peut pas durer plus de 24 mois."),
 			'FinancialYear::notClosed' => s("L'exercice comptable n'a pas pu être clôturé. Veuillez vérifier les points listés sur la page de clôture."),
 			'FinancialYear::legalCategory.check' => s("Veuillez choisir la forme juridique de votre exploitation."),
+			'FinancialYear::reclose.check' => s("Un problème est survenu lors de la refermeture de l'exercice."),
 
 			'ThirdParty::name.duplicate' => s("Ce tiers existe déjà, utilisez-le directement ?"),
 
