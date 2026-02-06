@@ -144,7 +144,7 @@ class FinancialYear extends FinancialYearElement {
 			$this['closeDate'] !== NULL and
 			$this['status'] === FinancialYear::CLOSE and
 			FinancialYear::model()->whereStatus(FinancialYear::OPEN)->count() < 2 and
-			($eNext->empty() or ($eNext->isOpen() === FALSE and $eNext->isClosed() === FALSE))
+			($eNext->empty() or ($eNext['openDate'] === NULL and $eNext['closeDate'] === NULL))
 		);
 
 	}

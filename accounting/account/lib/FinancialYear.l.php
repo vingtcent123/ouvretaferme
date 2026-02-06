@@ -15,8 +15,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		return FinancialYear::model()
 			->select(FinancialYear::getSelection())
-			->whereEndDate('<=', $eFinancialYear['startDate'])
-			->sort(['endDate' => SORT_DESC])
+			->whereEndDate('=', date('Y-m-d', strtotime($eFinancialYear['startDate'].' - 1 day')))
 			->get();
 
 	}
@@ -25,8 +24,7 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		return FinancialYear::model()
 			->select(FinancialYear::getSelection())
-			->whereStartDate('>=', $eFinancialYear['endDate'])
-			->sort(['endDate' => SORT_ASC])
+			->whereStartDate('=', date('Y-m-d', strtotime($eFinancialYear['endDate'].' + 1 day')))
 			->get();
 
 	}
