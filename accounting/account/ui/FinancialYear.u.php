@@ -987,9 +987,29 @@ class FinancialYearUi {
 
 					if($eFinancialYear->acceptUpdate()) {
 
-						$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
-							$h .= \Asset::icon('gear-fill');
-						$h .= '</a>';
+						if($eFinancialYear->acceptDelete()) {
+
+							$h .= '<a class="btn btn-primary dropdown-toggle"  data-dropdown="bottom">';
+								$h .= \Asset::icon('gear-fill');
+							$h .= '</a>';
+							$h .= '<div class="dropdown-list">';
+								$h .= '<a class="dropdown-item" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
+									$h .= s("Modifier l'exercice");
+								$h .= '</a>';
+								$h .= '<div class="dropdown-divider"></div>';
+								$h .= '<a class="dropdown-item bg-danger" data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doDelete" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Cette opération est définitive, toutes les informations liées seront supprimées. Confirmez-vous cette suppression ?").'">';
+									$h .= \Asset::icon('trash').' ';
+									$h .= s("Supprimer l'exercice");
+								$h .= '</a>';
+							$h .= '</div>';
+
+						} else {
+
+							$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
+								$h .= \Asset::icon('gear-fill');
+							$h .= '</a>';
+
+						}
 
 					} else if($eFinancialYear->acceptReOpen()) {
 

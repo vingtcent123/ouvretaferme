@@ -65,9 +65,9 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_FINANCIAL_YEAR, function($data, Far
 
 			echo '</a>';
 
-			echo '<a href="'.\farm\FarmUi::urlFinancialYear($data->eFinancialYear, $data->eFarm).'/etats-financiers/" class="util-button">';
+			echo '<a href="'.\company\CompanyUi::urlAccount($data->eFarm, $data->eFinancialYear, $data->eFarm).'/financialYear/fec:import" class="util-button">';
 
-				echo '<h4>'.s("Importer un fichier FEC depuis les paramètres de l'exercice").'</h4>';
+				echo '<h4>'.s("Importer un fichier FEC").'</h4>';
 				echo \Asset::icon('gear');
 
 			echo '</a>';

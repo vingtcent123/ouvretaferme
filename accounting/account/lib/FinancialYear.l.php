@@ -198,6 +198,43 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		FinancialYear::model()->commit();
 
+	}
+
+	// Pas d'écriture ni de Cash
+	public static function delete(FinancialYear $e): void {
+
+		$eFarm = \farm\Farm::getConnected();
+
+		FinancialYear::model()->beginTransaction();
+
+			parent::delete($e);
+
+			\company\CompanyCron::model()
+        ->whereAction(\company\CompanyCronLib::FINANCIAL_YEAR_GENERATE_DOCUMENT)
+				->whereFarm($eFarm)
+        ->delete();
+
+			Import::model()->whereFinancialYear($e)->delete();
+			Pdf::model()->whereFinancialYear($e)->delete();
+			FinancialYearDocument::model()->whereFinancialYear($e)->delete();
+
+			\asset\Amortization::model()->whereFinancialYear($e)->delete();
+			\asset\Depreciation::model()->whereFinancialYear($e)->delete();
+
+			\journal\Deferral::model()->whereFinancialYear($e)->delete();
+			\overview\VatDeclaration::model()->whereFinancialYear($e)->delete();
+
+			\farm\Farmer::model()
+				->whereFarm($eFarm)
+				->update(['viewAccountingYear' => NULL]);
+
+			if(FinancialYear::model()->count() === 0) {
+				\farm\Farm::model()->whereId($eFarm['id'])->update(['hasFinancialYears' => FALSE]);
+			}
+
+			LogLib::save('delete', 'FinancialYear', ['id' => $e['id']]);
+
+		FinancialYear::model()->commit();
 
 	}
 

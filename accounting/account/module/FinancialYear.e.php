@@ -76,10 +76,6 @@ class FinancialYear extends FinancialYearElement {
 		return ($this['status'] === FinancialYearElement::OPEN and $this['closeDate'] === NULL);
 	}
 
-	public function canReadDocument(): bool {
-		return $this['status'] === FinancialYearElement::CLOSE;
-	}
-
 	public function acceptImportFec(): bool {
 
 		$this->expects(['nOperation']);
@@ -95,7 +91,11 @@ class FinancialYear extends FinancialYearElement {
 
 	public function acceptDelete(): bool {
 
-		return $this['nOperation'] === 0;
+		return (
+			$this['closeDate'] === NULL and $this['status'] === FinancialYear::OPEN and
+			\journal\Operation::model()->whereFinancialYear($this)->count() === 0 and
+			(\preaccounting\CashLib::isActive() === FALSE or \cash\Cash::model()->whereFinancialYear($this)->count() === 0)
+		);
 
 	}
 

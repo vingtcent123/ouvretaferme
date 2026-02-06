@@ -167,6 +167,17 @@ new \account\FinancialYearPage(function($data) {
 		throw new FailAction('account\FinancialYear::notClosed');
 
 	})
+	->doDelete(function($data) {
+
+		$fw = new FailWatch();
+
+		\account\FinancialYearLib::delete($data->e);
+
+		$fw->validate();
+
+		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/account/financialYear/?success=account\\FinancialYear::deleted');
+
+	})
 	;
 
 new \account\FinancialYearPage(function($data) {

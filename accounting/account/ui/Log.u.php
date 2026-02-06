@@ -112,10 +112,10 @@ class LogUi {
 	public function getInvoiceAction(string $action, array $params): string {
 
 		return match(strtolower($action)) {
-			'import' => s("Import de facture"),
-			'ignore' => s("Facture ignorée pour l'import"),
-			'importseveral' => s("Import de factures"),
-			'ignoreseveral' => s("Factures ignorées pour l'import"),
+			'import' => s("Import de facture en comptabilité"),
+			'ignore' => s("Facture ignorée pour l'import en comptabilité"),
+			'importseveral' => s("Import de factures en comptabilité"),
+			'ignoreseveral' => s("Factures ignorées pour l'import en comptabilité"),
 		};
 
 	}
@@ -136,6 +136,7 @@ class LogUi {
 			'open' => s("Création de l'exercice #{value}", $params['id']),
 			'close' => s("Clôture de l'exercice #{value}", $params['id']),
 			'update' => s("Mise à jour de l'exercice #{value}", $params['id']),
+			'delete' => s("Suppression de l'exercice #{value}", $params['id']),
 			'reopen' => s("Réouverture de l'exercice #{value}", $params['id']),
 			'reclose' => s("Refermeture de l'exercice #{value}", $params['id']),
 			'generatefec' => s("Génération du FEC de l'exercice #{value}", $params['id']),
