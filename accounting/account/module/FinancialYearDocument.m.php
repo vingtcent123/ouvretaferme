@@ -51,7 +51,7 @@ class FinancialYearDocumentModel extends \ModuleModel {
 			'generation' => ['enum', [\account\FinancialYearDocument::WAITING, \account\FinancialYearDocument::NOW, \account\FinancialYearDocument::PROCESSING, \account\FinancialYearDocument::FAIL, \account\FinancialYearDocument::SUCCESS], 'null' => TRUE, 'cast' => 'enum'],
 			'generationAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'content' => ['element32', 'account\PdfContent', 'null' => TRUE, 'cast' => 'element'],
-			'createdAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [

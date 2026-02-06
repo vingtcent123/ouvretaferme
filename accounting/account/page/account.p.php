@@ -70,6 +70,7 @@ new Page()
 		'classPrefixes' => GET('classPrefixes', 'array'),
 		'withVat' => GET('withVat', 'bool', FALSE),
 		'withJournal' => GET('withJournal', 'bool', FALSE),
+		'status' => GET('status'),
 	]);
 
 	if($stock) {
@@ -148,6 +149,7 @@ new \account\AccountPage()
 
 		throw new ReloadAction('account', 'Account::created');
 	})
+	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ReloadAction())
 	->doDelete(function($data) {
 
 		throw new ReloadAction('account', 'Account::deleted');

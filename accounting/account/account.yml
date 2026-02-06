@@ -10,6 +10,8 @@ Account:
   journalCode: ?journal\JournalCode
   vatAccount: ?account\Account
   vatRate: ?decimal(5, 2)
+  thirdParty: ?account\ThirdParty
+  status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
   INDEX: [

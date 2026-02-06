@@ -43,6 +43,7 @@ GenericAccount:
   vatRate: ?decimal(5, 2)
   journalCode: ?company\JournalCode
   deletedAt: ?date
+  status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
   type: enum(AGRICULTURAL, ASSOCIATION)
   INDEX: [
     ["id"],

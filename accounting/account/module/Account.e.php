@@ -10,7 +10,6 @@ class Account extends AccountElement {
 		];
 
 	}
-
 	public function acceptDelete(): bool {
 
 		return (
@@ -95,6 +94,19 @@ class Account extends AccountElement {
 				$eAccountVatDb = AccountLib::getById($eAccountVat['id']);
 
 				return str_starts_with($eAccountVatDb['class'], AccountSetting::VAT_CLASS);
+
+			})
+			->setCallback('thirdParty.check', function(ThirdParty $eThirdParty) use ($p): bool {
+
+				if($p->isBuilt('class') === FALSE) {
+					return TRUE;
+				}
+
+				if(AccountLabelLib::isFromClass($this['class'], AccountSetting::ASSOCIATE_ACCOUNT_CLASS) === FALSE) {
+					return TRUE;
+				}
+
+				return $eThirdParty->notEmpty();
 
 			});
 

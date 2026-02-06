@@ -7,6 +7,10 @@ abstract class AccountElement extends \Element {
 
 	private static ?AccountModel $model = NULL;
 
+	const ACTIVE = 'active';
+	const INACTIVE = 'inactive';
+	const DELETED = 'deleted';
+
 	public static function getSelection(): array {
 		return Account::model()->getProperties();
 	}
@@ -49,17 +53,20 @@ class AccountModel extends \ModuleModel {
 			'journalCode' => ['element32', 'journal\JournalCode', 'null' => TRUE, 'cast' => 'element'],
 			'vatAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'min' => -999.99, 'max' => 999.99, 'null' => TRUE, 'cast' => 'float'],
+			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
+			'status' => ['enum', [\account\Account::ACTIVE, \account\Account::INACTIVE, \account\Account::DELETED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'class', 'description', 'oldDescription', 'visible', 'custom', 'journalCode', 'vatAccount', 'vatRate', 'createdAt', 'createdBy'
+			'id', 'class', 'description', 'oldDescription', 'visible', 'custom', 'journalCode', 'vatAccount', 'vatRate', 'thirdParty', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'journalCode' => 'journal\JournalCode',
 			'vatAccount' => 'account\Account',
+			'thirdParty' => 'account\ThirdParty',
 			'createdBy' => 'user\User',
 		];
 
@@ -84,6 +91,9 @@ class AccountModel extends \ModuleModel {
 			case 'custom' :
 				return FALSE;
 
+			case 'status' :
+				return Account::ACTIVE;
+
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
@@ -92,6 +102,20 @@ class AccountModel extends \ModuleModel {
 
 			default :
 				return parent::getDefaultValue($property);
+
+		}
+
+	}
+
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			default :
+				return parent::encode($property, $value);
 
 		}
 
@@ -139,6 +163,14 @@ class AccountModel extends \ModuleModel {
 
 	public function whereVatRate(...$data): AccountModel {
 		return $this->where('vatRate', ...$data);
+	}
+
+	public function whereThirdParty(...$data): AccountModel {
+		return $this->where('thirdParty', ...$data);
+	}
+
+	public function whereStatus(...$data): AccountModel {
+		return $this->where('status', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): AccountModel {

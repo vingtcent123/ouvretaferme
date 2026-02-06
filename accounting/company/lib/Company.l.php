@@ -126,6 +126,7 @@ class CompanyLib {
 		foreach($cAccount as $eAccount) {
 			\account\Account::model()->insert($eAccount);
 		}
+
 		// Set next auto-increment to 100000 (for the custom accounts)
 		$pdo = new \account\AccountModel()->pdo();
 		$database = new \account\AccountModel()->getDatabase();

@@ -1632,7 +1632,7 @@ class OperationUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: ['withVat' => TRUE, 'withJournal' => TRUE, 'withDetail' => TRUE]);
+				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: ['withVat' => TRUE, 'withJournal' => TRUE, 'withDetail' => TRUE, 'status' => \account\Account::ACTIVE]);
 				break;
 
 			case 'description':

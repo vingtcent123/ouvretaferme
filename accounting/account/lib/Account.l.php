@@ -8,7 +8,7 @@ class AccountLib extends AccountCrud {
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['class', 'description', 'vatAccount', 'vatRate'];
+		return ['class', 'description', 'vatAccount', 'vatRate', 'status', 'thirdParty'];
 	}
 
 	public static function getByClass(string $class): Account {
@@ -125,6 +125,7 @@ class AccountLib extends AccountCrud {
 			->where('class LIKE "%'.$search->get('stock').'%"', if: $search->has('stock') and $search->get('stock')->notEmpty())
 			->whereClass('LIKE', $search->get('classPrefix').'%', if: $search->get('classPrefix'))
 			->whereClass('IN', fn() => $search->get('class'), if: $search->has('class') and is_array($search->get('class')))
+			->whereStatus('=', $search->get('status'), if: $search->get('status'))
 			->whereDescription('LIKE', '%'.$search->get('description').'%', if: $search->get('description'))
 			->whereCustom(TRUE, if: $search->get('customFilter') === TRUE)
 			->whereVisible(TRUE, if: $search->get('visible') === TRUE)
@@ -141,7 +142,8 @@ class AccountLib extends AccountCrud {
 					->select('id')
 					->delegateCollection('account', callback: fn(\Collection $cOperation) => $cOperation->count()),
 				'vatAccount' => ['id', 'class', 'vatRate', 'description'],
-				'journalCode' => fn($e) => \journal\JournalCodeLib::ask($e['journalCode'], \farm\Farm::getConnected())
+				'journalCode' => fn($e) => \journal\JournalCodeLib::ask($e['journalCode'], \farm\Farm::getConnected()),
+				'thirdParty' => ['id', 'name']
 			])
 			->sort(['class' => SORT_ASC])
 			->getCollection(NULL, NULL, 'id');
@@ -185,6 +187,12 @@ class AccountLib extends AccountCrud {
 		if($thirdParty !== NULL) {
 
 			$eThirdParty = ThirdPartyLib::getById($thirdParty);
+
+			$cAccountWithThirdParty = Account::model()
+				->select(Account::getSelection())
+				->whereThirdParty($eThirdParty)
+				->getCollection(index: 'id');
+
 			$cOperationThirdParty = \journal\OperationLib::getByThirdPartyAndOrderedByUsage($eThirdParty);
 
 			foreach($cOperationThirdParty as $eOperation) {
@@ -194,7 +202,7 @@ class AccountLib extends AccountCrud {
 				}
 
 				$eAccount = $cAccount->offsetGet($eOperation['account']['id']);
-				$eAccount['thirdParty'] = TRUE;
+				$eAccount['isThirdParty'] = TRUE;
 				$eAccount['used'] = FALSE;
 
 				if(in_array($eAccount['id'], $accountsAlreadyUsed) === TRUE) {
@@ -220,6 +228,17 @@ class AccountLib extends AccountCrud {
 				}
 
 			}
+
+			foreach($cAccountWithThirdParty as $eAccount) {
+
+				if($cAccountByThirdParty->find(fn($e) => $e['id'] === $eAccount['id'])->count() > 0) {
+					continue;
+				}
+
+				$eAccount['isThirdParty'] = TRUE;
+				$eAccount['used'] = FALSE;
+				$cAccountByThirdParty->append($eAccount);
+			}
 		}
 
 		$cAccountByThirdParty->mergeCollection($cAccountClassThird);
@@ -243,7 +262,7 @@ class AccountLib extends AccountCrud {
 				}
 
 				$eAccount = $cAccount->offsetGet($eOperation['account']['id']);
-				$eAccount['thirdParty'] = FALSE;
+				$eAccount['isThirdParty'] = FALSE;
 				$eAccount['used'] = TRUE;
 				$class = (int)mb_substr($eAccount['class'], 0, 1);
 				$cAccountClassUsedGrouped[$class]->append($eAccount);
@@ -266,7 +285,7 @@ class AccountLib extends AccountCrud {
 				continue;
 			}
 
-			$eAccount['thirdParty'] = FALSE;
+			$eAccount['isThirdParty'] = FALSE;
 			$eAccount['used'] = FALSE;
 
 			if(POST('query') and ThirdPartyLib::scoreNameMatch($eAccount['description'], POST('query')) > 100) {

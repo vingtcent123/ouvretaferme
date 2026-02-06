@@ -6,6 +6,9 @@ class AccountUi {
 	public function __construct() {
 
 		\Asset::css('company', 'company.css');
+		\Asset::css('account', 'account.css');
+
+		\Asset::js('account', 'account.js');
 		\Asset::js('account', 'settings.js');
 
 	}
@@ -84,6 +87,8 @@ class AccountUi {
 
 		$displayProductsCount = $cAccount->match(fn($eAccount) => ($eAccount['nProductPro'] ?? 0) > 0 or ($eAccount['nProductPrivate'] ?? 0) > 0);
 		$displayOperationsCount = $cAccount->match(fn($eAccount) => (array_sum($eAccount['operationByFinancialYear']) ?? 0) > 0);
+		$displayThirdParty = $cAccount->match(fn($eAccount) => $eAccount['thirdParty']->notEmpty() > 0);
+		$displayActions = $cAccount->match(fn($eAccount) => $eAccount->acceptDelete()) > 0;
 
 		\Asset::css('util', 'batch.css');
 		\Asset::js('util', 'batch.js');
@@ -107,36 +112,41 @@ class AccountUi {
 						$h .= '<th rowspan="2">';
 							$h .= s("Libellé");
 						$h .= '</th>';
-						$h .= '<th rowspan="2">';
+						$h .= '<th rowspan="2" class="text-center">';
 							$h .= s("Journal");
 						$h .= '</th>';
-						$h .= '<th rowspan="2" class="text-center td-min-content">';
-							$h .= s("Personnalisé ?");
-						$h .= '</th>';
-						$h .= '<th colspan="2" class="text-center">';
+						if($displayThirdParty) {
+							$h .= '<th rowspan="2">'.s("Tiers").'</th>';
+						}
+						$h .= '<th colspan="2" class="text-center highlight-stick-alone">';
+							$h .= s("TVA");
 						$h .= '</th>';
 
 						if($displayOperationsCount) {
-							$h .= '<th colspan="2" class="text-center">';
+							$h .= '<th colspan="2" class="text-center highlight-stick-alone">';
 								$h .= s("Opérations");
 							$h .= '</th>';
 						}
 
 						if($displayProductsCount) {
-							$h .= '<th colspan="2" class="text-center">';
+							$h .= '<th colspan="2" class="text-center highlight-stick-alone">';
 								$h .= s("Produits");
 							$h .= '</th>';
 						}
 
-						$h .= '<th rowspan="2"></th>';
+						$h .= '<th rowspan="2">'.s("Activé").'</th>';
+
+						if($displayActions) {
+							$h .= '<th rowspan="2"></th>';
+						}
 					$h .= '</tr>';
 
 					$h .= '<tr>';
-						$h .= '<th>';
-							$h .= s("Compte de TVA");
+						$h .= '<th class="highlight-stick-right">';
+							$h .= s("Compte");
 						$h .= '</th>';
-						$h .= '<th>';
-							$h .= s("Taux de TVA");
+						$h .= '<th class="highlight-stick-left">';
+							$h .= s("Taux");
 						$h .= '</th>';
 						$financialYears = [];
 						if($displayOperationsCount) {
@@ -151,11 +161,11 @@ class AccountUi {
 							}
 						}
 						if($displayProductsCount) {
-							$h .= '<th class="text-center">';
-								$h .= s("Particuliers");
+							$h .= '<th class="text-center highlight-stick-right">';
+								$h .= s("Particulier");
 							$h .= '</th>';
-							$h .= '<th class="text-center">';
-								$h .= s("Professionnels");
+							$h .= '<th class="text-center highlight-stick-left">';
+								$h .= s("Pro");
 							$h .= '</th>';
 						}
 					$h .= '</tr>';
@@ -167,7 +177,7 @@ class AccountUi {
 
 					$classNumber = strlen($eAccount['class']) - 2;
 
-					$h .= '<tr name="account-'.$eAccount['id'].'" class="'.($eAccount['visible'] ? '' : 'account_not-visible').'">';
+					$h .= '<tr name="account-'.$eAccount['id'].'" class="'.($eAccount['visible'] ? '' : 'account_not-visible').' '.($eAccount['status'] !== Account::ACTIVE ? 'tr-disabled' : '').'">';
 
 						$h .= '<td class="td-checkbox">';
 							$h .= '<label>';
@@ -203,29 +213,29 @@ class AccountUi {
 								$h .= $classNumber === 0 ? '</b>' : '';
 						$h .= '</td>';
 
-						$h .= '<td class="td-min-content">';
+						$h .= '<td class="td-min-content text-center">';
 							if($eAccount->acceptQuickUpdate('journalCode')) {
 								$eAccount->setQuickAttribute('farm', $eFarm['id']);
 								$eAccount->setQuickAttribute('property', 'journalCode');
-								$h .= $eAccount->quick('journalCode', $eAccount['journalCode']->notEmpty() ? new \journal\JournalCodeUi()->getColoredName($eAccount['journalCode']) : '<span class="btn btn-sm btn-outline-secondary">'.s("Définir").'</span>');
-							} else {
-
+								$h .= $eAccount->quick('journalCode', $eAccount['journalCode']->notEmpty() ? new \journal\JournalCodeUi()->getColoredName($eAccount['journalCode']) : \Asset::icon('plus-circle'));
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="text-center">';
-							if($eAccount['custom'] === TRUE) {
-								$h .= 'oui';
-							}
-						$h .= '</td>';
+						if($displayThirdParty) {
+							$h .= '<td class="text-center">';
+								if($eAccount['thirdParty']->notEmpty()) {
+									$h .= '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/thirdParty?name='.urlencode($eAccount['thirdParty']['name']).'">'.encode($eAccount['thirdParty']['name']).'</a>';
+								}
+							$h .= '</td>';
+						}
 
-						$h .= '<td>';
+						$h .= '<td class="highlight-stick-right">';
 							if($eAccount['vatAccount']->notEmpty()) {
 								$h .= '<a '.attr('onclick', 'AccountSettings.scrollTo('.$eAccount['vatAccount']['id'].');').'>'.encode($eAccount['vatAccount']['class']).'</a>';
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="text-center td-min-content">';
+						$h .= '<td class="text-center td-min-content highlight-stick-left">';
 
 							if(strlen($eAccount['class']) >= 3) {
 
@@ -271,16 +281,27 @@ class AccountUi {
 						}
 
 						if($displayProductsCount) {
-							$h .= '<td class="text-center"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?proAccount='.$eAccount['id'].'">'.(($eAccount['nProductPro'] ?? 0) > 0 ? $eAccount['nProductPro'] : '').'</a></td>';
-							$h .= '<td class="text-center"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?privateAccount='.$eAccount['id'].'">'.(($eAccount['nProductPrivate'] ?? 0) > 0 ? $eAccount['nProductPrivate'] : '').'</td>';
+							$h .= '<td class="text-center highlight-stick-right"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?proAccount='.$eAccount['id'].'">'.(($eAccount['nProductPro'] ?? 0) > 0 ? $eAccount['nProductPro'] : '').'</a></td>';
+							$h .= '<td class="text-center highlight-stick-left"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?privateAccount='.$eAccount['id'].'">'.(($eAccount['nProductPrivate'] ?? 0) > 0 ? $eAccount['nProductPrivate'] : '').'</td>';
 						}
 
 						$h .= '<td>';
-							if($eAccount->acceptDelete()) {
-								$message = s("Confirmez-vous la suppression de ce numéro de compte ?");
-								$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/account:doDelete" post-id="'.$eAccount['id'].'" data-confirm="'.$message.'" class="btn btn-outline-secondary btn-outline-danger">'.\Asset::icon('trash').'</a>';
-							}
+							$h .= \util\TextUi::switch([
+								'id' => 'product-switch-'.$eAccount['id'],
+								'data-ajax' => $eAccount->canWrite() ? \company\CompanyUi::urlAccount($eFarm).'/account:doUpdateStatus' : NULL,
+								'post-id' => $eAccount['id'],
+								'post-status' => ($eAccount['status'] === Account::ACTIVE) ? Account::INACTIVE : Account::ACTIVE
+							], $eAccount['status'] === Account::ACTIVE);
 						$h .= '</td>';
+
+						if($displayActions) {
+							$h .= '<td>';
+								if($eAccount->acceptDelete()) {
+										$message = s("Confirmez-vous la suppression de ce numéro de compte ?");
+										$h .= '<a data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/account:doDelete" post-id="'.$eAccount['id'].'" data-confirm="'.$message.'" class="btn btn-outline-secondary btn-outline-danger">'.\Asset::icon('trash').'</a>';
+								}
+							$h .= '</td>';
+						}
 					$h .= '</tr>';
 				}
 
@@ -497,14 +518,7 @@ class AccountUi {
 
 		$h .= $form->asteriskInfo();
 
-		$h .= $form->dynamicGroups($eAccount, ['class*', 'description*']);
-
-		$h .= $form->dynamicGroup($eAccount, 'vatAccount', function($d) use($form) {
-		});
-		$h .= $form->dynamicGroup($eAccount,  'vatRate', function($d) use ($form) {
-				$d->default = NULL;
-			}
-		);
+		$h .= $form->dynamicGroups($eAccount, ['class*', 'description*', 'thirdParty*', 'vatAccount', 'vatRate']);
 
 		$h .= $form->group(
 			content: $form->submit(s("Créer le numéro de compte"))
@@ -866,6 +880,7 @@ class AccountUi {
 			'custom' => s("Personnalisé"),
 			'vatAccount' => s("Compte de TVA"),
 			'vatRate' => s("Taux de TVA"),
+			'thirdParty' => s("Tiers"),
 		]);
 
 		switch($property) {
@@ -884,6 +899,7 @@ class AccountUi {
 				break;
 
 			case 'vatRate':
+				$d->default = NULL;
 				$d->field = 'select';
 				$d->values = fn(Account $e) => array_map(fn($val) => s("{value} %", $val), array_values(\selling\SellingSetting::getVatRates($e['eFarm'])));
 				$d->default = fn(Account $e) => array_find_key((\selling\SellingSetting::getVatRates($e['eFarm'])), function($vat) use($e) {
@@ -897,7 +913,15 @@ class AccountUi {
 				$d->attributes['minlength'] = 4;
 				$d->attributes['maxlength'] = 8 ;
 				$d->after = \util\FormUi::info(\Asset::icon('exclamation-triangle').' '.s("Attention ! En modifiant le numéro, toutes les écritures de ce numéro seront modifiées en conséquence."));
+				$d->attributes['oninput'] = 'Account.checkForThirdParty("'.AccountSetting::ASSOCIATE_ACCOUNT_CLASS.'");';
 				break;
+
+			case 'thirdParty':
+				$d->autocompleteBody = function(\util\FormUi $form, Account $e) {
+					return [
+					];
+				};
+				new \account\ThirdPartyUi()->query($d, GET('farm', 'farm\Farm'));
 		}
 		return $d;
 

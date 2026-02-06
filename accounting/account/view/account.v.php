@@ -31,7 +31,7 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 	$cAccountOthers = new Collection();
 
 	foreach($data->cAccount as $eAccount) {
-		if($eAccount['thirdParty'] === TRUE) {
+		if($eAccount['isThirdParty'] === TRUE) {
 			$cAccountThirdParty->append($eAccount);
 		} else if($eAccount['used'] === TRUE) {
 			$cAccountUsed->append($eAccount);

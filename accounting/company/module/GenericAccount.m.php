@@ -7,6 +7,10 @@ abstract class GenericAccountElement extends \Element {
 
 	private static ?GenericAccountModel $model = NULL;
 
+	const ACTIVE = 'active';
+	const INACTIVE = 'inactive';
+	const DELETED = 'deleted';
+
 	const AGRICULTURAL = 'agricultural';
 	const ASSOCIATION = 'association';
 
@@ -51,11 +55,12 @@ class GenericAccountModel extends \ModuleModel {
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'min' => -999.99, 'max' => 999.99, 'null' => TRUE, 'cast' => 'float'],
 			'journalCode' => ['element32', 'company\JournalCode', 'null' => TRUE, 'cast' => 'element'],
 			'deletedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'status' => ['enum', [\company\GenericAccount::ACTIVE, \company\GenericAccount::INACTIVE, \company\GenericAccount::DELETED], 'cast' => 'enum'],
 			'type' => ['enum', [\company\GenericAccount::AGRICULTURAL, \company\GenericAccount::ASSOCIATION], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'class', 'description', 'visible', 'vatAccount', 'vatRate', 'journalCode', 'deletedAt', 'type'
+			'id', 'class', 'description', 'visible', 'vatAccount', 'vatRate', 'journalCode', 'deletedAt', 'status', 'type'
 		]);
 
 		$this->propertiesToModule += [
@@ -77,6 +82,9 @@ class GenericAccountModel extends \ModuleModel {
 			case 'visible' :
 				return TRUE;
 
+			case 'status' :
+				return GenericAccount::ACTIVE;
+
 			default :
 				return parent::getDefaultValue($property);
 
@@ -87,6 +95,9 @@ class GenericAccountModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
+
+			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'type' :
 				return ($value === NULL) ? NULL : (string)$value;
@@ -136,6 +147,10 @@ class GenericAccountModel extends \ModuleModel {
 
 	public function whereDeletedAt(...$data): GenericAccountModel {
 		return $this->where('deletedAt', ...$data);
+	}
+
+	public function whereStatus(...$data): GenericAccountModel {
+		return $this->where('status', ...$data);
 	}
 
 	public function whereType(...$data): GenericAccountModel {

@@ -235,7 +235,7 @@ class ThirdPartyUi {
 
 	}
 
-	public function query(\PropertyDescriber $d, \farm\Farm $eFarm, bool $multiple = FALSE) {
+	public function query(\PropertyDescriber $d, \farm\Farm $eFarm, bool $multiple = FALSE, bool $show = TRUE) {
 
 		$d->prepend = \Asset::icon('person-rolodex');
 		$d->field = 'autocomplete';

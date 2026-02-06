@@ -12,6 +12,7 @@ class AlertUi {
 			'Account::class.size' => s("Le numéro de compte doit contenir entre 4 et 8 chiffres."),
 			'Account::class.numeric' => s("Le numéro de compte doit être composé de chiffres uniquement."),
 			'Account::class.consistency' => fn(Account $e) => s("Le numéro de compte doit respecter le plan comptable et commencer par {value}.", mb_substr($e['class'], 0, 3)),
+			'Account::thirdParty.check' => s("Pour des comptes courants d'associé, un tiers doit être indiqué pour savoir à qui appartient le compte."),
 
 			'FinancialYear::startDate.check' => s("Cette date est incluse dans un autre exercice."),
 			'FinancialYear::endDate.check' => s("Cette date est incluse dans un autre exercice."),

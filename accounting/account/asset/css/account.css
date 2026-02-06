@@ -1,0 +1,3 @@
+#account-account-create [data-wrapper="thirdParty"]:not(.mandatory) .form-asterisk {
+	display: none;
+}
