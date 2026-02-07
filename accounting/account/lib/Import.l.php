@@ -132,29 +132,26 @@ Class ImportLib extends ImportCrud {
 
 		// Check headers
 		// Trouver le délimiteur
-		preg_match('/JournalCode(.*)JournalLib/', $e['content'], $matches);
-		if(isset($matches[1]) === FALSE or mb_strlen($matches[1]) !== 1) {
-			\Fail::log('Import::header.incorrect', wrapper: 'fec');
-			return;
-		}
+		$e['delimiter'] = self::extractDelimiter($e['content']);
 
-		$e['delimiter'] = $matches[1];
-
-		// Vérifier le nombre de colonnes
+		// Vérifier les colonnes
 		$lines = explode("\n", trim($e['content']));
 		$header = trim(first($lines));
-		$cols = explode($e['delimiter'], $header);
-		if(in_array(count($cols), [18, 21]) === FALSE) {
-			\Fail::log('Import::header.missingCols', wrapper: 'fec');
-			return;
-		}
+		$cols = explode(self::extractDelimiter($e['content']), $header);
 
 		$headerModel = array_map(fn($head) => mb_strtolower($head), FecLib::getHeader(TRUE));
-		foreach($cols as $col) {
-			if(in_array(mb_strtolower($col), $headerModel) === FALSE) {
+		$cols = array_map(fn($head) => mb_strtolower(rtrim(trim($head))), $cols);
+		if(count($cols) === 18) { // On force à ne vérifier que les 18 premières colonnes dans ce cas
+			$headerModel = array_slice($headerModel, 0, 18);
+		}
+		foreach($headerModel as $headerCol) {
+			foreach($cols as $col) {
+				if(str_contains($col, $headerCol)) {
+					continue 2;
+				}
+			}
 			\Fail::log('Import::header.incorrectCol', wrapper: 'fec');
 			return;
-			}
 		}
 
 		$e->validate();
@@ -165,6 +162,32 @@ Class ImportLib extends ImportCrud {
 
 		Import::model()->commit();
 
+	}
+
+	public static function extractDelimiter(string $content): ?string {
+
+		preg_match('/JournalCode(.*)JournalLib/', $content, $matches);
+		if(isset($matches[1]) === FALSE or mb_strlen($matches[1]) !== 1) {
+			\Fail::log('Import::header.incorrect', wrapper: 'fec');
+			return NULL;
+		}
+
+		return $matches[1];
+	}
+
+	public static function findCol(int $headerIndex, array $cols): ?int {
+
+		$headerModel = array_map(fn($head) => mb_strtolower($head), FecLib::getHeader(TRUE));
+		$cols = array_map(fn($head) => mb_strtolower(rtrim(trim($head))), $cols);
+		$index = 0;
+		$headerCol = $headerModel[$headerIndex];
+		foreach($cols as $col) {
+			if(str_contains($col, $headerCol)) {
+				return $index;
+			}
+			$index++;
+		}
+		return NULL;
 	}
 
 	public static function currentOpenImport(): Import {
@@ -259,29 +282,24 @@ Class ImportLib extends ImportCrud {
 
 	}
 
-	protected static function extractLineElements(Import $eImport, string $line): array {
+	protected static function extractLineElements(Import $eImport, string $line, array $headerCols): array {
 
-			$lineElements = explode($eImport['delimiter'], $line);
+		$delimiter = self::extractDelimiter($eImport['content']);
 
-			if(count($lineElements) === 18) {
+		$allElements = explode($delimiter, $line);
 
-				$lineElements[] = NULL;
-				$lineElements[] = NULL;
-				$lineElements[] = NULL;
+		$lineElements = [];
 
-				[
-					$journalCode, $journalLib,
-					$ecritureNum, $ecritureDate,
-					$compteNum, $compteLib,
-					$compAuxNum, $compAuxLib,
-					$pieceRef, $pieceDate,
-					$ecritureLib,
-					$debit, $credit,
-					$ecritureLet, $dateLet, $validDate,
-					$montantDevise, $IDDevise,
-				] = $lineElements;
+		for($headerIndex = 0; $headerIndex < count(FecLib::getHeader(FALSE)); $headerIndex++) {
+			$lineElements[] = $allElements[self::findCol($headerIndex, $headerCols)];
+		}
 
-			}
+		// S'il manque des colonnes on les rajoute à NULL
+		for($i = count($lineElements); $i < 21; $i++) {
+
+			$lineElements[] = NULL;
+
+		}
 
 			return $lineElements;
 	}
@@ -294,6 +312,11 @@ Class ImportLib extends ImportCrud {
 			->whereId('!=', $eImport['id'])
 			->whereStatus(Import::DONE)
 			->getCollection();
+
+		$contentArray = explode("\n", trim($eImport['content']));
+		// On récupère les colonnes
+		$header = array_shift($contentArray);
+		$headerCols = explode(self::extractDelimiter($eImport['content']), $header);
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
 		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
@@ -317,7 +340,7 @@ Class ImportLib extends ImportCrud {
 				$ecritureLet, $dateLet, $validDate,
 				$montantDevise, $IDDevise,
 				$dateRglt, $modeRglt, $natOp
-			] = self::extractLineElements($eImport, $line);
+			] = self::extractLineElements($eImport, $line, $headerCols);
 
 			if($journalCode and $journalLib) {
 				$journaux[$journalCode] = ['journalCode' => self::findJournal($cJournalCode, $journalCode, $journalLib, $cImport), 'label' => $journalLib];
@@ -413,7 +436,11 @@ Class ImportLib extends ImportCrud {
 
 		$cOperation = new \Collection();
 
-		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
+		$contentArray = explode("\n", trim($eImport['content']));
+		// On récupère les colonnes
+		$header = array_shift($contentArray);
+		$headerCols = explode(self::extractDelimiter($eImport['content']), $header);
+		$lines = array_slice($contentArray, 1);
 
 		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 		$cMethod = \payment\MethodLib::getByFarm($eFarm, FALSE);
@@ -433,7 +460,7 @@ Class ImportLib extends ImportCrud {
 				$ecritureLet, $dateLet, $validDate,
 				$montantDevise, $IDDevise,
 				$dateRglt, $modeRglt, $natOp
-			] = self::extractLineElements($eImport, $line);
+			] = self::extractLineElements($eImport, $line, $headerCols);
 
 			$ecritureDate = new \preaccounting\SaleUi()->toDate($ecritureDate);
 
@@ -482,12 +509,12 @@ Class ImportLib extends ImportCrud {
 
 			$eOperation = new \journal\Operation([
 				'hash' => $hash,
-				'number' => $ecritureNum,
+				'number' => preg_replace('/[a-zA-Z]/', '', $ecritureNum),
 				'financialYear' => $eImport['financialYear'],
 				'journalCode' => $eJournalCode,
 				'account' => $eAccount,
 				'accountLabel' => $compteNum,
-				'date' => new \preaccounting\SaleUi()->toDate($ecritureDate),
+				'date' => $ecritureDate, // Déjà convertie (pour check FinancialYear)
 				'description' => $ecritureLib,
 				'document' => $pieceRef,
 				'documentDate' => new \preaccounting\SaleUi()->toDate($pieceDate),
@@ -495,7 +522,7 @@ Class ImportLib extends ImportCrud {
 				'type' => $debit > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
 				'paymentDate' => $dateRglt ? new \preaccounting\SaleUi()->toDate($dateRglt) : NULL,
 				'paymentMethod' => $eMethod,
-				'validatedAt' => new \preaccounting\SaleUi()->toDate($validDate),
+				'validatedAt' => empty($validDate) ? NULL : new \preaccounting\SaleUi()->toDate($validDate),
 			]);
 			$cOperation->append($eOperation);
 

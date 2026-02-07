@@ -211,7 +211,7 @@ class ImportUi {
 				}
 				$missingAccounts = array_unique($missingAccounts);
 
-				$h .= '<div class="util-info">'.s("Certains numéro de comptes n'ont pas été trouvés, veuillez indiquer ici à quel numéro de compte sur {siteName} les rattacher. Vous pouvez également les <link>créer dans les paramètres de la comptabilité</link>. <br />Les comptes manquants sont : {accounts}. <br /> {icon} Attention, s'il s'agit d'anciens comptes liés à un Plan Comptable qui n'est plus en vigueur, assurez-vous de ne pas vous en resservir ultérieurement.", ['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/account">', 'accounts' => join(', ', $missingAccounts), 'icon' => \Asset::icon('exclamation-triangle')]).'</div>';
+				$h .= '<div class="util-info">'.s("Certains numéro de comptes n'ont pas été trouvés, veuillez indiquer ici à quel numéro de compte sur {siteName} les rattacher. Vous pouvez également les <link>créer dans les paramètres de la comptabilité</link>. <br />Les comptes manquants sont : {accounts}. <br /> {icon} Attention, s'il s'agit d'anciens comptes liés à un Plan Comptable qui n'est plus en vigueur, assurez-vous de ne pas vous en resservir ultérieurement en les désactivant après l'import.", ['link' => '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/account">', 'accounts' => join(', ', $missingAccounts), 'icon' => \Asset::icon('exclamation-triangle')]).'</div>';
 
 
 				$h .= '<table class="tr-even">';
@@ -231,7 +231,7 @@ class ImportUi {
 						new \account\AccountUi()->query($d, $eFarm);
 						foreach($eImport['rules']['comptes'] as $compte => $dataCompte) {
 							$eAccount = isset($dataCompte['account']['id']) ? $cAccount->find(fn($e) => $e['id'] === $dataCompte['account']['id'])->first() : new Account();
-							$class = 'class="'.($eAccount and $eAccount->empty() ? 'color-danger' : '').'"';
+							$class = 'class="'.(($eAccount and $eAccount->empty()) ? 'color-danger' : '').'"';
 							$h .= '<tr>';
 								$h .= '<td '.$class.'>'.encode($compte).'</td>';
 								$h .= '<td '.$class.'>'.encode($dataCompte['label']).'</td>';
