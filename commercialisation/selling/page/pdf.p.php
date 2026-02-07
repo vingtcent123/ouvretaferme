@@ -39,7 +39,7 @@ new \selling\PdfPage()
 			throw new NotExpectedAction();
 		}
 
-		$content = \selling\PdfLib::getContentBySale($data->e['sale'], $data->e['type']);
+		$content = \selling\PdfLib::getContent($data->e);
 
 		if($content === NULL) {
 			throw new NotExistsAction();

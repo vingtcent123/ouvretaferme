@@ -23,18 +23,14 @@ class PdfLib extends PdfCrud {
 
 	}
 
-	public static function getContentBySale(Sale $eSale, string $type): ?string {
+	public static function getContent(Pdf $ePdf): ?string {
 
-		$ePdf = Pdf::model()
+		if(
+			Pdf::model()
 			->select([
 				'content' => ['hash']
 			])
-			->whereSale($eSale)
-			->whereType($type)
-			->get();
-
-		if(
-			$ePdf->notEmpty() and
+			->get($ePdf) and
 			$ePdf['content']->notEmpty() and
 			$ePdf['content']['hash']
 		) {
