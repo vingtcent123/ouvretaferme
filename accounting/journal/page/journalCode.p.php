@@ -25,7 +25,7 @@ new \journal\JournalCodePage()
 	})
 	->read('accounts', function($data) {
 
-		$data->cAccount = \account\AccountLib::getAll();
+		$data->cAccount = \account\AccountLib::getAll(new Search(['withJournal' => TRUE]));
 
 		throw new ViewAction($data);
 
