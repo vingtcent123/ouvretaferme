@@ -101,7 +101,7 @@ class GridLib extends GridCrud {
 
 	}
 
-	public static function applyToProduct(Product $eProduct, \selling\Grid $eGrid): void {
+	public static function applyToProduct(Product|\shop\Product $eProduct, \selling\Grid $eGrid): void {
 
 		if($eGrid->notEmpty()) {
 			$eProduct['price'] = $eGrid['price'];
