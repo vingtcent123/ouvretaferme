@@ -321,7 +321,7 @@ Sale:
   closedAt: ?datetime
   closedBy: ?user\User
   preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED, EXPIRED) = DRAFT
-  paymentStatus: ?enum(NOT_PAID, PAID, NEVER_PAID)
+  paymentStatus: ?enum(NOT_PAID, PARTIAL_PAID, PAID, NEVER_PAID)
   onlinePaymentStatus: ?enum(INITIALIZED, SUCCESS, FAILURE)
   compositionOf: ?selling\Product
   compositionEndAt: ?date
