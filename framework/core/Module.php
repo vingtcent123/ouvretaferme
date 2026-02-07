@@ -1154,6 +1154,9 @@ abstract class ModuleModel {
 				[$property, $operator, $value] = $data;
 				return $this->whereBuild($property, $operator, is_closure($value) ? $value() : $value);
 
+			default :
+				throw new Exception('Invalid arguments ('.count($data).')');
+
 		}
 
 	}

@@ -45,11 +45,38 @@ class Register extends RegisterElement {
 		);
 	}
 
+	public function acceptClose(): bool {
+		return ($this['status'] === Register::ACTIVE);
+	}
+
+	public function getCloseDate(): ?string {
+
+		if($this['pending?']('firstDraft') === NULL) {
+			$date = date("Y-m-d", strtotime('last day of last month'));
+		} else {
+			$date = date('Y-m-d', strtotime('last day of last month', strtotime($this['pending?']('firstDraft'))));
+		}
+
+		return (
+			$this['closedAt'] !== NULL and
+			$date > $this['closedAt']
+		) ? $date : NULL;
+
+	}
+
 	public function acceptDelete(): bool {
 
 		$this->expects(['operations']);
 
 		return ($this['operations'] === 0);
+
+	}
+
+	public function isClosedByDate(string $date): bool {
+
+		$this->expects(['closedAt']);
+
+		return ($date <= $this['closedAt']);
 
 	}
 

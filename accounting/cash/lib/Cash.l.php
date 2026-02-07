@@ -172,7 +172,7 @@ class CashLib extends CashCrud {
 					// IL n'y a pas encore de solde initial
 					$eRegister['operations'] === 0 or
 					// L'opération est placée avant la dernière opération validée
-					$e['date'] < $eRegister['closedAt']
+					$eRegister->isClosedByDate($e['date'])
 				) {
 					Cash::model()->rollBack();
 					return;
@@ -333,7 +333,7 @@ class CashLib extends CashCrud {
 		};
 
 		$eRegister['balance'] += $additional;
-		$eRegister['closedAt'] = $e['date'];
+		$eRegister['closedAt'] = date('Y-m-d', strtotime($e['date'].' - 1 DAY'));
 		$eRegister['operations']++;
 
 		if($eRegister['balance'] < 0) {

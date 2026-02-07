@@ -38,6 +38,7 @@ class AlertUi {
 
 			'Register::created' => s("Le journal de caisse a bien été créé"),
 			'Register::updated' => s("Le journal de caisse a bien été paramétré"),
+			'Register::updatedClosed' => s("La clôture du journal de caisse a bien été réalisée"),
 			'Register::deleted' => s("Le journal de caisse a bien été supprimé"),
 
 			default => null

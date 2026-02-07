@@ -141,7 +141,7 @@ class Cash extends CashElement {
 
 				return (
 					$this['register']['closedAt'] === NULL or
-					$date >= $this['register']['closedAt']
+					$this['register']->isClosedByDate($date) === FALSE
 				);
 
 			})

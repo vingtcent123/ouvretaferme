@@ -112,6 +112,7 @@ class CashUi {
 					$h .= '</a>';
 
 				}
+
 			$h .= '</div>';
 
 			$h .= '<br/>';
@@ -185,28 +186,61 @@ class CashUi {
 									case Cash::DRAFT :
 
 										if($eCashLast['balanceNegative'] === FALSE) {
-											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCashLast['id'].'" data-confirm="'.s("Toutes les opérations seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="btn btn-secondary">'.s("Tout valider maintenant").'</a>';
+											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCashLast['id'].'" data-confirm="'.s("Toutes les opérations seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération avant le {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="btn btn-secondary">'.s("Tout valider maintenant").'</a>';
 										}
 
-										break;
-
-									case Cash::VALID :
-/*
-										if(str_starts_with($eRegister[''], date('Y-m') === FALSE) {
-											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCashLast['id'].'" data-confirm="'.s("Toutes les opérations seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="btn btn-secondary">'.s("Clôturer au ").'</a>';
-										}
-*/
 										break;
 
 								}
 
 							$h .= '</div>';
 
-							if($status === Cash::DRAFT) {
+							switch($status) {
 
-								if($eCashLast['balanceNegative']) {
-									$h .= '<div class="util-block-danger">'.\Asset::icon('exclamation-circle').' '.s("Le solde de votre journal de caisse doit toujours être positif. </h3>Veuillez corriger vos saisies afin de pouvoir valider vos opérations.").'</div>';
-								}
+								case Cash::DRAFT :
+
+									if($eCashLast['balanceNegative']) {
+										$h .= '<div class="util-block-danger">'.\Asset::icon('exclamation-circle').' '.s("Le solde de votre journal de caisse doit toujours être positif. </h3>Veuillez corriger vos saisies afin de pouvoir valider vos opérations.").'</div>';
+									}
+
+									break;
+
+								case Cash::VALID :
+
+									if($eRegister['closedAt'] !== NULL) {
+
+										$h .= '<div class="util-block-gradient">';
+											$h .= \Asset::icon('lock-fill').'  '.s("Votre journal de caisse est actuellement clôturé au {closed}, la saisie de nouvelles opérations est possible à partir du {open}.", [
+												'closed' => \util\DateUi::numeric($eRegister['closedAt']),
+												'open' => \util\DateUi::numeric(date('Y-m-d', strtotime($eRegister['closedAt'].' + 1 DAY'))),
+											]);
+
+											if($eRegister->acceptClose()) {
+
+												$closeDate = $eRegister->getCloseDate();
+
+												if($closeDate !== NULL) {
+
+													$h .= '<div class="mt-1">';
+														$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doClose" post-id="'.$eRegister['id'].'" post-date="'.$closeDate.'" class="btn btn-secondary" data-confirm="'.s("La clôture est définitive, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($closeDate)).'">';
+															$h .= '<div class="btn-icon">'.\Asset::icon('calendar-month').'</div>';
+															$h .= s("Clôturer le journal au {value}", \util\DateUi::numeric($closeDate));
+														$h .= '</a>';
+													$h .= '</div>';
+
+													if(substr($closeDate, 0, 7) < date('Y-m', strtotime('last month'))) {
+														$h .= '<div class="util-info mt-1">'.s("Validez les opérations en attente pour clôturer le journal plus tard.").'</div>';
+													}
+
+												}
+
+											}
+
+										$h .= '</div>';
+
+									}
+
+									break;
 
 							}
 
@@ -334,7 +368,7 @@ class CashUi {
 									$h .= '<div class="dropdown-list">';
 										$h .= '<div class="dropdown-title">'.s("Opération de caisse").'</div>';
 										$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:update?id='.$eCash['id'].'" class="dropdown-item">'.s("Modifier l'opération").'</a>';
-										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCash['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="dropdown-item '.($eCash['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
+										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCash['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération avant le {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="dropdown-item '.($eCash['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
 										$h .= '<div class="dropdown-divider"></div>';
 										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doDelete" data-confirm="'.s("Vous allez supprimer cette opération. Continuer ?").'" post-id="'.$eCash['id'].'" class="dropdown-item">'.s("Supprimer l'opération").'</a>';
 									$h .= '</div>';
@@ -446,6 +480,11 @@ class CashUi {
 
 						$time = time() - $day * 86400;
 						$date = date('Y-m-d', $time);
+
+						if($eRegister->isClosedByDate($date)) {
+							continue;
+						}
+
 						$dayName = \util\DateUi::getDayName(date('N', strtotime($date)));
 
 						$dates .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'date', $date).'" class="btn btn-sm btn-primary">';
@@ -620,7 +659,7 @@ class CashUi {
 
 			$h .= $form->group(
 				s("Date de l'opération"),
-				$form->date('date', $eRegister['closedAt'])
+				$form->date('date', ($eRegister['closedAt'] !== null) ? date('Y-m-d', strtotime($eRegister['closedAt'].' + 1 DAY')) : '')
 			);
 
 			$h .= $form->group(
