@@ -275,7 +275,7 @@ class CashUi {
 			foreach($ccCash as $status => $cCash) {
 
 				$eCashLast = $cCash->first();
-				$columns = 4 + ($hasVat ? 2 : 0) + ($search->empty() ? 1 : 0);
+				$columns = 5 + ($hasVat ? 2 : 0) + ($search->empty() ? 1 : 0);
 
 				$h .= '<thead>';
 					$h .= '<tr>';
@@ -354,7 +354,7 @@ class CashUi {
 						$h .= '</td>';
 					$h .= '</tr>';
 					$h .= '<tr>';
-						$h .= '<th></th>';
+						$h .= '<th colspan="2"></th>';
 						$h .= '<th class="text-end highlight-stick-right">'.s("Crédit").'</th>';
 						$h .= '<th class="text-end highlight-stick-left">'.s("Débit").'</th>';
 
@@ -393,7 +393,7 @@ class CashUi {
 							}
 
 									$h .= '<tr class="tr-title">';
-										$h .= '<td>';
+										$h .= '<td colspan="2">';
 											$h .= \util\DateUi::textual($currentSubtitle);
 										$h .= '</td>';
 										$h .= '<td class="text-end highlight-stick-right"></td>';
@@ -408,6 +408,12 @@ class CashUi {
 						}
 
 						$h .= '<tr>';
+
+							$h .= '<td class="td-min-content text-end td-vertical-align-top">';
+								if($eCash['position'] !== NULL) {
+									$h .= '<div class="btn btn-outline-primary btn-readonly btn-xs">'.$eCash['position'].'</div>';
+								}
+							$h .= '</td>';
 
 							$h .= '<td>';
 
