@@ -23,7 +23,7 @@ Class SaleLib {
 		return \selling\Sale::model()
 			->wherePreparationStatus(\selling\Sale::DELIVERED)
 			->where('priceExcludingVat != 0.0')
-			->whereInvoice(NULL)
+			->where('m1.invoice IS NULL')
 			->where('m1.type = "'.\selling\Sale::PRIVATE.'"')
 			->where(fn() => new \Sql('m1.customer = '.$search->get('customer')['id']), if: $search->get('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
