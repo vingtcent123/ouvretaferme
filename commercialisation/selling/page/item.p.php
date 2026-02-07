@@ -28,7 +28,6 @@ new Page(function($data) {
 		}
 
 		$data->eItem = \selling\ItemLib::getNew($data->eSale, $data->eProduct, $eGrid);
-		$data->eItem['grid'] = $eGrid;
 
 		$data->eItem['cUnit'] = $data->eProduct->empty() ?
 			\selling\UnitLib::getByFarm($data->eSale['farm']) :

@@ -348,7 +348,6 @@ class ProductLib extends ProductCrud {
 		foreach($cProduct as $eProduct) {
 			$eGrid = $cGrid[$eProduct['id']] ?? new \selling\Grid();
 			$eProduct['item'] = \selling\ItemLib::getNew($eSale, $eProduct, $eGrid);
-			$eProduct['item']['grid'] = $eGrid;
 			if($eGrid->notEmpty()) {
 				$grids++;
 			}

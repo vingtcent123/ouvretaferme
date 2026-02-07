@@ -75,6 +75,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 			echo Asset::image('main', 'doc/market-item.png');
 		echo '</p>';
 
+		echo '<p>'.s("Si vous connaissez votre client, vous avez la possibilité d'associer la vente à un client en cliquant sur <u>Anonyme</u> puis en tapant le nom du client. Par la suite, les prix personnalisés pour le client s'appliquent dans le logiciel de caisse.").'</p>';
 		echo '<p>'.s("Pour terminer une vente avec un client avec le bouton <u>Vente payée</u>, vous devez préalablement indiquer au moins un moyen de paiement, ce qui est une obligation légale.").'</p>';
 
 		echo '<h3>'.s("Clôturer la caisse").'</h3>';

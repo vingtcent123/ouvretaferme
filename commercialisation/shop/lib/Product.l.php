@@ -585,7 +585,7 @@ class ProductLib extends ProductCrud {
 				$sold = round($cItem[$productId]['quantity'], 2);
 			}
 
-			self::applyGrid($eProduct, $cGrid[$eProduct['product']['id']] ?? new \selling\Grid());
+			\selling\GridLib::applyToProduct($eProduct, $cGrid[$eProduct['product']['id']] ?? new \selling\Grid());
 
 			$eProduct['sold'] = $sold;
 
@@ -670,15 +670,6 @@ class ProductLib extends ProductCrud {
 
 		$eDate['productsIndex'] = $index;
 		$eDate['productsEmpty'] = $cProduct->empty();
-
-	}
-
-	public static function applyGrid(Product $eProduct, \selling\Grid $eGrid): void {
-
-		if($eGrid->notEmpty()) {
-			$eProduct['price'] = $eGrid['price'];
-			$eProduct['priceInitial'] = $eGrid['priceInitial'];
-		}
 
 	}
 

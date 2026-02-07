@@ -37,6 +37,10 @@ new \selling\SalePage()
 
 		$data->cItemSale = \selling\SaleLib::getItems($data->eSale, index: 'product');
 
+		if($data->eSale['customer']->notEmpty()) {
+			\selling\GridLib::applyItemsByCustomer($data->cItemMarket, $data->eSale['customer']);
+		}
+
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 		$data->eFarmer = $data->e['farm']->getFarmer();
 

@@ -69,6 +69,49 @@ class GridLib extends GridCrud {
 
 	}
 
+	public static function applyItemsByCustomer(\Collection $cItem, Customer $eCustomer): void {
+
+		$cGrid = \selling\GridLib::calculateByCustomer($eCustomer);
+
+
+		foreach($cItem as $eItem) {
+
+			$eProduct = $eItem['product'];
+
+			if($eProduct->empty()) {
+				continue;
+			}
+
+			$eGrid = $cGrid[$eProduct['id']] ?? new \selling\Grid();
+
+			self::applyToItem($eItem, $eGrid);
+
+		}
+
+	}
+
+	public static function applyToItem(Item $eItem, \selling\Grid $eGrid): void {
+
+		if($eGrid->notEmpty()) {
+			$eItem['unitPrice'] = $eGrid['price'];
+			$eItem['unitPriceInitial'] = $eGrid['priceInitial'];
+		}
+
+		$eItem['grid'] = $eGrid;
+
+	}
+
+	public static function applyToProduct(Product $eProduct, \selling\Grid $eGrid): void {
+
+		if($eGrid->notEmpty()) {
+			$eProduct['price'] = $eGrid['price'];
+			$eProduct['priceInitial'] = $eGrid['priceInitial'];
+		}
+
+		$eProduct['grid'] = $eGrid;
+
+	}
+
 	public static function calculateByGroup(CustomerGroup $eCustomerGroup, Product $eProduct = new Product()): \Collection|Grid {
 
 		$eCustomerGroup->expects(['id']);
