@@ -15,9 +15,8 @@ class Cash extends CashElement {
 	public function acceptCreate(): bool {
 		return (
 			$this['register']['status'] === Register::ACTIVE and
-			Cash::model()
-				->whereRegister($this['register'])
-				->count() < CashSetting::DRAFT_LIMIT
+			$this['register']['pending?']('draft') < CashSetting::DRAFT_LIMIT and
+			$this['register']['pending?']('balance') === 0
 		);
 	}
 
@@ -151,12 +150,11 @@ class Cash extends CashElement {
 				return ($date <= currentDate());
 
 			})
-			->setCallback('description.empty', function(?string &$description = NULL) {
+			->setCallback('description.empty', function(?string $description = NULL) {
 
 				if($this->requireDescription()) {
 					return ($description !== NULL);
 				} else {
-					$description = NULL;
 					return TRUE;
 				}
 

@@ -25,6 +25,24 @@ class RegisterLib extends RegisterCrud {
 
 	}
 
+	public static function countPending(Register $e): Cash {
+
+		static $count = Cash::model()
+			->select([
+				'draft' => new \Sql('SUM(status = "'.Cash::DRAFT.'")', 'int'),
+				'balance' => new \Sql('SUM(source = "'.Cash::BALANCE.'")', 'int')
+			])
+			->whereRegister($e)
+			->whereStatus(Cash::DRAFT)
+			->get();
+
+		$count['draft'] ??= 0;
+		$count['balance'] ??= 0;
+
+		return $count;
+
+	}
+
 	public static function update(Register $e, array $properties): void {
 
 		Register::model()->beginTransaction();

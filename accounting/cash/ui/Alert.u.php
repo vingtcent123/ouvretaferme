@@ -18,6 +18,7 @@ class AlertUi {
 			'Cash::vat.empty' => s("Vous devez saisir un montant de TVA"),
 			'Cash::vatRate.empty' => s("Vous devez saisir un taux de TVA"),
 			'Cash::amountConsistency' => s("Le total HT + TVA doit être égal au total TTC"),
+			'Cash::balance.negative' => s("Le nouveau solde ne peut pas être négatif"),
 
 			default => null
 
@@ -31,6 +32,7 @@ class AlertUi {
 
 			'Cash::created' => s("L'opération a bien été ajoutée"),
 			'Cash::updated' => s("L'opération a bien été mise à jour"),
+			'Cash::updatedBalance' => s("Le solde du journal de caisse a bien été mis à jour"),
 			'Cash::validated' => s("Les opérations ont bien été validées"),
 			'Cash::deleted' => s("L'opération a bien été supprimée"),
 

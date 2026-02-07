@@ -49,14 +49,14 @@ class RegisterModel extends \ModuleModel {
 			'paymentMethod' => ['element32', 'payment\Method', 'cast' => 'element'],
 			'color' => ['color', 'cast' => 'string'],
 			'balance' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => -99999999.99, 'max' => 99999999.99, 'cast' => 'float'],
-			'operations' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
-			'closedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'operations' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'status' => ['enum', [\cash\Register::ACTIVE, \cash\Register::INACTIVE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
+			'closedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'bankAccount', 'paymentMethod', 'color', 'balance', 'operations', 'closedAt', 'status', 'createdAt'
+			'id', 'account', 'bankAccount', 'paymentMethod', 'color', 'balance', 'operations', 'status', 'createdAt', 'closedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -143,16 +143,16 @@ class RegisterModel extends \ModuleModel {
 		return $this->where('operations', ...$data);
 	}
 
-	public function whereclosedAt(...$data): RegisterModel {
-		return $this->where('closedAt', ...$data);
-	}
-
 	public function whereStatus(...$data): RegisterModel {
 		return $this->where('status', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): RegisterModel {
 		return $this->where('createdAt', ...$data);
+	}
+
+	public function whereClosedAt(...$data): RegisterModel {
+		return $this->where('closedAt', ...$data);
 	}
 
 

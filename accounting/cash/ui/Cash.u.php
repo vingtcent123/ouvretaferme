@@ -42,23 +42,38 @@ class CashUi {
 			'register' => $eRegister
 		]);
 
-		if($eRegister['status'] !== Register::ACTIVE) {
+		if($eCash->acceptCreate() === FALSE) {
 
-			$h = '<div class="util-block-info">';
-				$h .= '<h3>'.s("Ce journal de caisse est désactivé").'</h3>';
-				$h .= '<p>'.s("Vous ne pouvez pas ajouter de nouvelles opérations.").'</p>';
-			$h .= '</div>';
+			if($eRegister['status'] !== Register::ACTIVE) {
 
-			return $h;
+				$h = '<div class="util-block-info">';
+					$h .= '<h3>'.s("Ce journal de caisse est désactivé").'</h3>';
+					$h .= '<p>'.s("Vous ne pouvez pas ajouter de nouvelles opérations.").'</p>';
+				$h .= '</div>';
 
-		} else if($eCash->acceptCreate() === FALSE) {
+				return $h;
 
-			$h = '<div class="util-block-info">';
-				$h .= '<h3>'.s("Vous ne pouvez plus saisir de nouvelle opération").'</h3>';
-				$h .= '<p>'.s("Vous ne pouvez pas avoir plus de {value} opérations non validées simultanément.<br/>Veuillez valider certaines opérations afin de pouvoir saisir une nouvelle opération de caisse.", CashSetting::DRAFT_LIMIT).'</p>';
-			$h .= '</div>';
+			} else if($eRegister['pending?']('draft') >= CashSetting::DRAFT_LIMIT) {
 
-			return $h;
+				$h = '<div class="util-block-info">';
+					$h .= '<h3>'.s("Vous ne pouvez plus saisir de nouvelle opération").'</h3>';
+					$h .= '<p>'.s("Vous ne pouvez pas avoir plus de {value} opérations non validées simultanément.<br/>Veuillez valider certaines opérations afin de pouvoir saisir une nouvelle opération de caisse.", CashSetting::DRAFT_LIMIT).'</p>';
+				$h .= '</div>';
+
+				return $h;
+
+			} else if($eRegister['pending?']('balance') > 0) {
+
+				$h = '<div class="util-block-info">';
+					$h .= '<h3>'.s("Contrôlez et validez le nouveau solde").'</h3>';
+					$h .= '<p>'.s("Valider maintenant le nouveau solde de votre caisse avant de pouvoir saisir de nouvelles opérations.").'</p>';
+				$h .= '</div>';
+
+				return $h;
+
+			} else {
+				return '';
+			}
 
 		}
 
@@ -85,7 +100,18 @@ class CashUi {
 						}
 					}
 				$h .= '</div>';
-				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('plus-slash-minus').'</div>'.s("Corriger le solde").'</a>';
+
+				if($eRegister['paymentMethod']['fqn'] === \payment\MethodLib::CASH) {
+
+					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:updateBalance?id='.$eRegister['id'].'" class="btn btn-secondary '.($eRegister->acceptUpdateBalance() ? '' : 'disabled').'">';
+						$h .= '<div class="btn-icon">'.\Asset::icon('plus-slash-minus').'</div>';
+						$h .= s("Constater un écart de caisse");
+						if($eRegister->acceptUpdateBalance() === FALSE) {
+							$h .= '<div style="margin-top: 0.25rem" class="font-xs">'.\Asset::icon('exclamation-circle').' '.s("Opérations non validées").'</div>';
+						}
+					$h .= '</a>';
+
+				}
 			$h .= '</div>';
 
 			$h .= '<br/>';
@@ -98,11 +124,12 @@ class CashUi {
 
 	}
 
-	public static function getOperation(string $source, string $type): string {
+	public static function getOperation(string $source, ?string $type = NULL): string {
 
 		return match($source) {
 
 			Cash::INITIAL => s("Solde initial de la caisse"),
+			Cash::BALANCE => \Asset::icon('plus-slash-minus').'  '.s("Écart de caisse"),
 
 			Cash::PRIVATE => match($type) {
 				Cash::CREDIT => \Asset::icon('person-fill').'  '.s("Apport de l'exploitant à la caisse"),
@@ -339,10 +366,7 @@ class CashUi {
 
 		$list = [];
 
-		if(
-			$eCash->requireAssociateAccount() or
-			$eCash->requireAccount()
-		) {
+		if($eCash['account']->notEmpty()) {
 			$list[] = encode($eCash['account']['name']);
 		}
 
@@ -573,6 +597,56 @@ class CashUi {
 		return new \Panel(
 			id: 'panel-cash-update',
 			title: s("Modifier une opération"),
+			body: $h
+		);
+
+	}
+
+	public function updateBalance(Register $eRegister): \Panel {
+
+		$form = new \util\FormUi();
+
+		$eCash = new Cash([
+			'source' => Cash::BALANCE
+		]);
+
+		$h = '';
+
+		$h .= $form->openAjax(\farm\FarmUi::urlConnected().'/cash/cash:doUpdateBalance');
+
+			$h .= $form->hidden('id', $eRegister['id']);
+
+			$h .= '<div class="util-info">'.s("Vous pouvez corriger le solde indiqué dans le journal de caisse lorsque vous constatez un écart avec le solde réel de la caisse.").'</div>';
+
+			$h .= $form->group(
+				s("Date de l'opération"),
+				$form->date('date', $eRegister['closedAt'])
+			);
+
+			$h .= $form->group(
+				s("Solde du journal de caisse"),
+				'<span class="btn btn-readonly"><b>'.\util\TextUi::money($eRegister['balance']).'</b></span>'
+			);
+
+			$h .= $form->group(
+				s("Solde constaté dans la caisse"),
+				$form->inputGroup(
+					$form->number('balance', attributes: ['min' => 0.0, 'step' => 0.01]).
+					$form->addon(s("€"))
+				)
+			);
+
+			$h .= $form->dynamicGroup($eCash, 'description');
+
+			$h .= $form->group(
+				content: $form->submit(s("Enregistrer"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-cash-update-balance',
+			title: s("Constater un écart de caisse"),
 			body: $h
 		);
 

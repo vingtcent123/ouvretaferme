@@ -9,6 +9,7 @@ class Register extends RegisterElement {
 			'account' => \account\Account::getSelection(),
 			'bankAccount' => \account\Account::getSelection(),
 			'paymentMethod' => fn($e) => \payment\MethodLib::ask($e['paymentMethod'], \farm\Farm::getConnected()),
+			'pending?' => fn($e) => fn($key) => RegisterLib::countPending($e)[$key]
 		];
 
 	}
@@ -34,6 +35,14 @@ class Register extends RegisterElement {
 
 		return ($this['status'] === Register::ACTIVE);
 
+	}
+
+	public function acceptUpdateBalance(): bool {
+		return (
+			$this['status'] === Register::ACTIVE and
+			$this['paymentMethod']['fqn'] === \payment\MethodLib::CASH and
+			$this['pending?']('draft') === 0
+		);
 	}
 
 	public function acceptDelete(): bool {

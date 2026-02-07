@@ -53,7 +53,10 @@ class CashLib extends CashCrud {
 
 		}
 
-		if($eCash->requireAccount()) {
+		if(
+			$eCash->exists() === FALSE and
+			$eCash->requireAccount()
+		) {
 
 			$eCash['account'] = match($eCash['source']) {
 
@@ -120,6 +123,7 @@ class CashLib extends CashCrud {
 
 		return [
 			'status' => new \Sql('FIELD(status, "'.Cash::DRAFT.'", "'.Cash::VALID.'")'),
+			'position' => SORT_DESC,
 			'date' => SORT_DESC,
 			'type' => new \Sql('FIELD(type, "'.Cash::DEBIT.'", "'.Cash::CREDIT.'")'),
 			'id' => SORT_DESC
@@ -131,6 +135,7 @@ class CashLib extends CashCrud {
 
 		return [
 			'status' => new \Sql('FIELD(status, "'.Cash::VALID.'", "'.Cash::DRAFT.'")'),
+			'position' => SORT_ASC,
 			'date' => SORT_ASC,
 			'type' => new \Sql('FIELD(type, "'.Cash::CREDIT.'", "'.Cash::DEBIT.'")'),
 			'id' => SORT_ASC
@@ -178,6 +183,7 @@ class CashLib extends CashCrud {
 			match($e['source']) {
 
 				Cash::INITIAL => self::createInitial($e),
+				Cash::BALANCE => self::createBalance($e),
 				Cash::PRIVATE => self::createPrivate($e),
 				Cash::BANK => self::createWithoutVat($e),
 				Cash::OTHER, Cash::BUY_MANUAL, Cash::SELL_MANUAL => self::createWithVat($e),
@@ -224,6 +230,26 @@ class CashLib extends CashCrud {
 		$e['vatRate'] = NULL;
 		$e['description'] = NULL;
 		$e['status'] = Cash::VALID;
+
+	}
+
+	private static function createBalance(Cash $e): void {
+
+		$e->expects(['amountIncludingVat']);
+
+		$e['amountExcludingVat'] = NULL;
+		$e['vat'] = NULL;
+		$e['vatRate'] = NULL;
+		$e['status'] = Cash::DRAFT;
+
+		if($e['financialYear']->isAccounting()) {
+
+			$e['account'] = \account\AccountLib::getByClass(match($e['type']) {
+				Cash::DEBIT => \account\AccountSetting::CHARGES_OTHER_CLASS,
+				Cash::CREDIT => \account\AccountSetting::PRODUCT_OTHER_CLASS,
+			});
+
+		}
 
 	}
 
@@ -319,9 +345,10 @@ class CashLib extends CashCrud {
 			->update($eRegister);
 
 		$e['balance'] = $eRegister['balance'];
+		$e['position'] = $eRegister['operations'];
 
 		Cash::model()
-			->select('balance')
+			->select('balance', 'position')
 			->update($e);
 
 	}

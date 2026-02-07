@@ -39,6 +39,55 @@ new \cash\CashPage()
 	}, method: ['get', 'post'])
 	->doCreate(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e['register']).'&success=cash\\Cash::created'));
 
+new \cash\RegisterPage()
+	->read('updateBalance', function($data) {
+
+		throw new ViewAction($data);
+
+	}, validate: ['acceptUpdateBalance', 'canWrite'])
+	->write('doUpdateBalance', function($data) {
+
+		$balance = POST('balance', 'float');
+
+		$eCash = new \cash\Cash([
+			'register' => $data->e,
+			'source' => \cash\Cash::BALANCE
+		]);
+
+		if($balance < 0) {
+			throw new FailAction('cash\Cash::balance.negative');
+		} else if($balance !== $data->e['balance']) {
+
+			if($balance < $data->e['balance']) {
+
+				$eCash->merge([
+					'type' => \cash\Cash::DEBIT,
+					'amountIncludingVat' => $data->e['balance'] - $balance
+				]);
+
+			} else {
+
+				$eCash->merge([
+					'type' => \cash\Cash::CREDIT,
+					'amountIncludingVat' => $balance - $data->e['balance']
+				]);
+
+			}
+
+			$fw = new FailWatch();
+
+			$eCash->build(['date', 'description'], $_POST);
+
+			$fw->validate();
+
+			\cash\CashLib::create($eCash);
+
+		}
+
+		throw new RedirectAction(\farm\FarmUi::urlCash($data->e).'&success=cash\\Cash::updatedBalance');
+
+	}, validate: ['acceptUpdateBalance', 'canWrite']);
+
 new \cash\CashPage()
 	->update(function($data) {
 
