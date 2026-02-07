@@ -983,7 +983,7 @@ class AnalyzeUi {
 			]
 		]));
 
-		$globalTime ??= $cTimesheet->sum('time');
+		$globalTime ??= $cTimesheet->sum('timeTotal');
 
 		$h = '<div class="'.($monthly ? 'util-overflow-lg' : '').' stick-xs">';
 
