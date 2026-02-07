@@ -122,6 +122,7 @@ class ConfigurationLib extends ConfigurationCrud {
 
 		for($i = 0; ; $i++) {
 
+			$currentValue = $newValue;
 			$newValue++;
 
 			$number = Configuration::getNumber($eConfiguration['invoicePrefix'], $newValue);
@@ -139,15 +140,21 @@ class ConfigurationLib extends ConfigurationCrud {
 
 			}
 
-			Configuration::model()
+			$affected = Configuration::model()
 				->whereFarm($eFarm)
+				->whereDocumentInvoices($currentValue)
 				->update([
 					'documentInvoices' => $newValue
 				]);
 
-			Configuration::model()->commit();
+			// Le numéro a pu être incrémenté entre temps
+			if($affected > 0) {
 
-			return $newValue;
+				Configuration::model()->commit();
+
+				return $newValue;
+
+			}
 
 		}
 
