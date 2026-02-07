@@ -27,6 +27,7 @@ Cash:
   sourceCashflow: ?bank\Cashflow
   sourceInvoice: ?selling\Invoice
   sourceSale: ?selling\Sale
+  sourceSalePayment: ?selling\Payment
   account: ?account\Account
   financialYear: ?account\FinancialYear
   thirdParty: ?account\ThirdParty

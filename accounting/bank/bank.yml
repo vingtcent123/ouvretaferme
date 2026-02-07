@@ -27,7 +27,6 @@ Cashflow:
   isSuggestionCalculated: bool = FALSE
   invoice: ?selling\Invoice
   sale: ?selling\Sale
-  salePayment: ?selling\Payment
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
