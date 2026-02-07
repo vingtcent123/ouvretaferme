@@ -448,7 +448,7 @@ class CashUi {
 						$date = date('Y-m-d', $time);
 						$dayName = \util\DateUi::getDayName(date('N', strtotime($date)));
 
-						$dates .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'date', $date).'" class="btn btn-sm btn-outline-primary">';
+						$dates .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'date', $date).'" class="btn btn-sm btn-primary">';
 
 							$dates .= match($day) {
 								0 => s("Aujourd'hui"),
