@@ -198,24 +198,28 @@ Item:
 
 Payment:
   id: serial32
-  sale: selling\Sale
+  source: enum(SALE, INVOICE)
+  sale: ?selling\Sale
+  invoice: ?selling\Invoice
   customer: ?selling\Customer
   farm: farm\Farm
   amountIncludingVat: ?decimal(8, 2)
   method: ?payment\Method
   methodName: ?text8
-  checkoutId: ?text8
-  paymentIntentId: ?text8
+  onlineCheckoutId: ?text8
+  onlinePaymentIntentId: ?text8
   statusCash: enum(WAITING, DRAFT, VALID, IGNORED) = WAITING
-  onlineStatus: ?enum(INITIALIZED, SUCCESS, FAILURE, EXPIRED)
+  statusOnline: ?enum(INITIALIZED, SUCCESS, FAILURE, EXPIRED)
+  paidAt: ?date
   createdAt: datetime = SPECIAL(now)
   INDEX: [
     ["farm"],
-    ["sale"]
+    ["sale"],
+    ["invoice"],
   ]
   UNIQUE: [
-    ["checkoutId"],
-    ["paymentIntentId"]
+    ["onlineCheckoutId"],
+    ["onlinePaymentIntentId"]
   ]
 
 Pdf:

@@ -58,8 +58,8 @@ class HistoryModel extends \ModuleModel {
 			'type' => ['enum', [\association\History::MEMBERSHIP, \association\History::DONATION], 'cast' => 'enum'],
 			'amount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'cast' => 'float'],
 			'membership' => ['int32', 'min' => 2025, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'checkoutId' => ['text8', 'null' => TRUE, 'cast' => 'string'],
-			'paymentIntentId' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'onlineCheckoutId' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'onlinePaymentIntentId' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'paymentStatus' => ['enum', [\association\History::INITIALIZED, \association\History::SUCCESS, \association\History::FAILURE, \association\History::EXPIRED], 'null' => TRUE, 'cast' => 'enum'],
 			'status' => ['enum', [\association\History::PROCESSING, \association\History::VALID, \association\History::INVALID], 'cast' => 'enum'],
 			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
@@ -70,7 +70,7 @@ class HistoryModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'customer', 'type', 'amount', 'membership', 'checkoutId', 'paymentIntentId', 'paymentStatus', 'status', 'sale', 'document', 'createdAt', 'updatedAt', 'paidAt'
+			'id', 'farm', 'customer', 'type', 'amount', 'membership', 'onlineCheckoutId', 'onlinePaymentIntentId', 'paymentStatus', 'status', 'sale', 'document', 'createdAt', 'updatedAt', 'paidAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -157,12 +157,12 @@ class HistoryModel extends \ModuleModel {
 		return $this->where('membership', ...$data);
 	}
 
-	public function whereCheckoutId(...$data): HistoryModel {
-		return $this->where('checkoutId', ...$data);
+	public function whereOnlineCheckoutId(...$data): HistoryModel {
+		return $this->where('onlineCheckoutId', ...$data);
 	}
 
-	public function wherePaymentIntentId(...$data): HistoryModel {
-		return $this->where('paymentIntentId', ...$data);
+	public function whereOnlinePaymentIntentId(...$data): HistoryModel {
+		return $this->where('onlinePaymentIntentId', ...$data);
 	}
 
 	public function wherePaymentStatus(...$data): HistoryModel {

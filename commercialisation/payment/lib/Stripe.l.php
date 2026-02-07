@@ -181,7 +181,7 @@ class StripeLib {
 
 		$object = $event['data']['object'];
 
-		$ePayment = \selling\PaymentLib::getByPaymentIntentId($eStripeFarm, $object['id']);
+		$ePayment = \selling\PaymentOnlineLib::getByPaymentIntentId($eStripeFarm, $object['id']);
 
 		if($ePayment->empty()) {
 			throw new \Exception('Unknown payment for intentId '.$object['id']);

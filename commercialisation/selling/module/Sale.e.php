@@ -477,7 +477,7 @@ class Sale extends SaleElement {
 	}
 
 	// Une vente est online seulement si le paiement lié est validé.
-	public function isPaymentOnline(?string $onlineStatus = Payment::SUCCESS): bool {
+	public function isPaymentOnline(?string $statusOnline = Payment::SUCCESS): bool {
 
 		$this->expects(['cPayment']);
 
@@ -488,7 +488,7 @@ class Sale extends SaleElement {
 		foreach($this['cPayment'] as $ePayment) {
 			if(
 				$ePayment['method']->isOnline() and
-				($onlineStatus === NULL or $ePayment['onlineStatus'] === $onlineStatus)
+				($statusOnline === NULL or $ePayment['statusOnline'] === $statusOnline)
 			) {
 				return TRUE;
 			}
@@ -1250,10 +1250,10 @@ class Sale extends SaleElement {
 					'sale' => $this,
 					'customer' => $this['customer'],
 					'farm' => $this['farm'],
-					'checkoutId' => NULL,
+					'onlineCheckoutId' => NULL,
 					'method' => $eMethod,
 					'amountIncludingVat' => $this['priceIncludingVat'],
-					'onlineStatus' => NULL,
+					'statusOnline' => NULL,
 				])]);
 				return TRUE;
 

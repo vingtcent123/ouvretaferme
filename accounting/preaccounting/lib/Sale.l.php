@@ -9,7 +9,7 @@ Class SaleLib {
 
 		\selling\Sale::model()
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
-			->join(\selling\Payment::model(), 'm1.id = m3.sale AND (m3.onlineStatus = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR m3.onlineStatus IS NULL)', 'LEFT'); // Moyen de paiement OK
+			->join(\selling\Payment::model(), 'm1.id = m3.sale AND (m3.statusOnline = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR m3.statusOnline IS NULL)', 'LEFT'); // Moyen de paiement OK
 
 		if($search->get('method') and $search->get('method')->notEmpty()) {
 
@@ -50,8 +50,8 @@ Class SaleLib {
 			'cPayment' => \selling\Payment::model()
 				->select(\selling\Payment::getSelection())
 				->or(
-					fn() => $this->whereOnlineStatus(NULL),
-					fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
+					fn() => $this->whereStatusOnline(NULL),
+					fn() => $this->whereStatusOnline(\selling\Payment::SUCCESS)
 				)
 				->delegateCollection('sale', 'id'),
 				'cItem' => \selling\Item::model()

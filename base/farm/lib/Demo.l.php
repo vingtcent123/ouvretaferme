@@ -49,7 +49,7 @@ class DemoLib {
 		'series\Series' => ['comment'],
 		'selling\Sale' => ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry'],
 		'selling\Invoice' => ['paymentCondition', 'header', 'footer', 'comment'],
-		'selling\Payment' => ['checkoutId', 'paymentIntentId'],
+		'selling\Payment' => ['onlineCheckoutId', 'onlinePaymentIntentId'],
 		'selling\Customer' => ['name', 'firstName', 'lastName', 'email', 'phone', 'legalName', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry']
 	];
 

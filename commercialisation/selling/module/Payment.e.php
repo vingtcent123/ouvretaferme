@@ -15,17 +15,17 @@ class Payment extends PaymentElement {
 	// Si le mode de paiement est un autre, on peut considérer que le paiement est OK
 	public function isNotPaid(): bool {
 
-		$this->expects(['method' => ['online'], 'onlineStatus']);
+		$this->expects(['method' => ['online'], 'statusOnline']);
 
-		return $this['method']->isOnline() and $this['onlineStatus'] !== Payment::SUCCESS;
+		return $this['method']->isOnline() and $this['statusOnline'] !== Payment::SUCCESS;
 
 	}
 
 	public function isPaid(): bool {
 
-		$this->expects(['method' => ['online'], 'onlineStatus']);
+		$this->expects(['method' => ['online'], 'statusOnline']);
 
-		return $this['method']->isOnline() === FALSE or $this['onlineStatus'] === Payment::SUCCESS;
+		return $this['method']->isOnline() === FALSE or $this['statusOnline'] === Payment::SUCCESS;
 
 	}
 

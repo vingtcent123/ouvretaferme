@@ -49,8 +49,8 @@ Class ImportLib {
 					'cPayment' => \selling\Payment::model()
 						->select(\selling\Payment::getSelection())
 						->or(
-							fn() => $this->whereOnlineStatus(NULL),
-							fn() => $this->whereOnlineStatus(\selling\Payment::SUCCESS)
+							fn() => $this->whereStatusOnline(NULL),
+							fn() => $this->whereStatusOnline(\selling\Payment::SUCCESS)
 						)
 						->delegateCollection('sale'),
 					'cItem' => \selling\Item::model()

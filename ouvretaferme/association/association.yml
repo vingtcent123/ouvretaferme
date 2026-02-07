@@ -5,8 +5,8 @@ History:
   type: enum(MEMBERSHIP, DONATION)
   amount: decimal(8, 2, 0.01, null)
   membership: ?int(2025, null)
-  checkoutId: ?text8
-  paymentIntentId: ?text8
+  onlineCheckoutId: ?text8
+  onlinePaymentIntentId: ?text8
   paymentStatus: ?enum(INITIALIZED, SUCCESS, FAILURE, EXPIRED)
   status: enum(PROCESSING, VALID, INVALID) = PROCESSING
   sale: ?selling\Sale

@@ -42,7 +42,7 @@ class HistoryUi {
 							$h .= '</td>';
 							$h .= '<td>';
 								$h .= self::p('status')->values[$eHistory['status']];
-								if($eHistory['checkoutId'] !== NULL) {
+								if($eHistory['onlineCheckoutId'] !== NULL) {
 									$h .= '<br />';
 									$h .= '<div class="util-annotation">'.self::p('paymentStatus')->values[$eHistory['paymentStatus']].'</div>';
 								}

@@ -205,7 +205,7 @@ class MembershipLib {
 
 		History::model()->update(
 			$eHistory, [
-				'checkoutId' => $stripeSession['id'],
+				'onlineCheckoutId' => $stripeSession['id'],
 			]
 		);
 
@@ -286,11 +286,11 @@ class MembershipLib {
 		} else {
 
 			// On fait expirer les sessions précédentes avant de repartir sur celle ci (cas de plusieurs onglets : le dernier est le seul valable)
-			if($eHistoryDb['checkoutId'] !== NULL) {
+			if($eHistoryDb['onlineCheckoutId'] !== NULL) {
 				$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
 				$eStripeFarm = self::getAssociationStripeFarm($eFarmOtf);
 				try {
-					\payment\StripeLib::expiresCheckoutSession($eStripeFarm, $eHistoryDb['checkoutId']);
+					\payment\StripeLib::expiresCheckoutSession($eStripeFarm, $eHistoryDb['onlineCheckoutId']);
 				} catch(\Exception) {}
 			}
 
@@ -300,7 +300,7 @@ class MembershipLib {
 					'paymentStatus' => History::INITIALIZED,
 					'status' => History::PROCESSING,
 					'updatedAt' => new \Sql('NOW()'),
-					'checkoutId' => NULL,
+					'onlineCheckoutId' => NULL,
 				]
 			);
 
@@ -396,7 +396,7 @@ class MembershipLib {
 		}
 
 		$alreadyValidated = (History::model()
-			->wherePaymentIntentId($object['id'])
+			->whereOnlinePaymentIntentId($object['id'])
 			->whereStatus(History::VALID)
 			->count() === 1);
 
@@ -470,7 +470,7 @@ class MembershipLib {
 
 			\selling\Payment::model()
 				->whereSale($eSale)
-				->update(['checkoutId' => $eHistory['checkoutId'], 'paymentIntentId' => $eHistory['paymentIntentId'], 'onlineStatus' => \selling\Payment::SUCCESS]);
+				->update(['onlineCheckoutId' => $eHistory['onlineCheckoutId'], 'onlinePaymentIntentId' => $eHistory['onlinePaymentIntentId'], 'statusOnline' => \selling\Payment::SUCCESS]);
 
 		}
 

@@ -7,6 +7,9 @@ abstract class PaymentElement extends \Element {
 
 	private static ?PaymentModel $model = NULL;
 
+	const SALE = 'sale';
+	const INVOICE = 'invoice';
+
 	const WAITING = 'waiting';
 	const DRAFT = 'draft';
 	const VALID = 'valid';
@@ -51,25 +54,29 @@ class PaymentModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'sale' => ['element32', 'selling\Sale', 'cast' => 'element'],
+			'source' => ['enum', [\selling\Payment::SALE, \selling\Payment::INVOICE], 'cast' => 'enum'],
+			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
+			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'amountIncludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'method' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'methodName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
-			'checkoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
-			'paymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
+			'onlineCheckoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
+			'onlinePaymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'statusCash' => ['enum', [\selling\Payment::WAITING, \selling\Payment::DRAFT, \selling\Payment::VALID, \selling\Payment::IGNORED], 'cast' => 'enum'],
-			'onlineStatus' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE, \selling\Payment::EXPIRED], 'null' => TRUE, 'cast' => 'enum'],
+			'statusOnline' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE, \selling\Payment::EXPIRED], 'null' => TRUE, 'cast' => 'enum'],
+			'paidAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'sale', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'checkoutId', 'paymentIntentId', 'statusCash', 'onlineStatus', 'createdAt'
+			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'statusCash', 'statusOnline', 'paidAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'sale' => 'selling\Sale',
+			'invoice' => 'selling\Invoice',
 			'customer' => 'selling\Customer',
 			'farm' => 'farm\Farm',
 			'method' => 'payment\Method',
@@ -77,12 +84,13 @@ class PaymentModel extends \ModuleModel {
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['farm'],
-			['sale']
+			['sale'],
+			['invoice']
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['checkoutId'],
-			['paymentIntentId']
+			['onlineCheckoutId'],
+			['onlinePaymentIntentId']
 		]);
 
 	}
@@ -108,10 +116,13 @@ class PaymentModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'source' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'statusCash' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'onlineStatus' :
+			case 'statusOnline' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -133,8 +144,16 @@ class PaymentModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
+	public function whereSource(...$data): PaymentModel {
+		return $this->where('source', ...$data);
+	}
+
 	public function whereSale(...$data): PaymentModel {
 		return $this->where('sale', ...$data);
+	}
+
+	public function whereInvoice(...$data): PaymentModel {
+		return $this->where('invoice', ...$data);
 	}
 
 	public function whereCustomer(...$data): PaymentModel {
@@ -157,20 +176,24 @@ class PaymentModel extends \ModuleModel {
 		return $this->where('methodName', ...$data);
 	}
 
-	public function whereCheckoutId(...$data): PaymentModel {
-		return $this->where('checkoutId', ...$data);
+	public function whereOnlineCheckoutId(...$data): PaymentModel {
+		return $this->where('onlineCheckoutId', ...$data);
 	}
 
-	public function wherePaymentIntentId(...$data): PaymentModel {
-		return $this->where('paymentIntentId', ...$data);
+	public function whereOnlinePaymentIntentId(...$data): PaymentModel {
+		return $this->where('onlinePaymentIntentId', ...$data);
 	}
 
 	public function whereStatusCash(...$data): PaymentModel {
 		return $this->where('statusCash', ...$data);
 	}
 
-	public function whereOnlineStatus(...$data): PaymentModel {
-		return $this->where('onlineStatus', ...$data);
+	public function whereStatusOnline(...$data): PaymentModel {
+		return $this->where('statusOnline', ...$data);
+	}
+
+	public function wherePaidAt(...$data): PaymentModel {
+		return $this->where('paidAt', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): PaymentModel {

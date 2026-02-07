@@ -64,7 +64,7 @@ class HistoryLib extends HistoryCrud {
 	public static function updateByPaymentIntentId(string $paymentIntentId, array $values): void {
 
 		History::model()
-			->wherePaymentIntentId($paymentIntentId)
+			->whereOnlinePaymentIntentId($onlinePaymentIntentId)
 			->update($values);
 	}
 
@@ -85,9 +85,9 @@ class HistoryLib extends HistoryCrud {
 		}
 
 		History::model()
-			->whereCheckoutId($checkout['data'][0]['id'])
+			->whereOnlineCheckoutId($checkout['data'][0]['id'])
 			->update([
-				'paymentIntentId' => $id
+				'onlinePaymentIntentId' => $id
 			]);
 
 	}
@@ -98,7 +98,7 @@ class HistoryLib extends HistoryCrud {
 
 		History::model()
 			->select(History::getSelection())
-			->wherePaymentIntentId($id)
+			->whereOnlinePaymentIntentId($id)
 			->get($eHistory);
 
 		if($eHistory->notEmpty()) {
@@ -109,7 +109,7 @@ class HistoryLib extends HistoryCrud {
 
 		History::model()
 			->select(History::getSelection())
-			->wherePaymentIntentId($id)
+			->whereOnlinePaymentIntentId($id)
 			->get($eHistory);
 
 		return $eHistory;

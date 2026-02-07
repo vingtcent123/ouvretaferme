@@ -65,7 +65,7 @@ class SaleLib extends SaleCrud {
 			$cPayment = new \Collection([
 				new Payment([
 					'method' => $eMethod,
-					'onlineStatus' => ($eMethod['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD ? Payment::SUCCESS : NULL,
+					'statusOnline' => ($eMethod['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD ? Payment::SUCCESS : NULL,
 				])
 			]);
 		}
@@ -1359,10 +1359,10 @@ class SaleLib extends SaleCrud {
 						'sale' => $e,
 						'customer' => $e['customer'],
 						'farm' => $e['farm'],
-						'checkoutId' => NULL,
+						'onlineCheckoutId' => NULL,
 						'method' => $eMethod,
 						'amountIncludingVat' => $e['priceIncludingVat'],
-						'onlineStatus' => NULL,
+						'statusOnline' => NULL,
 					])
 
 				);

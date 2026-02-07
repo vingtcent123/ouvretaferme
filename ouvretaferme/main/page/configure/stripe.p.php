@@ -14,7 +14,7 @@ new Page()
 
 		}
 
-		if(get_exists('checkoutId')) {
+		if(get_exists('onlineCheckoutId')) {
 			$paymentDetails = \payment\StripeLib::getCheckoutIdDetails($eStripeFarm, GET('checkoutId'));
 			dd($paymentDetails);
 

@@ -332,7 +332,7 @@ class SaleLib {
 
 		return (
 			$eSale['cPayment']->empty() or
-			$eSale['cPayment']->contains(fn($ePayment) => ($ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD and in_array($ePayment['onlineStatus'], [\selling\Payment::EXPIRED, \selling\Payment::FAILURE]) === FALSE)) === FALSE
+			$eSale['cPayment']->contains(fn($ePayment) => ($ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD and in_array($ePayment['statusOnline'], [\selling\Payment::EXPIRED, \selling\Payment::FAILURE]) === FALSE)) === FALSE
 		);
 
 	}
@@ -452,7 +452,7 @@ class SaleLib {
 			SaleLib::changePaymentForShop($eSaleReference);
 
 			// On annule les précédentes tentatives de paiement pour cette vente
-			\selling\PaymentLib::expiresPaymentSessions($eSaleReference);
+			\selling\PaymentOnlineLib::expiresPaymentSessions($eSaleReference);
 
 		}
 
@@ -612,13 +612,13 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		$affected = \selling\PaymentLib::updateByPaymentIntentId($object['id'], [
-			'onlineStatus' => \selling\Payment::FAILURE
+		$affected = \selling\PaymentOnlineLib::updateByPaymentIntentId($object['id'], [
+			'statusOnline' => \selling\Payment::FAILURE
 		]);
 
 		if(
 			$affected > 0 and
-			\selling\PaymentLib::hasSuccess($eSale) === FALSE
+			\selling\PaymentOnlineLib::hasSuccess($eSale) === FALSE
 		) {
 
 			$newValues = [
@@ -661,8 +661,8 @@ class SaleLib {
 			return;
 		}
 
-		\selling\PaymentLib::updateByPaymentIntentId($object['id'], [
-			'onlineStatus' => \selling\Payment::SUCCESS,
+		\selling\PaymentOnlineLib::updateByPaymentIntentId($object['id'], [
+			'statusOnline' => \selling\Payment::SUCCESS,
 			'amountIncludingVat' => $eSale['priceIncludingVat'],
 		]);
 

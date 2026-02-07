@@ -894,8 +894,8 @@ class AnalyzeLib {
 				'cPayment' => Payment::model()
 					->select(Payment::getSelection())
 					->or(
-						fn() => $this->whereOnlineStatus(NULL),
-						fn() => $this->whereOnlineStatus(Payment::SUCCESS)
+						fn() => $this->whereStatusOnline(NULL),
+						fn() => $this->whereStatusOnline(Payment::SUCCESS)
 					)
 					->delegateCollection('sale', 'id'),
 			])
