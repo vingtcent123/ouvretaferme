@@ -83,8 +83,8 @@ class SaleUi {
 			}
 
 			return match($eSale['taxes']) {
-				Sale::EXCLUDING => $eSale['priceExcludingVat'] ? \util\TextUi::money($eSale['priceExcludingVat'] / $eSale['marketSales']).$taxes : '',
-				Sale::INCLUDING => $eSale['priceIncludingVat'] ? \util\TextUi::money($eSale['priceIncludingVat'] / $eSale['marketSales']).$taxes : ''
+				Sale::EXCLUDING => $eSale['priceExcludingVat'] ? \util\TextUi::money($eSale['priceExcludingVat'] / $eSale['marketSales'], precision: 2).$taxes : '',
+				Sale::INCLUDING => $eSale['priceIncludingVat'] ? \util\TextUi::money($eSale['priceIncludingVat'] / $eSale['marketSales'], precision: 2).$taxes : ''
 			};
 
 		} else {

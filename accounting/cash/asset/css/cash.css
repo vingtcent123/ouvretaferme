@@ -25,3 +25,8 @@
 	gap: 0.5rem;
 	flex-wrap: wrap;
 }
+
+.cash-auto-description {
+	color: var(--muted);
+	font-size: 0.9rem;
+}

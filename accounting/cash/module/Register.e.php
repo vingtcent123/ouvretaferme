@@ -6,6 +6,7 @@ class Register extends RegisterElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
+			'openedSince' => new \Sql('closedAt + INTERVAL 1 DAY'),
 			'account' => \account\Account::getSelection(),
 			'bankAccount' => \account\Account::getSelection(),
 			'paymentMethod' => fn($e) => \payment\MethodLib::ask($e['paymentMethod'], \farm\Farm::getConnected()),

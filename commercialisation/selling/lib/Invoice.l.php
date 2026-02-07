@@ -142,6 +142,32 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
+	public static function getForCash(\farm\Farm $eFarm, \payment\Method $eMethod, string $dateAfter): \Collection {
+
+		return Invoice::model()
+			->select([
+				'id',
+				'date' => new \Sql('paidAt'),
+				'number',
+				'source' => fn() => \cash\Cash::SELL_INVOICE,
+				'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? \cash\Cash::CREDIT : \cash\Cash::DEBIT,
+				'priceIncludingVat', 'priceExcludingVat',
+				'amountIncludingVat' => new \Sql('priceIncludingVat', 'float'),
+				'amountExcludingVat' => new \Sql('priceExcludingVat', 'float'),
+				'vat',
+				'vatByRate',
+				'description' => fn($e) => InvoiceUi::getName($e)
+			])
+			->wherePaymentMethod($eMethod)
+			->whereFarm($eFarm)
+			->wherePaidAt('>', $dateAfter)
+			->whereStatus('IN', [Invoice::GENERATED, Invoice::DELIVERED])
+			->whereStatusCash(Invoice::WAITING)
+			->whereDate('>', $dateAfter)
+			->getCollection();
+
+	}
+
 	public static function existsQualifiedSales(\farm\Farm $eFarm): bool {
 
 		return Sale::model()

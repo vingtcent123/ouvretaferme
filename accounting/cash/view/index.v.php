@@ -19,7 +19,7 @@ new AdaptativeView('/journal-de-caisse', function($data, FarmTemplate $t) {
 
 		if($data->eRegisterCurrent['operations'] > 0) {
 
-			echo new \cash\CashUi()->getChoice($data->eRegisterCurrent);
+			echo new \cash\CashUi()->getChoice($data->eRegisterCurrent, $data->cCashflow, $data->cInvoice, $data->cSale);
 			echo new \cash\CashUi()->getSearch($data->eRegisterCurrent, $data->search);
 			echo new \cash\CashUi()->getList($data->eRegisterCurrent, $data->ccCash, $data->search, $data->page);
 

@@ -15,6 +15,10 @@ abstract class CashflowElement extends \Element {
 	const ALLOCATED = 'allocated';
 	const DELETED = 'deleted';
 
+	const DRAFT = 'draft';
+	const VALID = 'valid';
+	const IGNORED = 'ignored';
+
 	public static function getSelection(): array {
 		return Cashflow::model()->getProperties();
 	}
@@ -59,17 +63,19 @@ class CashflowModel extends \ModuleModel {
 			'account' => ['element32', 'bank\BankAccount', 'null' => TRUE, 'cast' => 'element'],
 			'import' => ['element32', 'bank\Import', 'cast' => 'element'],
 			'status' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::ALLOCATED, \bank\Cashflow::DELETED], 'cast' => 'enum'],
+			'statusCash' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::DRAFT, \bank\Cashflow::VALID, \bank\Cashflow::IGNORED], 'cast' => 'enum'],
 			'isReconciliated' => ['bool', 'cast' => 'bool'],
 			'isSuggestionCalculated' => ['bool', 'cast' => 'bool'],
 			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
+			'salePayment' => ['element32', 'selling\Payment', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'date', 'hash', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'isReconciliated', 'isSuggestionCalculated', 'invoice', 'sale', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'date', 'hash', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'statusCash', 'isReconciliated', 'isSuggestionCalculated', 'invoice', 'sale', 'salePayment', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -77,6 +83,7 @@ class CashflowModel extends \ModuleModel {
 			'import' => 'bank\Import',
 			'invoice' => 'selling\Invoice',
 			'sale' => 'selling\Sale',
+			'salePayment' => 'selling\Payment',
 			'createdBy' => 'user\User',
 		];
 
@@ -95,6 +102,9 @@ class CashflowModel extends \ModuleModel {
 		switch($property) {
 
 			case 'status' :
+				return Cashflow::WAITING;
+
+			case 'statusCash' :
 				return Cashflow::WAITING;
 
 			case 'isReconciliated' :
@@ -127,6 +137,9 @@ class CashflowModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'statusCash' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -188,6 +201,10 @@ class CashflowModel extends \ModuleModel {
 		return $this->where('status', ...$data);
 	}
 
+	public function whereStatusCash(...$data): CashflowModel {
+		return $this->where('statusCash', ...$data);
+	}
+
 	public function whereIsReconciliated(...$data): CashflowModel {
 		return $this->where('isReconciliated', ...$data);
 	}
@@ -202,6 +219,10 @@ class CashflowModel extends \ModuleModel {
 
 	public function whereSale(...$data): CashflowModel {
 		return $this->where('sale', ...$data);
+	}
+
+	public function whereSalePayment(...$data): CashflowModel {
+		return $this->where('salePayment', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): CashflowModel {

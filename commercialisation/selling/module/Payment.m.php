@@ -7,6 +7,11 @@ abstract class PaymentElement extends \Element {
 
 	private static ?PaymentModel $model = NULL;
 
+	const WAITING = 'waiting';
+	const DRAFT = 'draft';
+	const VALID = 'valid';
+	const IGNORED = 'ignored';
+
 	const INITIALIZED = 'initialized';
 	const SUCCESS = 'success';
 	const FAILURE = 'failure';
@@ -54,12 +59,13 @@ class PaymentModel extends \ModuleModel {
 			'methodName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'checkoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'paymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
+			'statusCash' => ['enum', [\selling\Payment::WAITING, \selling\Payment::DRAFT, \selling\Payment::VALID, \selling\Payment::IGNORED], 'cast' => 'enum'],
 			'onlineStatus' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE, \selling\Payment::EXPIRED], 'null' => TRUE, 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'sale', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'checkoutId', 'paymentIntentId', 'onlineStatus', 'createdAt'
+			'id', 'sale', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'checkoutId', 'paymentIntentId', 'statusCash', 'onlineStatus', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -85,6 +91,9 @@ class PaymentModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'statusCash' :
+				return Payment::WAITING;
+
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
@@ -98,6 +107,9 @@ class PaymentModel extends \ModuleModel {
 	public function encode(string $property, $value) {
 
 		switch($property) {
+
+			case 'statusCash' :
+				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'onlineStatus' :
 				return ($value === NULL) ? NULL : (string)$value;
@@ -151,6 +163,10 @@ class PaymentModel extends \ModuleModel {
 
 	public function wherePaymentIntentId(...$data): PaymentModel {
 		return $this->where('paymentIntentId', ...$data);
+	}
+
+	public function whereStatusCash(...$data): PaymentModel {
+		return $this->where('statusCash', ...$data);
 	}
 
 	public function whereOnlineStatus(...$data): PaymentModel {

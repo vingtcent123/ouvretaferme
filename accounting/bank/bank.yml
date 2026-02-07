@@ -22,10 +22,12 @@ Cashflow:
   account: ?bank\BankAccount
   import: bank\Import
   status: enum(WAITING, ALLOCATED, DELETED) = WAITING
+  statusCash: enum(WAITING, DRAFT, VALID, IGNORED) = WAITING
   isReconciliated: bool = FALSE
   isSuggestionCalculated: bool = FALSE
   invoice: ?selling\Invoice
   sale: ?selling\Sale
+  salePayment: ?selling\Payment
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)

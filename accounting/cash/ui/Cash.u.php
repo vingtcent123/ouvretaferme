@@ -36,7 +36,7 @@ class CashUi {
 
 	}
 
-	public function getChoice(Register $eRegister): string {
+	public function getChoice(Register $eRegister, \Collection $cCashflow, \Collection $cInvoice, \Collection $cSale): string {
 
 		$eCash = new Cash([
 			'register' => $eRegister
@@ -115,9 +115,114 @@ class CashUi {
 
 			$h .= '</div>';
 
-			$h .= '<br/>';
-			$h .= '<h3>'.s("Opérations automatiquement trouvées depuis le XXX").'</h3>';
-			// Doit passer par acceptCreate
+			$h .= $this->getAuto($eRegister, $cCashflow, $cInvoice, $cSale);
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected static function getAuto(Register $eRegister, \Collection $cCashflow, \Collection $cInvoice, \Collection $cSale): string {
+
+		$summarize = '';
+
+		if($cCashflow->notEmpty()) {
+
+			$summarize .= '<li>';
+				$summarize .= '<h5>'.s("Banque").'</h5>';
+				$summarize .= '<div>'.$cCashflow->count().'</div>';
+			$summarize .= '</li>';
+
+		}
+
+		if($cInvoice->notEmpty()) {
+
+			$summarize .= '<li>';
+				$summarize .= '<h5>'.s("Factures").'</h5>';
+				$summarize .= '<div>'.$cInvoice->count().'</div>';
+			$summarize .= '</li>';
+
+		}
+
+		if($cSale->notEmpty()) {
+
+			$summarize .= '<li>';
+				$summarize .= '<h5>'.s("Ventes non facturées").'</h5>';
+				$summarize .= '<div>'.$cSale->count().'</div>';
+			$summarize .= '</li>';
+
+		}
+
+		if($summarize === '') {
+			return '';
+		}
+
+		$h = '<br/>';
+		$h .= '<div class="util-title">';
+			$h .= '<h3>'.\Asset::icon('fire').' '.s("Opérations par {method} automatiquement trouvées depuis le {value}", ['method' => '<span style="text-transform: uppercase">'.encode($eRegister['paymentMethod']['name']).'</span>', 'value' => \util\DateUi::numeric($eRegister['openedSince'])]).'</h3>';
+			$h .= '<a href="" class="btn btn-outline-secondary">'.s("Tout ignorer").'</a>';
+		$h .= '</div>';
+
+		$h .= '<ul class="util-summarize util-summarize-overflow">';
+			$h .= $summarize;
+		$h .= '</ul>';
+
+		$cAuto = new \Collection()
+			->mergeCollection($cCashflow)
+			->mergeCollection($cInvoice)
+			->mergeCollection($cSale)
+			->sort([
+				'date' => SORT_ASC,
+				'id' => SORT_ASC
+			]);
+
+		$h .= '<div class="util-overflow-sm">';
+
+			$h .= '<table class="tr-even">';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th>'.s("Date").'</th>';
+						$h .= '<th>'.s("Libellé").'</th>';
+						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
+						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
+						$h .= '<th></th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+				foreach($cAuto as $eAuto) {
+
+					$h .= '<tr>';
+						$h .= '<td class="td-vertical-align-top">';
+							$h .= \util\DateUi::numeric($eAuto['date']);
+						$h .= '</td>';
+						$h .= '<td>';
+							$h .= self::getOperation($eAuto['source'], $eAuto['type']).'</div>';
+							$h .= '<div class="cash-auto-description">'.\Asset::icon('arrow-return-right').'  '.encode($eAuto['description']).'</div>';
+						$h .= '</td>';
+
+						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+							if($eAuto['type'] === Cash::CREDIT) {
+								$h .= \util\TextUi::money(abs($eAuto['amountIncludingVat']));
+							}
+						$h .= '</td>';
+
+						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
+							if($eAuto['type'] === Cash::DEBIT) {
+								$h .= \util\TextUi::money(abs($eAuto['amountIncludingVat']));
+							}
+						$h .= '</td>';
+						$h .= '<td class="text-end">';
+
+							$h .= '<a class="btn btn-secondary dropdown-toggle">'.s("Importer dans le journal").'</a> ';
+							$h .= '<a class="btn btn-outline-secondary dropdown-toggle">'.s("Ignorer").'</a>';
+						$h .= '</td>';
+					$h .= '</tr>';
+				}
+				$h .= '</tbody>';
+			$h .= '</table>';
 
 		$h .= '</div>';
 
@@ -148,7 +253,9 @@ class CashUi {
 			},
 
 			Cash::BUY_MANUAL => \Asset::icon('wallet').'  '.s("Achat à un fournisseur"),
-			Cash::SELL_MANUAL => \Asset::icon('wallet').'  '.s("Vente à un client")
+			Cash::SELL_MANUAL => \Asset::icon('wallet').'  '.s("Vente à un client"),
+			Cash::SELL_INVOICE => \Asset::icon('wallet').'  '.s("Vente avec facture"),
+			Cash::SELL_SALE => \Asset::icon('wallet').'  '.s("Vente sans facture")
 
 		};
 
@@ -699,7 +806,7 @@ class CashUi {
 			'amountExcludingVat' => s("Montant HT"),
 			'vat' => s("Montant de TVA"),
 			'vatRate' => s("Taux de TVA"),
-			'description' => s("Motif"),
+			'description' => s("Libellé"),
 			'account' => s("Numéro de compte")
 		]);
 

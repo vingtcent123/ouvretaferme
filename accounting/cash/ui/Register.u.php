@@ -45,10 +45,13 @@ class RegisterUi {
 				$h .= '<div class="dropdown-list bg-secondary">';
 					$h .= '<div class="dropdown-title">'.s("Mes journaux de caisse").'</div>';
 
+					$hasOld = FALSE;
+
 					foreach($cRegister as $eRegister) {
 
-						if($eRegister['status'] === Register::INACTIVE) {
+						if($hasOld === FALSE and $eRegister['status'] === Register::INACTIVE) {
 							$h .= '<div class="dropdown-subtitle">'.s("Anciens journaux").'</div>';
+							$hasOld = TRUE;
 						}
 
 						$h .= '<a href="'.\farm\FarmUi::urlCash($eRegister).'" class="dropdown-item '.($eRegister['id'] === $eRegisterCurrent['id'] ? 'selected' : '').'">';

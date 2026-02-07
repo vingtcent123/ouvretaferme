@@ -22,6 +22,13 @@ class InvoiceUi {
 		return '/facture/'.$e['id'];
 
 	}
+
+	public static function getName(Invoice $e): string {
+
+		$number = encode($e['number'] ?? '');
+		return ($e['priceIncludingVat'] > 0) ? s("Facture {value}", $number) : s("Facture d'avoir {value}", $number);
+
+	}
 	
 	public function getSuccessActions(Invoice $eInvoice): string {
 
@@ -344,7 +351,7 @@ class InvoiceUi {
 
 								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 								$h .= '<div class="dropdown-list">';
-									$h .= '<div class="dropdown-title">'.s("Facture {value}", encode($eInvoice['number'] ?? '')).'</div>';
+									$h .= '<div class="dropdown-title">'.self::getName($eInvoice).'</div>';
 
 									if(
 										$eInvoice->acceptDownload() or
