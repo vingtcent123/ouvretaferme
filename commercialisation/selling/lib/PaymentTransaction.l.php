@@ -290,7 +290,10 @@ class PaymentTransactionLib {
 		}
 
 		// Cas impossible sauf en cas de bug technique
-		if($notPaid >= 2) {
+		if(
+			$eSale['profile'] !== Sale::SALE_MARKET and
+			$notPaid >= 2
+		) {
 			throw new \Exception('Too much not paid payment methods for sale '.$eSale['id']);
 		}
 

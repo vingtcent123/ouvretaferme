@@ -5,6 +5,7 @@ new Page()
 		$c = \selling\Sale::model()
 			->select('id', 'paymentStatus')
 			->whereProfile('NOT IN', [\selling\Sale::COMPOSITION, \selling\Sale::MARKET])
+			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Sale::NEVER_PAID.'"')
 			->sort([
 				'id' => SORT_ASC
 			])
