@@ -4,7 +4,6 @@ new Page()
 
 		$c = \selling\Sale::model()
 			->select('id', 'paymentStatus')
-			->whereFarm(7)
 			->whereProfile('NOT IN', [\selling\Sale::COMPOSITION, \selling\Sale::MARKET])
 			->sort([
 				'id' => SORT_ASC
