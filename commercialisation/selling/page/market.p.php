@@ -19,7 +19,7 @@ new \selling\SalePage()
 
 		$data->eSale = \selling\SaleLib::getById(GET('subId'), \selling\Sale::getSelection() + [
 			'createdBy' => ['firstName', 'lastName', 'vignette'],
-			'cPayment' => \selling\PaymentLib::delegateBySale(),
+			'cPayment' => \selling\PaymentTransactionLib::delegateBySale(),
 		]);
 
 		if($data->eSale->empty()) {
@@ -121,7 +121,7 @@ new \selling\SalePage()
 
 		$fw = new FailWatch();
 
-		\selling\MarketLib::doNotPaidMarketSale($data->e);
+		\selling\MarketLib::dissociateMarketSale($data->e);
 
 		$fw->validate();
 
@@ -161,7 +161,7 @@ new \selling\SalePage()
 
 		$data->e = \selling\SaleLib::getById($data->e, \selling\Sale::getSelection() + [
 			'createdBy' => ['firstName', 'lastName', 'vignette'],
-			'cPayment' => \selling\PaymentLib::delegateBySale(),
+			'cPayment' => \selling\PaymentTransactionLib::delegateBySale(),
 		]);
 
 		$data->cItemMarket = \selling\SaleLib::getItems($data->eSaleMarket);

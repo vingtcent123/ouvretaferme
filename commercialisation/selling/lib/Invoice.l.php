@@ -132,7 +132,7 @@ class InvoiceLib extends InvoiceCrud {
 
 		return Sale::model()
 			->join(Payment::model(), 'm1.id = m2.sale')
-			->where('m2.method IS NOT NULL AND m2.method = '.$ePaymentMethod['id'])
+			->where('m2.method', $ePaymentMethod)
 			->where('m1.farm', $eFarm)
 			->whereShop('!=', NULL)
 			->wherePreparationStatus(Sale::DELIVERED)
@@ -497,7 +497,7 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
-	public static function update(Invoice $e, array $properties): void {
+	public static function 	update(Invoice $e, array $properties): void {
 
 		Invoice::model()->beginTransaction();
 
@@ -509,7 +509,7 @@ class InvoiceLib extends InvoiceCrud {
 					$e['paymentStatus'] === NULL
 				) {
 
-					$e['paymentStatus'] = Sale::NOT_PAID;
+					$e['paymentStatus'] = Invoice::NOT_PAID;
 					$properties[] = 'paymentStatus';
 
 				}
@@ -556,24 +556,12 @@ class InvoiceLib extends InvoiceCrud {
 
 			parent::update($e, $properties);
 
-			$updateSale = [];
-			$updateSaleProperties = [];
-
-			if(in_array('paymentMethod', $properties)) {
-				$updateSale['cPayment'] = new \Collection([
-					new Payment(['method' => $e['paymentMethod']]),
-				]);
-				$updateSaleProperties[] = 'paymentMethod';
-			}
-
-			if(in_array('paymentStatus', $properties)) {
-				$updateSale['paymentStatus'] = $e['paymentStatus'];
-				$updateSaleProperties[] = 'paymentStatus';
-			}
-
-			if(in_array('paidAt', $properties)) {
-				$updateSale['paidAt'] = $e['paidAt'];
-				$updateSaleProperties[] = 'paidAt';
+			if(
+				in_array('paymentMethod', $properties) or
+				in_array('paymentStatus', $properties) or
+				in_array('paidAt', $properties)
+			) {
+				PaymentTransactionLib::broadcastInvoice($e);
 			}
 
 			if(in_array('status', $properties)) {
@@ -591,16 +579,6 @@ class InvoiceLib extends InvoiceCrud {
 
 						break;
 
-				}
-
-			}
-
-			if($updateSale) {
-
-				$cSale = SaleLib::getByIds($e['sales']);
-
-				foreach($cSale as $eSale) {
-					SaleLib::update($eSale->merge($updateSale), $updateSaleProperties);
 				}
 
 			}

@@ -3,6 +3,51 @@ namespace selling;
 
 class PaymentMarketLib {
 
+	public static function pay(Sale $eSale): void {
+
+		Sale::model()->beginTransaction();
+
+			$paidAt = currentDate();
+
+			$cPayment = PaymentTransactionLib::getAll($eSale);
+
+			$ids = [];
+
+			foreach($cPayment as $ePayment) {
+
+				if($ePayment['status'] === Payment::NOT_PAID) {
+
+					$ePayment['status'] = Payment::PAID;
+					$ePayment['paidAt'] = $paidAt;
+
+					$ids[] = $ePayment['id'];
+
+				}
+
+			}
+
+			Payment::model()
+				->whereId('IN', $ids)
+				->update([
+					'status' => Payment::PAID,
+					'paidAt' => $paidAt
+				]);
+
+			PaymentTransactionLib::recalculate($eSale, $cPayment);
+
+		Sale::model()->commit();
+
+	}
+
+	public static function clean(Sale $eSale): void {
+
+		Payment::model()
+			->whereSale($eSale)
+			->where('amountIncludingVat IS NULL OR amountIncludingVat = 0')
+			->delete();
+
+	}
+
 	/**
 	 * Change un moyen de paiement pour un autre s'il n'est pas présent par ailleurs
 	 */
@@ -68,7 +113,7 @@ class PaymentMarketLib {
 
 		Payment::model()->beginTransaction();
 
-			$cPayment = PaymentLib::getBySale($eSale);
+			$cPayment = PaymentTransactionLib::getAll($eSale);
 
 			if($eMethod->empty()) {
 
@@ -115,11 +160,20 @@ class PaymentMarketLib {
 						'amountIncludingVat' => $fillAmount
 					]);
 
+				PaymentTransactionLib::recalculate($eSale, $cPayment);
+
 			} else {
 
 				$fillAmount = max(0.0, $eSale['priceIncludingVat'] - $currentAmount);
 
-				PaymentLib::createByMethod($eSale, $eMethod, $fillAmount);
+				$ePaymentCreate = new Payment([
+					'sale' => $eSale,
+					'method' => $eMethod,
+					'amountIncludingVat' => $fillAmount,
+					'status' => Sale::NOT_PAID
+				]);
+
+				PaymentTransactionLib::createForSale($ePaymentCreate);
 
 			}
 

@@ -410,12 +410,12 @@ class SaleUi {
 							$batch[] = 'accept-delete';
 						}
 
-						if($eSale->acceptUpdatePayment()) {
-							$batch[] = 'accept-update-payment';
+						if($eSale->acceptReplacePayment()) {
+							$batch[] = 'accept-replace-payment';
 						}
 
-						if($eSale->acceptUpdatePaymentStatus()) {
-							$batch[] = 'accept-update-payment-status';
+						if($eSale->acceptPayPayment()) {
+							$batch[] = 'accept-pay-payment';
 						}
 
 					}
@@ -693,22 +693,21 @@ class SaleUi {
 
 		$menu .= '</div>';
 
-		$menu .= '<a data-dropdown="top-start" data-batch-test="accept-update-payment" data-batch-not-contains="hide" class="batch-item">';
+		$menu .= '<a data-dropdown="top-start" data-batch-test="accept-replace-payment" data-batch-not-contains="hide" class="batch-item">';
 			$menu .= \Asset::icon('cash-coin');
 			$menu .= '<span>'.s("Règlement").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<div class="dropdown-list dropdown-list-2 bg-secondary">';
-			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-update-payment" data-batch-contains="count" data-batch-only="hide"></span></div>';
+			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-replace-payment" data-batch-contains="count" data-batch-only="hide"></span></div>';
 			foreach($cPaymentMethod as $ePaymentMethod) {
 				if($ePaymentMethod->acceptManualUpdate()) {
-					$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentCollection" data-batch-test="accept-update-payment" data-batch-contains="post" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+					$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentNotPaidCollection" data-batch-test="accept-replace-payment" data-batch-contains="post" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
 				}
 			}
-			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentCollection" data-batch-test="accept-update-payment" data-batch-contains="post" post-payment-method="" class="dropdown-item" style="grid-column: span 2"><i>'.s("Pas de moyen de paiement").'</i></a>';
-			$menu .= '<div class="dropdown-subtitle">'.s("Changer l'état du paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-update-payment-status" data-batch-always="count" data-batch-only="hide"></span></div>';
-			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-confirm="'.s("Les ventes seront marqués payées au {value}. Voulez-vous continuer ?", currentDate()).'" data-batch-test="accept-update-payment-status" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::PAID.'" class="dropdown-item">'.self::getPaymentStatusBadge(Sale::PAID).'</a>';
-			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-batch-test="accept-update-payment-status" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::NOT_PAID.'" class="dropdown-item">'.self::getPaymentStatusBadge(Sale::NOT_PAID).'</a>';
+			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentNotPaidCollection" data-batch-test="accept-replace-payment" data-batch-contains="post" post-payment-method="" class="dropdown-item" style="grid-column: span 2"><i>'.s("Pas de moyen de paiement").'</i></a>';
+			$menu .= '<div class="dropdown-subtitle">'.s("Changer l'état du paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-pay-payment" data-batch-always="count" data-batch-only="hide"></span></div>';
+			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-confirm="'.s("Les ventes seront marqués payées au {value}. Voulez-vous continuer ?", currentDate()).'" data-batch-test="accept-pay-payment" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::PAID.'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûre de vouloir passer ces ventes à l'état payé ? Vous ne pourrez pas facilement revenir en arrière.").'">'.self::getPaymentStatusBadge(Sale::PAID).'</a>';
 		$menu .= '</div>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="batch-item">';
@@ -2397,11 +2396,13 @@ class SaleUi {
 				});
 			$h .= '</div>';
 
+			$never = $eSale->acceptReplacePayment() ? '<a data-ajax="/selling/sale:doUpdateNeverPaid" post-id="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette vente ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>' : '';
+
 			$h .= $form->group(
-				content: '<div class="flex-justify-space-between">'
-					.$form->submit(s("Enregistrer"))
-					.'<a data-ajax="/selling/sale:doUpdateNeverPaid" post-id="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette vente ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>'
-				.'</div>'
+				content: '<div class="flex-justify-space-between">'.
+					$form->submit(s("Enregistrer")).
+					$never.
+				'</div>'
 		);
 
 		$h .= $form->close();

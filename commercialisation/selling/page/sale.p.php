@@ -455,18 +455,18 @@ new \selling\SalePage()
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
 	->write('doUpdateNeverPaid', function($data) {
 
-		\selling\SaleLib::updateNeverPaid($data->e);
+		\selling\PaymentTransactionLib::updateNeverPaid($data->e);
 
 		throw new ReloadAction();
 
-	}, validate: ['canWrite', 'acceptUpdatePayment'])
+	}, validate: ['canWrite', 'acceptReplacePayment'])
 	->write('doDeletePayment', function($data) {
 
-		\selling\SaleLib::deletePayment($data->e);
+		\selling\PaymentTransactionLib::delete($data->e);
 
 		throw new ReloadLayerAction();
 
-	}, validate: ['canWrite', 'acceptUpdatePayment'])
+	}, validate: ['canWrite', 'acceptReplacePayment'])
 	->read('duplicate', function($data) {
 
 		if($data->e->acceptDuplicate() === FALSE) {
@@ -617,9 +617,9 @@ new Page(function($data) {
 		throw new ReloadAction();
 
 	})
-	->post('doUpdatePaymentCollection', function($data) {
+	->post('doUpdatePaymentNotPaidCollection', function($data) {
 
-		$data->c->validate('canWrite', 'acceptUpdatePayment');
+		$data->c->validate('canWrite', 'acceptReplacePayment');
 
 		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'));
 
@@ -627,18 +627,20 @@ new Page(function($data) {
 			$eMethod->validate('canUse', 'acceptManualUpdate');
 		}
 
-		\selling\SaleLib::updatePaymentMethodCollection($data->c, $eMethod);
+		foreach($data->c as $e) {
+			\selling\PaymentTransactionLib::updateNotPaidMethod($e, $eMethod);
+		}
 
 		throw new ReloadAction('selling', 'Sale::paymentMethodUpdated');
 
 	})
 	->post('doUpdatePaymentStatusCollection', function($data) {
 
-		$data->c->validate('canWrite', 'acceptUpdatePaymentStatus');
+		$data->c->validate('canWrite', 'acceptPayPayment');
 
-		$paymentStatus = POST('paymentStatus', [\selling\Sale::PAID, \selling\Sale::NOT_PAID]);
-
-		\selling\SaleLib::updatePaymentStatusCollection($data->c, $paymentStatus);
+		foreach($data->c as $e) {
+			\selling\PaymentTransactionLib::updatePaid($e);
+		}
 
 		throw new ReloadAction('selling', 'Sale::paymentStatusUpdated');
 

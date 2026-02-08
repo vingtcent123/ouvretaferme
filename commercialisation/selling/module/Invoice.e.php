@@ -145,14 +145,25 @@ class Invoice extends InvoiceElement {
 	}
 
 	public function acceptUpdatePayment(): bool {
-		return in_array($this['status'], [Invoice::DRAFT, Invoice::GENERATED, Invoice::DELIVERED]);
+		return (
+			in_array($this['status'], [Invoice::DRAFT, Invoice::GENERATED, Invoice::DELIVERED])
+		);
 	}
 
-	public function acceptUpdatePaymentStatus(): bool {
+	public function acceptReplacePayment(): bool {
 
 		return (
 			$this->acceptUpdatePayment() and
-			$this['paymentMethod']->notEmpty()
+			$this['paymentStatus'] !== Sale::PAID
+		);
+
+	}
+
+	public function acceptPayPayment(): bool {
+
+		return (
+			$this->acceptUpdatePayment() and
+			$this['paymentStatus'] === Sale::NOT_PAID
 		);
 
 	}

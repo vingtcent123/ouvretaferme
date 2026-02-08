@@ -7,7 +7,7 @@ class History extends HistoryElement {
 
 		return parent::getSelection() + [
 			'farm' => \farm\Farm::getSelection(),
-			'sale' => ['id', 'priceIncludingVat', 'cPayment' => \selling\PaymentLib::delegateBySale()],
+			'sale' => ['id', 'priceIncludingVat', 'cPayment' => \selling\PaymentTransactionLib::delegateBySale()],
 		];
 
 	}

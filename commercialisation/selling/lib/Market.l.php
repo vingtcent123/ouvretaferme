@@ -240,7 +240,7 @@ class MarketLib {
 
 		Sale::model()->beginTransaction();
 
-			$eSale['cPayment'] = PaymentLib::getBySale($eSale);
+			$eSale['cPayment'] = PaymentTransactionLib::getAll($eSale);
 
 			if($eSale['cPayment']->empty()) {
 
@@ -260,18 +260,18 @@ class MarketLib {
 			SaleLib::update($eSale, ['preparationStatus']);
 
 			// Supprime les moyens de paiement vide / à 0€
-			PaymentLib::cleanBySale($eSale);
-			PaymentLib::updateSalePaid($eSale);
+			PaymentMarketLib::clean($eSale);
+			PaymentMarketLib::pay($eSale);
 
 		Sale::model()->commit();
 
 	}
 
-	public static function doNotPaidMarketSale(Sale $eSale): void {
+	public static function dissociateMarketSale(Sale $eSale): void {
 
 		Sale::model()->beginTransaction();
 
-			$eSale['cPayment'] = PaymentLib::getBySale($eSale);
+			$eSale['cPayment'] = PaymentTransactionLib::getAll($eSale);
 
 			if(
 				$eSale['cPayment']->notEmpty() and
@@ -302,7 +302,7 @@ class MarketLib {
 					'profile' => $eSale['profile'],
 				]);
 
-			PaymentLib::cleanBySale($eSale);
+			PaymentMarketLib::clean($eSale);
 
 		Sale::model()->commit();
 

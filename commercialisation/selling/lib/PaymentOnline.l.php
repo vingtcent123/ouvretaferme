@@ -49,16 +49,52 @@ class PaymentOnlineLib {
 
 	}
 
-	public static function updateByPaymentIntentId(string $id, array $properties): int {
+	public static function failByPaymentIntentId(Sale $eSale, string $paymentIntentId): bool {
 
-		return Payment::model()
-			->whereOnlinePaymentIntentId($id)
-			->update($properties);
+		\selling\Payment::model()->beginTransaction();
+
+			$affected = Payment::model()
+				->whereSale($eSale)
+				->whereOnlinePaymentIntentId($paymentIntentId)
+				->update([
+					'status' => \selling\Payment::FAILED
+				]);
+
+			if($affected > 0) {
+				PaymentTransactionLib::recalculate($eSale);
+			}
+
+		\selling\Payment::model()->commit();
+
+		return ($affected > 0);
+
+	}
+
+	public static function payByPaymentIntentId(Sale $eSale, string $paymentIntentId, float $amount): int {
+
+		\selling\Payment::model()->beginTransaction();
+
+			$affected = Payment::model()
+				->whereSale($eSale)
+				->whereOnlinePaymentIntentId($paymentIntentId)
+				->update([
+					'status' => Payment::PAID,
+					'amountIncludingVat' => $amount,
+					'paidAt' => currentDate()
+				]);
+
+			if($affected > 0) {
+				PaymentTransactionLib::recalculate($eSale);
+			}
+
+		\selling\Payment::model()->commit();
+
+		return ($affected > 0);
 
 	}
 
 	/**
-	 * Expire les paiements par CB en ligne
+	 * Expire les paiements en ligne
 	 * OU supprime tous les autres moyens de paiement
 	 * pour une vente donnée.
 	 *
@@ -74,34 +110,25 @@ class PaymentOnlineLib {
 			->getCollection();
 
 		if($cPayment->notEmpty()) {
+
 			$eStripeFarm = \payment\StripeLib::getByFarm($eSale['farm']);
-		}
 
-		foreach($cPayment as $ePayment) {
+			if($eStripeFarm->notEmpty()) {
 
-			if($eStripeFarm->notEmpty() and $ePayment['method']->isOnline()) {
+				foreach($cPayment as $ePayment) {
 
-				try {
-					\payment\StripeLib::expiresCheckoutSession($eStripeFarm, $ePayment['onlineCheckoutId']);
-				} catch(\payment\StripeException) {
+					try {
+						\payment\StripeLib::expiresCheckoutSession($eStripeFarm, $ePayment['onlineCheckoutId']);
+					} catch(\payment\StripeException) {
+					}
+
 				}
-
-				Payment::model()->delete($ePayment);
 
 			}
 
 		}
 
-		// On supprime tous les paiements autres que en ligne
-		Payment::model()
-			->join(\payment\Method::model(), 'm1.method = m2.id')
-			->whereSale($eSale)
-			->where('m2.online = 0')
-			->delete();
-
-		// On réinitialise le statut de la vente
-		$properties = ['paymentStatus' => NULL];
-		Sale::model()->update($eSale, $properties);
+		PaymentTransactionLib::delete($eSale);
 
 	}
 

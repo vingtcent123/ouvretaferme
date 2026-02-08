@@ -343,7 +343,6 @@ class SaleLib {
 	public static function changePaymentForShop(\selling\Sale $eSale): void {
 
 		$eSale['preparationStatus'] = \selling\Sale::BASKET;
-
 		\selling\SaleLib::update($eSale, ['preparationStatus']);
 
 		\selling\HistoryLib::createBySale($eSale, 'sale-update-payment');
@@ -455,7 +454,7 @@ class SaleLib {
 			SaleLib::changePaymentForShop($eSaleReference);
 
 			// On annule les précédentes tentatives de paiement pour cette vente
-			\selling\PaymentOnlineLib::expiresPaymentSessions($eSaleReference);
+			\selling\PaymentTransactionLib::delete($eSaleReference);
 
 		}
 
@@ -520,20 +519,26 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		$properties = ['paymentStatus'];
-
-		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
-
 		// On prolonge le délai d'expiration de la vente
 		if($eSale['preparationStatus'] === \selling\Sale::BASKET) {
+
 			$eSale['expiresAt'] = new \Sql('NOW() + INTERVAL 1 HOUR');
-			$properties[] = 'expiresAt';
+			\selling\SaleLib::update($eSale, ['expiresAt']);
+
 		}
 
 		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
 
-		\selling\SaleLib::update($eSale, $properties);
-		$ePayment = \selling\PaymentLib::createByMethod($eSale, $eMethod, checkoutId: $stripeSession['id']);
+
+		$ePayment = new \selling\Payment([
+			'sale' => $eSale,
+			'method' => $eMethod,
+			'status' => \selling\Payment::NOT_PAID,
+			'onlineCheckoutId' => $stripeSession['id']
+		]);
+
+		\selling\PaymentTransactionLib::createForSale($ePayment);
+
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
 
 		\selling\Sale::model()->commit();
@@ -553,25 +558,34 @@ class SaleLib {
 			'customer'
 		]);
 
-		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
-
-		if($eMethod->empty()) {
-			$eSale['paymentStatus'] = NULL;
-		} else {
-			$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
-		}
 
 		\selling\Sale::model()->beginTransaction();
 
-		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus']);
+			$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
+			\selling\SaleLib::update($eSale, ['preparationStatus']);
 
-		\selling\PaymentLib::replaceBySale($eSale, $eMethod);
+			if($eMethod->empty()) {
+				\selling\PaymentTransactionLib::delete($eSale);
+			} else {
 
-		// On re-récupère la liste de moyens de paiement à jour (pour le notify)
-		$eSale['cPayment'] = \selling\PaymentLib::getBySale($eSale);
+				$cPayment = new \Collection([
+					new \selling\Payment([
+						'method' => $eMethod,
+						'amountIncludingVat' => NULL,
+						'status' => \selling\Payment::NOT_PAID
+					])
+				]);
 
-		$group = FALSE;
-		self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem'], $group);
+				\selling\PaymentTransactionLib::replace($eSale, $cPayment);
+
+			}
+
+
+			// On re-récupère la liste de moyens de paiement à jour (pour le notify)
+			$eSale['cPayment'] = \selling\PaymentTransactionLib::getAll($eSale);
+
+			$group = FALSE;
+			self::notify($eSale['shopUpdated'] ? 'saleUpdated' : 'saleConfirmed', $eSale, $eSale['cItem'], $group);
 
 		\selling\Sale::model()->commit();
 
@@ -608,44 +622,18 @@ class SaleLib {
 
 	}
 
-	public static function paymentFailed(\selling\Sale $eSale, \payment\Method $eMethod, array $event): void {
+	public static function paymentFailed(\selling\Sale $eSale, array $event): void {
 
 		$object = $event['data']['object'];
 
-		\selling\Sale::model()->beginTransaction();
+		$hasFailed = \selling\PaymentOnlineLib::failByPaymentIntentId($eSale, $object['id']);
 
-		$affected = \selling\PaymentOnlineLib::updateByPaymentIntentId($object['id'], [
-			'status' => \selling\Payment::FAILED
-		]);
+		if($hasFailed) {
 
-		if(
-			$affected > 0 and
-			\selling\Payment::model()
-				->whereSale($eSale)
-				->whereMethod($eMethod)
-				->whereStatus(\selling\Payment::PAID)
-				->exists() === FALSE
-		) {
-
-			$newValues = [
-				'paymentStatus' => \selling\Sale::FAILED
-			];
-
-			$affected = \selling\Sale::model()
-				->wherePaymentStatus('NOT IN', [\selling\Sale::PAID]) // En cas de concurrence (si le client a réussi entre temps)
-				->update($eSale, $newValues);
-
-			if($affected > 0) {
-
-				\selling\HistoryLib::createBySale($eSale, 'shop-payment-failed', 'Stripe event id #'.$object['id'].' (event type '.$event['type'].')');
-
-				self::notify('saleFailed', $eSale);
-
-			}
+			\selling\HistoryLib::createBySale($eSale, 'shop-payment-failed', 'Stripe event id #'.$object['id'].' (event type '.$event['type'].')');
+			self::notify('saleFailed', $eSale);
 
 		}
-
-		\selling\Sale::model()->commit();
 
 	}
 
@@ -666,23 +654,22 @@ class SaleLib {
 			return;
 		}
 
-		\selling\PaymentOnlineLib::updateByPaymentIntentId($object['id'], [
-			'status' => \selling\Payment::PAID,
-			'amountIncludingVat' => $eSale['priceIncludingVat'],
-		]);
+		\selling\Sale::model()->beginTransaction();
 
-		$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
+			$hasSucceeded = \selling\PaymentOnlineLib::payByPaymentIntentId($eSale, $object['id'], $eSale['priceIncludingVat']);
 
-		$eSale['paymentStatus'] = \selling\Sale::PAID;
-		$eSale['paidAt'] = currentDate();
+			if($hasSucceeded) {
+				$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
+				\selling\SaleLib::update($eSale, ['preparationStatus']);
+			}
 
-		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus', 'paidAt']);
+		\selling\Sale::model()->commit();
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$object['id']);
 
 		// Récupération des données actualisées
 		$cItem = \selling\SaleLib::getItems($eSale);
-		$eSale['cPayment'] = \selling\PaymentLib::getBySale($eSale);
+		$eSale['cPayment'] = \selling\PaymentTransactionLib::getAll($eSale);
 
 		self::notify('salePaid', $eSale, $cItem);
 

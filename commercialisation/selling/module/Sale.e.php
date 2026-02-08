@@ -18,7 +18,7 @@ class Sale extends SaleElement {
 				'customer' => ['type', 'name']
 			],
 			'paymentStatus',
-			'cPayment' => PaymentLib::delegateBySale(),
+			'cPayment' => PaymentTransactionLib::delegateBySale(),
 		];
 
 	}
@@ -267,11 +267,20 @@ class Sale extends SaleElement {
 
 	}
 
-	public function acceptUpdatePaymentStatus(): bool {
+	public function acceptReplacePayment(): bool {
 
 		return (
 			$this->acceptUpdatePayment() and
-			$this['cPayment']->notEmpty()
+			$this['paymentStatus'] !== Sale::PAID
+		);
+
+	}
+
+	public function acceptPayPayment(): bool {
+
+		return (
+			$this->acceptUpdatePayment() and
+			$this['paymentStatus'] === Sale::NOT_PAID
 		);
 
 	}
@@ -710,7 +719,7 @@ class Sale extends SaleElement {
 	}
 
 	public function acceptDeletePaymentStatus() {
-		return in_array($this['paymentStatus'], [NULL, Sale::NOT_PAID, Sale::NEVER_PAID]);
+		return in_array($this['paymentStatus'], [NULL, Sale::NOT_PAID, Sale::NEVER_PAID, Sale::FAILED]);
 	}
 
 	public function checkMarketSelling() {
@@ -1246,15 +1255,19 @@ class Sale extends SaleElement {
 					return FALSE;
 				}
 
-				$this['cPayment'] = new \Collection([new Payment([
-					'sale' => $this,
-					'customer' => $this['customer'],
-					'farm' => $this['farm'],
-					'onlineCheckoutId' => NULL,
-					'method' => $eMethod,
-					'amountIncludingVat' => $this['priceIncludingVat'],
-					'status' => Payment::PAID,
-				])]);
+				$paymentStatus = POST('paymentStatus', [Payment::PAID, Payment::NOT_PAID], fn() => throw new \FailAction());
+
+				$this['cPayment'] = new \Collection([
+
+					new Payment([
+						'sale' => $this,
+						'method' => $eMethod,
+						'amountIncludingVat' => ($paymentStatus === Payment::PAID) ? $this['priceIncludingVat'] : NULL,
+						'status' => $paymentStatus,
+						'paidAt' => ($paymentStatus === Payment::PAID) ? Payment::POST('paidAt', 'paidAt', fn() => throw new \FailAction()) : NULL,
+					])
+
+				]);
 				return TRUE;
 
 			})

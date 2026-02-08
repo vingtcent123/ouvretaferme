@@ -206,24 +206,9 @@ new Page(function($data) {
 		throw new ReloadAction();
 
 	})
-	->post('doUpdatePaymentCollection', function($data) {
-
-		$data->c->validate('canWrite', 'acceptUpdatePayment');
-
-		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'));
-
-		if($eMethod->notEmpty()) {
-			$eMethod->validate('canUse', 'acceptManualUpdate');
-		}
-
-		\selling\InvoiceLib::updatePaymentMethodCollection($data->c, $eMethod);
-
-		throw new ReloadAction('selling', 'Invoice::paymentMethodUpdated');
-
-	})
 	->post('doUpdatePaymentStatusCollection', function($data) {
 
-		$data->c->validate('canWrite', 'acceptUpdatePaymentStatus');
+		$data->c->validate('canWrite', 'acceptPayPayment');
 
 		$paymentStatus = POST('paymentStatus', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID]);
 
@@ -232,7 +217,7 @@ new Page(function($data) {
 		throw new ReloadAction('selling', 'Invoice::paymentStatusUpdated');
 
 	})
-	->post('doUpdatePaymentCollection', function($data) {
+	->post('doUpdatePaymentNotPaidCollection', function($data) {
 
 		$data->c->validate('canWrite', 'acceptUpdatePayment');
 

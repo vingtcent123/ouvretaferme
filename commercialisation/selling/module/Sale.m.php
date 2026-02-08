@@ -99,6 +99,7 @@ class SaleModel extends \ModuleModel {
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED, \selling\Sale::EXPIRED], 'cast' => 'enum'],
 			'paymentStatus' => ['enum', [\selling\Sale::NOT_PAID, \selling\Sale::PARTIAL_PAID, \selling\Sale::PAID, \selling\Sale::NEVER_PAID, \selling\Sale::FAILED], 'null' => TRUE, 'cast' => 'enum'],
+			'paymentAmount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'compositionOf' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'compositionEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'marketSales' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -137,7 +138,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'secured', 'securedAt', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'paidAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'secured', 'securedAt', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'paymentAmount', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'paidAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash'
 		]);
 
 		$this->propertiesToModule += [
@@ -398,6 +399,10 @@ class SaleModel extends \ModuleModel {
 
 	public function wherePaymentStatus(...$data): SaleModel {
 		return $this->where('paymentStatus', ...$data);
+	}
+
+	public function wherePaymentAmount(...$data): SaleModel {
+		return $this->where('paymentAmount', ...$data);
 	}
 
 	public function whereCompositionOf(...$data): SaleModel {

@@ -321,7 +321,8 @@ class SaleLib extends SaleCrud {
 			->where('m2.paidAt', '>', $dateAfter)
 			->where('m2.createdAt', '>', $dateAfter)
 			->where('m2.profile', 'IN', [Sale::SALE, Sale::MARKET])
-			->whereStatusCash(Invoice::WAITING)
+			->whereStatus(Payment::PAID)
+			->whereStatusCash(Payment::WAITING)
 			->getCollection();
 
 	}
@@ -527,7 +528,7 @@ class SaleLib extends SaleCrud {
 					->sort(['version' => SORT_DESC])
 					->delegateCollection('sale', ['type', NULL])
 			])
-			->select(['cPayment' => PaymentLib::delegateBySale()])
+			->select(['cPayment' => PaymentTransactionLib::delegateBySale()])
 			->whereCustomer($eCustomer)
 			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "other") DESC, id DESC'))
 			->getCollection();
@@ -634,7 +635,7 @@ class SaleLib extends SaleCrud {
 		$ccSale = Sale::model()
 			->select(Sale::getSelection() + [
 				'createdBy' => ['firstName', 'lastName', 'vignette'],
-				'cPayment' => PaymentLib::delegateBySale()
+				'cPayment' => PaymentTransactionLib::delegateBySale()
 			])
 			->whereFarm($eSale['farm'])
 			->whereMarketParent($eSale)
@@ -696,28 +697,8 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		$ePaymentMethod = new \payment\Method();
-
-		if($e->isSale()) {
-
-			$e->expects(['shop']);
-
-			if($e['shop']->empty()) {
-
-				if($e['customer']['defaultPaymentMethod']->notEmpty()) {
-
-					$e['paymentStatus'] = Sale::NOT_PAID;
-					$ePaymentMethod = \payment\MethodLib::getById($e['customer']['defaultPaymentMethod']);
-
-				}
-
-			}
-
-		}
-
 		if($e->isMarket()) {
 			$e['marketSales'] = 0;
-			$e['paymentStatus'] = NULL;
 			$e['preparationStatus'] ??= Sale::CONFIRMED;
 		} else {
 			$e['preparationStatus'] ??= Sale::DRAFT;
@@ -764,8 +745,28 @@ class SaleLib extends SaleCrud {
 			\selling\ItemLib::createCollection($e, $e['cItemCreate']);
 		}
 
-		if($ePaymentMethod->notEmpty()) {
-			PaymentLib::createByMethod($e, $ePaymentMethod);
+		$ePaymentMethod = new \payment\Method();
+
+		if($e->isSale()) {
+
+			$e->expects(['shop']);
+
+			if($e['shop']->empty()) {
+
+				if($e['customer']['defaultPaymentMethod']->notEmpty()) {
+
+					$ePayment = new Payment([
+						'sale' => $e,
+						'status' => Sale::NOT_PAID,
+						'method' => \payment\MethodLib::getById($e['customer']['defaultPaymentMethod'])
+					]);
+
+					PaymentTransactionLib::createForSale($ePayment);
+
+				}
+
+			}
+
 		}
 
 		if($e->isComposition()) {
@@ -864,8 +865,15 @@ class SaleLib extends SaleCrud {
 		$eMethod = $eSale['farm']->getConf('marketSalePaymentMethod');
 
 		if($eMethod->notEmpty()) {
-			$eMethod = \payment\MethodLib::getById($eMethod['id']);
-			PaymentLib::createByMethod($eSale, $eMethod);
+
+			$ePayment = new Payment([
+				'sale' => $e,
+				'method' => \payment\MethodLib::getById($eMethod),
+				'status' => Payment::NOT_PAID
+			]);
+
+			PaymentTransactionLib::createForSale($ePayment);
+
 		}
 
 		return $e;
@@ -977,6 +985,8 @@ class SaleLib extends SaleCrud {
 
 	public static function update(Sale $e, array $properties): void {
 
+		$e->expects(['secured', 'closed']);
+
 		Sale::model()->beginTransaction();
 
 		if(in_array('preparationStatus', $properties)) {
@@ -1029,11 +1039,6 @@ class SaleLib extends SaleCrud {
 				if($e->acceptSecuring()) {
 					self::fillSecured($e, $properties);
 				}
-
-			} else {
-
-				$e['paidAt'] = NULL;
-				$properties[] = 'paidAt';
 
 			}
 
@@ -1217,14 +1222,7 @@ class SaleLib extends SaleCrud {
 
 		if($updatePayments) {
 
-			$values = $e['cPayment']->toArray(function(Payment $ePayment) {
-				return [
-					'method' => $ePayment['method'],
-					'amount' => $ePayment['amountIncludingVat'] ?? NULL
-				];
-			});
-
-			PaymentLib::replaceSeveralBySale($e, $values);
+			PaymentTransactionLib::replace($e, $e['cPayment']);
 
 		}
 
@@ -1268,16 +1266,6 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function updateNeverPaid(Sale $e): void {
-
-		$e['cPayment'] = new \Collection();
-		$e['paymentStatus'] = Sale::NEVER_PAID;
-		$e['paidAt'] = NULL;
-
-		self::update($e, ['paymentMethod', 'paymentStatus', 'paidAt']);
-
-	}
-
 	public static function updatePreparationStatus(Sale $e, string $newStatus): void {
 
 		if($e['preparationStatus'] === $newStatus) {
@@ -1306,78 +1294,6 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function updatePaymentMethodCollection(\Collection $c, \payment\Method $eMethod): void {
-
-		foreach($c as $e) {
-
-			if(
-				($e['cPayment']->empty() and $eMethod->empty()) or
-				($e['cPayment']->notEmpty() and $eMethod->notEmpty() and in_array($eMethod['id'], $e['cPayment']->getColumnCollection('method')->getIds()))
-			) {
-				continue;
-			}
-
-			Sale::model()->beginTransaction();
-
-			$e['cPayment'] = new \Collection();
-
-			if($eMethod->notEmpty()) {
-
-				$e['cPayment']->append(
-
-					new Payment([
-						'sale' => $e,
-						'customer' => $e['customer'],
-						'farm' => $e['farm'],
-						'onlineCheckoutId' => NULL,
-						'method' => $eMethod,
-						'amountIncludingVat' => $e['priceIncludingVat'],
-						'status' => Payment::PAID,
-					])
-
-				);
-
-			}
-
-			self::update($e, ['paymentMethod', 'paymentStatus']);
-
-			Sale::model()->commit();
-
-		}
-
-	}
-
-	public static function deletePayment(Sale $e): void {
-
-		$e['cPayment'] = new \Collection();
-		$e['paymentStatus'] = NULL;
-
-		self::update($e, ['paymentMethod', 'paymentStatus']);
-
-	}
-
-	public static function updatePaymentStatusCollection(\Collection $c, string $paymentStatus): void {
-
-		$properties = ['paymentStatus'];
-
-		if($paymentStatus === Sale::PAID) {
-			$properties[] = 'paidAt';
-		}
-
-		foreach($c as $e) {
-
-			$e['paymentStatus'] = $paymentStatus;
-
-			if($paymentStatus === Sale::PAID) {
-				$e['paidAt'] = currentDate();
-			}
-
-			self::update($e, $properties);
-
-		}
-
-	}
-
 	public static function updateCustomer(Sale $e, Customer $eCustomer): void {
 
 		Sale::model()->beginTransaction();
@@ -1396,11 +1312,7 @@ class SaleLib extends SaleCrud {
 				'customer' => $eCustomer,
 			]);
 
-		Payment::model()
-			->whereSale($e)
-			->update([
-				'customer' => $eCustomer,
-			]);
+		PaymentTransactionLib::updateCustomer($e, $eCustomer);
 
 		Sale::model()->commit();
 
@@ -1419,60 +1331,57 @@ class SaleLib extends SaleCrud {
 		$e->expects([
 			'id', 'profile',
 			'shopDate',
-			'preparationStatus',
 		]);
 
 		Sale::model()->beginTransaction();
 
-		$deleted = Sale::model()
-			->wherePreparationStatus('IN', $e->getDeleteStatuses())
-			->or(
-				fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
-				fn() => $this->wherePaymentStatus(NULL)
-			)
-			->delete($e);
+			Sale::model()
+				->select('preparationStatus', 'paymentStatus', 'secured')
+				->get($e);
 
-		if($deleted > 0) {
+			if($e->acceptDelete()) {
 
-			Item::model()
-				->whereSale($e)
-				->delete();
-
-			if($e->isMarket()) {
-
-				$cSaleMarket = Sale::model()
-					->select('id')
-					->whereFarm($e['farm'])
-					->whereMarketParent($e)
-					->getCollection();
-
-				Sale::model()
-					->whereId('IN', $cSaleMarket)
-					->update([
-						'profile' => Sale::SALE,
-						'marketParent' => NULL
-					]);
+				Sale::model()->delete($e);
 
 				Item::model()
-					->whereSale('IN', $cSaleMarket)
-					->update([
-						'parent' => NULL
-					]);
+					->whereSale($e)
+					->delete();
+
+				if($e->isMarket()) {
+
+					$cSaleMarket = Sale::model()
+						->select('id')
+						->whereFarm($e['farm'])
+						->whereMarketParent($e)
+						->getCollection();
+
+					Sale::model()
+						->whereId('IN', $cSaleMarket)
+						->update([
+							'profile' => Sale::SALE,
+							'marketParent' => NULL
+						]);
+
+					Item::model()
+						->whereSale('IN', $cSaleMarket)
+						->update([
+							'parent' => NULL
+						]);
+
+				}
+
+				if($e->isMarketSale()) {
+					MarketLib::updateSaleMarket($e['marketParent']);
+					self::recalculate($e['marketParent']);
+				}
+
+				if($e->isComposition()) {
+					self::reorderComposition($e);
+				}
+
+				PaymentTransactionLib::delete($e, recalculate: FALSE);
 
 			}
-
-			if($e->isMarketSale()) {
-				MarketLib::updateSaleMarket($e['marketParent']);
-				self::recalculate($e['marketParent']);
-			}
-
-			if($e->isComposition()) {
-				self::reorderComposition($e);
-			}
-
-			PaymentLib::deleteBySale($e);
-
-		}
 
 		Sale::model()->commit();
 

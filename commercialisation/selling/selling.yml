@@ -204,8 +204,8 @@ Payment:
   customer: ?selling\Customer
   farm: farm\Farm
   amountIncludingVat: ?decimal(8, 2)
-  method: ?payment\Method
-  methodName: ?text8
+  method: payment\Method
+  methodName: text8
   onlineCheckoutId: ?text8
   onlinePaymentIntentId: ?text8
   status: enum(NOT_PAID, PAID, FAILED)
@@ -324,6 +324,7 @@ Sale:
   closedBy: ?user\User
   preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED, EXPIRED) = DRAFT
   paymentStatus: ?enum(NOT_PAID, PARTIAL_PAID, PAID, NEVER_PAID, FAILED)
+  paymentAmount: ?decimal(8, 2)
   compositionOf: ?selling\Product
   compositionEndAt: ?date
   marketSales: ?int(0, null)

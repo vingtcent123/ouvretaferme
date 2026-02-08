@@ -141,7 +141,7 @@ class StripeLib {
 		$stripePaymentMethods = $object['payment_method_types'];
 
 		$eMethod = \payment\MethodLib::getByFqn(MethodLib::ONLINE_CARD);
-		$ePayment = \selling\PaymentLib::getByMethod($eSale, $eMethod);
+		$ePayment = \selling\PaymentTransactionLib::getByMethod($eSale, $eMethod);
 
 		if($ePayment->notEmpty()) {
 
@@ -162,7 +162,7 @@ class StripeLib {
 
 			case 'payment_intent.partially_funded' :
 			case 'payment_intent.payment_failed' :
-				\shop\SaleLib::paymentFailed($eSale, $eMethod, $event);
+				\shop\SaleLib::paymentFailed($eSale, $event);
 				break;
 
 			case 'payment_intent.succeeded' :
@@ -170,7 +170,7 @@ class StripeLib {
 				break;
 
 			case 'payment_intent.canceled':
-				\shop\SaleLib::paymentFailed($eSale, $eMethod, $event);
+				\shop\SaleLib::paymentFailed($eSale, $event);
 				break;
 
 		}

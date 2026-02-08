@@ -12,7 +12,7 @@ class SignatureLib {
 	public static function getSaleData(\selling\Sale $eSale, ?\Collection $cItem = NULL, ?\Collection $cPayment = NULL): array {
 
 		// Les données peuvent être parfois déjà présentes
-		$cPayment ??= \selling\PaymentLib::getBySale($eSale);
+		$cPayment ??= \selling\PaymentTransactionLib::getAll($eSale);
 		$cItem ??= \selling\SaleLib::getItems($eSale);
 
 		$paymentMethods = [];
@@ -20,7 +20,8 @@ class SignatureLib {
 		foreach((clone $cPayment)->sort('methodName') as $ePayment) {
 			$paymentMethods[] = [
 				'amountIncludingVat' => $ePayment['amountIncludingVat'],
-				'methodName' => $ePayment['methodName']
+				'methodName' => $ePayment['methodName'],
+				'status' => $ePayment['status']
 			];
 		}
 
