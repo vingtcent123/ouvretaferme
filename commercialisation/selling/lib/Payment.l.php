@@ -9,6 +9,47 @@ class PaymentLib extends PaymentCrud {
 		throw new \UnsupportedException();
 	}
 
+	public static function updateSalePaid(Sale $eSale): void {
+
+		$paidAt = currentDate();
+
+		Payment::model()
+			->whereSale($eSale)
+			->whereStatus(Payment::NOT_PAID)
+			->update([
+				'status' => Payment::PAID,
+				'paidAt' => $paidAt
+			]);
+
+		// TODO : gérer le paiement partiel
+		$eSale['paymentStatus'] = Sale::PAID;
+		$eSale['paidAt'] = $paidAt;
+
+		SaleLib::update($eSale, ['paymentStatus', 'paidAt']);
+
+	}
+
+	public static function updateSaleNotPaid(Sale $eSale): void {
+
+		$paidAt = currentDate();
+
+		Payment::model()
+			->whereSale($eSale)
+			->whereStatus(Payment::NOT_PAID)
+			->update([
+				'status' => Payment::PAID,
+				'paidAt' => $paidAt
+			]);
+
+		// TODO : gérer le paiement partiel
+
+		SaleLib::update($eSale, [
+			'paymentStatus' => Payment::PAID,
+			'paidAt' => $paidAt
+		]);
+
+	}
+
 	public static function update(Payment $e, array $properties): void {
 
 		if(array_diff($properties, ['method', 'amountIncludingVat']) !== []) {
@@ -77,19 +118,13 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function getBySale(Sale $eSale, bool $onlyPaid = FALSE): \Collection {
+	public static function getBySale(Sale $eSale): \Collection {
 
-		$cPayment = Payment::model()
+		return Payment::model()
 			->select(Payment::getSelection())
 			->whereSale($eSale)
 			->sort(['createdAt' => SORT_DESC])
 			->getCollection();
-
-		if($onlyPaid) {
-			$cPayment->filter(fn($ePayment) => $ePayment->isPaid());
-		}
-
-		return $cPayment;
 
 	}
 
@@ -123,7 +158,7 @@ class PaymentLib extends PaymentCrud {
 
 		Payment::model()->beginTransaction();
 
-			$cPayment = self::getBySale($eSale, onlyPaid: TRUE);
+			$cPayment = self::getBySale($eSale);
 
 			if($eMethod->empty()) {
 
@@ -151,14 +186,10 @@ class PaymentLib extends PaymentCrud {
 
 			foreach($cPayment as $ePayment) {
 
-				if($ePayment->isPaid()) {
+				$currentAmount += $ePayment['amountIncludingVat'];
 
-					$currentAmount += $ePayment['amountIncludingVat'];
-
-					if($ePayment['method']->is($eMethod)) {
-						$ePaymentWithMethod = $ePayment;
-					}
-
+				if($ePayment['method']->is($eMethod)) {
+					$ePaymentWithMethod = $ePayment;
 				}
 
 			}
@@ -210,7 +241,7 @@ class PaymentLib extends PaymentCrud {
 			'method' => $eMethod,
 			'methodName' => $eMethod['name'],
 			'amountIncludingVat' => $amount ?? $eSale['priceIncludingVat'],
-			'status' => ($eMethod['fqn'] === \payment\MethodLib::ONLINE_CARD) ? Payment::NOT_PAID : $eSale['paymentStatus'],
+			'status' => ($eMethod['fqn'] === \payment\MethodLib::ONLINE_CARD) ? Payment::NOT_PAID : ($eSale['paymentStatus'] ?: Payment::NOT_PAID),
 		]);
 
 		Payment::model()->insert($ePayment);

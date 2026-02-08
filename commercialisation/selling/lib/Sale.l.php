@@ -594,8 +594,8 @@ class SaleLib extends SaleCrud {
 			->whereProfile('IN', [Sale::SALE, Sale::SALE_MARKET])
 			->wherePreparationStatus(Sale::DELIVERED)
 			->or(
-			fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
-			fn() => $this->wherePaymentStatus(NULL)
+				fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
+				fn() => $this->wherePaymentStatus(NULL)
 			)
 			->group(['m1.customer', 'taxes', 'hasVat']);
 

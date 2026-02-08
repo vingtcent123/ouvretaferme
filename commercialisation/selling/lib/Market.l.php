@@ -256,7 +256,12 @@ class MarketLib {
 
 			}
 
-			self::doPaymentStatusMarketSale($eSale, Sale::PAID);
+			$eSale['preparationStatus'] = Sale::DELIVERED;
+			SaleLib::update($eSale, ['preparationStatus']);
+
+			// Supprime les moyens de paiement vide / à 0€
+			PaymentLib::cleanBySale($eSale);
+			PaymentLib::updateSalePaid($eSale);
 
 		Sale::model()->commit();
 
@@ -281,6 +286,9 @@ class MarketLib {
 			$eSale['profile'] = Sale::SALE;
 			$eSale['marketParent'] = new Sale();
 			$eSale['stats'] = TRUE;
+			$eSale['preparationStatus'] = Sale::DELIVERED;
+
+			SaleLib::update($eSale, ['profile', 'marketParent', 'stats', 'preparationStatus']);
 
 			Sale::model()
 				->select('profile', 'marketParent', 'stats')
@@ -294,7 +302,7 @@ class MarketLib {
 					'profile' => $eSale['profile'],
 				]);
 
-			self::doPaymentStatusMarketSale($eSale, $eSale['cPayment']->notEmpty() ? Sale::NOT_PAID : NULL);
+			PaymentLib::cleanBySale($eSale);
 
 		Sale::model()->commit();
 
@@ -305,21 +313,6 @@ class MarketLib {
 		$totalPayments = $eSale['cPayment']->reduce(fn($e, $v) => $v + $e['amountIncludingVat'], 0);
 
 		return ($totalPayments === $eSale['priceIncludingVat']);
-
-	}
-
-	public static function doPaymentStatusMarketSale(Sale $eSale, ?string $paymentStatus): void {
-
-		// Supprime les moyens de paiement vide / à 0€
-		PaymentLib::cleanBySale($eSale);
-
-		$properties = ['preparationStatus', 'paymentStatus', 'paidAt'];
-
-		$eSale['preparationStatus'] = Sale::DELIVERED;
-		$eSale['paymentStatus'] = $paymentStatus;
-		$eSale['paidAt'] = ($paymentStatus === Sale::PAID) ? currentDate() : NULL;
-
-		SaleLib::update($eSale, $properties);
 
 	}
 
