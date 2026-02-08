@@ -108,7 +108,13 @@ class Account extends AccountElement {
 
 				return $eThirdParty->notEmpty();
 
-			});
+			})
+			->setCallback('status.check', function(bool $status) use ($p): bool {
+
+				return ($this['custom'] === TRUE);
+
+			})
+		;
 
 		parent::build($properties, $input, $p);
 

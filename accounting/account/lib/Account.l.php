@@ -68,6 +68,7 @@ class AccountLib extends AccountCrud {
 			->select(Account::getSelection())
 			->whereClass('LIKE', AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS.'%')
 			->where('LENGTH(class) > '.strlen(AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS))
+			->whereStatus(Account::ACTIVE)
 			->getCollection();
 
 	}

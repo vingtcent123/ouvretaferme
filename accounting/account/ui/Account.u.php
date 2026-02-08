@@ -89,6 +89,7 @@ class AccountUi {
 		$displayOperationsCount = $cAccount->match(fn($eAccount) => (array_sum($eAccount['operationByFinancialYear']) ?? 0) > 0);
 		$displayThirdParty = $cAccount->match(fn($eAccount) => $eAccount['thirdParty']->notEmpty() > 0);
 		$displayActions = $cAccount->match(fn($eAccount) => $eAccount->acceptDelete()) > 0;
+		$displayActive = $cAccount->match(fn($eAccount) => $eAccount['custom'] === FALSE) > 0;
 
 		\Asset::css('util', 'batch.css');
 		\Asset::js('util', 'batch.js');
@@ -134,7 +135,9 @@ class AccountUi {
 							$h .= '</th>';
 						}
 
-						$h .= '<th rowspan="2">'.s("Activé").'</th>';
+						if($displayActive) {
+							$h .= '<th rowspan="2">'.s("Activé").'</th>';
+						}
 
 						if($displayActions) {
 							$h .= '<th rowspan="2"></th>';
@@ -285,14 +288,19 @@ class AccountUi {
 							$h .= '<td class="text-center highlight-stick-left"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?privateAccount='.$eAccount['id'].'">'.(($eAccount['nProductPrivate'] ?? 0) > 0 ? $eAccount['nProductPrivate'] : '').'</td>';
 						}
 
-						$h .= '<td>';
-							$h .= \util\TextUi::switch([
-								'id' => 'product-switch-'.$eAccount['id'],
-								'data-ajax' => $eAccount->canWrite() ? \company\CompanyUi::urlAccount($eFarm).'/account:doUpdateStatus' : NULL,
-								'post-id' => $eAccount['id'],
-								'post-status' => ($eAccount['status'] === Account::ACTIVE) ? Account::INACTIVE : Account::ACTIVE
-							], $eAccount['status'] === Account::ACTIVE);
-						$h .= '</td>';
+						if($displayActive) {
+							$h .= '<td>';
+							if($eAccount['custom'] === TRUE) {
+								$h .= \util\TextUi::switch([
+										'id' => 'product-switch-'.$eAccount['id'],
+										'data-ajax' => $eAccount->canWrite() ? \company\CompanyUi::urlAccount($eFarm).'/account:doUpdateStatus' : NULL,
+										'post-id' => $eAccount['id'],
+										'post-status' => ($eAccount['status'] === Account::ACTIVE) ? Account::INACTIVE : Account::ACTIVE
+									], $eAccount['status'] === Account::ACTIVE);
+								$h .= '</td>';
+							}
+						}
+
 
 						if($displayActions) {
 							$h .= '<td>';
