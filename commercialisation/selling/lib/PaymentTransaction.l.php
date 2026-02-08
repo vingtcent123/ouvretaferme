@@ -291,7 +291,7 @@ class PaymentTransactionLib {
 
 		// Cas impossible sauf en cas de bug technique
 		if($notPaid >= 2) {
-			throw new \Exception('Too much not paid payment methods');
+			throw new \Exception('Too much not paid payment methods for sale '.$eSale['id']);
 		}
 
 		if($paidAmount !== NULL) {
