@@ -236,6 +236,11 @@ class PaymentTransactionLib {
 
 	public static function recalculate(Sale $eSale, ?\Collection $cPayment = NULL): void {
 
+		$eSale->expects([
+			'profile',
+			'secured', 'closed'
+		]);
+
 		$cPayment ??= self::getAll($eSale);
 
 		Sale::model()

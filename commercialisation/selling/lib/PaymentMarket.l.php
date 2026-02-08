@@ -5,6 +5,10 @@ class PaymentMarketLib {
 
 	public static function pay(Sale $eSale): void {
 
+		if($eSale->isMarketSale() === FALSE) {
+			throw new \UnsupportedException();
+		}
+
 		Sale::model()->beginTransaction();
 
 			$paidAt = currentDate();
@@ -41,6 +45,10 @@ class PaymentMarketLib {
 
 	public static function clean(Sale $eSale): void {
 
+		if($eSale->isMarketSale() === FALSE) {
+			throw new \UnsupportedException();
+		}
+
 		Payment::model()
 			->whereSale($eSale)
 			->where('amountIncludingVat IS NULL OR amountIncludingVat = 0')
@@ -51,17 +59,20 @@ class PaymentMarketLib {
 	/**
 	 * Change un moyen de paiement pour un autre s'il n'est pas présent par ailleurs
 	 */
-	public static function updateMethod(Payment $ePayment, \payment\Method $eMethod): void {
+	public static function updateMethod(Sale $eSale, Payment $ePayment, \payment\Method $eMethod): void {
+
+		if($eSale->isMarketSale() === FALSE) {
+			throw new \UnsupportedException();
+		}
 
 		if($eMethod->isOnline()) {
 			throw new \UnsupportedException();
 		}
 
+		$ePayment->expects(['id', 'sale', 'method']);
+		$ePayment->validateProperty('sale', $eSale);
+
 		Payment::model()->beginTransaction();
-
-			$ePayment->expects(['id', 'sale', 'method']);
-
-			$eSale = $ePayment['sale'];
 
 			if(Payment::model()
 				->whereSale($eSale)
@@ -71,6 +82,7 @@ class PaymentMarketLib {
 			}
 
 			$ePayment['method'] = $eMethod;
+			$ePayment['sale'] = $eSale;
 
 			PaymentLib::update($ePayment, ['method']);
 
@@ -83,6 +95,10 @@ class PaymentMarketLib {
 	 * S'il n'en reste qu'un, modifie le montant pour correspondre à la vente
 	 */
 	public static function deleteMethod(Sale $eSale, \payment\Method $eMethod): void {
+
+		if($eSale->isMarketSale() === FALSE) {
+			throw new \UnsupportedException();
+		}
 
 		Payment::model()->beginTransaction();
 
@@ -103,6 +119,10 @@ class PaymentMarketLib {
 	 * Sinon, on utilise le moyen de paiement par défaut
 	 */
 	public static function fillMethod(Sale $eSale, \payment\Method $eMethod = new \payment\Method()): void {
+
+		if($eSale->isMarketSale() === FALSE) {
+			throw new \UnsupportedException();
+		}
 
 		if(
 			$eMethod->notEmpty() and

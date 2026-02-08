@@ -81,8 +81,8 @@ new \selling\SalePage()
 		switch($action) {
 
 			case 'update':
-				$ePayment = \selling\PaymentLib::getById(POST('payment'))->validateProperty('sale', $data->e);
-				\selling\PaymentMarketLib::updateMethod($ePayment, $eMethod);
+				$ePayment = \selling\PaymentLib::getById(POST('payment'));
+				\selling\PaymentMarketLib::updateMethod($data->e, $ePayment, $eMethod);
 				break;
 
 			case 'remove':

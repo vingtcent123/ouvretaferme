@@ -3,8 +3,9 @@ new \selling\PaymentPage()
 	->applyElement(function($data, \selling\Payment $e) {
 
 			$e->expects(['id', 'sale']);
-			$eSale = \selling\SaleLib::getById($e['sale']['id']);
-			$eSale->validate('acceptUpdateMarketSalePayment');
+
+			$e['sale'] = \selling\SaleLib::getById($e['sale']);
+			$e['sale']->validate('acceptUpdateMarketSalePayment');
 
 	})
 	->quick(['amountIncludingVat']);
