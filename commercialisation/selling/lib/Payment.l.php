@@ -13,8 +13,16 @@ class PaymentLib extends PaymentCrud {
 			'source',
 			'customer', 'farm',
 			'method' => ['fqn', 'name'],
+			'sale' => ['profile'],
 			'status'
 		]);
+
+		if(
+			$e['sale']->isMarketSale() === FALSE and
+			$e['sale']->isSale() === FALSE
+		) {
+			throw new \UnsupportedException();
+		}
 
 		Payment::model()->beginTransaction();
 

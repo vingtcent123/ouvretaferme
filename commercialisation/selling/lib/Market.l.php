@@ -282,6 +282,8 @@ class MarketLib {
 				return;
 			}
 
+			PaymentMarketLib::clean($eSale);
+
 			// On sort la vente du logiciel de caisse
 			$eSale['profile'] = Sale::SALE;
 			$eSale['marketParent'] = new Sale();
@@ -301,8 +303,6 @@ class MarketLib {
 					'stats' => TRUE,
 					'profile' => $eSale['profile'],
 				]);
-
-			PaymentMarketLib::clean($eSale);
 
 		Sale::model()->commit();
 
