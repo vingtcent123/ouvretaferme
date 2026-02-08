@@ -198,12 +198,7 @@ class Operation extends OperationElement {
 			})
 			->setCallback('thirdParty.unknown', function(?\account\ThirdParty &$eThirdParty): bool {
 
-				if($eThirdParty->empty() and ($this['journalCode']->empty() or $this['journalCode']['code'] !== JournalSetting::JOURNAL_CODE_OD_BILAN)) {
-					return FALSE;
-				}
-
-				// Pas de tiers pour les opérations de bilan
-				if($eThirdParty->empty() and ($this['journalCode']->empty() or $this['journalCode']['code'] === JournalSetting::JOURNAL_CODE_OD_BILAN)) {
+				if($eThirdParty->empty()) {
 					return TRUE;
 				}
 
