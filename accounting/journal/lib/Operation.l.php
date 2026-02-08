@@ -584,7 +584,7 @@ class OperationLib extends OperationCrud {
 			}
 
 			// Enregistre les termes du libellé de banque pour améliorer les prédictions
-			if($isFromCashflow === TRUE) {
+			if($isFromCashflow === TRUE and $eOperation['thirdParty']->notEmpty()) {
 
 				$eThirdParty = \account\ThirdPartyLib::recalculateMemos($eCashflow, $eOperation['thirdParty']);
 				\account\ThirdPartyLib::update($eThirdParty, ['memos']);
@@ -819,9 +819,9 @@ class OperationLib extends OperationCrud {
 			array_merge([
 				'financialYear',
 				'account', 'accountLabel', 'description', 'document', 'documentDate',
-				'thirdParty', 'type', 'amount', 'operation',
+				'type', 'amount', 'operation',
 				'hash', 'journalCode', // On prend le journalCode de l'opération d'origine
-				'date', 'vatRule',
+				'thirdParty', 'date', 'vatRule',
 			], $eCashflow->empty() ? ['paymentDate', 'paymentMethod',] : []),
 			$values,
 		);
@@ -1097,8 +1097,8 @@ class OperationLib extends OperationCrud {
 		$fw = new \FailWatch();
 
 		$eOperationBank->build([
-			'financialYear', 'date', 'account', 'accountLabel', 'description', 'document', 'documentDate', 'thirdParty', 'type', 'amount',
-			'operation', 'paymentDate', 'paymentMethod', 'hash', 'journalCode',
+			'financialYear', 'date', 'account', 'accountLabel', 'description', 'document', 'documentDate', 'type', 'amount',
+			'operation', 'paymentDate', 'paymentMethod', 'hash', 'journalCode', 'thirdParty',
 		], $values, new \Properties('create'));
 
 		$fw->validate();
