@@ -893,10 +893,7 @@ class AnalyzeLib {
 				'deliveredAt',
 				'cPayment' => Payment::model()
 					->select(Payment::getSelection())
-					->or(
-						fn() => $this->whereStatusOnline(NULL),
-						fn() => $this->whereStatusOnline(Payment::SUCCESS)
-					)
+					->whereStatus(Payment::PAID)
 					->delegateCollection('sale', 'id'),
 			])
 			->whereFarm($eFarm)

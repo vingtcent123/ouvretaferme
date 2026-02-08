@@ -35,10 +35,7 @@ abstract class SaleElement extends \Element {
 	const PARTIAL_PAID = 'partial-paid';
 	const PAID = 'paid';
 	const NEVER_PAID = 'never-paid';
-
-	const INITIALIZED = 'initialized';
-	const SUCCESS = 'success';
-	const FAILURE = 'failure';
+	const FAILED = 'failed';
 
 	public static function getSelection(): array {
 		return Sale::model()->getProperties();
@@ -101,8 +98,7 @@ class SaleModel extends \ModuleModel {
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'preparationStatus' => ['enum', [\selling\Sale::COMPOSITION, \selling\Sale::DRAFT, \selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::SELLING, \selling\Sale::PREPARED, \selling\Sale::DELIVERED, \selling\Sale::CANCELED, \selling\Sale::EXPIRED], 'cast' => 'enum'],
-			'paymentStatus' => ['enum', [\selling\Sale::NOT_PAID, \selling\Sale::PARTIAL_PAID, \selling\Sale::PAID, \selling\Sale::NEVER_PAID], 'null' => TRUE, 'cast' => 'enum'],
-			'onlinePaymentStatus' => ['enum', [\selling\Sale::INITIALIZED, \selling\Sale::SUCCESS, \selling\Sale::FAILURE], 'null' => TRUE, 'cast' => 'enum'],
+			'paymentStatus' => ['enum', [\selling\Sale::NOT_PAID, \selling\Sale::PARTIAL_PAID, \selling\Sale::PAID, \selling\Sale::NEVER_PAID, \selling\Sale::FAILED], 'null' => TRUE, 'cast' => 'enum'],
 			'compositionOf' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'compositionEndAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'marketSales' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -141,7 +137,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'secured', 'securedAt', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'onlinePaymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'paidAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceGross', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'shippingExcludingVat', 'secured', 'securedAt', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'paidAt', 'expiresAt', 'statusAt', 'statusBy', 'accountingHash'
 		]);
 
 		$this->propertiesToModule += [
@@ -257,9 +253,6 @@ class SaleModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'paymentStatus' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'onlinePaymentStatus' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -405,10 +398,6 @@ class SaleModel extends \ModuleModel {
 
 	public function wherePaymentStatus(...$data): SaleModel {
 		return $this->where('paymentStatus', ...$data);
-	}
-
-	public function whereOnlinePaymentStatus(...$data): SaleModel {
-		return $this->where('onlinePaymentStatus', ...$data);
 	}
 
 	public function whereCompositionOf(...$data): SaleModel {

@@ -441,7 +441,6 @@ class MembershipLib {
 			'priceExcludingVat' => NULL,
 			'priceIncludingVat' => $eHistory['amount'],
 			'preparationStatus' => \selling\Sale::DELIVERED,
-			'onlinePaymentStatus' => $eMethod->isOnline() ? \selling\Sale::SUCCESS : NULL,
 			'deliveredAt' => $eHistory['paidAt'] ?? new \Sql('NOW()'),
 		]);
 		\selling\SaleLib::create($eSale);
@@ -470,7 +469,12 @@ class MembershipLib {
 
 			\selling\Payment::model()
 				->whereSale($eSale)
-				->update(['onlineCheckoutId' => $eHistory['onlineCheckoutId'], 'onlinePaymentIntentId' => $eHistory['onlinePaymentIntentId'], 'statusOnline' => \selling\Payment::SUCCESS]);
+				->whereMethod($eMethod)
+				->update([
+					'onlineCheckoutId' => $eHistory['onlineCheckoutId'],
+					'onlinePaymentIntentId' => $eHistory['onlinePaymentIntentId'],
+					'status' => \selling\Payment::PAID
+				]);
 
 		}
 

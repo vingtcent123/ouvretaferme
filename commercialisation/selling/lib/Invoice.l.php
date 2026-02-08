@@ -137,7 +137,7 @@ class InvoiceLib extends InvoiceCrud {
 			->whereShop('!=', NULL)
 			->wherePreparationStatus(Sale::DELIVERED)
 			->whereDeliveredAt('LIKE', $month.'%')
-			->whereInvoice(NULL)
+			->where('m2.invoice', NULL)
 			->getValue(new \Sql('COUNT(*)'));
 
 	}

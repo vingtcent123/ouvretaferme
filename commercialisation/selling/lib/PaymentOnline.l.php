@@ -69,7 +69,8 @@ class PaymentOnlineLib {
 		$cPayment = Payment::model()
 			->select(Payment::getSelection())
 			->whereSale($eSale)
-			->whereStatusOnline(Payment::INITIALIZED)
+			->whereStatus(Payment::NOT_PAID)
+			->whereOnlineCheckoutId('!=', NULL)
 			->getCollection();
 
 		if($cPayment->notEmpty()) {
@@ -85,7 +86,7 @@ class PaymentOnlineLib {
 				} catch(\payment\StripeException) {
 				}
 
-				Payment::model()->update($ePayment, ['statusOnline' => Payment::EXPIRED]);
+				Payment::model()->delete($ePayment);
 
 			}
 
@@ -99,18 +100,8 @@ class PaymentOnlineLib {
 			->delete();
 
 		// On réinitialise le statut de la vente
-		$properties = ['paymentStatus' => NULL, 'onlinePaymentStatus' => NULL];
+		$properties = ['paymentStatus' => NULL];
 		Sale::model()->update($eSale, $properties);
-
-	}
-
-	public static function hasSuccess(Sale $eSale): bool {
-
-		return Payment::model()
-			->select(Payment::getSelection())
-			->whereSale($eSale)
-			->whereStatusOnline(Payment::SUCCESS)
-			->exists();
 
 	}
 

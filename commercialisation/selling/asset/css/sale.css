@@ -117,28 +117,24 @@ div.selling-label-example > * {
 	font-size: 0.8rem;
 }
 
-.sale-payment-status-paid,
-.sale-payment-status-success {
+.sale-payment-status-paid {
 	background-color: var(--success);
 }
 
-.sale-payment-status-not-paid,
-.sale-payment-status-initialized {
+.sale-payment-status-not-paid {
 	background-color: var(--muted);
+}
+
+.sale-payment-status-partial-paid {
+	background-color: var(--warning);
 }
 
 .sale-payment-status-never-paid {
 	background-color: var(--primary);
 }
 
-.sale-payment-status-failure {
+.sale-payment-status-failed {
 	background-color: var(--danger);
-}
-
-.sale-payment-status-undefined,
-.sale-payment-status-waiting,
-.sale-payment-status-sepa-waiting {
-	background-color: var(--muted);
 }
 
 .sale-preparation-status-draft {

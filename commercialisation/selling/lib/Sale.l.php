@@ -65,7 +65,7 @@ class SaleLib extends SaleCrud {
 			$cPayment = new \Collection([
 				new Payment([
 					'method' => $eMethod,
-					'statusOnline' => ($eMethod['fqn'] ?? NULL) === \payment\MethodLib::ONLINE_CARD ? Payment::SUCCESS : NULL,
+					'status' => Payment::PAID,
 				])
 			]);
 		}
@@ -590,7 +590,7 @@ class SaleLib extends SaleCrud {
 			->whereCustomer('IN', fn() => CustomerLib::getByGroup($eCustomerGroup), if: $eCustomerGroup->notEmpty())
 			->whereType($type, if: in_array($type, [Customer::PRIVATE, Customer::PRO]))
 			->whereDeliveredAt('LIKE', $month.'%')
-			->whereInvoice(NULL)
+			->where('m1.invoice',NULL)
 			->whereProfile('IN', [Sale::SALE, Sale::SALE_MARKET])
 			->wherePreparationStatus(Sale::DELIVERED)
 			->or(
@@ -1004,10 +1004,7 @@ class SaleLib extends SaleCrud {
 				if(in_array($e['paymentStatus'], [Invoice::PAID, Invoice::NOT_PAID])) {
 
 					$e['paymentStatus'] = NULL;
-					$e['onlinePaymentStatus'] = NULL;
-
 					$properties[] = 'paymentStatus';
-					$properties[] = 'onlinePaymentStatus';
 
 				}
 
@@ -1017,10 +1014,7 @@ class SaleLib extends SaleCrud {
 				if($e['paymentStatus'] === NULL) {
 
 					$e['paymentStatus'] = Sale::NOT_PAID;
-					$e['onlinePaymentStatus'] = NULL;
-
 					$properties[] = 'paymentStatus';
-					$properties[] = 'onlinePaymentStatus';
 
 				}
 
@@ -1029,16 +1023,6 @@ class SaleLib extends SaleCrud {
 		}
 
 		if(in_array('paymentStatus', $properties)) {
-
-			if(
-				$e['paymentStatus'] !== Sale::PAID and
-				$e['onlinePaymentStatus'] !== NULL
-			) {
-
-				$e['onlinePaymentStatus'] = NULL;
-				$properties[] = 'onlinePaymentStatus';
-
-			}
 
 			if($e['paymentStatus'] === Sale::PAID) {
 
@@ -1242,20 +1226,6 @@ class SaleLib extends SaleCrud {
 
 			PaymentLib::replaceSeveralBySale($e, $values);
 
-			// Si on a mis à jour et qu'il ne reste plus de paiement en ligne
-			if($e['onlinePaymentStatus'] !== NULL) {
-
-				$cPayment = PaymentLib::getBySale($e);
-
-				$hasValidOnlinePayment = $cPayment->find(fn($ePayment) => $ePayment->isPaid() and $ePayment['method']->isOnline())->count() > 0;
-
-				if($hasValidOnlinePayment === FALSE) {
-					$e['onlinePaymentStatus'] = NULL;
-					Sale::model()->update($e, ['onlinePaymentStatus' => NULL]);
-				}
-
-			}
-
 		}
 
 		if(
@@ -1362,7 +1332,7 @@ class SaleLib extends SaleCrud {
 						'onlineCheckoutId' => NULL,
 						'method' => $eMethod,
 						'amountIncludingVat' => $e['priceIncludingVat'],
-						'statusOnline' => NULL,
+						'status' => Payment::PAID,
 					])
 
 				);

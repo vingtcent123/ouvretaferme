@@ -46,7 +46,7 @@ Class CashLib {
 		/*
 		\selling\Sale::model()
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
-			->join(\selling\Payment::model(), 'm1.id = m3.sale AND (m3.statusOnline = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR m3.statusOnline IS NULL)', 'LEFT'); // Moyen de paiement OK
+			->join(\selling\Payment::model(), 'm1.id = m3.sale AND m3.status = '.\selling\Payment::model()->format(\selling\Payment::PAID), 'LEFT'); // Moyen de paiement OK
 
 		if($search->get('method') and $search->get('method')->notEmpty()) {
 

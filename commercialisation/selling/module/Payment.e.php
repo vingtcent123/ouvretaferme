@@ -3,6 +3,10 @@ namespace selling;
 
 class Payment extends PaymentElement {
 
+	public function acceptDelete(): bool {
+		return ($this['closed'] === FALSE);
+	}
+
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
@@ -15,17 +19,17 @@ class Payment extends PaymentElement {
 	// Si le mode de paiement est un autre, on peut considérer que le paiement est OK
 	public function isNotPaid(): bool {
 
-		$this->expects(['method' => ['online'], 'statusOnline']);
+		$this->expects(['status']);
 
-		return $this['method']->isOnline() and $this['statusOnline'] !== Payment::SUCCESS;
+		return ($this['status'] !== Payment::PAID);
 
 	}
 
 	public function isPaid(): bool {
 
-		$this->expects(['method' => ['online'], 'statusOnline']);
+		$this->expects(['status']);
 
-		return $this['method']->isOnline() === FALSE or $this['statusOnline'] === Payment::SUCCESS;
+		return ($this['status'] === Payment::PAID);
 
 	}
 

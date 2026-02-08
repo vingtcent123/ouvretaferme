@@ -382,8 +382,7 @@ new Page(function($data) {
 		$data->validatePayment = function() use($data) {
 
 			if(
-				$data->eSaleReference['paymentStatus'] !== \selling\Sale::PAID and
-				$data->eSaleReference['onlinePaymentStatus'] !== \selling\Sale::FAILURE and // On affiche la page de confirmation si le paiement est en échec
+				in_array($data->eSaleReference['paymentStatus'], [\selling\Sale::PAID, \selling\Sale::FAILED]) === FALSE and
 				$data->eSaleReference['preparationStatus'] === \selling\Sale::BASKET
 			) {
 				throw new RedirectAction(\shop\ShopUi::paymentUrl($data->eShop, $data->eDate));

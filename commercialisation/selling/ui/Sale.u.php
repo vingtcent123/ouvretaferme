@@ -1241,22 +1241,11 @@ class SaleUi {
 
 	public static function getPaymentStatus(Sale $eSale): string {
 
-		if($eSale['onlinePaymentStatus'] !== NULL) {
-			$h = '<span class="util-badge sale-payment-status sale-payment-status-'.$eSale['onlinePaymentStatus'].'">';
-				$label = self::p('onlinePaymentStatus')->values[$eSale['onlinePaymentStatus']];
-				if($eSale['paidAt'] !== NULL) {
-					$h .= s("{status} le {date}", ['status' => $label, 'date' => \util\DateUi::numeric($eSale['paidAt'])]);
-				} else {
-					$h .= $label;
-				}
-			$h .= '</span>';
-		} else if($eSale['paymentStatus'] !== NULL) {
-			$h = self::getPaymentStatusBadge($eSale['paymentStatus'], $eSale['paidAt']);
+		if($eSale['paymentStatus'] !== NULL) {
+			return self::getPaymentStatusBadge($eSale['paymentStatus'], $eSale['paidAt']);
 		} else {
-			$h = '';
+			return '';
 		}
-
-		return $h;
 
 	}
 
@@ -1417,9 +1406,7 @@ class SaleUi {
 
 			// On n'affiche pas les paiements en échec s'il y a au moins 1 paiement en succès
 			if(
-				($hasAtLeastOneSuccessfulPayment and $ePayment->isNotPaid()) or
-				// Le paiement par CB n'est pas le dernier => On ne le prend pas en compte
-				($eSale['onlinePaymentStatus'] === NULL and $ePayment['method']->isOnline())
+				($hasAtLeastOneSuccessfulPayment and $ePayment->isNotPaid())
 			) {
 				continue;
 			}
@@ -2337,92 +2324,15 @@ class SaleUi {
 
 	public function updatePayment(Sale $eSale): \Panel {
 
-		$form = new \util\FormUi();
-
-		$h = '';
-
-		$h .= $form->openAjax('/selling/sale:doUpdatePayment');
-
-			$h .= $form->hidden('id', $eSale['id']);
-
-			if($eSale['invoice']->notEmpty()) {
-
-				$paymentInfo = '<div class="util-info">';
-					$paymentInfo .= '<p>';
-						$paymentInfo .= s("Cette vente est incluse dans la facture <b>{invoiceNumber}</b>. Vous pouvez modifier le moyen de paiement et l'état du paiement directement dans la facture.", [
-						'invoiceNumber' => encode($eSale['invoice']['number']),
-					]);
-					$paymentInfo .= '</p>';
-					$paymentInfo .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" class="btn btn-secondary">';
-						$paymentInfo .= s("Consulter la facture");
-					$paymentInfo .= '</a>';
-				$paymentInfo .= '</div>';
-
-				$h .= '<div class="util-block bg-background-light">';
-					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-					$h .= $form->group(content: $paymentInfo);
-				$h .= '</div>';
-
-				$h .= $form->group(
-					content: $form->submit(s("Enregistrer"))
-				);
-
-
-			} else if($eSale->isPaymentOnline(NULL)) {
-
-				$content = '<div class="flex-justify-space-between flex-align-center">';
-					$content .= '<div>'.SaleUi::getPaymentMethodName($eSale).' '.SaleUi::getPaymentStatus($eSale).'</div>';
-					$content .= '<a data-ajax="/selling/sale:doDeletePayment" post-id="'.$eSale['id'].'" class="btn btn-xs btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce mode de règlement pour la vente ?").'">'.s("Supprimer").'</a>';
-				$content .= '</div>';
-
-				$h .= '<div class="util-block bg-background-light">';
-					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-					$h .= $form->group(
-						self::p('paymentMethod')->label,
-						$content
-					);
-				$h .= '</div>';
-
+		if($eSale['invoice']->notEmpty()) {
+			$h = $this->getInvoicePayment($eSale);
+		} else {
+			if($eSale->isPaymentOnline(NULL)) {
+				$h = $this->getOnlinePayment($eSale);
 			} else {
-
-				if($eSale['paymentStatus'] === Sale::NEVER_PAID) {
-					$h .= $form->group(
-						content: '<div class="util-block-info">'.s("Cette vente est actuellement enregistrée comme une facture qui ne sera pas payée, mais vous pouvez revenir sur votre choix.").'</div>'
-					);
-				}
-
-				$h .= '<div class="sale-payment-controler">';
-					$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
-
-					$h .= $form->group(
-						s("Moyen de paiement"),
-						$form->select(
-							'method', $eSale['cPaymentMethod'], $eSale['cPayment']->first()['method'] ?? new \payment\Method(), [
-								'onrender' => 'Sale.changePaymentMethod(this)',
-								'onchange' => 'Sale.changePaymentMethod(this)',
-								'placeholder' => s("Non défini"),
-							]
-						)
-					);
-
-					$h .= $form->dynamicGroup($eSale, 'paymentStatus', function($d) {
-						$d->default = fn(Sale $eSale) => ($eSale['paymentStatus'] === Sale::PAID) ? Sale::PAID : Sale::NOT_PAID;
-					});
-					$h .= $form->dynamicGroup($eSale, 'paidAt', function($d) {
-						$d->default = fn(Sale $eSale) => $eSale['paymentStatus'] === Sale::PAID ? $eSale['paidAt'] : currentDate();
-					});
-				$h .= '</div>';
-
-				$h .= $form->group(
-					content: '<div class="flex-justify-space-between">'
-						.$form->submit(s("Enregistrer"))
-						.'<a data-ajax="/selling/sale:doUpdateNeverPaid" post-id="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette vente ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>'
-					.'</div>'
-				);
-
+				$h = $this->getPaymentForm($eSale);
 			}
-
-		$h .= $form->close();
+		}
 
 		return new \Panel(
 			id: 'panel-sale-update',
@@ -2432,6 +2342,88 @@ class SaleUi {
 			body: $h
 		);
 
+	}
+
+	protected function getOnlinePayment(Sale $eSale): string {
+
+		$content = '<div class="flex-justify-space-between flex-align-center">';
+			$content .= '<div>'.SaleUi::getPaymentMethodName($eSale).' '.SaleUi::getPaymentStatus($eSale).'</div>';
+			$content .= '<a data-ajax="/selling/sale:doDeletePayment" post-id="'.$eSale['id'].'" class="btn btn-xs btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce mode de règlement pour la vente ?").'">'.s("Supprimer").'</a>';
+		$content .= '</div>';
+
+		$h = '<div class="util-block bg-background-light">';
+			$h .= $content;
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function getPaymentForm(Sale $eSale): string {
+
+		$form = new \util\FormUi();
+
+		$h = '';
+
+		$h .= $form->openAjax('/selling/sale:doUpdatePayment');
+
+			$h .= $form->hidden('id', $eSale['id']);
+
+			if($eSale['paymentStatus'] === Sale::NEVER_PAID) {
+				$h .= $form->group(
+					content: '<div class="util-block-info">'.s("Cette vente est actuellement enregistrée comme une vente qui ne sera pas payée, mais vous pouvez revenir sur votre choix.").'</div>'
+				);
+			}
+
+			$h .= '<div class="sale-payment-controler">';
+				$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
+
+				$h .= $form->group(
+					s("Moyen de paiement"),
+					$form->select(
+						'method', $eSale['cPaymentMethod'], $eSale['cPayment']->first()['method'] ?? new \payment\Method(), [
+							'onrender' => 'Sale.changePaymentMethod(this)',
+							'onchange' => 'Sale.changePaymentMethod(this)',
+							'placeholder' => s("Non défini"),
+						]
+					)
+				);
+
+				$h .= $form->dynamicGroup($eSale, 'paymentStatus', function($d) {
+					$d->default = fn(Sale $eSale) => ($eSale['paymentStatus'] === Sale::PAID) ? Sale::PAID : Sale::NOT_PAID;
+				});
+				$h .= $form->dynamicGroup($eSale, 'paidAt', function($d) {
+					$d->default = fn(Sale $eSale) => $eSale['paymentStatus'] === Sale::PAID ? $eSale['paidAt'] : currentDate();
+				});
+			$h .= '</div>';
+
+			$h .= $form->group(
+				content: '<div class="flex-justify-space-between">'
+					.$form->submit(s("Enregistrer"))
+					.'<a data-ajax="/selling/sale:doUpdateNeverPaid" post-id="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette vente ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>'
+				.'</div>'
+		);
+
+		$h .= $form->close();
+
+		return $h;
+
+	}
+
+	protected function getInvoicePayment(Sale $eSale): string {
+
+		$h = '<div class="util-block-info">';
+			$h .= '<p>';
+				$h .= s("Cette vente est incluse dans la facture <b>{invoiceNumber}</b>.<br/>Vous pouvez modifier le moyen de paiement et l'état du paiement directement dans la facture.", [
+				'invoiceNumber' => encode($eSale['invoice']['number']),
+			]);
+			$h .= '</p>';
+			$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" class="btn btn-transparent">';
+				$h .= s("Consulter la facture");
+			$h .= '</a>';
+		$h .= '</div>';
+
+		return $h;
 	}
 
 
@@ -2813,6 +2805,8 @@ class SaleUi {
 				$d->values = [
 					Sale::PAID => s("Payé"),
 					Sale::NOT_PAID => s("Non payé"),
+					Sale::PARTIAL_PAID => s("Partiellement payé"),
+					Sale::FAILED => s("Paiement en échec"),
 					Sale::NEVER_PAID => s("Ne sera pas payé"),
 				];
 				$d->field = 'switch';
@@ -2821,14 +2815,6 @@ class SaleUi {
 					'labelOff' => $d->values[Sale::NOT_PAID],
 					'valueOn' => Sale::PAID,
 					'valueOff' => Sale::NOT_PAID,
-				];
-				break;
-
-			case 'onlinePaymentStatus' :
-				$d->values = [
-					Sale::INITIALIZED => s("Non payé"),
-					Sale::SUCCESS => s("Payé"),
-					Sale::FAILURE => s("Échec"),
 				];
 				break;
 

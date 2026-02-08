@@ -48,10 +48,7 @@ Class ImportLib {
 					'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate',
 					'cPayment' => \selling\Payment::model()
 						->select(\selling\Payment::getSelection())
-						->or(
-							fn() => $this->whereStatusOnline(NULL),
-							fn() => $this->whereStatusOnline(\selling\Payment::SUCCESS)
-						)
+						->whereStatus(\selling\Payment::PAID)
 						->delegateCollection('sale'),
 					'cItem' => \selling\Item::model()
 						->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])

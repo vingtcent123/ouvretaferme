@@ -10,15 +10,14 @@ abstract class PaymentElement extends \Element {
 	const SALE = 'sale';
 	const INVOICE = 'invoice';
 
+	const NOT_PAID = 'not-paid';
+	const PAID = 'paid';
+	const FAILED = 'failed';
+
 	const WAITING = 'waiting';
 	const DRAFT = 'draft';
 	const VALID = 'valid';
 	const IGNORED = 'ignored';
-
-	const INITIALIZED = 'initialized';
-	const SUCCESS = 'success';
-	const FAILURE = 'failure';
-	const EXPIRED = 'expired';
 
 	public static function getSelection(): array {
 		return Payment::model()->getProperties();
@@ -64,14 +63,16 @@ class PaymentModel extends \ModuleModel {
 			'methodName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'onlineCheckoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'onlinePaymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
+			'status' => ['enum', [\selling\Payment::NOT_PAID, \selling\Payment::PAID, \selling\Payment::FAILED], 'cast' => 'enum'],
 			'statusCash' => ['enum', [\selling\Payment::WAITING, \selling\Payment::DRAFT, \selling\Payment::VALID, \selling\Payment::IGNORED], 'cast' => 'enum'],
-			'statusOnline' => ['enum', [\selling\Payment::INITIALIZED, \selling\Payment::SUCCESS, \selling\Payment::FAILURE, \selling\Payment::EXPIRED], 'null' => TRUE, 'cast' => 'enum'],
 			'paidAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
+			'closed' => ['bool', 'cast' => 'bool'],
+			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'statusCash', 'statusOnline', 'paidAt', 'createdAt'
+			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'status', 'statusCash', 'paidAt', 'createdAt', 'closed', 'closedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -105,6 +106,9 @@ class PaymentModel extends \ModuleModel {
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
+			case 'closed' :
+				return FALSE;
+
 			default :
 				return parent::getDefaultValue($property);
 
@@ -119,10 +123,10 @@ class PaymentModel extends \ModuleModel {
 			case 'source' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'statusCash' :
+			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'statusOnline' :
+			case 'statusCash' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -184,12 +188,12 @@ class PaymentModel extends \ModuleModel {
 		return $this->where('onlinePaymentIntentId', ...$data);
 	}
 
-	public function whereStatusCash(...$data): PaymentModel {
-		return $this->where('statusCash', ...$data);
+	public function whereStatus(...$data): PaymentModel {
+		return $this->where('status', ...$data);
 	}
 
-	public function whereStatusOnline(...$data): PaymentModel {
-		return $this->where('statusOnline', ...$data);
+	public function whereStatusCash(...$data): PaymentModel {
+		return $this->where('statusCash', ...$data);
 	}
 
 	public function wherePaidAt(...$data): PaymentModel {
@@ -198,6 +202,14 @@ class PaymentModel extends \ModuleModel {
 
 	public function whereCreatedAt(...$data): PaymentModel {
 		return $this->where('createdAt', ...$data);
+	}
+
+	public function whereClosed(...$data): PaymentModel {
+		return $this->where('closed', ...$data);
+	}
+
+	public function whereClosedAt(...$data): PaymentModel {
+		return $this->where('closedAt', ...$data);
 	}
 
 

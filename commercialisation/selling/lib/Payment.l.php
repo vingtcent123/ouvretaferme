@@ -28,8 +28,26 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function delete(Payment $e): void {
-		throw new \UnsupportedException();
+	public static function delete(Payment $ePayment): void {
+
+		Payment::model()->beginTransaction();
+
+			$cPayment = Payment::model()
+				->select(Payment::getSelection())
+				->whereSource($ePayment['source'])
+				->whereSale($ePayment['sale'])
+				->getCollection(index: 'id');
+
+			if($cPayment->offsetExists($ePayment['id']) === FALSE) {
+				return;
+			}
+
+			$ePayment = $cPayment[$ePayment['id']];
+
+			dd($ePayment);
+
+		Payment::model()->commit();
+
 	}
 
 	public static function delegateBySale(): PaymentModel {
@@ -192,7 +210,7 @@ class PaymentLib extends PaymentCrud {
 			'method' => $eMethod,
 			'methodName' => $eMethod['name'],
 			'amountIncludingVat' => $amount ?? $eSale['priceIncludingVat'],
-			'statusOnline' => ($eMethod['fqn'] === \payment\MethodLib::ONLINE_CARD) ? Payment::INITIALIZED : NULL,
+			'status' => ($eMethod['fqn'] === \payment\MethodLib::ONLINE_CARD) ? Payment::NOT_PAID : $eSale['paymentStatus'],
 		]);
 
 		Payment::model()->insert($ePayment);

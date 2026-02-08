@@ -9,7 +9,7 @@ Class SaleLib {
 
 		\selling\Sale::model()
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
-			->join(\selling\Payment::model(), 'm1.id = m3.sale AND (m3.statusOnline = '.\selling\Payment::model()->format(\selling\Payment::SUCCESS).' OR m3.statusOnline IS NULL)', 'LEFT'); // Moyen de paiement OK
+			->join(\selling\Payment::model(), 'm1.id = m3.sale AND m3.status = '.\selling\Payment::model()->format(\selling\Payment::PAID), 'LEFT'); // Moyen de paiement OK
 
 		if($search->get('method') and $search->get('method')->notEmpty()) {
 
@@ -43,16 +43,13 @@ Class SaleLib {
 		$selectSale = [
 			'id', 'customer' => ['name', 'type', 'destination', 'user'], 'preparationStatus', 'priceIncludingVat',
 			'deliveredAt', 'document', 'farm', 'profile', 'createdAt', 'taxes', 'hasVat', 'priceExcludingVat',
-			'onlinePaymentStatus', 'paymentStatus', 'closed', 'invoice',
+			'paymentStatus', 'closed', 'invoice',
 			'shipping', 'shippingExcludingVat', 'shippingVatRate',
 			'marketParent' => ['customer' => ['name', 'type', 'destination']],
 			'shopDate' => ['id', 'deliveryDate', 'status', 'orderStartAt', 'orderEndAt'], 'createdBy',
 			'cPayment' => \selling\Payment::model()
 				->select(\selling\Payment::getSelection())
-				->or(
-					fn() => $this->whereStatusOnline(NULL),
-					fn() => $this->whereStatusOnline(\selling\Payment::SUCCESS)
-				)
+				->whereStatus(\selling\Payment::PAID)
 				->delegateCollection('sale', 'id'),
 				'cItem' => \selling\Item::model()
 					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])

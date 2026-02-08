@@ -208,10 +208,12 @@ Payment:
   methodName: ?text8
   onlineCheckoutId: ?text8
   onlinePaymentIntentId: ?text8
+  status: enum(NOT_PAID, PAID, FAILED)
   statusCash: enum(WAITING, DRAFT, VALID, IGNORED) = WAITING
-  statusOnline: ?enum(INITIALIZED, SUCCESS, FAILURE, EXPIRED)
   paidAt: ?date
   createdAt: datetime = SPECIAL(now)
+  closed: bool = FALSE
+  closedAt: ?datetime
   INDEX: [
     ["farm"],
     ["sale"],
@@ -321,8 +323,7 @@ Sale:
   closedAt: ?datetime
   closedBy: ?user\User
   preparationStatus: enum(COMPOSITION, DRAFT, BASKET, CONFIRMED, SELLING, PREPARED, DELIVERED, CANCELED, EXPIRED) = DRAFT
-  paymentStatus: ?enum(NOT_PAID, PARTIAL_PAID, PAID, NEVER_PAID)
-  onlinePaymentStatus: ?enum(INITIALIZED, SUCCESS, FAILURE)
+  paymentStatus: ?enum(NOT_PAID, PARTIAL_PAID, PAID, NEVER_PAID, FAILED)
   compositionOf: ?selling\Product
   compositionEndAt: ?date
   marketSales: ?int(0, null)

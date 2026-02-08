@@ -216,6 +216,8 @@ class AlertUi {
 			'Unit::updated' => s("L'unité a bien été mise à jour."),
 			'Unit::deleted' => s("L'unité a bien été supprimée."),
 
+			'Payment::deleted' => s("Le moyen de paiement a bien été supprimé."),
+
 			'Quality::updated' => s("Le signe de qualité a bien été modifié."),
 			'Quality::deleted' => s("Le signe de qualité a bien été supprimé et retiré des produits."),
 

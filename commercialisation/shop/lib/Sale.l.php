@@ -332,7 +332,10 @@ class SaleLib {
 
 		return (
 			$eSale['cPayment']->empty() or
-			$eSale['cPayment']->contains(fn($ePayment) => ($ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD and in_array($ePayment['statusOnline'], [\selling\Payment::EXPIRED, \selling\Payment::FAILURE]) === FALSE)) === FALSE
+			$eSale['cPayment']->contains(fn($ePayment) => (
+				$ePayment['method']['fqn'] === \payment\MethodLib::ONLINE_CARD and
+				$ePayment['status'] !== \selling\Payment::FAILED
+			)) === FALSE
 		);
 
 	}
@@ -517,10 +520,9 @@ class SaleLib {
 
 		\selling\Sale::model()->beginTransaction();
 
-		$properties = ['paymentStatus', 'onlinePaymentStatus'];
+		$properties = ['paymentStatus'];
 
 		$eSale['paymentStatus'] = \selling\Sale::NOT_PAID;
-		$eSale['onlinePaymentStatus'] = \selling\Sale::INITIALIZED;
 
 		// On prolonge le délai d'expiration de la vente
 		if($eSale['preparationStatus'] === \selling\Sale::BASKET) {
@@ -606,24 +608,27 @@ class SaleLib {
 
 	}
 
-	public static function paymentFailed(\selling\Sale $eSale, array $event): void {
+	public static function paymentFailed(\selling\Sale $eSale, \payment\Method $eMethod, array $event): void {
 
 		$object = $event['data']['object'];
 
 		\selling\Sale::model()->beginTransaction();
 
 		$affected = \selling\PaymentOnlineLib::updateByPaymentIntentId($object['id'], [
-			'statusOnline' => \selling\Payment::FAILURE
+			'status' => \selling\Payment::FAILED
 		]);
 
 		if(
 			$affected > 0 and
-			\selling\PaymentOnlineLib::hasSuccess($eSale) === FALSE
+			\selling\Payment::model()
+				->whereSale($eSale)
+				->whereMethod($eMethod)
+				->whereStatus(\selling\Payment::PAID)
+				->exists() === FALSE
 		) {
 
 			$newValues = [
-				'paymentStatus' => \selling\Sale::NOT_PAID,
-				'onlinePaymentStatus' => \selling\Sale::FAILURE,
+				'paymentStatus' => \selling\Sale::FAILED
 			];
 
 			$affected = \selling\Sale::model()
@@ -662,7 +667,7 @@ class SaleLib {
 		}
 
 		\selling\PaymentOnlineLib::updateByPaymentIntentId($object['id'], [
-			'statusOnline' => \selling\Payment::SUCCESS,
+			'status' => \selling\Payment::PAID,
 			'amountIncludingVat' => $eSale['priceIncludingVat'],
 		]);
 
@@ -670,9 +675,8 @@ class SaleLib {
 
 		$eSale['paymentStatus'] = \selling\Sale::PAID;
 		$eSale['paidAt'] = currentDate();
-		$eSale['onlinePaymentStatus'] = \selling\Sale::SUCCESS;
 
-		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus', 'paidAt', 'onlinePaymentStatus']);
+		\selling\SaleLib::update($eSale, ['preparationStatus', 'paymentStatus', 'paidAt']);
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$object['id']);
 

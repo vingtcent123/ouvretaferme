@@ -162,7 +162,7 @@ class StripeLib {
 
 			case 'payment_intent.partially_funded' :
 			case 'payment_intent.payment_failed' :
-				\shop\SaleLib::paymentFailed($eSale, $event);
+				\shop\SaleLib::paymentFailed($eSale, $eMethod, $event);
 				break;
 
 			case 'payment_intent.succeeded' :
@@ -170,7 +170,7 @@ class StripeLib {
 				break;
 
 			case 'payment_intent.canceled':
-				\shop\SaleLib::paymentFailed($eSale, $event);
+				\shop\SaleLib::paymentFailed($eSale, $eMethod, $event);
 				break;
 
 		}
