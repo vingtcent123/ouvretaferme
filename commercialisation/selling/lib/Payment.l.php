@@ -29,27 +29,6 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function updateSaleNotPaid(Sale $eSale): void {
-
-		$paidAt = currentDate();
-
-		Payment::model()
-			->whereSale($eSale)
-			->whereStatus(Payment::NOT_PAID)
-			->update([
-				'status' => Payment::PAID,
-				'paidAt' => $paidAt
-			]);
-
-		// TODO : gérer le paiement partiel
-
-		SaleLib::update($eSale, [
-			'paymentStatus' => Payment::PAID,
-			'paidAt' => $paidAt
-		]);
-
-	}
-
 	public static function update(Payment $e, array $properties): void {
 
 		if(array_diff($properties, ['method', 'amountIncludingVat']) !== []) {
@@ -123,6 +102,7 @@ class PaymentLib extends PaymentCrud {
 		return Payment::model()
 			->select(Payment::getSelection())
 			->whereSale($eSale)
+			->whereStatus('!=', Payment::FAILED)
 			->sort(['createdAt' => SORT_DESC])
 			->getCollection();
 
@@ -313,7 +293,6 @@ class PaymentLib extends PaymentCrud {
 
 		Payment::model()
 			->whereSale($eSale)
-			->whereFarm($eSale['farm'])
 			->where('amountIncludingVat IS NULL OR amountIncludingVat = 0')
 			->delete();
 

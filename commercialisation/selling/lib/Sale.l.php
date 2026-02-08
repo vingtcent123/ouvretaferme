@@ -308,7 +308,7 @@ class SaleLib extends SaleCrud {
 			->join(Sale::model()->select('document', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate'), 'm1.sale = m2.id')
 			->select([
 				'id' => new \Sql('m2.id'),
-				'date' => new \Sql('paidAt'),
+				'date' => new \Sql('m1.paidAt'),
 				'sale' => ['document', 'profile', 'priceExcludingVat', 'compositionEndAt'],
 				'source' => fn() => \cash\Cash::SELL_SALE,
 				'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? \cash\Cash::CREDIT : \cash\Cash::DEBIT,
