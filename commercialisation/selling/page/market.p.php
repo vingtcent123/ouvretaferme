@@ -69,7 +69,7 @@ new \selling\SalePage()
 
 		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse');
 
-		\selling\PaymentLib::fillByMethod($data->e, $eMethod);
+		\selling\PaymentMarketLib::fillMethod($data->e, $eMethod);
 
 		throw new ReloadLayerAction();
 	}, validate: ['canWrite', 'acceptUpdateMarketSalePayment'])
@@ -82,16 +82,15 @@ new \selling\SalePage()
 
 			case 'update':
 				$ePayment = \selling\PaymentLib::getById(POST('payment'))->validateProperty('sale', $data->e);
-				\selling\PaymentLib::updateMethod($ePayment, $eMethod);
+				\selling\PaymentMarketLib::updateMethod($ePayment, $eMethod);
 				break;
 
 			case 'remove':
-				\selling\PaymentLib::deleteByMethod($data->e, $eMethod);
-				\selling\PaymentLib::fillByMethod($data->e);
+				\selling\PaymentMarketLib::deleteMethod($data->e, $eMethod);
 				break;
 
 			case 'complete':
-				\selling\PaymentLib::fillByMethod($data->e, $eMethod);
+				\selling\PaymentMarketLib::fillMethod($data->e, $eMethod);
 				break;
 
 			default:
@@ -158,7 +157,7 @@ new \selling\SalePage()
 
 		\selling\ItemLib::updateSaleCollection($data->e, $cItemSale);
 
-		\selling\PaymentLib::fillByMethod($data->e);
+		\selling\PaymentMarketLib::fillMethod($data->e);
 
 		$data->e = \selling\SaleLib::getById($data->e, \selling\Sale::getSelection() + [
 			'createdBy' => ['firstName', 'lastName', 'vignette'],

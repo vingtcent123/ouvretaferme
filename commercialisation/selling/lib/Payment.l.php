@@ -122,81 +122,6 @@ class PaymentLib extends PaymentCrud {
 		return $ePayment;
 	}
 
-	/**
-	 * Remplit la vente avec le moyen de paiement renseigné pour que le total des paiements corresponde au total de la vente
-	 * Si aucun moyen de paiement n'est renseigné, on utilise le moyen de paiement actuel de la vente si il est renseigné et qu'il n'y en a qu'un
-	 * Sinon, on utilise le moyen de paiement par défaut
-	 */
-	public static function fillByMethod(Sale $eSale, \payment\Method $eMethod = new \payment\Method()): void {
-
-		if(
-			$eMethod->notEmpty() and
-			$eMethod->isOnline()
-		) {
-			throw new \UnsupportedException();
-		}
-
-		Payment::model()->beginTransaction();
-
-			$cPayment = self::getBySale($eSale);
-
-			if($eMethod->empty()) {
-
-				$eMethodDefault = $eSale['farm']->getConf('marketSalePaymentMethod');
-
-				if($cPayment->count() === 1) {
-
-					$eMethod = $cPayment->first()['method'];
-
-				} else if($eMethodDefault->notEmpty()) {
-
-					$eMethod = \payment\MethodLib::getById($eMethodDefault['id']);
-
-				} else {
-
-					Payment::model()->commit();
-					return;
-
-				}
-
-			}
-
-			$currentAmount = 0;
-			$ePaymentWithMethod = new \payment\Method();
-
-			foreach($cPayment as $ePayment) {
-
-				$currentAmount += $ePayment['amountIncludingVat'];
-
-				if($ePayment['method']->is($eMethod)) {
-					$ePaymentWithMethod = $ePayment;
-				}
-
-			}
-
-			if($ePaymentWithMethod->notEmpty()) {
-
-				$fillAmount =  $eSale['priceIncludingVat'] - $currentAmount + $ePaymentWithMethod['amountIncludingVat'];
-
-				Payment::model()
-					->whereSale($eSale)
-					->whereMethod($eMethod)
-					->update([
-						'amountIncludingVat' => $fillAmount
-					]);
-
-			} else {
-
-				$fillAmount = max(0.0, $eSale['priceIncludingVat'] - $currentAmount);
-
-				self::createByMethod($eSale, $eMethod, $fillAmount);
-
-			}
-
-		Payment::model()->commit();
-
-	}
-
 	public static function createByMethod(Sale $eSale, \payment\Method $eMethod, ?float $amount = NULL, ?string $checkoutId = NULL): Payment {
 
 		if($eMethod->empty()) {
@@ -227,36 +152,6 @@ class PaymentLib extends PaymentCrud {
 		Payment::model()->insert($ePayment);
 
 		return $ePayment;
-
-	}
-
-	public static function deleteByMethod(Sale $eSale, \payment\Method $eMethod): void {
-
-		Payment::model()
-			->whereSale($eSale)
-			->whereMethod($eMethod)
-			->delete();
-
-	}
-
-	public static function updateMethod(Payment $ePayment, \payment\Method $eMethod): void {
-
-		$ePayment->expects(['id', 'sale', 'method']);
-
-		$eSale = $ePayment['sale'];
-
-		$isExisting = Payment::model()
-			->whereSale($eSale)
-			->whereMethod($eMethod)
-			->exists();
-
-		if($isExisting) {
-			return;
-		}
-
-		$ePayment['method'] = $eMethod;
-
-		self::update($ePayment, ['method']);
 
 	}
 

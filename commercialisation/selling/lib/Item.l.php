@@ -609,12 +609,12 @@ class ItemLib extends ItemCrud {
 				self::deleteIngredients($e);
 			}
 
-			if($e['sale']->isMarketSale()) {
-				\selling\PaymentLib::fillByMethod($e['sale']);
-			}
-
 			$e['sale']['farm'] = $e['farm'];
 			SaleLib::recalculate($e['sale']);
+
+			if($e['sale']->isMarketSale()) {
+				\selling\PaymentMarketLib::fillMethod($e['sale']);
+			}
 
 		Item::model()->commit();
 
