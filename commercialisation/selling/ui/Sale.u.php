@@ -584,34 +584,7 @@ class SaleUi {
 						if($hasDocuments and in_array('paymentMethod', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
-
-								if($eSale['cPayment']->empty()) {
-
-									if($eSale['paymentStatus'] !== NULL) {
-										$h .= self::getPaymentStatusBadge($eSale['paymentStatus']);
-									} else if($eSale->acceptUpdatePayment()) {
-										$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary">'.s("Choisir").'</a>';
-									}
-
-								} else {
-
-									if($eSale->acceptUpdatePayment() and $eSale['paymentStatus'] !== Sale::PAID) {
-										$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary sale-button">';
-									}
-
-										$h .= self::getPaymentMethodName($eSale);
-
-										$paymentStatus = self::getPaymentStatus($eSale);
-										if($paymentStatus) {
-											$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
-										}
-
-									if($eSale->acceptUpdatePayment() and $eSale['paymentStatus'] !== Sale::PAID) {
-										$h .= '</a>';
-									}
-
-								}
-
+								$h .= $this->getPaymentBox($eSale);
 							$h .= '</td>';
 
 						}
@@ -1398,27 +1371,20 @@ class SaleUi {
 	public static function getPaymentMethodName(Sale $eSale): ?string {
 
 		$eSale->expects(['cPayment']);
-		$hasAtLeastOneSuccessfulPayment = $eSale->hasSuccessfulPayment();
+
+		$cPayment = $eSale['cPayment'];
 
 		$paymentList = [];
-		foreach($eSale['cPayment'] as $ePayment) {
 
-			// On n'affiche pas les paiements en échec s'il y a au moins 1 paiement en succès
+		foreach($cPayment as $ePayment) {
+
+			$payment = \payment\MethodUi::getName($ePayment['method']);
+
 			if(
-				($hasAtLeastOneSuccessfulPayment and $ePayment->isNotPaid())
+				$cPayment->count() > 1 or
+				($ePayment['status'] === Payment::PAID and $eSale['paymentStatus'] === Sale::PARTIAL_PAID)
 			) {
-				continue;
-			}
-
-			$payment = '';
-			if($ePayment['accountingHash'] !== NULL) {
-				$payment .= ' <a href="'.\farm\FarmUi::urlConnected($eSale['farm']).'/journal/livre-journal?hash='.$ePayment['accountingHash'].'" class="util-badge bg-accounting" title="'.("Intégré dans le livre-journal").'">';
-					$payment .= \Asset::icon('journal-bookmark');
-				$payment .= '</a> ';
-			}
-			$payment .= \payment\MethodUi::getName($ePayment['method']);
-			if($eSale['cPayment']->find(fn($e) => $e->isPaid())->count() > 1 and $ePayment['amountIncludingVat'] !== NULL) {
-				$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
+				$payment .= ' <span class="color-muted font-sm">'.\util\TextUi::money($ePayment['amountIncludingVat']).'</span>';
 			}
 
 			$paymentList[] = $payment;
@@ -1426,44 +1392,6 @@ class SaleUi {
 
 		return implode('<br />', $paymentList);
 
-	}
-	public static function getPayment(Sale $eSale): string {
-
-		$paymentList = [];
-
-		if($eSale['invoice']->notEmpty()) {
-
-			if($eSale['invoice']->isCreditNote()) {
-				$paymentList[] = s("Avoir");
-			} else {
-				$paymentList[] = s("Facture").' '.InvoiceUi::getPaymentStatusBadge($eSale['invoice']['paymentStatus'], $eSale['invoice']['paidAt']);
-			}
-		} else {
-
-			if($eSale['cPayment']->empty()) {
-
-				if($eSale['paymentStatus'] === NULL) {
-					return '';
-				} else {
-					return self::getPaymentStatus($eSale);
-				}
-
-			}
-
-			$payment = self::getPaymentMethodName($eSale);
-
-			if($eSale['cPayment']->count() > 1) {
-				$payment .= '<br />';
-			} else {
-				$payment .= ' ';
-			}
-
-			$payment .= self::getPaymentStatus($eSale);
-			$paymentList[] = $payment;
-
-		}
-
-		return implode('<br />', $paymentList);
 	}
 
 	public function getContent(Sale $eSale, \Collection $cPdf): string {
@@ -1506,7 +1434,7 @@ class SaleUi {
 				if($eSale->isMarket() === FALSE) {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
-						$h .= self::getPayment($eSale);
+						$h .= self::getPaymentBox($eSale, optimize: TRUE);
 					$h .= '</dd>';
 				}
 
@@ -2332,7 +2260,7 @@ class SaleUi {
 		if($eSale['invoice']->notEmpty()) {
 			$h = $this->getInvoicePayment($eSale);
 		} else {
-			if($eSale->isPaymentOnline(NULL)) {
+			if($eSale->isPaymentOnline(Payment::FAILED)) {
 				$h = $this->getOnlinePayment($eSale);
 			} else {
 				$h = $this->getPaymentForm($eSale);
@@ -2364,6 +2292,52 @@ class SaleUi {
 
 	}
 
+	protected function getPaymentBox(Sale $eSale, bool $optimize = FALSE): string {
+
+		$h = '';
+
+		if($eSale['paymentStatus'] === Sale::NEVER_PAID) {
+			$h .= '<span class="util-badge sale-payment-status-never-paid">'.self::p('paymentStatus')->values[Sale::NEVER_PAID].'</span>';
+		} else if($eSale['cPayment']->empty()) {
+
+			if($eSale->acceptUpdatePayment()) {
+				$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary">'.s("Choisir").'</a>';
+			}
+
+		} else {
+
+			if($eSale->acceptUpdatePayment() and $eSale['paymentStatus'] !== Sale::PAID) {
+				$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary sale-button">';
+			}
+
+				$h .= self::getPaymentMethodName($eSale);
+
+				$paymentStatus = self::getPaymentStatus($eSale);
+
+				if($paymentStatus) {
+
+					if(
+						$optimize and
+						$eSale['cPayment']->count() === 1 and
+						$eSale['paymentStatus'] !== Sale::PARTIAL_PAID
+					) {
+						$h .= '  '.$paymentStatus;
+					} else {
+						$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
+					}
+
+				}
+
+			if($eSale->acceptUpdatePayment() and $eSale['paymentStatus'] !== Sale::PAID) {
+				$h .= '</a>';
+			}
+
+		}
+
+		return $h;
+
+	}
+
 	protected function getPaymentForm(Sale $eSale): string {
 
 		$form = new \util\FormUi();
@@ -2380,34 +2354,18 @@ class SaleUi {
 				);
 			}
 
-			$h .= '<div class="sale-payment-controler">';
-				$h .= $form->group(content: '<h4>'.s("Règlement").'</h4>');
+			$never = $eSale->acceptNeverPaid() ? '<a data-ajax="/selling/sale:doUpdateNeverPaid" post-id="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette vente ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>' : '';
 
-				$h .= $form->group(
-					s("Moyen de paiement"),
-					$form->select(
-						'method', $eSale['cPaymentMethod'], $eSale['cPayment']->first()['method'] ?? new \payment\Method(), [
-							'onrender' => 'Sale.changePaymentMethod(this)',
-							'onchange' => 'Sale.changePaymentMethod(this)',
-							'placeholder' => s("Non défini"),
-						]
-					)
-				);
-
-				$h .= $form->dynamicGroup($eSale, 'paymentStatus', function($d) {
-					$d->default = fn(Sale $eSale) => ($eSale['paymentStatus'] === Sale::PAID) ? Sale::PAID : Sale::NOT_PAID;
-				});
-				$h .= $form->dynamicGroup($eSale, 'paidAt', function($d) {
-					$d->default = fn(Sale $eSale) => $eSale['paymentStatus'] === Sale::PAID ? $eSale['paidAt'] : currentDate();
-				});
-			$h .= '</div>';
-
-			$never = $eSale->acceptReplacePayment() ? '<a data-ajax="/selling/sale:doUpdateNeverPaid" post-id="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette vente ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>' : '';
+			$h .= $form->group(content: '<div class="util-title">'.
+				'<h4>'.s("Vente de {value}", \util\TextUi::money($eSale['priceIncludingVat'])).'</h4>'.
+				$never.
+			'</div>');
+			$h .= new PaymentTransactionUi()->update($eSale, $eSale['cPayment'], $eSale['cPaymentMethod']);
 
 			$h .= $form->group(
 				content: '<div class="flex-justify-space-between">'.
 					$form->submit(s("Enregistrer")).
-					$never.
+					'<a class="btn btn-outline-primary" onclick="Payment.add()">'.\Asset::icon('plus-circle').' '.s("Ajouter un autre paiement").'</a>'.
 				'</div>'
 		);
 
@@ -2812,16 +2770,9 @@ class SaleUi {
 				$d->values = [
 					Sale::PAID => s("Payé"),
 					Sale::NOT_PAID => s("Non payé"),
-					Sale::PARTIAL_PAID => s("Partiellement payé"),
+					Sale::PARTIAL_PAID => s("Payé partiellement"),
 					Sale::FAILED => s("Paiement en échec"),
 					Sale::NEVER_PAID => s("Ne sera pas payé"),
-				];
-				$d->field = 'switch';
-				$d->attributes = [
-					'labelOn' => $d->values[Sale::PAID],
-					'labelOff' => $d->values[Sale::NOT_PAID],
-					'valueOn' => Sale::PAID,
-					'valueOff' => Sale::NOT_PAID,
 				];
 				break;
 

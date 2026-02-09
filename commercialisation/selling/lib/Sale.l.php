@@ -1005,33 +1005,6 @@ class SaleLib extends SaleCrud {
 			$updatePreparationStatus = FALSE;
 		}
 
-		$updatePayments = array_delete($properties, 'paymentMethod');
-
-		if($updatePayments) {
-
-			if($e['cPayment']->empty()) {
-
-				if(in_array($e['paymentStatus'], [Invoice::PAID, Invoice::NOT_PAID])) {
-
-					$e['paymentStatus'] = NULL;
-					$properties[] = 'paymentStatus';
-
-				}
-
-			} else {
-
-				// On met un statut de paiement par défaut s'il n'est pas renseigné
-				if($e['paymentStatus'] === NULL) {
-
-					$e['paymentStatus'] = Sale::NOT_PAID;
-					$properties[] = 'paymentStatus';
-
-				}
-
-			}
-
-		}
-
 		if(in_array('paymentStatus', $properties)) {
 
 			if($e['paymentStatus'] === Sale::PAID) {
@@ -1220,15 +1193,8 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		if($updatePayments) {
-
-			PaymentTransactionLib::replace($e, $e['cPayment']);
-
-		}
-
 		if(
 			in_array('shipping', $properties) or
-			($e['secured'] and $updatePayments) or
 			($e['secured'] and in_array('paidAt', $properties)) or
 			($e['secured'] and $updatePreparationStatus)
 		) {
@@ -1687,6 +1653,20 @@ class SaleLib extends SaleCrud {
 		$hash .= json_encode($newValues);
 
 		$newValues['crc32'] = crc32($hash);
+
+		if(
+			$e['paymentStatus'] === Sale::PAID and
+			$e['priceIncludingVat'] !== $e['paymentAmount']
+		) {
+			$newValues['paymentStatus'] = Sale::PARTIAL_PAID;
+		}
+
+		if(
+			$e['paymentStatus'] === Sale::PARTIAL_PAID and
+			$e['priceIncludingVat'] === $e['paymentAmount']
+		) {
+			$newValues['paymentStatus'] = Sale::PAID;
+		}
 
 		$e->merge($newValues);
 

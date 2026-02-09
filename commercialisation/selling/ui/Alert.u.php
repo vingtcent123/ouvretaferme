@@ -55,6 +55,11 @@ class AlertUi {
 			'Invoice::importNoFinancialYear' => s("Il n'y a pas d'exercice comptable dans lequel importer les factures."),
 			'Invoice::importNotBelongsToFinancialYear' => s("Les dates des factures ne correspondent pas à l'exercice comptable."),
 
+			'Payment::unexpected' => s("Le format des règlements n'est pas reconnu"),
+			'Payment::method.empty' => s("Veuillez choisir un moyen de paiement"),
+			'Payment::paidAt.empty' => s("Veuillez indiquer une date de paiement"),
+			'Payment::amountIncludingVat.empty' => s("Veuillez saisir un montant"),
+
 			'Product::proOrPrivate.check' => s("Veuillez déterminer si votre produit composé est vendu aux clients particuliers ou aux clients professionnels. Il ne peut pas à la fois être vendu aux professionnels et aux particuliers"),
 			'Product::proOrPrivatePrice.empty' => s("Veuillez indiquer au moins un prix pour ce produit"),
 			'Product::privatePrice.empty' => s("Veuillez indiquer le prix de ce produit vendu aux particuliers"),
@@ -174,7 +179,7 @@ class AlertUi {
 			'Sale::created' => s("La vente a bien été créée."),
 			'Sale::createdCollection' => s("Les ventes ont bien été créées !"),
 			'Sale::updated' => s("La vente a bien été mise à jour."),
-			'Sale::updatedPayment' => s("La règlement a bien été mis à jour."),
+			'Sale::updatedPayment' => s("Le règlement a bien été mis à jour."),
 			'Sale::deleted' => s("La vente a bien été supprimée."),
 			'Sale::pdfCreated' => [
 				Pdf::ORDER_FORM => s("Le devis a été généré au format PDF !"),
@@ -200,7 +205,7 @@ class AlertUi {
 			'Invoice::reminded' => s("La relance a bien été envoyée par e-mail au client."),
 			'Invoice::remindedCollection' => s("Les relances ont bien été envoyées par e-mail aux clients."),
 			'Invoice::regenerated' => s("La facture a bien été regénérée !").($options['actions'] ?? ''),
-			'Invoice::updatedPayment' => s("La règlement a bien été mis à jour."),
+			'Invoice::updatedPayment' => s("Le règlement a bien été mis à jour."),
 			'Invoice::deleted' => s("La facture a bien été supprimée."),
 			'Invoice::deletedCollection' => s("Les factures ont bien été supprimées."),
 			'Invoice::readyForAccountingRefused' => s("Les factures sont maintenant ignorées pour les exports comptables."),

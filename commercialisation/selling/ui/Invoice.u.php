@@ -992,7 +992,7 @@ class InvoiceUi {
 					);
 				}
 
-				$h .= '<div class="invoice-payment-controler">';
+				$h .= '<div class="invoice-payment-update">';
 					$h .= $form->dynamicGroup($eInvoice, 'paymentMethod');
 					$h .= $form->dynamicGroup($eInvoice, 'paymentStatus', function($d) {
 						$d->default = fn(Invoice $eInvoice) => ($eInvoice['paymentStatus'] === Invoice::PAID) ? Invoice::PAID : Invoice::NOT_PAID;
@@ -1002,7 +1002,7 @@ class InvoiceUi {
 					});
 				$h .= '</div>';
 
-				$never = $eInvoice->acceptReplacePayment() ? '<a data-ajax="/selling/invoice:doUpdateNeverPaid" post-id="'.$eInvoice['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette facture ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>' : '';
+				$never = $eInvoice->acceptNeverPaid() ? '<a data-ajax="/selling/invoice:doUpdateNeverPaid" post-id="'.$eInvoice['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette facture ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>' : '';
 
 				$h .= $form->group(
 					content: '<div class="flex-justify-space-between">'.

@@ -33,5 +33,37 @@ class Payment extends PaymentElement {
 
 	}
 
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
+
+		$p
+			->setCallback('amountIncludingVat.empty', function(?float $amountIncludingVat) use($p): bool {
+
+				if(
+					$p->isInvalid('status') or
+					$this['status'] === Payment::NOT_PAID
+				) {
+					return TRUE;
+				}
+
+				return ($amountIncludingVat !== NULL);
+
+			})
+			->setCallback('paidAt.empty', function(?string $paidAt) use($p): bool {
+
+				if(
+					$p->isInvalid('status') or
+					$this['status'] === Payment::NOT_PAID
+				) {
+					return TRUE;
+				}
+
+				return ($paidAt !== NULL);
+
+			});
+
+		parent::build($properties, $input, $p);
+
+	}
+
 }
 ?>

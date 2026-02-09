@@ -3,13 +3,92 @@ namespace selling;
 
 class PaymentTransactionLib {
 
-	public static function getAll(Sale $eSale): \Collection {
+	/**
+	 * Vérification intégrale des données car le build() ne fait pas les vérification métier
+	 * Trop de comportements différents avec le paiement en ligne et le logiciel de caisse
+	 */
+	public static function prepare(Sale $eSale, array $input): \Collection {
+
+		$keys = ['id', 'method', 'status', 'amountIncludingVat', 'paidAt'];
+
+		if(array_intersect($keys, array_keys($input)) !== $keys) {
+			Payment::fail('unexpected');
+			return new \Collection();
+		}
+
+		$ids = array_slice($input['payment'], 0, -1, preserve_keys: TRUE);
+		$payments = count($ids);
+
+		Payment::model()->beginTransaction();
+
+			$cMethod = \payment\MethodLib::getByFarm($eSale['farm'], NULL);
+
+			$cPaymentCurrent = PaymentTransactionLib::getAll($eSale, index: 'id');
+			$cPaymentNew = new \Collection();
+
+			foreach($ids as $position => $id) {
+
+				$ePaymentNew = $cPaymentCurrent->offsetExists($id) ? $cPaymentCurrent[$id] : new Payment();
+
+				$method = var_filter($input['method'][$position] ?? NULL, '?int');
+				$amount = var_filter($input['amountIncludingVat'][$position] ?? NULL, '?float', default: 0.0);
+				$paidAt = var_filter($input['paidAt'][$position] ?? NULL, '?string');
+
+				if($cMethod->offsetExists($method)) {
+					$ePaymentNew['method'] = $cMethod[$method];
+				} else {
+					Payment::fail('method.empty', wrapper: 'method['.$position.']');
+					$ePaymentNew['method'] = new \payment\Method();
+				}
+
+				if($payments > 1) {
+					$ePaymentNew['status'] = Payment::PAID;
+				} else {
+					$ePaymentNew['status'] = var_filter($input['status'][$position] ?? NULL, [Payment::PAID, Payment::NOT_PAID], Payment::NOT_PAID);
+				}
+
+
+				// Il doit y avoir un montant pour un règlement payé
+				if(
+					$amount === 0.0 and
+					$ePaymentNew['status'] === Payment::PAID
+				) {
+					continue;
+				}
+
+				switch($ePaymentNew['status']) {
+
+					case Payment::NOT_PAID :
+						$ePaymentNew['amountIncludingVat'] = NULL;
+						$ePaymentNew['paidAt'] = NULL;
+						break;
+
+					case Payment::PAID :
+						$ePaymentNew->build(['amountIncludingVat', 'paidAt'], [
+							'amountIncludingVat' => $amount,
+							'paidAt'=> $paidAt
+						], new \Properties()->setWrapper(fn(string $property) => $property.'['.$position.']'));
+						break;
+
+				}
+
+				$cPaymentNew[] = $ePaymentNew;
+
+			}
+
+		Payment::model()->commit();
+
+		return $cPaymentNew;
+
+	}
+
+	public static function getAll(Sale $eSale, mixed $index = NULL): \Collection {
 
 		return Payment::model()
 			->select(Payment::getSelection())
 			->whereSale($eSale)
-			->sort(['createdAt' => SORT_DESC])
-			->getCollection();
+			->sort(['id' => SORT_ASC])
+			->getCollection(index: $index);
 
 	}
 
@@ -27,7 +106,7 @@ class PaymentTransactionLib {
 
 		return Payment::model()
       	->select(Payment::getSelection())
-			->sort(['id' => SORT_DESC])
+			->sort(['id' => SORT_ASC])
 			->delegateCollection('sale', 'id');
 
 	}

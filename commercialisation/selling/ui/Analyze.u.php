@@ -930,7 +930,7 @@ class AnalyzeUi {
 								$h .= ($turnover > 0 ? \util\TextUi::pc($eItem['turnover'] / $turnover * 100) : '-');
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
-								$h .= ($eItem['quantity'] > 0) ? \util\TextUi::money($eItem['turnover'] / $eItem['quantity']) : '-';
+								$h .= ($eItem['quantity'] > 0) ? \util\TextUi::money($eItem['turnover'] / $eItem['quantity'], precision: 2) : '-';
 							$h .= '</td>';
 						$h .= '</tr>';
 

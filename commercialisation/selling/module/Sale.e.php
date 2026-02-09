@@ -271,7 +271,17 @@ class Sale extends SaleElement {
 
 		return (
 			$this->acceptUpdatePayment() and
-			$this['paymentStatus'] !== Sale::PAID
+			$this['paymentStatus'] !== Sale::PAID and
+			$this['paymentStatus'] !== Sale::PARTIAL_PAID
+		);
+
+	}
+
+	public function acceptNeverPaid(): bool {
+
+		return (
+			$this->acceptReplacePayment() and
+			$this['paymentStatus'] !== Sale::NEVER_PAID
 		);
 
 	}
@@ -280,7 +290,8 @@ class Sale extends SaleElement {
 
 		return (
 			$this->acceptUpdatePayment() and
-			$this['paymentStatus'] === Sale::NOT_PAID
+			$this['paymentStatus'] === Sale::NOT_PAID and
+			$this['paymentStatus'] !== Sale::PARTIAL_PAID
 		);
 
 	}
@@ -1238,53 +1249,6 @@ class Sale extends SaleElement {
 				$this['basket'] = \shop\BasketLib::checkAvailableProducts($products, $this['shopDate']['cProduct'], $this['cItem'], $warning);
 
 				return ($this['basket'] !== [] and $warning === FALSE);
-
-			})
-			->setCallback('paymentMethod.check', function(): bool {
-
-				$this->expects(['customer', 'farm', 'priceIncludingVat']);
-
-				$eMethod = \payment\MethodLib::getById(POST('method', 'int'));
-
-				if($eMethod->empty()) {
-					$this['cPayment'] = new \Collection();
-					return TRUE;
-				}
-
-				if(\payment\MethodLib::isSelectable($this['farm'], $eMethod) === FALSE) {
-					return FALSE;
-				}
-
-				$paymentStatus = POST('paymentStatus', [Payment::PAID, Payment::NOT_PAID], fn() => throw new \FailAction());
-
-				$this['cPayment'] = new \Collection([
-
-					new Payment([
-						'sale' => $this,
-						'method' => $eMethod,
-						'amountIncludingVat' => ($paymentStatus === Payment::PAID) ? $this['priceIncludingVat'] : NULL,
-						'status' => $paymentStatus,
-						'paidAt' => ($paymentStatus === Payment::PAID) ? Payment::POST('paidAt', 'paidAt', fn() => throw new \FailAction()) : NULL,
-					])
-
-				]);
-				return TRUE;
-
-			})
-			->setCallback('paymentStatus.check', function(?string &$status) use($p): bool {
-
-				if($p->isInvalid('paymentMethod')) {
-					return TRUE;
-				}
-
-				$this->expects(['farm', 'cPayment']);
-
-				if($this['cPayment']->empty()) {
-					$status = NULL;
-					return TRUE;
-				} else {
-					return in_array($status, [Sale::PAID, Sale::NOT_PAID]);
-				}
 
 			});
 		

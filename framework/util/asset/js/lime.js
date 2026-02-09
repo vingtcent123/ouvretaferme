@@ -101,6 +101,10 @@ function rem() {
 }
 
 function money(value, precision = 2) {
+	return formatNumber(value, precision) +' €';
+}
+
+function formatNumber(value, precision = 2) {
 
 	const isNegative = value < 0;
 	const multiplier = Math.pow(10, precision);
@@ -125,7 +129,7 @@ function money(value, precision = 2) {
 
 	}
 
-	return output +' €';
+	return output;
 
 }
 

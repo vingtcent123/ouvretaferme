@@ -406,12 +406,24 @@ new \selling\SalePage()
 	})
 	->update(function($data) {
 
-		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
+		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], NULL);
 
 		throw new ViewAction($data);
 
 	}, page: 'updatePayment')
-	->doUpdateProperties('doUpdatePayment', ['paymentMethod', 'paymentStatus', 'paidAt'], fn($data) => throw new ReloadAction('selling', 'Sale::updatedPayment'), validate: ['canWrite', 'acceptUpdatePayment'])
+	->write('doUpdatePayment', function($data) {
+
+		$fw = new FailWatch();
+
+		$cPayment = \selling\PaymentTransactionLib::prepare($data->e, $_POST);
+
+		$fw->validate();
+
+		\selling\PaymentTransactionLib::replace($data->e, $cPayment);
+
+		throw new ReloadAction('selling', 'Sale::updatedPayment');
+
+	})
 	->read('updateShop', function($data) {
 
 		$data->e['cShop'] = \shop\ShopLib::getAroundByFarm($data->e['farm'], $data->e['type']);
@@ -459,7 +471,7 @@ new \selling\SalePage()
 
 		throw new ReloadAction();
 
-	}, validate: ['canWrite', 'acceptReplacePayment'])
+	}, validate: ['canWrite', 'acceptNeverPaid'])
 	->write('doDeletePayment', function($data) {
 
 		\selling\PaymentTransactionLib::delete($data->e);
@@ -619,7 +631,7 @@ new Page(function($data) {
 	})
 	->post('doUpdatePaymentNotPaidCollection', function($data) {
 
-		$data->c->validate('canWrite', 'acceptReplacePayment');
+		$data->c->validate('canWrite', 'acceptUpdatePayment');
 
 		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'));
 

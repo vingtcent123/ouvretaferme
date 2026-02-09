@@ -120,11 +120,11 @@ td.invoice-item-amount {
 	text-align: left;
 }
 
-.invoice-payment-controler {
+.invoice-payment-update {
 	margin-bottom: 1rem;
 }
 
-.invoice-payment-controler:has(select[name="paymentMethod"] option[value=""]:checked) {
+.invoice-payment-update:has(select[name="paymentMethod"] option[value=""]:checked) {
 
 	[data-wrapper="paymentStatus"],
 	[data-wrapper="paidAt"] {
@@ -132,7 +132,7 @@ td.invoice-item-amount {
 	}
 }
 
-.invoice-payment-controler:has(input[name="paymentStatus"][value="not-paid"]) {
+.invoice-payment-update:has(input[name="paymentStatus"][value="not-paid"]) {
 
 	[data-wrapper="paidAt"] {
 		display: none;

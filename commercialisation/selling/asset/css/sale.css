@@ -404,25 +404,6 @@ a.sale-preaccounting-title:hover {
 	text-decoration: none;
 }
 
-.sale-payment-controler {
-	margin-bottom: 1rem;
-}
-
-.sale-payment-controler:has(select[name="paymentMethod"] option[value=""]:checked) {
-
-	[data-wrapper="paymentStatus"],
-	[data-wrapper="paidAt"] {
-		display: none;
-	}
-}
-
-.sale-payment-controler:has(input[name="paymentStatus"][value="not-paid"]) {
-
-	[data-wrapper="paidAt"] {
-		display: none;
-	}
-}
-
 .btn.sale-button {
 	line-height: 1.2;
 	padding-top: 0.25rem;

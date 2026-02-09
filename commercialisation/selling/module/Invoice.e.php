@@ -159,6 +159,15 @@ class Invoice extends InvoiceElement {
 
 	}
 
+	public function acceptNeverPaid(): bool {
+
+		return (
+			$this->acceptReplacePayment() and
+			$this['paymentStatus'] !== Sale::NEVER_PAID
+		);
+
+	}
+
 	public function acceptPayPayment(): bool {
 
 		return (

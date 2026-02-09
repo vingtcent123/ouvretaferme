@@ -1,0 +1,68 @@
+#payment-update-list {
+	counter-reset: paymentUpdateCounter;
+}
+
+#payment-update-list .payment-update {
+	margin-bottom: 1.5rem;
+	position: relative;
+}
+
+#payment-update-list .payment-update:only-child .payment-update-title {
+	display: none !important;
+}
+
+.payment-update-wrapper:has(#payment-update-list .payment-update:only-child) #payment-update-total {
+	display: none !important;
+}
+
+.payment-update-wrapper:has(#payment-update-list .payment-update:only-child) .payment-update-info {
+	display: none !important;
+}
+
+#payment-update-list .payment-update:not(:only-child) .payment-update-status {
+	display: none !important;
+}
+
+#payment-update-list .payment-update:only-child:has(select[name^="method"] option[value=""]:checked) {
+
+	[data-wrapper^="status"],
+	[data-wrapper^="amountIncludingVat"],
+	[data-wrapper^="paidAt"] {
+		display: none;
+	}
+}
+
+#payment-update-list .payment-update:only-child:has(input[name^="status"][value="not-paid"]) {
+
+	[data-wrapper^="amountIncludingVat"],
+	[data-wrapper^="paidAt"] {
+		display: none;
+	}
+}
+
+#payment-update-list .payment-update-counter:after {
+	counter-increment: paymentUpdateCounter;
+	content: counter(paymentUpdateCounter);
+}
+
+.payment-update-amount {
+	display: flex;
+	gap: 1rem;
+}
+
+#payment-update-list[data-balanced="1"] .payment-update-magic {
+	display: none;
+}
+
+#payment-update-new {
+	display: none;
+}
+
+#payment-update-total:not(.payment-update-total-error) #payment-update-target,
+#payment-update-total:not(.payment-update-total-error) svg {
+	display: none;
+}
+
+#payment-update-total svg {
+	margin-right: 0.5rem;
+}

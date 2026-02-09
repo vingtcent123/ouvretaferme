@@ -27,11 +27,15 @@ Cash:
   sourceCashflow: ?bank\Cashflow
   sourceInvoice: ?selling\Invoice
   sourceSale: ?selling\Sale
-  sourceSalePayment: ?selling\Payment
+  payment: ?selling\Payment
   account: ?account\Account
   financialYear: ?account\FinancialYear
   thirdParty: ?account\ThirdParty
   operation: ?journal\Operation
   status: enum(DRAFT, VALID, DELETED)
   createdAt: datetime = SPECIAL(now)
-
+  INDEX: [
+    ["sourceSale"],
+    ["sourceInvoice"],
+    ["payment"]
+  ]

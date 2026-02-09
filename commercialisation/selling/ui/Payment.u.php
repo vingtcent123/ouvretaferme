@@ -23,16 +23,42 @@ class PaymentUi {
 
 	public static function p(string $property): \PropertyDescriber {
 
-		$d = Customer::model()->describer(
-			$property, [
-				'amountIncludingVat' => s("Montant (TTC)"),
-			]
-		);
+		$d = Payment::model()->describer($property, [
+			'method' => s("Moyen de paiement"),
+			'status' => s("État du paiement"),
+			'paidAt' => s("Date de paiement"),
+			'amountIncludingVat' => s("Montant réglé"),
+		]);
 
 		switch($property) {
 
+			case 'method' :
+				$d->values = fn(Payment $e) => $e['cMethod'] ?? $e->expects(['cMethod']);
+				break;
+
+			case 'status' :
+				$d->values = [
+					Sale::PAID => s("Payé"),
+					Sale::NOT_PAID => s("Non payé"),
+					Sale::PARTIAL_PAID => s("Payé partiellement"),
+					Sale::FAILED => s("Paiement en échec"),
+					Sale::NEVER_PAID => s("Ne sera pas payé"),
+				];
+				$d->field = 'switch';
+				$d->attributes = [
+					'labelOn' => $d->values[Sale::PAID],
+					'labelOff' => $d->values[Sale::NOT_PAID],
+					'valueOn' => Sale::PAID,
+					'valueOff' => Sale::NOT_PAID,
+				];
+				break;
+
 			case 'amountIncludingVat' :
 				$d->type = 'float';
+				$d->append = fn(\util\FormUi $form, $e) => $form->addon($e['farm']->getConf('hasVat') ? s("€ TTC") : s("€"));
+				$d->attributes = [
+					'onfocus' => 'this.select()',
+				];
 				break;
 
 		}
