@@ -681,7 +681,7 @@ Class AccountingLib {
 		}
 
 		// Si la vente a des frais de port
-		if($eSale['shippingExcludingVat'] !== NULL and $eSale['shippingExcludingVat'] > 0) {
+		if($eSale['shippingExcludingVat'] !== NULL) {
 
 			$eAccountShipping = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS)->first();
 
