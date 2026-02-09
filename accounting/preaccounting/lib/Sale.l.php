@@ -43,7 +43,7 @@ Class SaleLib {
 		$selectSale = [
 			'id', 'customer' => ['name', 'type', 'destination', 'user'], 'preparationStatus',
 			'deliveredAt', 'document', 'farm', 'profile', 'createdAt', 'taxes',
-			'hasVat', 'priceExcludingVat', 'priceIncludingVat', 'vat',
+			'hasVat', 'priceExcludingVat', 'priceIncludingVat', 'vat', 'vatByRate',
 			'shipping', 'shippingExcludingVat', 'shippingVatRate',
 			'paymentStatus', 'closed', 'invoice',
 			'marketParent' => ['customer' => ['name', 'type', 'destination']],
