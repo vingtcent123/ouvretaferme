@@ -318,7 +318,7 @@ class FinancialYear extends FinancialYearElement {
 					$accountingType = FinancialYear::ACCRUAL;
 				}
 
-				return TRUE;
+				return ($accountingType !== NULL);
 
 			})
 		;
