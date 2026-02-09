@@ -1410,7 +1410,13 @@ class SaleUi {
 				continue;
 			}
 
-			$payment = \payment\MethodUi::getName($ePayment['method']);
+			$payment = '';
+			if($ePayment['accountingHash'] !== NULL) {
+				$payment .= ' <a href="'.\farm\FarmUi::urlConnected($eSale['farm']).'/journal/livre-journal?hash='.$ePayment['accountingHash'].'" class="util-badge bg-accounting" title="'.("Intégré dans le livre-journal").'">';
+					$payment .= \Asset::icon('journal-bookmark');
+				$payment .= '</a> ';
+			}
+			$payment .= \payment\MethodUi::getName($ePayment['method']);
 			if($eSale['cPayment']->find(fn($e) => $e->isPaid())->count() > 1 and $ePayment['amountIncludingVat'] !== NULL) {
 				$payment .= ' ('.\util\TextUi::money($ePayment['amountIncludingVat']).')';
 			}
