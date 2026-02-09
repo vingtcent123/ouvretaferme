@@ -246,42 +246,50 @@ Class AccountingLib {
 
 			$items = [];
 
-			foreach($eSale['cPayment'] as $ePayment) {
+			$allEntries = self::computeSalePaymentRatio($eSale, $cFinancialYear, $cAccount, $eAccountBank);
 
-				$allEntries = self::computeSalePaymentRatio($eSale, $ePayment, $cFinancialYear, $cAccount, $eAccountBank);
+			foreach($allEntries as $item) {
 
-				foreach($allEntries as $item) {
+				$eAccount = $cAccount->offsetGet($item['account']);
 
-					$eAccount = $cAccount->offsetGet($item['account']);
+				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
 
-					if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
-
-						$fecDataItemPayment = self::getFecLine(
-							eAccount    : $eAccount,
-							date        : $ePayment['paidAt'],
-							eCode       : $eAccount['journalCode'],
-							ecritureLib : $document,
-							document    : $document,
-							documentDate: $documentDate,
-							amount      : $item['amount'],
-							type        : $item['amount'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-							payment     : $ePayment['methodName'] ?? '',
-							compAuxNum  : $compAuxNum,
-							compAuxLib  : $compAuxLib,
-							isSummed    : $eAccountBank['id'] !== $eAccount['id'],
-							origin      : 'sale',
-						);
-
-						$items[] = $fecDataItemPayment;
-
+					if($eSale['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->count() > 0) {
+						$ePayment = $eSale['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->first();
+						$date = $ePayment['paidAt'];
+						$payment = $ePayment['methodName'];
+					} else {
+						$date = $eSale['deliveredAt'];
+						$payment = '';
 					}
-				}
+
+					$fecDataItemPayment = self::getFecLine(
+						eAccount    : $eAccount,
+						date        : $date,
+						eCode       : $eAccount['journalCode'],
+						ecritureLib : $document,
+						document    : $document,
+						documentDate: $documentDate,
+						amount      : $item['amount'],
+						type        : $item['amount'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+						payment     : $payment,
+						compAuxNum  : $compAuxNum,
+						compAuxLib  : $compAuxLib,
+						isSummed    : $eAccountBank['id'] !== $eAccount['id'],
+						origin      : 'sale',
+					);
+
+					self::mergeFecLineIntoItemData($items, $fecDataItemPayment);
+
+			}
+
 			}
 
 			if(count($items) > 0) {
 				$nSale++;
 			}
 			$fecData = array_merge($fecData, $items);
+
 
 		}
 
@@ -614,31 +622,61 @@ Class AccountingLib {
 
 	}
 
-	public static function computeSalePaymentRatio(\selling\Sale $eSale, \selling\Payment $ePayment, \Collection $cFinancialYear, \Collection $cAccount, \account\Account $eAccountPayment): array {
-
-		$totalAmount = $eSale['priceIncludingVat'];
-		$paidAmount = $ePayment['amountIncludingVat'];
-
-		$ratio = $paidAmount / $totalAmount;
+	public static function computeSalePaymentRatio(\selling\Sale $eSale, \Collection $cFinancialYear, \Collection $cAccount, \account\Account $eAccountPaymentDefault): array {
 
 		$itemsPaymentRatio = [];
 
 		$itemsByPayment = self::computeSaleRatios($eSale, $cFinancialYear, $cAccount);
 
-		foreach($itemsByPayment as $item) {
+		// On ventile par paiement
+		foreach($eSale['cPayment'] as $ePayment) {
 
-			$item['amount'] = round($item['amount'] * $ratio, 2);
-			$itemsPaymentRatio[] = $item;
+			$paymentRatio = $ePayment['amountIncludingVat'] / $eSale['priceIncludingVat'];
+
+			$totalPayment = 0;
+
+			foreach($itemsByPayment as $item) {
+
+				$item['amount'] = round($item['amount'] * $paymentRatio, 2);
+				$item['type'] = 'sale';
+				$item['method'] = $ePayment['method']['id'];
+				$item['payment'] = $ePayment['id'];
+				$itemsPaymentRatio[] = $item;
+
+				$totalPayment += $item['amount'];
+
+			}
+
+			$eAccountPayment = $ePayment['account'] ?? $eAccountPaymentDefault;
+
+			$itemsPaymentRatio[] = [
+				'account' => $eAccountPayment['id'],
+				'accountReference' => NULL,
+				'vatRate' => NULL,
+				'amount' => $ePayment['amountIncludingVat'] * -1,
+				'type' => 'payment',
+				'method' => $ePayment['method']['id'],
+				'payment' => $ePayment['id'],
+			];
 
 		}
 
-		// On rajoute le paiement
-		$itemsPaymentRatio[] = [
-			'account' => $eAccountPayment['id'],
-			'accountReference' => NULL,
-			'vatRate' => NULL,
-			'amount' => $ePayment['amountIncludingVat'] * -1,
-		];
+		// TODO Vérification des totaux HT et TVA
+		/*$amountExcludingVatTotal = round(array_sum(array_column(array_filter($itemsPaymentRatio, fn($item) => ($item['vatRate'] === NULL and $item['type'] === 'sale')), 'amount')), 2);
+		$differenceAmountExcludingVat = $amountExcludingVatTotal - $eSale['priceExcludingVat'];
+
+		$amountVatTotal = round(array_sum(array_column(array_filter($itemsPaymentRatio, fn($item) => ($item['vatRate'] !== NULL and $item['type'] === 'sale')), 'amount')), 2);
+		$differenceAmountVat = $amountVatTotal - $eSale['vat'];
+
+		foreach($eSale['cPayment'] as $ePayment) {
+			$amountPaymentTotal = round(array_sum(array_column(array_filter($itemsPaymentRatio, fn($item) => ($item['type'] === 'sale' and $item['payment'] === $ePayment['id'])), 'amount')), 2);
+			$expectedPaymentTotal = $ePayment['amountIncludingVat'];
+
+			if($differenceAmountVat === 0.0) { // On va répercuter ça n'importe où qui ne soit pas de la TVA
+
+			}
+
+		}*/
 
 		return $itemsPaymentRatio;
 
@@ -669,7 +707,7 @@ Class AccountingLib {
 			$amountExcludingVat = $eItem['priceStats'];
 
 			if(round($eItem['vatRate'], 2) !== 0.0) {
-				$amountVat = round($amountExcludingVat * $eItem['vatRate'] / 100, 2);
+				$amountVat = $amountExcludingVat * $eItem['vatRate'] / 100;
 			} else {
 				$amountVat = 0.0;
 			}
@@ -765,25 +803,20 @@ Class AccountingLib {
 		$totalExcludingVat = round(array_sum(array_column(array_filter($items, fn($item) => $item['vatRate'] === NULL), 'amount')), 2);
 		$totalVat = round(array_sum(array_column(array_filter($items, fn($item) => $item['vatRate'] !== NULL), 'amount')), 2);
 
-		$expectedTotalExcludingVat = round($eSale['priceExcludingVat'], 2);
-		$expectedTotalVat = round($eSale['vat'], 2);
+		$expectedTotalExcludingVat = $eSale['priceExcludingVat'];
+		$expectedTotalVat = $eSale['vat'];
 
 		if($totalExcludingVat !== $expectedTotalExcludingVat) {
-			$difference = round($totalExcludingVat - $expectedTotalExcludingVat, 2);
+			$difference = $totalExcludingVat - $expectedTotalExcludingVat;
 			$key = array_find_key($items, fn($item) => $item['vatRate'] === NULL);
-			$items[$key]['amount'] = round($items[$key]['amount'] - $difference, 2);
+			$items[$key]['amount'] = $items[$key]['amount'] - $difference;
 		}
 
 		if($totalVat !== $expectedTotalVat) {
-			$difference = round($totalVat - $expectedTotalVat, 2);
+			$difference = $totalVat - $expectedTotalVat;
 			$key = array_find_key($items, fn($item) => $item['vatRate'] !== NULL);
-			$items[$key]['amount'] = round($items[$key]['amount'] - $difference, 2);
+			$items[$key]['amount'] = $items[$key]['amount'] - $difference;
 		}
-
-		$items = array_map(function($item) {
-			$item['amount'] = round($item['amount'], 2);
-			return $item;
-		}, $items);
 
 		return $items;
 
