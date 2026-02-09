@@ -1378,7 +1378,13 @@ class SaleUi {
 
 		foreach($cPayment as $ePayment) {
 
-			$payment = \payment\MethodUi::getName($ePayment['method']);
+			$payment = '';
+			if($ePayment['accountingHash'] !== NULL) {
+				$payment .= ' <a href="'.\farm\FarmUi::urlConnected($eSale['farm']).'/journal/livre-journal?hash='.$ePayment['accountingHash'].'" class="util-badge bg-accounting" title="'.("Intégré dans le livre-journal").'">';
+					$payment .= \Asset::icon('journal-bookmark');
+				$payment .= '</a> ';
+			}
+			$payment .= \payment\MethodUi::getName($ePayment['method']);
 
 			if(
 				$cPayment->count() > 1 or
