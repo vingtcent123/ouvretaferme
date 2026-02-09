@@ -41,10 +41,11 @@ Class SaleLib {
 	public static function getForAccounting(\farm\Farm $eFarm, \Search $search): \Collection {
 
 		$selectSale = [
-			'id', 'customer' => ['name', 'type', 'destination', 'user'], 'preparationStatus', 'priceIncludingVat',
-			'deliveredAt', 'document', 'farm', 'profile', 'createdAt', 'taxes', 'hasVat', 'priceExcludingVat',
-			'paymentStatus', 'closed', 'invoice',
+			'id', 'customer' => ['name', 'type', 'destination', 'user'], 'preparationStatus',
+			'deliveredAt', 'document', 'farm', 'profile', 'createdAt', 'taxes',
+			'hasVat', 'priceExcludingVat', 'priceIncludingVat', 'vat',
 			'shipping', 'shippingExcludingVat', 'shippingVatRate',
+			'paymentStatus', 'closed', 'invoice',
 			'marketParent' => ['customer' => ['name', 'type', 'destination']],
 			'shopDate' => ['id', 'deliveryDate', 'status', 'orderStartAt', 'orderEndAt'], 'createdBy',
 			'cPayment' => \selling\Payment::model()
