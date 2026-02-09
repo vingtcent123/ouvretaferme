@@ -211,6 +211,7 @@ Payment:
   status: enum(NOT_PAID, PAID, FAILED)
   statusCash: enum(WAITING, DRAFT, VALID, IGNORED) = WAITING
   paidAt: ?date
+  accountingHash: ?textFixed(20, 20) @charset(ascii)
   createdAt: datetime = SPECIAL(now)
   closed: bool = FALSE
   closedAt: ?datetime

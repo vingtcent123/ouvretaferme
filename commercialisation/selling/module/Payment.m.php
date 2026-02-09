@@ -66,13 +66,14 @@ class PaymentModel extends \ModuleModel {
 			'status' => ['enum', [\selling\Payment::NOT_PAID, \selling\Payment::PAID, \selling\Payment::FAILED], 'cast' => 'enum'],
 			'statusCash' => ['enum', [\selling\Payment::WAITING, \selling\Payment::DRAFT, \selling\Payment::VALID, \selling\Payment::IGNORED], 'cast' => 'enum'],
 			'paidAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'closed' => ['bool', 'cast' => 'bool'],
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'status', 'statusCash', 'paidAt', 'createdAt', 'closed', 'closedAt'
+			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'status', 'statusCash', 'paidAt', 'accountingHash', 'createdAt', 'closed', 'closedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -198,6 +199,10 @@ class PaymentModel extends \ModuleModel {
 
 	public function wherePaidAt(...$data): PaymentModel {
 		return $this->where('paidAt', ...$data);
+	}
+
+	public function whereAccountingHash(...$data): PaymentModel {
+		return $this->where('accountingHash', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): PaymentModel {
