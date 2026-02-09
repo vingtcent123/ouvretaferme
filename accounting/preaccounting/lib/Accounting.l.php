@@ -887,39 +887,6 @@ Class AccountingLib {
 		];
 	}
 
-	private static function explodePaymentsRatio(\selling\Sale $eSale): array {
-
-		if($eSale['profile'] === \selling\Sale::MARKET) {
-
-			return [[
-				'label' => \payment\MethodUi::getCashRegisterText(),
-				'rate' => 100,
-			]];
-
-		}
-
-		$payments = [];
-		$cPayment = $eSale['cPayment'];
-		$totalAmount = $cPayment->sum('amountIncludingVat');
-
-		if($totalAmount === 0) {
-			return [];
-		}
-
-		foreach($cPayment as $ePayment) {
-			$payments[$ePayment['method']['id']] = [
-				'label' => $ePayment['method']['name'],
-				'rate' => $totalAmount !== 0.0 ? round($ePayment['amountIncludingVat'] / $totalAmount * 100, 2) : 100,
-			];
-		}
-
-		if(count($payments) > 0) {
-			return $payments;
-		}
-
-		return [['label' => '', 'rate' => 100]];
-	}
-
 	private static function mergeFecLineIntoItemData(array &$items, array $fecLine): void {
 
 		$added = FALSE;
