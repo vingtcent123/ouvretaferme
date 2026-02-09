@@ -53,8 +53,16 @@ class OfxParserLib {
 
 	public static function extractAccount(\DOMDocument $ofx): BankAccount {
 
-		$bankId = $ofx->getElementsByTagName('bankid')->item(0)->nodeValue;
-		$accountId = $ofx->getElementsByTagName('acctid')->item(0)->nodeValue;
+		if($ofx->getElementsByTagName('bankid')->item(0) !== NULL) {
+			$bankId = $ofx->getElementsByTagName('bankid')->item(0)->nodeValue;
+		} else {
+			$bankId = '';
+		}
+		if($ofx->getElementsByTagName('acctid')->item(0) !== NULL) {
+			$accountId = $ofx->getElementsByTagName('acctid')->item(0)->nodeValue;
+		} else {
+			$accountId = '';
+		}
 
 		if(strlen($bankId) === 0 or strlen($accountId) === 0) {
 			return new BankAccount(['bankId' => $bankId, 'accountId' => $accountId]);
