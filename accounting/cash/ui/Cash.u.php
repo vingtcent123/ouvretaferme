@@ -160,7 +160,7 @@ class CashUi {
 
 		$h = '<br/>';
 		$h .= '<div class="util-title">';
-			$h .= '<h3>'.\Asset::icon('fire').' '.s("Opérations par {method} automatiquement trouvées depuis le {value}", ['method' => '<span style="text-transform: uppercase">'.encode($eRegister['paymentMethod']['name']).'</span>', 'value' => \util\DateUi::numeric($eRegister['openedSince'])]).'</h3>';
+			$h .= '<h3>'.\Asset::icon('fire').' '.s("Opérations en {method} automatiquement trouvées depuis le {value}", ['method' => '<span style="text-transform: uppercase">'.encode($eRegister['paymentMethod']['name']).'</span>', 'value' => \util\DateUi::numeric($eRegister['openedSince'])]).'</h3>';
 			$h .= '<a href="" class="btn btn-outline-secondary">'.s("Tout ignorer").'</a>';
 		$h .= '</div>';
 
@@ -200,7 +200,26 @@ class CashUi {
 						$h .= '</td>';
 						$h .= '<td>';
 							$h .= self::getOperation($eAuto['source'], $eAuto['type']).'</div>';
-							$h .= '<div class="cash-auto-description">'.\Asset::icon('arrow-return-right').'  '.encode($eAuto['description']).'</div>';
+							$h .= '<div class="cash-auto-description">';
+								$h .= \Asset::icon('arrow-return-right').'  ';
+
+								switch($eAuto['source']) {
+
+									case Cash::SELL_INVOICE :
+										$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$eAuto['sourceInvoice']['id'].'">'.encode($eAuto['description']).'</a>';
+										break;
+
+									case Cash::SELL_SALE :
+										$h .= '<a href="'.\selling\SaleUi::url($eAuto['sourceSale']).'">'.encode($eAuto['description']).'</a>';
+										break;
+
+									default :
+										$h .= encode($eAuto['description']);
+										break;
+
+								}
+
+							$h .= '</div>';
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
@@ -254,7 +273,7 @@ class CashUi {
 
 			Cash::BUY_MANUAL => \Asset::icon('wallet').'  '.s("Achat à un fournisseur"),
 			Cash::SELL_MANUAL => \Asset::icon('wallet').'  '.s("Vente à un client"),
-			Cash::SELL_INVOICE => \Asset::icon('wallet').'  '.s("Vente avec facture"),
+			Cash::SELL_INVOICE => \Asset::icon('wallet').'  '.s("Facture"),
 			Cash::SELL_SALE => \Asset::icon('wallet').'  '.s("Vente sans facture")
 
 		};

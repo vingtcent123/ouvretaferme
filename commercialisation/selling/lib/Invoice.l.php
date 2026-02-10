@@ -133,31 +133,29 @@ class InvoiceLib extends InvoiceCrud {
 	public static function getForCash(\farm\Farm $eFarm, \payment\Method $eMethod, string $dateAfter): \Collection {
 
 		return Payment::model()
-			->join(Invoice::model(), 'm1.invoice = 2.id')
+			->join(Invoice::model()
+				->select([
+					'id',
+					'number',
+					'priceIncludingVat', 'priceExcludingVat',
+					'vat',
+					'vatByRate',
+					'description' => fn($e) => InvoiceUi::getName($e)
+				]), 'm1.invoice = m2.id')
+			->select([
+				'amountIncludingVat',
+				'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? \cash\Cash::CREDIT : \cash\Cash::DEBIT,
+				'date' => new \Sql('m1.paidAt'),
+				'invoice',
+				'source' => fn() => \cash\Cash::SELL_INVOICE,
+				'sourceInvoice' => fn($e) => $e['invoice'],
+			])
 			->where('m1.farm', $eFarm)
 			->where('m1.source', Payment::INVOICE)
 			->where('m1.method', $eMethod)
 			->where('m1.paidAt', '>', $dateAfter)
-			->where('m2.status', 'IN', [Invoice::GENERATED, Invoice::DELIVERED]);
-
-
-			Invoice::model()
-			->select([
-				'id',
-				'date' => new \Sql('paidAt'),
-				'number',
-				'source' => fn() => \cash\Cash::SELL_INVOICE,
-				'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? \cash\Cash::CREDIT : \cash\Cash::DEBIT,
-				'priceIncludingVat', 'priceExcludingVat',
-				'amountIncludingVat' => new \Sql('priceIncludingVat', 'float'),
-				'amountExcludingVat' => new \Sql('priceExcludingVat', 'float'),
-				'vat',
-				'vatByRate',
-				'description' => fn($e) => InvoiceUi::getName($e)
-			])
-			->whereStatus('IN', [Invoice::GENERATED, Invoice::DELIVERED])
-			->whereStatusCash(Invoice::WAITING)
-			->whereDate('>', $dateAfter)
+			->where('m2.status', 'IN', [Invoice::GENERATED, Invoice::DELIVERED])
+			->where('m2.statusCash', Invoice::WAITING)
 			->getCollection();
 
 	}

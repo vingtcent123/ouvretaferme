@@ -3394,6 +3394,7 @@ abstract class ModuleModel {
 	public function buildCollectionFromJoinRecordSet(PDOStatement $rs, $index) {
 
 		$properties = [];
+		$propertiesPositions = [];
 		$subProperties = [];
 
 		foreach($this->join as $position => $value) {
@@ -3402,6 +3403,7 @@ abstract class ModuleModel {
 
 			if($selection) {
 				$properties[$position] = $value;
+				$propertiesPositions[] = $position;
 			}
 
 			$subProperties[$position] = [];
@@ -3421,11 +3423,10 @@ abstract class ModuleModel {
 
 		$row = $rs->fetch(PDO::FETCH_ASSOC);
 
-		$references = array_fill(0, count($this->join), []);
+		$tables = count($this->join);
+		$references = array_fill(0, $tables, []);
 
 		if($row) {
-
-			$elements = [];
 
 			do {
 
@@ -3438,20 +3439,12 @@ abstract class ModuleModel {
 
 				}
 
-				$eElementMain = NULL;
-
 				foreach($properties as $position => list($mElement, $condition, $type, $selection)) {
 
 					$eElement = $mElement->getNewElement();
 
 					if(isset($fields[$position])) {
 						$mElement->setAll($eElement, $fields[$position], $mElement);
-					}
-
-					if($eElementMain === NULL) {
-						$eElementMain = $eElement;
-					} else {
-						$eElementMain->merge($eElement);
 					}
 
 					foreach($subProperties[$position] as $property => $values) {
@@ -3461,8 +3454,6 @@ abstract class ModuleModel {
 					$references[$position][] = $eElement;
 
 				}
-
-				$elements[] = $eElementMain;
 
 			}  while($row = $rs->fetch(PDO::FETCH_ASSOC));
 
@@ -3482,6 +3473,18 @@ abstract class ModuleModel {
 
 				$mElement->setDelegation($references[$position]);
 				$mElement->setCallableCollection($references[$position]);
+
+			}
+
+			$elements = [];
+
+			foreach($references[0] as $key => $eElementMain) {
+
+				foreach($propertiesPositions as $position) {
+					$eElementMain->merge($references[$position][$key]);
+				}
+
+				$elements[] = $eElementMain;
 
 			}
 

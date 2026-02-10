@@ -305,22 +305,25 @@ class SaleLib extends SaleCrud {
 	public static function getForCash(\farm\Farm $eFarm, \payment\Method $eMethod, string $dateAfter): \Collection {
 
 		return Payment::model()
-			->join(Sale::model()->select('document', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate'), 'm1.sale = m2.id')
+			->join(Sale::model()->select([
+				'id', 'document', 'profile', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate', 'compositionEndAt',
+				'description' => fn($e) => SaleUi::getName($e)
+			]), 'm1.sale = m2.id')
 			->select([
 				'id' => new \Sql('m2.id'),
 				'date' => new \Sql('m1.paidAt'),
-				'sale' => ['document', 'profile', 'priceExcludingVat', 'compositionEndAt'],
+				'sale',
 				'source' => fn() => \cash\Cash::SELL_SALE,
+				'sourceSale' => fn($e) => $e['sale'],
 				'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? \cash\Cash::CREDIT : \cash\Cash::DEBIT,
-				'amountIncludingVat' => new \Sql('priceIncludingVat', 'float'),
-				'amountExcludingVat' => new \Sql('priceExcludingVat', 'float'),
-				'description' => fn($e) => SaleUi::getName($e['sale'])
+				'amountIncludingVat',
 			])
 			->whereMethod($eMethod)
 			->where('m1.farm', $eFarm)
 			->where('m2.paidAt', '>', $dateAfter)
 			->where('m2.createdAt', '>', $dateAfter)
-			->where('m2.profile', 'IN', [Sale::SALE, Sale::MARKET])
+			->where('m2.profile', 'IN', [Sale::SALE, Sale::SALE_MARKET])
+			->where('m2.invoice', NULL)
 			->whereStatus(Payment::PAID)
 			->whereStatusCash(Payment::WAITING)
 			->getCollection();
