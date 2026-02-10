@@ -37,6 +37,12 @@ class PaymentTransactionLib {
 				if($cMethod->offsetExists($method)) {
 					$ePaymentNew['method'] = $cMethod[$method];
 				} else {
+
+					if($payments === 1) {
+						Payment::model()->commit();
+						return new \Collection();
+					}
+
 					Payment::fail('method.empty', wrapper: 'method['.$position.']');
 					$ePaymentNew['method'] = new \payment\Method();
 				}

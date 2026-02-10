@@ -103,7 +103,7 @@ class PaymentTransactionUi {
 					) {
 						$h .= '  '.$paymentStatus;
 					} else {
-						$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
+						$h .= '<div>'.$paymentStatus.'</div>';
 					}
 
 				}
