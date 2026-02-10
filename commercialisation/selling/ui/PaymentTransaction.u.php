@@ -24,7 +24,8 @@ class PaymentTransactionUi {
 
 			if(
 				$cPayment->count() > 1 or
-				($ePayment['status'] === Payment::PAID and $e['paymentStatus'] === Sale::PARTIAL_PAID)
+				($ePayment['status'] === Payment::PAID and $e['paymentStatus'] === Sale::PARTIAL_PAID) or
+				($ePayment['amountIncludingVat'] !== $e['priceIncludingVat'] and $ePayment['amountIncludingVat'] !== NULL)
 			) {
 				$payment .= ' <span class="color-muted font-sm">'.\util\TextUi::money($ePayment['amountIncludingVat']).'</span>';
 			}
@@ -162,8 +163,14 @@ class PaymentTransactionUi {
 
 			$never = $e->acceptNeverPaid() ? '<a data-ajax="'.self::getPrefix($e).':doUpdateNeverPaid" post-id="'.$e['id'].'" class="btn btn-outline-primary" data-confirm="'.$neverPaidConfirm.'">'.s("Ne sera pas payée").'</a>' : '';
 
+			if($e['priceIncludingVat'] !== NULL) {
+				$title = s("Vente de {value}", \util\TextUi::money($e['priceIncludingVat']));
+			} else {
+				$title = s("Vente");
+			}
+
 			$h .= $form->group(content: '<div class="util-title">'.
-				'<h4>'.s("Vente de {value}", \util\TextUi::money($e['priceIncludingVat'])).'</h4>'.
+				'<h4>'.$title.'</h4>'.
 				$never.
 			'</div>');
 			$h .= $this->update($e, $e['cPayment'], $e['cPaymentMethod']);
