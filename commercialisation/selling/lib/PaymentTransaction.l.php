@@ -208,7 +208,7 @@ class PaymentTransactionLib {
 
 				PaymentTransactionLib::withRecalculate(TRUE);
 
-				PaymentTransactionLib::recalculate($e, $cPayment);
+				PaymentTransactionLib::recalculate($e);
 
 			} else {
 				self::delete($e);

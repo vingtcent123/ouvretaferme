@@ -290,7 +290,7 @@ class PaymentTransactionUi {
 		$ePayment['cMethod'] = $cMethod;
 
 		if($ePayment['closed']) {
-			return $this->getClosedPayment($form, $ePayment);
+			return $this->getClosedPayment($form, $ePayment, $position);
 		}
 
 		$h = '<div class="payment-update util-block bg-background-light">';
@@ -301,6 +301,7 @@ class PaymentTransactionUi {
 				'</div>',
 				attributes: ['class' => 'payment-update-title']
 			);
+			$h .= $form->hidden('payment['.$position.']', $ePayment->exists() ? $ePayment['id'] : '');
 			$h .= $form->dynamicGroup($ePayment, 'method['.$position.']');
 			$h .= '<div class="payment-update-status">';
 				$h .= $form->dynamicGroup($ePayment, 'status['.$position.']');
@@ -319,7 +320,7 @@ class PaymentTransactionUi {
 
 	}
 
-	protected function getClosedPayment(\util\FormUi $form, Payment $ePayment): string {
+	protected function getClosedPayment(\util\FormUi $form, Payment $ePayment, int|string $position): string {
 
 		$h = '<div class="payment-update util-block bg-background-light">';
 
@@ -329,6 +330,9 @@ class PaymentTransactionUi {
 				'</div>',
 				attributes: ['class' => 'payment-update-title']
 			);
+
+			// Pour les calculs JS
+			$h .= $form->hidden('amountIncludingVat', $ePayment['amountIncludingVat']);
 
 			$accountingStatus = [];
 

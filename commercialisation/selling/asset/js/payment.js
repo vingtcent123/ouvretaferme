@@ -96,6 +96,8 @@ class Payment {
 
 		target.firstParent('.payment-update').remove();
 
+		this.recalculate();
+
 	}
 
 }
