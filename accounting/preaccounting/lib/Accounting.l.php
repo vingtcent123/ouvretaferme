@@ -771,7 +771,11 @@ Class AccountingLib {
 			// Ajout de l'écriture de banque
 			if($ePayment['status'] === \selling\Payment::PAID) {
 
-				$eAccountPayment = $ePayment['account'] ?? $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
+				if(isset($eElement['cashflow']) and $eElement['cashflow']->notEmpty()) {
+					$eAccountPayment = $eElement['cashflow']['account']['account'];
+				} else {
+					$eAccountPayment = $ePayment['account'] ?? $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
+				}
 
 				$items[] = [
 					'account' => $eAccountPayment['id'],
