@@ -275,13 +275,13 @@ class InvoiceUi {
 									$reminder = $eInvoice['farm']->getConf('invoiceReminder');
 									$color = ($reminder !== NULL and $reminder <= $days) ? 'secondary' : 'muted';
 
-									$late = '<span class="util-badge bg-'.$color.'">'.p("{value} jour de retard", "{value} jours de retard", $days).'</span>';
+									$late = ' <span class="util-badge bg-'.$color.'">'.p("{value} jour de retard", "{value} jours de retard", $days).'</span>';
 
 								} else {
 									$late = '';
 								}
 
-								$reconciliate = ($eInvoice['cashflow']['id'] ?? NULL) ? '<a href="'.\farm\FarmUi::urlConnected($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('bank').' '.s("Rapprochée").'</a>' :  '';
+								$reconciliate = ($eInvoice['cashflow']['id'] ?? NULL) ? ' <a href="'.\farm\FarmUi::urlConnected($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('bank').' '.s("Rapprochée").'</a>' :  '';
 
 								$h .= PaymentTransactionUi::getPaymentBox($eInvoice, late: $late, reconciliate: $reconciliate);
 
