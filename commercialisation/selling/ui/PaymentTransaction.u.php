@@ -23,9 +23,11 @@ class PaymentTransactionUi {
 			$payment = \payment\MethodUi::getName($ePayment['method']);
 
 			if(
-				$cPayment->count() > 1 or
-				($ePayment['status'] === Payment::PAID and $e['paymentStatus'] === Sale::PARTIAL_PAID) or
-				($ePayment['amountIncludingVat'] !== $e['priceIncludingVat'] and $ePayment['amountIncludingVat'] !== NULL)
+				$ePayment['amountIncludingVat'] !== NULL and
+				($cPayment->count() > 1 or
+					($ePayment['status'] === Payment::PAID and $e['paymentStatus'] === Sale::PARTIAL_PAID) or
+					$ePayment['amountIncludingVat'] !== $e['priceIncludingVat']
+				)
 			) {
 				$payment .= ' <span class="color-muted font-sm">'.\util\TextUi::money($ePayment['amountIncludingVat']).'</span>';
 			}
