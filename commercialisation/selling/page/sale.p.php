@@ -404,26 +404,10 @@ new \selling\SalePage()
 		throw new ViewAction($data);
 
 	})
-	->update(function($data) {
-
-		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], NULL);
-
-		throw new ViewAction($data);
-
-	}, page: 'updatePayment')
-	->write('doUpdatePayment', function($data) {
-
-		$fw = new FailWatch();
-
-		$cPayment = \selling\PaymentTransactionLib::prepare($data->e, $_POST);
-
-		$fw->validate();
-
-		\selling\PaymentTransactionLib::replace($data->e, $cPayment);
-
-		throw new ReloadAction('selling', 'Sale::updatedPayment');
-
-	})
+	->update(\selling\PaymentPageLib::updatePayment(), page: 'updatePayment', validate: ['canWrite', 'acceptUpdatePayment'])
+	->write('doUpdatePayment', \selling\PaymentPageLib::doUpdatePayment(), validate: ['canWrite', 'acceptUpdatePayment'])
+	->write('doUpdateNeverPaid', \selling\PaymentPageLib::doUpdateNeverPaid(), validate: ['canWrite', 'acceptNeverPaid'])
+	->write('doDeletePayment', \selling\PaymentPageLib::doDeletePayment(), validate: ['canWrite', 'acceptReplacePayment'])
 	->read('updateShop', function($data) {
 
 		$data->e['cShop'] = \shop\ShopLib::getAroundByFarm($data->e['farm'], $data->e['type']);
@@ -465,20 +449,6 @@ new \selling\SalePage()
 		throw new ReloadAction('selling', 'Sale::customerUpdated');
 
 	}, validate: ['canUpdateCustomer', 'acceptUpdateCustomer'])
-	->write('doUpdateNeverPaid', function($data) {
-
-		\selling\PaymentTransactionLib::updateNeverPaid($data->e);
-
-		throw new ReloadAction();
-
-	}, validate: ['canWrite', 'acceptNeverPaid'])
-	->write('doDeletePayment', function($data) {
-
-		\selling\PaymentTransactionLib::delete($data->e);
-
-		throw new ReloadLayerAction();
-
-	}, validate: ['canWrite', 'acceptReplacePayment'])
 	->read('duplicate', function($data) {
 
 		if($data->e->acceptDuplicate() === FALSE) {
@@ -629,34 +599,8 @@ new Page(function($data) {
 		throw new ReloadAction();
 
 	})
-	->post('doUpdatePaymentNotPaidCollection', function($data) {
-
-		$data->c->validate('canWrite', 'acceptUpdatePayment');
-
-		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'));
-
-		if($eMethod->notEmpty()) {
-			$eMethod->validate('canUse', 'acceptManualUpdate');
-		}
-
-		foreach($data->c as $e) {
-			\selling\PaymentTransactionLib::updateNotPaidMethod($e, $eMethod);
-		}
-
-		throw new ReloadAction('selling', 'Sale::paymentMethodUpdated');
-
-	})
-	->post('doUpdatePaymentStatusCollection', function($data) {
-
-		$data->c->validate('canWrite', 'acceptPayPayment');
-
-		foreach($data->c as $e) {
-			\selling\PaymentTransactionLib::updatePaid($e);
-		}
-
-		throw new ReloadAction('selling', 'Sale::paymentStatusUpdated');
-
-	});
+	->post('doUpdatePaymentNotPaidCollection', \selling\PaymentPageLib::doUpdatePaymentNotPaidCollection())
+	->post('doUpdatePaymentStatusCollection', \selling\PaymentPageLib::doUpdatePaymentStatusCollection());
 
 new \selling\PdfPage()
 	->doDelete(fn($data) => throw new ReloadAction('selling', 'Pdf::deleted'), page: 'doDeleteDocument');

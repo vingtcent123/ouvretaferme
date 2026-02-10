@@ -1,3 +1,27 @@
+.payment-status {
+	font-size: 0.8rem;
+}
+
+.payment-status-paid {
+	background-color: var(--success);
+}
+
+.payment-status-not-paid {
+	background-color: var(--muted);
+}
+
+.payment-status-partial-paid {
+	background-color: var(--warning);
+}
+
+.payment-status-never-paid {
+	background-color: var(--primary);
+}
+
+.payment-status-failed {
+	background-color: var(--danger);
+}
+
 #payment-update-list {
 	counter-reset: paymentUpdateCounter;
 }

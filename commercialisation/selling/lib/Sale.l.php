@@ -756,12 +756,11 @@ class SaleLib extends SaleCrud {
 				if($e['customer']['defaultPaymentMethod']->notEmpty()) {
 
 					$ePayment = new Payment([
-						'sale' => $e,
 						'status' => Sale::NOT_PAID,
 						'method' => \payment\MethodLib::getById($e['customer']['defaultPaymentMethod'])
 					]);
 
-					PaymentTransactionLib::createForSale($ePayment);
+					PaymentTransactionLib::createForTransaction($e, $ePayment);
 
 				}
 
@@ -867,12 +866,11 @@ class SaleLib extends SaleCrud {
 		if($eMethod->notEmpty()) {
 
 			$ePayment = new Payment([
-				'sale' => $e,
 				'method' => \payment\MethodLib::getById($eMethod),
 				'status' => Payment::NOT_PAID
 			]);
 
-			PaymentTransactionLib::createForSale($ePayment);
+			PaymentTransactionLib::createForTransaction($e, $ePayment);
 
 		}
 

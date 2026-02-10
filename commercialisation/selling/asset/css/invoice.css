@@ -93,18 +93,6 @@ td.invoice-item-amount {
 	margin-bottom: 0.25rem;
 }
 
-.invoice-payment-block {
-
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 0.5rem;
-
-}
-.invoice-payment-block > span {
-	white-space: nowrap;
-}
-
 #panel-invoice-create:not(:has(input[name="sales[]"]:checked)) #invoice-sales-required {
 	display: none;
 }
@@ -118,23 +106,4 @@ td.invoice-item-amount {
 	padding-top: 0.25rem;
 	padding-bottom: 0.25rem;
 	text-align: left;
-}
-
-.invoice-payment-update {
-	margin-bottom: 1rem;
-}
-
-.invoice-payment-update:has(select[name="paymentMethod"] option[value=""]:checked) {
-
-	[data-wrapper="paymentStatus"],
-	[data-wrapper="paidAt"] {
-		display: none;
-	}
-}
-
-.invoice-payment-update:has(input[name="paymentStatus"][value="not-paid"]) {
-
-	[data-wrapper="paidAt"] {
-		display: none;
-	}
 }

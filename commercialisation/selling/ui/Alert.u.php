@@ -44,7 +44,6 @@ class AlertUi {
 			'Invoice::date.check' => s("Merci d'indiquer une date de facturation"),
 			'Invoice::date.future' => s("Vous ne pouvez pas facturer dans le futur"),
 			'Invoice::date.past' => s("Vous ne pouvez pas facturer antérieurement au {value}", \util\DateUi::numeric($options[0]['lastDate'])),
-			'Invoice::paidAt.future' => s("Vous ne pouvez pas indiquer une date de paiement dans le futur"),
 			'Invoice::dueDate.consistency' => s("La date d'échéance ne peut pas être antérieure à la date de facturation"),
 			'Invoice::emptySales' => s("Vous devez ajouter au moins une vente à votre facture !"),
 			'Invoice::invoices.check' => s("Merci de sélectionner au moins une facture."),
@@ -58,6 +57,7 @@ class AlertUi {
 			'Payment::unexpected' => s("Le format des règlements n'est pas reconnu"),
 			'Payment::method.empty' => s("Veuillez choisir un moyen de paiement"),
 			'Payment::paidAt.empty' => s("Veuillez indiquer une date de paiement"),
+			'Payment::paidAt.future' => s("Vous ne pouvez pas indiquer une date de paiement dans le futur"),
 			'Payment::amountIncludingVat.empty' => s("Veuillez saisir un montant"),
 
 			'Product::proOrPrivate.check' => s("Veuillez déterminer si votre produit composé est vendu aux clients particuliers ou aux clients professionnels. Il ne peut pas à la fois être vendu aux professionnels et aux particuliers"),
@@ -84,7 +84,6 @@ class AlertUi {
 			'Sale::address.check' => s("Nous avons besoin de votre adresse pour vous livrer à domicile !"),
 			'Sale::products.check' => s("Vous ne pouvez pas continuer car votre panier est vide !"),
 			'Sale::customer.market' => s("Le logiciel de caisse n'est disponible que pour les points de vente aux particuliers."),
-			'Sale::paidAt.future' => s("Vous ne pouvez pas indiquer une date de paiement dans le futur"),
 			'Sale::deliveredAt.check' => s("La date de vente est obligatoire."),
 			'Sale::deliveredAt.composition' => s("Vous avez déjà ajouté une composition pour cette même date."),
 			'Sale::deliveredAt.compositionTooLate' => s("Vous ne pouvez modifier la composition de votre produit que sur les 30 derniers jours."),

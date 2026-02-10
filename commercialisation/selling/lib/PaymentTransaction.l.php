@@ -4,10 +4,10 @@ namespace selling;
 class PaymentTransactionLib {
 
 	/**
-	 * Vérification intégrale des données car le build() ne fait pas les vérification métier
+	 * Vérification intégrale des données car le build() ne fait pas les vérifications métier
 	 * Trop de comportements différents avec le paiement en ligne et le logiciel de caisse
 	 */
-	public static function prepare(Sale $eSale, array $input): \Collection {
+	public static function prepare(Sale|Invoice $e, array $input): \Collection {
 
 		$keys = ['id', 'method', 'status', 'amountIncludingVat', 'paidAt'];
 
@@ -21,9 +21,9 @@ class PaymentTransactionLib {
 
 		Payment::model()->beginTransaction();
 
-			$cMethod = \payment\MethodLib::getByFarm($eSale['farm'], NULL);
+			$cMethod = \payment\MethodLib::getByFarm($e['farm'], NULL);
 
-			$cPaymentCurrent = PaymentTransactionLib::getAll($eSale, index: 'id');
+			$cPaymentCurrent = PaymentTransactionLib::getAll($e, index: 'id');
 			$cPaymentNew = new \Collection();
 
 			foreach($ids as $position => $id) {
@@ -82,21 +82,25 @@ class PaymentTransactionLib {
 
 	}
 
-	public static function getAll(Sale $eSale, mixed $index = NULL): \Collection {
+	public static function getAll(Sale|Invoice $e, ?array $selection = NULL, mixed $index = NULL): \Collection {
+
+		$selection ??= Payment::getSelection();
 
 		return Payment::model()
-			->select(Payment::getSelection())
-			->whereSale($eSale)
+			->select($selection)
+			->whereSale($e, if: $e instanceof Sale)
+			->whereInvoice($e, if: $e instanceof Invoice)
 			->sort(['id' => SORT_ASC])
 			->getCollection(index: $index);
 
 	}
 
-	public static function getByMethod(Sale $eSale, \payment\Method $eMethod): Payment {
+	public static function getByMethod(Sale|Invoice $e, \payment\Method $eMethod): Payment {
 
 		return Payment::model()
 			->select(Payment::getSelection())
-			->whereSale($eSale)
+			->whereSale($e, if: $e instanceof Sale)
+			->whereInvoice($e, if: $e instanceof Invoice)
 			->whereMethod($eMethod)
 			->sort(['createdAt' => SORT_DESC])
 			->get();
@@ -111,27 +115,50 @@ class PaymentTransactionLib {
 
 	}
 
+	public static function delegateByInvoice(): PaymentModel {
+
+		return Payment::model()
+      	->select(Payment::getSelection())
+			->sort(['id' => SORT_ASC])
+			->delegateCollection('invoice', 'id');
+
+	}
+
 	/**
 	 * Ajoute un moyen de paiement
 	 * Si les moyens de paiement sont fournis, ils doivent être garantis par une transaction
 	 */
-	public static function createForSale(Payment $e): void {
+	public static function createForTransaction(Sale|Invoice $e, Payment $ePayment): void {
 
-		$e->expects([
-			'sale' => ['farm', 'customer'],
+		$e->expects(['farm', 'customer']);
+
+		$ePayment->merge([
+			'sale' => $e,
+			'customer' => $e['customer'],
+			'farm' => $e['farm'],
 		]);
 
-		$e->merge([
-			'source' => Payment::SALE,
-			'customer' => $e['sale']['customer'],
-			'farm' => $e['sale']['farm'],
-		]);
+		if($e instanceof Sale) {
+			$ePayment['sale'] = $e;
+			$ePayment['source'] = Payment::SALE;
+		} else if($e instanceof Invoice) {
+			$ePayment['invoice'] = $e;
+			$ePayment['source'] = Payment::INVOICE;
+		}
 
-		PaymentLib::create($e);
+		PaymentLib::create($ePayment);
 
 	}
 
-	public static function replace(Sale $eSale, \Collection $cPayment): void {
+	public static function createCollectionForTransaction(Sale|Invoice $e, \Collection $cPayment): void {
+
+		foreach($cPayment as $ePayment) {
+			self::createForTransaction($e, $ePayment);
+		}
+
+	}
+
+	public static function replace(Sale|Invoice $e, \Collection $cPayment): void {
 
 		$cPayment->expects([
 			'method', 'amountIncludingVat', 'status'
@@ -139,61 +166,65 @@ class PaymentTransactionLib {
 
 		Payment::model()->beginTransaction();
 
-			self::delete($eSale, recalculate: FALSE);
+			self::delete($e, recalculate: FALSE);
 
 			if($cPayment->notEmpty()) {
 
-				foreach($cPayment as $ePayment) {
-
-					$ePayment['sale'] = $eSale;
-
-					self::createForSale($ePayment);
-
-				}
+				self::createCollectionForTransaction($e, $cPayment);
 
 			} else {
-				PaymentTransactionLib::recalculate($eSale, new \Collection());
+				PaymentTransactionLib::recalculate($e, new \Collection());
 			}
 
 		Payment::model()->commit();
 
 	}
 
-	public static function updateNotPaidMethod(Sale $eSale, \payment\Method $eMethod): void {
+	public static function updateNotPaidMethod(Sale|Invoice $e, \payment\Method $eMethod): void {
 
 		if($eMethod->acceptManualUpdate() === FALSE) {
 			throw new \UnsupportedException();
 		}
 
-		Payment::model()
-			->whereSale($eSale)
-			->whereStatus(Payment::NOT_PAID)
-			->update([
-				'method' => $eMethod
-			]);
+		$cPayment = new \Collection([
+			new Payment([
+				'method' => $eMethod,
+				'status' => Payment::NOT_PAID,
+				'paidAt' => NULL,
+				'amountIncludingVat' => NULL,
+			])
+		]);
+
+		self::replace($e, $cPayment);
 
 	}
 
-	public static function updatePaid(Sale $eSale): void {
+	public static function updatePaid(Sale|Invoice $e): void {
 
 		Payment::model()->beginTransaction();
 
 			$ePayment = Payment::model()
 				->select(Payment::getSelection())
-				->whereSale($eSale)
+				->whereSale($e, if: $e instanceof Sale)
+				->whereInvoice($e, if: $e instanceof Invoice)
 				->whereStatus(Payment::NOT_PAID)
 				->get();
 
 			if($ePayment->notEmpty()) {
 
-				Sale::model()
+				$e->model()
 					->select('paymentAmount', 'priceIncludingVat')
-					->get($eSale);
+					->get($e);
 
-				$ePayment['amountIncludingVat'] = ($eSale['priceIncludingVat'] - $eSale['paymentAmount']);
+				$ePayment['amountIncludingVat'] = ($e['priceIncludingVat'] - $e['paymentAmount']);
 				$ePayment['status'] = Payment::PAID;
 				$ePayment['paidAt'] = currentDate();
-				$ePayment['sale'] = $eSale;
+
+				if($e instanceof Sale) {
+					$ePayment['sale'] = $e;
+				} else if($e instanceof Invoice) {
+					$ePayment['invoice'] = $e;
+				}
 
 				PaymentLib::update($ePayment, ['amountIncludingVat', 'status', 'paidAt']);
 
@@ -203,35 +234,36 @@ class PaymentTransactionLib {
 
 	}
 
-	public static function updateNeverPaid(Sale $eSale): void {
+	public static function updateNeverPaid(Sale|Invoice $e): void {
 
 		Payment::model()->beginTransaction();
 
-			self::delete($eSale, recalculate: FALSE);
-			self::reset($eSale, Sale::NEVER_PAID);
+			self::delete($e, recalculate: FALSE);
+			self::reset($e, Sale::NEVER_PAID);
 
 		Payment::model()->commit();
 
 	}
 
-	public static function updateCustomer(Sale $eSale, Customer $eCustomer): void {
+	public static function updateCustomer(Sale|Invoice $e, Customer $eCustomer): void {
 
 		Payment::model()
-			->whereSale($eSale)
+			->whereSale($e, if: $e instanceof Sale)
+			->whereInvoice($e, if: $e instanceof Invoice)
 			->update([
 				'customer' => $eCustomer,
 			]);
 
 	}
 
-	public static function delete(Sale $eSale, bool $recalculate = TRUE): void {
+	public static function delete(Sale|Invoice $e, bool $recalculate = TRUE): void {
 
-		$eSale->expects(['id']);
+		$e->expects(['id']);
 
 		Payment::model()->beginTransaction();
 
 			// On expire toutes les sessions paiement en ligne
-			$cPayment = self::getAll($eSale);
+			$cPayment = self::getAll($e);
 
 			if($cPayment->empty()) {
 				Payment::model()->commit();
@@ -245,7 +277,7 @@ class PaymentTransactionLib {
 					$ePayment['onlineCheckoutId'] !== NULL
 				) {
 
-					static $eStripeFarm = \payment\StripeLib::getByFarm($eSale['farm']);
+					static $eStripeFarm = \payment\StripeLib::getByFarm($e['farm']);
 
 					if($eStripeFarm->notEmpty()) {
 
@@ -263,7 +295,7 @@ class PaymentTransactionLib {
 			Payment::model()->delete($cPayment);
 
 			if($recalculate) {
-				PaymentTransactionLib::recalculate($eSale, new \Collection());
+				PaymentTransactionLib::recalculate($e, new \Collection());
 			}
 
 		Payment::model()->commit();
@@ -276,33 +308,19 @@ class PaymentTransactionLib {
 
 		Payment::model()->beginTransaction();
 
-			Invoice::model()
-				->select([
-					'paymentMethod' => \payment\MethodElement::getSelection(),
-					'paymentStatus', 'paidAt'
-				])
-				->get($eInvoice);
+			$cPayment = PaymentTransactionLib::getAll($eInvoice, selection: [
+				'method' => \payment\Method::getSelection(),
+				'status', 'amountIncludingVat', 'paidAt'
+			]);
 
 			$cSale = SaleLib::getByIds($eInvoice['sales']);
 
 			foreach($cSale as $eSale) {
 
-				if($eInvoice['paymentMethod']->notEmpty()) {
+				$cPaymentClone = $cPayment->find();
 
-					$cPayment = new \Collection([
-						new Payment([
-							'method' => $eInvoice['paymentMethod'],
-							'status' => $eInvoice['paymentStatus'],
-							'paidAt' => $eInvoice['paidAt'],
-							'amountIncludingVat' => match($eInvoice['paymentStatus']) {
-								Invoice::PAID => $eInvoice['priceIncludingVat'],
-								default => NULL
-							},
-						])
-					]);
-
-					self::replace($eSale, $cPayment);
-
+				if($cPaymentClone->notEmpty()) {
+					self::replace($eSale, $cPaymentClone);
 				} else {
 					self::delete($eSale);
 				}
@@ -313,25 +331,47 @@ class PaymentTransactionLib {
 
 	}
 
-	public static function recalculate(Sale $eSale, ?\Collection $cPayment = NULL): void {
+	public static function importInvoice(Invoice $eInvoice, \Collection $cPayment): void {
 
-		$eSale->expects([
-			'profile',
-			'secured', 'closed'
-		]);
+		$eInvoice->expects(['sales']);
 
-		$cPayment ??= self::getAll($eSale);
+		Payment::model()->beginTransaction();
 
-		Sale::model()
+			$cPaymentCopy = new \Collection();
+
+			foreach($cPayment as $ePayment) {
+				$cPaymentCopy[] = $ePayment->getCopy(['method', 'status', 'amountIncludingVat', 'paidAt']);
+			}
+
+			self::createCollectionForTransaction($eInvoice, $cPaymentCopy);
+
+		Payment::model()->commit();
+
+	}
+
+	public static function recalculate(Sale|Invoice $e, ?\Collection $cPayment = NULL): void {
+
+		if($e instanceof Sale) {
+
+			$e->expects([
+				'profile',
+				'secured', 'closed'
+			]);
+
+		}
+
+		$cPayment ??= self::getAll($e);
+
+		$e->model()
 			->select('priceIncludingVat', 'paymentStatus')
-			->get($eSale);
+			->get($e);
 
 		if($cPayment->empty()) {
 
 			// Pas de moyen de paiement, on replace la vente à l'état NULL
-			if($eSale['paymentStatus'] !== NULL) {
+			if($e['paymentStatus'] !== NULL) {
 
-				self::reset($eSale, NULL);
+				self::reset($e, NULL);
 
 			}
 
@@ -375,10 +415,13 @@ class PaymentTransactionLib {
 
 		// Cas impossible sauf en cas de bug technique
 		if(
-			$eSale['profile'] !== Sale::SALE_MARKET and
+			(
+				$e instanceof Invoice or
+				($e instanceof Sale and $e['profile'] !== Sale::SALE_MARKET)
+			) and
 			$notPaid >= 2
 		) {
-			throw new \Exception('Too much not paid payment methods for sale '.$eSale['id']);
+			throw new \Exception('Too much not paid payment methods for '.$e->getModule().' '.$e['id']);
 		}
 
 		if($paidAmount !== NULL) {
@@ -386,13 +429,13 @@ class PaymentTransactionLib {
 		}
 
 		if($paid === 0) {
-			$eSale['paymentStatus'] = ($failed > 0) ? Sale::FAILED : Sale::NOT_PAID;
+			$e['paymentStatus'] = ($failed > 0) ? Sale::FAILED : Sale::NOT_PAID;
 		} else {
 
-			if($paidAmount < $eSale['priceIncludingVat']) {
-				$eSale['paymentStatus'] = Sale::PARTIAL_PAID;
+			if($paidAmount < $e['priceIncludingVat']) {
+				$e['paymentStatus'] = Sale::PARTIAL_PAID;
 			} else {
-				$eSale['paymentStatus'] = Sale::PAID;
+				$e['paymentStatus'] = Sale::PAID;
 			}
 
 		}
@@ -403,30 +446,37 @@ class PaymentTransactionLib {
 		) {
 
 			Payment::model()
-				->whereSale($eSale)
+				->whereSale($e, if: $e instanceof Sale)
+				->whereInvoice($e, if: $e instanceof Invoice)
 				->whereStatus(Payment::FAILED)
 				->delete();
 
 		}
 
-		$eSale['paymentAmount'] = $paidAmount;
-		$eSale['paidAt'] = $paidAt;
+		$e['paymentAmount'] = $paidAmount;
+		$e['paidAt'] = $paidAt;
 
-		SaleLib::update($eSale, ['paymentStatus', 'paymentAmount', 'paidAt']);
+		$properties = ['paymentStatus', 'paymentAmount', 'paidAt'];
+
+		if($e instanceof Sale) {
+			SaleLib::update($e, $properties);
+		} else if($e instanceof Invoice) {
+			InvoiceLib::update($e, $properties);
+		}
 
 	}
 
-	protected static function reset(Sale $eSale, ?string $paymentStatus): void {
+	protected static function reset(Sale|Invoice $e, ?string $paymentStatus): void {
 
 		if($paymentStatus !== NULL and $paymentStatus !== Sale::NEVER_PAID) {
 			throw new \UnsupportedException();
 		}
 
-		$eSale['paymentStatus'] = $paymentStatus;
-		$eSale['paymentAmount'] = NULL;
-		$eSale['paidAt'] = NULL;
+		$e['paymentStatus'] = $paymentStatus;
+		$e['paymentAmount'] = NULL;
+		$e['paidAt'] = NULL;
 
-		SaleLib::update($eSale, ['paymentStatus', 'paymentAmount', 'paidAt']);
+		SaleLib::update($e, ['paymentStatus', 'paymentAmount', 'paidAt']);
 
 	}
 

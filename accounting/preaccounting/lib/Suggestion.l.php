@@ -161,7 +161,7 @@ Class SuggestionLib extends SuggestionCrud {
 				'thirdParty' => \account\ThirdParty::model()
 					->select('id', 'name', 'normalizedName')
 					->delegateCollection('customer'),
-				'paymentMethod' => ['id', 'fqn'],
+				'cPayment' => \selling\PaymentTransactionLib::delegateByInvoice(),
 			])
 			->whereFarm($eFarm)
 			->whereStatus('NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
@@ -250,13 +250,14 @@ Class SuggestionLib extends SuggestionCrud {
 
 		}
 
-		if($eInvoice['paymentMethod']->notEmpty()) {
+		foreach($eInvoice['cPayment'] as $ePayment) {
 
 			$fqn = self::determinePaymentMethod($eCashflow);
-			if($fqn === $eInvoice['paymentMethod']['fqn']) {
 
-					$weight += 80;
-					$reason->value(Suggestion::PAYMENT_METHOD, TRUE);
+			if($fqn === $ePayment['method']['fqn']) {
+
+				$weight += 80;
+				$reason->value(Suggestion::PAYMENT_METHOD, TRUE);
 
 			}
 

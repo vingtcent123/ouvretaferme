@@ -344,7 +344,8 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir importé les opérations bancaires</link>", ['link' => '<a href="/doc/accounting:bank#bank-import">']).'</h4>';
 
 	echo '<div class="util-block">';
-	Asset::css('selling', 'sale.css');
+
+		\Asset::css('selling', 'payment.css');
 
 		echo '<h2 id="reconciliate">'.s("Rapprocher les factures avec les opérations bancaires").'</h2>';
 
@@ -366,7 +367,7 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de le refuser.<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre association est trouvée, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
 
-		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> avec le moyen de paiement et la date de paiement renseignés et <span2>{icon} rapprochée</span2>, dans le module de commercialisation.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">', 'span2' => '<span class="util-badge bg-accounting">', 'icon' => Asset::icon('bank')]).'</p>';
+		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> avec le moyen de paiement et la date de paiement renseignés et <span2>{icon} rapprochée</span2>, dans le module de commercialisation.", ['span' => '<span class="util-badge payment-status payment-status-success">', 'span2' => '<span class="util-badge bg-accounting">', 'icon' => Asset::icon('bank')]).'</p>';
 		echo '<p>'.s("Vous pouvez ensuite passer à l'étape suivante : <link>Importer vos factures dans la comptabilité de {siteName}</link> en quelques clics !", ['link' => '<a href="/doc/accounting:import">']).'</p>';
 
 	echo '</div>';

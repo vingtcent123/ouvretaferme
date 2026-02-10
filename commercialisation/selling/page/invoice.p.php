@@ -112,30 +112,12 @@ new \selling\InvoicePage()
 		throw new PdfAction($content, $filename);
 
 	}, validate: ['canPublicRead'])
-	->update(function($data) {
-
-		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
-
-		throw new ViewAction($data);
-
-	}, page: 'updatePayment', validate: ['canWrite', 'acceptUpdatePayment'])
 	->update(page: 'updateComment', validate: ['canWrite'])
 	->doUpdateProperties('doUpdateComment', ['comment'], fn() => throw new ReloadAction(), validate: ['canWrite'])
-	->doUpdateProperties('doUpdatePayment', ['paymentMethod', 'paymentStatus', 'paidAt'], fn($data) => throw new ReloadAction('selling', 'Invoice::updatedPayment'), validate: ['canWrite', 'acceptUpdatePayment'])
-	->write('doUpdateNeverPaid', function($data) {
-
-		\selling\InvoiceLib::updateNeverPaid($data->e);
-
-		throw new ReloadAction();
-
-	}, validate: ['canWrite', 'acceptUpdatePayment'])
-	->write('doDeletePayment', function($data) {
-
-		\selling\InvoiceLib::deletePayment($data->e);
-
-		throw new ReloadLayerAction();
-
-	}, validate: ['canWrite', 'acceptUpdatePayment'])
+	->update(\selling\PaymentPageLib::updatePayment(), page: 'updatePayment', validate: ['canWrite', 'acceptUpdatePayment'])
+	->write('doUpdatePayment', \selling\PaymentPageLib::doUpdatePayment(), validate: ['canWrite', 'acceptUpdatePayment'])
+	->write('doUpdateNeverPaid', \selling\PaymentPageLib::doUpdateNeverPaid(), validate: ['canWrite', 'acceptNeverPaid'])
+	->write('doDeletePayment', \selling\PaymentPageLib::doDeletePayment(), validate: ['canWrite', 'acceptReplacePayment'])
 	->quick(['comment'])
 	->doDelete(fn() => throw new ReloadAction('selling', 'Invoice::deleted'));
 
@@ -206,33 +188,8 @@ new Page(function($data) {
 		throw new ReloadAction();
 
 	})
-	->post('doUpdatePaymentStatusCollection', function($data) {
-
-		$data->c->validate('canWrite', 'acceptPayPayment');
-
-		$paymentStatus = POST('paymentStatus', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID]);
-
-		\selling\InvoiceLib::updatePaymentStatusCollection($data->c, $paymentStatus);
-
-		throw new ReloadAction('selling', 'Invoice::paymentStatusUpdated');
-
-	})
-	->post('doUpdatePaymentNotPaidCollection', function($data) {
-
-		$data->c->validate('canWrite', 'acceptUpdatePayment');
-
-		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse');
-
-		\selling\InvoiceLib::updatePaymentCollection(
-			$data->c, [
-				'paymentMethod' => $eMethod,
-				'paymentStatus' => new Sql('IF(paymentStatus IS NULL, "'.\selling\Invoice::NOT_PAID.'", paymentStatus)')
-			]
-		);
-
-		throw new ReloadAction();
-
-	})
+	->post('doUpdatePaymentNotPaidCollection', \selling\PaymentPageLib::doUpdatePaymentNotPaidCollection())
+	->post('doUpdatePaymentStatusCollection', \selling\PaymentPageLib::doUpdatePaymentStatusCollection())
 	->post('doUpdateCanceledCollection', function($data) {
 
 		$data->c->validate('canWrite', 'acceptStatusCanceled');

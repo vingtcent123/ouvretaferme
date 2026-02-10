@@ -531,13 +531,12 @@ class SaleLib {
 
 
 		$ePayment = new \selling\Payment([
-			'sale' => $eSale,
 			'method' => $eMethod,
 			'status' => \selling\Payment::NOT_PAID,
 			'onlineCheckoutId' => $stripeSession['id']
 		]);
 
-		\selling\PaymentTransactionLib::createForSale($ePayment);
+		\selling\PaymentTransactionLib::createForTransaction($eSale, $ePayment);
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
 

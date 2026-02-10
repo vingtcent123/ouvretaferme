@@ -45,12 +45,11 @@ Class InvoiceLib {
 
 		$cInvoice = \selling\Invoice::model()
 			->select('id', 'cashflow', 'priceIncludingVat', 'accountingDifference')
-			->whereFarm($eFarm)
-			->whereStatus('NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
-			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
-			->whereAccountingHash(NULL)
+			->where('m1.farm', $eFarm)
+			->where('m1.status', 'NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
+			->where('paymentStatus IS NULL')
+			->where('m1.accountingHash', NULL)
 			->whereCashflow('!=', NULL)
-			->wherePaymentMethod('!=', NULL)
 			->whereReadyForAccounting(FALSE)
 			->getCollection();
 
@@ -72,8 +71,8 @@ Class InvoiceLib {
 	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\InvoiceModel {
 
 		return \selling\Invoice::model()
-			->whereStatus('NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
-			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
+			->where('m1.status', 'NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
+			->where('paymentStatus IS NULL')
 			->where('priceExcludingVat != 0.0')
 			->where('m1.farm = '.$eFarm['id'])
 			->where('date BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')));
@@ -82,9 +81,7 @@ Class InvoiceLib {
 
 	public static function countForAccountingPaymentCheck(\farm\Farm $eFarm, \Search $search): int {
 
-		return self::filterForAccountingCheck($eFarm, $search)
-			->wherePaymentMethod('=', NULL)
-			->count();
+		return self::filterForAccountingCheck($eFarm, $search)->count();
 
 	}
 
@@ -98,8 +95,7 @@ Class InvoiceLib {
 
 		return self::filterForAccountingCheck($eFarm, $search)
 			->select(\selling\Invoice::getSelection())
-			->whereClosed(FALSE)
-			->wherePaymentMethod(NULL)
+			->where('m1.closed', FALSE)
 			->sort(['date' => SORT_DESC])
 			->getCollection(NULL, NULL, 'id');
 
@@ -126,7 +122,7 @@ Class InvoiceLib {
 				],
 				'cashflow' => \bank\Cashflow::getSelection(),
 				'accountingDifference', 'readyForAccounting', 'accountingHash',
-				'paymentMethod' => ['name'],
+				'cPayment' => \selling\PaymentTransactionLib::delegateByInvoice(),
 				'cSale' => \selling\Sale::model()
 					->select([
 						'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate',

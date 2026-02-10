@@ -1500,7 +1500,7 @@ class PdfUi {
 						$entry .= '<div class="pdf-sales-label-detail">';
 							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Moyen de paiement").'</div>';
 							$entry .= '<div class="pdf-sales-label-detail-value">';
-								$entry .= SaleUi::getPaymentMethodName($eSale);
+								$entry .= PaymentTransactionUi::getPaymentMethodName($eSale);
 							$entry .= '</div>';
 						$entry .= '</div>';
 					}

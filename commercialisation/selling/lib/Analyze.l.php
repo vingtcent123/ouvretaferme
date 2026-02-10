@@ -806,7 +806,10 @@ class AnalyzeLib {
 				'priceIncludingVat', 'priceExcludingVat',
 				'vat', 'vatByRate',
 				'date', 'dueDate',
-				'paymentMethod' => ['name'],
+				'cPayment' => Payment::model()
+					->select(Payment::getSelection())
+					->whereStatus(Payment::PAID)
+					->delegateCollection('invoice', 'id'),
 				'paymentStatus',
 			])
 			->whereFarm($eFarm)
@@ -838,7 +841,7 @@ class AnalyzeLib {
 					$eInvoice['customer']['vatNumber'],
 					\util\DateUi::numeric($eInvoice['date']),
 					$eInvoice['dueDate'] === NULL ? '' : \util\DateUi::numeric($eInvoice['dueDate']),
-					$eInvoice['paymentMethod']->empty() ? '' : $eInvoice['paymentMethod']['name'],
+					$eInvoice['cPayment']->empty() ? '' : $eInvoice['cPayment']->first()['method']['name'],
 					match($eInvoice['paymentStatus']) {
 						Invoice::PAID => 'paid',
 						Invoice::NOT_PAID => 'not_paid',

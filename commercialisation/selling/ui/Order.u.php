@@ -308,8 +308,8 @@ class OrderUi {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
 
-						$h .= SaleUi::getPaymentMethodName($eSale);
-						$h .= ' '.SaleUi::getPaymentStatus($eSale);
+						$h .= PaymentTransactionUi::getPaymentMethodName($eSale);
+						$h .= ' '.PaymentTransactionUi::getPaymentStatusBadge($eSale);
 
 					$h .= '</dd>';
 				}

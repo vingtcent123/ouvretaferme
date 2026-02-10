@@ -236,25 +236,7 @@ Class PreaccountingUi {
 						$h .= '</td>';
 
 						$h .= '<td>';
-							$h .= '<div>'.\payment\MethodUi::getName($eInvoice['paymentMethod']).'</div>';
-							if($eInvoice['paymentMethod']->empty()) {
-								$h .= $form->openAjax('/selling/invoice:doUpdatePayment', ['id' => 'preaccounting-payment-customer', 'class' => 'flex-justify-space-between']);
-								$h .= $form->hidden('paymentStatus', $eInvoice['paymentStatus'] ?? \selling\Invoice::NOT_PAID);
-								$h .= $form->hidden('id', $eInvoice['id']);
-								$h .= $form->dynamicField($eInvoice, 'paymentMethod', function($d) use($form, $cPaymentMethod, $eInvoice) {
-									$d->values = $cPaymentMethod;
-									$d->default = fn() => $eInvoice['paymentMethod'];
-									$d->attributes['onrender'] = '';
-									$d->attributes['onchange'] = '';
-									$d->attributes['data-invoice'] = $eInvoice['id'];
-									$d->attributes['data-payment-status'] = $eInvoice['paymentStatus'];
-									if($eInvoice['paymentMethod']->notEmpty()) {
-										$d->attributes['mandatory'] = TRUE;
-									}
-								});
-								$h .= $form->submit(s("Valider"), ['class' => 'btn btn-xs btn-outline-secondary']);
-								$h .= $form->close();
-							}
+							$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="btn btn-sm btn-outline-primary">'.s("Choisir").'</a>';
 						$h .= '</td>';
 
 						$h .= '<td class="sale-item-status">';

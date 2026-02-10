@@ -124,8 +124,8 @@ Invoice:
   priceIncludingVat: decimal(8, 2)
   date: date
   dueDate: ?date
-  paymentMethod: ?payment\Method
-  paymentStatus: ?enum(PAID, NOT_PAID, NEVER_PAID)
+  paymentStatus: ?enum(PAID, PARTIAL_PAID, NOT_PAID, NEVER_PAID, FAILED)
+  paymentAmount: ?decimal(8, 2)
   paymentCondition: ?editor16(1, 400)
   header: ?editor16(1, 400)
   footer: ?editor16(1, 400)

@@ -187,13 +187,12 @@ class PaymentMarketLib {
 				$fillAmount = max(0.0, $eSale['priceIncludingVat'] - $currentAmount);
 
 				$ePaymentCreate = new Payment([
-					'sale' => $eSale,
 					'method' => $eMethod,
 					'amountIncludingVat' => $fillAmount,
 					'status' => Sale::NOT_PAID
 				]);
 
-				PaymentTransactionLib::createForSale($ePaymentCreate);
+				PaymentTransactionLib::createForTransaction($eSale, $ePaymentCreate);
 
 			}
 

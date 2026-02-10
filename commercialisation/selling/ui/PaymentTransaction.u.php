@@ -10,14 +10,185 @@ class PaymentTransactionUi {
 
 	}
 
-	public function update(Sale $eSale, \Collection $cPayment, \Collection $cMethod): string {
+	public static function getPaymentMethodName(Sale|Invoice $e): ?string {
 
-		$eFarm = $eSale['farm'];
+		$e->expects(['cPayment']);
+
+		$cPayment = $e['cPayment'];
+
+		$paymentList = [];
+
+		foreach($cPayment as $ePayment) {
+
+			$payment = \payment\MethodUi::getName($ePayment['method']);
+
+			if(
+				$cPayment->count() > 1 or
+				($ePayment['status'] === Payment::PAID and $e['paymentStatus'] === Sale::PARTIAL_PAID)
+			) {
+				$payment .= ' <span class="color-muted font-sm">'.\util\TextUi::money($ePayment['amountIncludingVat']).'</span>';
+			}
+
+			$paymentList[] = $payment;
+		}
+
+		return implode('<br />', $paymentList);
+
+	}
+
+	public static function getPaymentStatusBadge(Sale|Invoice $e): string {
+
+		\Asset::css('selling', 'payment.css');
+
+		if($e['paymentStatus'] === NULL) {
+			return '';
+		}
+
+		$status = $e['paymentStatus'];
+		$label = SaleUi::p('paymentStatus')->values[$status];
+
+		$h = '<span class="util-badge payment-status payment-status-'.$status.'">';
+
+			if($e['paidAt'] !== NULL) {
+				$h .= s("{status} le {date}", ['status' => $label, 'date' => \util\DateUi::numeric($e['paidAt'])]);
+			} else {
+				$h .= $label;
+			}
+
+		$h .= '</span>';
+
+		return $h;
+
+	}
+
+	public static function getPaymentBox(Sale|Invoice $e, bool $optimize = FALSE, string $late = '', string $reconciliate = ''): string {
+
+		$e->expects([
+			'paymentStatus',
+			'cPayment'
+		]);
+
+		\Asset::css('selling', 'payment.css');
+
+		$h = '';
+
+		if($e['paymentStatus'] === Sale::NEVER_PAID) {
+			$h .= PaymentTransactionUi::getPaymentStatusBadge($e);
+		} else if($e['cPayment']->empty()) {
+
+			if($e->acceptUpdatePayment()) {
+				$h .= '<a href="'.self::getPrefix($e).':updatePayment?id='.$e['id'].'" class="btn btn-sm btn-outline-primary">'.s("Choisir").'</a>';
+				$h .= $late;
+			}
+
+		} else {
+
+			if($e->acceptUpdatePayment() and $e['paymentStatus'] !== Sale::PAID) {
+				$h .= '<a href="'.self::getPrefix($e).':updatePayment?id='.$e['id'].'" class="btn btn-sm btn-outline-primary sale-button">';
+			}
+
+				$h .= PaymentTransactionUi::getPaymentMethodName($e);
+
+				$paymentStatus = PaymentTransactionUi::getPaymentStatusBadge($e);
+				$paymentStatus .= $late;
+				$paymentStatus .= $reconciliate;
+
+				if($paymentStatus) {
+
+					if(
+						$optimize and
+						$e['cPayment']->count() === 1 and
+						$e['paymentStatus'] !== Sale::PARTIAL_PAID
+					) {
+						$h .= '  '.$paymentStatus;
+					} else {
+						$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
+					}
+
+				}
+
+			if($e->acceptUpdatePayment() and $e['paymentStatus'] !== Sale::PAID) {
+				$h .= '</a>';
+			}
+
+		}
+
+		return $h;
+
+	}
+
+	public function getOnlinePayment(Sale|Invoice $e): string {
+
+		if($e instanceof Sale) {
+			$confirm = s("Voulez-vous vraiment supprimer ce mode de règlement pour la vente ?");
+		} else if($e instanceof Invoice) {
+			$confirm = s("Voulez-vous vraiment supprimer ce mode de règlement pour la facture ?");
+		}
+
+		$content = '<div class="flex-justify-space-between flex-align-center">';
+			$content .= '<div>'.self::getPaymentMethodName($e).' '.self::getPaymentStatusBadge($e).'</div>';
+			$content .= '<a data-ajax="'.self::getPrefix($e).':doDeletePayment" post-id="'.$e['id'].'" class="btn btn-xs btn-danger" data-confirm="'.$confirm.'">'.s("Supprimer").'</a>';
+		$content .= '</div>';
+
+		$h = '<div class="util-block bg-background-light">';
+			$h .= $content;
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getPaymentForm(Sale|Invoice $e): string {
+
+		$form = new \util\FormUi();
+
+		if($e instanceof Sale) {
+			$neverPaid = s("Cette vente est actuellement enregistrée comme une vente qui ne sera pas payée, mais vous pouvez revenir sur votre choix.");
+			$neverPaidConfirm = s("Vous allez indiquer que cette vente ne sera jamais payée. Voulez-vous continuer ?");
+		} else if($e instanceof Invoice) {
+			$neverPaid = s("Cette facture est actuellement enregistrée comme une facture qui ne sera pas payée, mais vous pouvez revenir sur votre choix.");
+			$neverPaidConfirm = s("Vous allez indiquer que cette facture ne sera jamais payée. Voulez-vous continuer ?");
+		}
+
+		$h = $form->openAjax(self::getPrefix($e).':doUpdatePayment');
+
+			$h .= $form->hidden('id', $e['id']);
+
+			if($e['paymentStatus'] === Sale::NEVER_PAID) {
+				$h .= $form->group(
+					content: '<div class="util-block-info">'.$neverPaid.'</div>'
+				);
+			}
+
+			$never = $e->acceptNeverPaid() ? '<a data-ajax="'.self::getPrefix($e).':doUpdateNeverPaid" post-id="'.$e['id'].'" class="btn btn-outline-primary" data-confirm="'.$neverPaidConfirm.'">'.s("Ne sera pas payée").'</a>' : '';
+
+			$h .= $form->group(content: '<div class="util-title">'.
+				'<h4>'.s("Vente de {value}", \util\TextUi::money($e['priceIncludingVat'])).'</h4>'.
+				$never.
+			'</div>');
+			$h .= $this->update($e, $e['cPayment'], $e['cPaymentMethod']);
+
+			$h .= $form->group(
+				content: '<div class="flex-justify-space-between">'.
+					$form->submit(s("Enregistrer")).
+					'<a class="btn btn-outline-primary" onclick="Payment.add()">'.\Asset::icon('plus-circle').' '.s("Ajouter un autre paiement").'</a>'.
+				'</div>'
+		);
+
+		$h .= $form->close();
+
+		return $h;
+
+	}
+
+	public function update(Sale|Invoice $e, \Collection $cPayment, \Collection $cMethod): string {
+
+		$eFarm = $e['farm'];
 
 		$form = new \util\FormUi();
 		$position = 0;
 
-		$saleAmount = $eSale['priceIncludingVat'];
+		$saleAmount = $e['priceIncludingVat'];
 
 		if(
 			$cPayment->empty() or
@@ -25,7 +196,7 @@ class PaymentTransactionUi {
 		) {
 			$paymentAmount = $saleAmount;
 		} else {
-			$paymentAmount = $eSale['paymentAmount'];
+			$paymentAmount = $e['paymentAmount'];
 		}
 
 		$isBalanced = ($saleAmount === $paymentAmount);
@@ -115,6 +286,16 @@ class PaymentTransactionUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	private static function getPrefix(Sale|Invoice $e): string {
+
+		if($e instanceof Sale) {
+			return '/selling/sale';
+		} else if($e instanceof Invoice) {
+			return '/selling/invoice';
+		}
 
 	}
 

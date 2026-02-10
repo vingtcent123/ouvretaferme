@@ -290,8 +290,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this->acceptUpdatePayment() and
-			$this['paymentStatus'] === Sale::NOT_PAID and
-			$this['paymentStatus'] !== Sale::PARTIAL_PAID
+			$this['paymentStatus'] === Sale::NOT_PAID
 		);
 
 	}
@@ -483,38 +482,11 @@ class Sale extends SaleElement {
 		return ($this['priceExcludingVat'] < 0.0);
 	}
 
-	public function hasPaymentStatus(): bool {
-
-		$this->expects(['invoice']);
-
-		return (
-			$this->isMarket() === FALSE and (
-				$this['invoice']->notEmpty() or // Paiement par facturation
-				$this->isPaymentOnline() // Ou paiement CB
-			)
-		);
-
-	}
-
 	// Une vente est online seulement si le paiement lié est validé.
 	public function isPaymentOnline(?string $status = Payment::PAID): bool {
 
 		$this->expects(['cPayment']);
-
-		if($this['cPayment']->empty()) {
-			return FALSE;
-		}
-
-		foreach($this['cPayment'] as $ePayment) {
-			if(
-				$ePayment['method']->isOnline() and
-				($status === NULL or $ePayment['status'] === $status)
-			) {
-				return TRUE;
-			}
-		}
-
-		return FALSE;
+		return PaymentLib::isOnline($this['cPayment'], $status);
 
 	}
 

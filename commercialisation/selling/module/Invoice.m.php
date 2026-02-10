@@ -15,8 +15,10 @@ abstract class InvoiceElement extends \Element {
 	const MIXED = 'mixed';
 
 	const PAID = 'paid';
+	const PARTIAL_PAID = 'partial-paid';
 	const NOT_PAID = 'not-paid';
 	const NEVER_PAID = 'never-paid';
+	const FAILED = 'failed';
 
 	const DRAFT = 'draft';
 	const CONFIRMED = 'confirmed';
@@ -88,8 +90,8 @@ class InvoiceModel extends \ModuleModel {
 			'priceIncludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'cast' => 'float'],
 			'date' => ['date', 'cast' => 'string'],
 			'dueDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
-			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
-			'paymentStatus' => ['enum', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID, \selling\Invoice::NEVER_PAID], 'null' => TRUE, 'cast' => 'enum'],
+			'paymentStatus' => ['enum', [\selling\Invoice::PAID, \selling\Invoice::PARTIAL_PAID, \selling\Invoice::NOT_PAID, \selling\Invoice::NEVER_PAID, \selling\Invoice::FAILED], 'null' => TRUE, 'cast' => 'enum'],
+			'paymentAmount' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'paymentCondition' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'header' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'footer' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
@@ -111,14 +113,13 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'number', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentMethod', 'paymentStatus', 'paymentCondition', 'header', 'footer', 'status', 'statusCash', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
+			'id', 'document', 'number', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentStatus', 'paymentAmount', 'paymentCondition', 'header', 'footer', 'status', 'statusCash', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'customer' => 'selling\Customer',
 			'content' => 'selling\PdfContent',
 			'farm' => 'farm\Farm',
-			'paymentMethod' => 'payment\Method',
 			'closedBy' => 'user\User',
 			'cashflow' => 'bank\Cashflow',
 		];
@@ -295,12 +296,12 @@ class InvoiceModel extends \ModuleModel {
 		return $this->where('dueDate', ...$data);
 	}
 
-	public function wherePaymentMethod(...$data): InvoiceModel {
-		return $this->where('paymentMethod', ...$data);
-	}
-
 	public function wherePaymentStatus(...$data): InvoiceModel {
 		return $this->where('paymentStatus', ...$data);
+	}
+
+	public function wherePaymentAmount(...$data): InvoiceModel {
+		return $this->where('paymentAmount', ...$data);
 	}
 
 	public function wherePaymentCondition(...$data): InvoiceModel {

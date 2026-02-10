@@ -15,6 +15,17 @@ class Payment extends PaymentElement {
 
 	}
 
+	public function getElement(): Sale|Invoice {
+
+		$this->expects(['source', 'sale', 'invoice']);
+
+		return match($this['source']) {
+			Payment::SALE => $this['sale'],
+			Payment::INVOICE => $this['invoice'],
+		};
+
+	}
+
 	// On considère qu'un paiement par CB peut déterminer si payé ou non
 	// Si le mode de paiement est un autre, on peut considérer que le paiement est OK
 	public function isNotPaid(): bool {
@@ -58,6 +69,14 @@ class Payment extends PaymentElement {
 				}
 
 				return ($paidAt !== NULL);
+
+			})
+			->setCallback('paidAt.future', function(?string &$paidAt) use($p): bool {
+
+				return (
+					$paidAt === NULL or
+					$paidAt <= currentDate()
+				);
 
 			});
 

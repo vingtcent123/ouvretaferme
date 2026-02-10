@@ -584,7 +584,7 @@ class SaleUi {
 						if($hasDocuments and in_array('paymentMethod', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
-								$h .= $this->getPaymentBox($eSale);
+								$h .= PaymentTransactionUi::getPaymentBox($eSale);
 							$h .= '</td>';
 
 						}
@@ -680,7 +680,7 @@ class SaleUi {
 			}
 			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentNotPaidCollection" data-batch-test="accept-replace-payment" data-batch-contains="post" post-payment-method="" class="dropdown-item" style="grid-column: span 2"><i>'.s("Pas de moyen de paiement").'</i></a>';
 			$menu .= '<div class="dropdown-subtitle">'.s("Changer l'état du paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-pay-payment" data-batch-always="count" data-batch-only="hide"></span></div>';
-			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-confirm="'.s("Les ventes seront marqués payées au {value}. Voulez-vous continuer ?", currentDate()).'" data-batch-test="accept-pay-payment" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::PAID.'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûre de vouloir passer ces ventes à l'état payé ? Vous ne pourrez pas facilement revenir en arrière.").'">'.self::getPaymentStatusBadge(Sale::PAID).'</a>';
+			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-confirm="'.s("Les ventes seront marqués payées au {value}. Voulez-vous continuer ?", currentDate()).'" data-batch-test="accept-pay-payment" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::PAID.'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûre de vouloir passer ces ventes à l'état payé ? Vous ne pourrez pas facilement revenir en arrière.").'">'.PaymentTransactionUi::getPaymentStatusBadge(new Sale(['paymentStatus' => Sale::PAID, 'paidAt' => NULL])).'</a>';
 		$menu .= '</div>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="batch-item">';
@@ -1211,34 +1211,6 @@ class SaleUi {
 
 	}
 
-	public static function getPaymentStatus(Sale $eSale): string {
-
-		if($eSale['paymentStatus'] !== NULL) {
-			return self::getPaymentStatusBadge($eSale['paymentStatus'], $eSale['paidAt']);
-		} else {
-			return '';
-		}
-
-	}
-
-	public static function getPaymentStatusBadge(string $status, ?string $paidAt = NULL): string {
-
-		$label = self::p('paymentStatus')->values[$status];
-
-		$h = '<span class="util-badge sale-payment-status sale-payment-status-'.$status.'">';
-
-			if($paidAt !== NULL) {
-				$h .= s("{status} le {date}", ['status' => $label, 'date' => \util\DateUi::numeric($paidAt)]);
-			} else {
-				$h .= $label;
-			}
-
-		$h .= '</span>';
-
-		return $h;
-
-	}
-
 	public static function getPaymentStatusForCustomer(Sale $eSale, bool $withColors = FALSE): string {
 
 		switch($eSale['paymentStatus']) {
@@ -1368,38 +1340,6 @@ class SaleUi {
 
 	}
 
-	public static function getPaymentMethodName(Sale $eSale): ?string {
-
-		$eSale->expects(['cPayment']);
-
-		$cPayment = $eSale['cPayment'];
-
-		$paymentList = [];
-
-		foreach($cPayment as $ePayment) {
-
-			$payment = '';
-			if($ePayment['accountingHash'] !== NULL) {
-				$payment .= ' <a href="'.\farm\FarmUi::urlConnected($eSale['farm']).'/journal/livre-journal?hash='.$ePayment['accountingHash'].'" class="util-badge bg-accounting" title="'.("Intégré dans le livre-journal").'">';
-					$payment .= \Asset::icon('journal-bookmark');
-				$payment .= '</a> ';
-			}
-			$payment .= \payment\MethodUi::getName($ePayment['method']);
-
-			if(
-				$cPayment->count() > 1 or
-				($ePayment['status'] === Payment::PAID and $eSale['paymentStatus'] === Sale::PARTIAL_PAID)
-			) {
-				$payment .= ' <span class="color-muted font-sm">'.\util\TextUi::money($ePayment['amountIncludingVat']).'</span>';
-			}
-
-			$paymentList[] = $payment;
-		}
-
-		return implode('<br />', $paymentList);
-
-	}
-
 	public function getContent(Sale $eSale, \Collection $cPdf): string {
 
 		if($eSale->isComposition()) {
@@ -1440,7 +1380,7 @@ class SaleUi {
 				if($eSale->isMarket() === FALSE) {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
-						$h .= self::getPaymentBox($eSale, optimize: TRUE);
+						$h .= PaymentTransactionUi::getPaymentBox($eSale, optimize: TRUE);
 					$h .= '</dd>';
 				}
 
@@ -2267,9 +2207,9 @@ class SaleUi {
 			$h = $this->getInvoicePayment($eSale);
 		} else {
 			if($eSale->isPaymentOnline(Payment::FAILED)) {
-				$h = $this->getOnlinePayment($eSale);
+				$h = new PaymentTransactionUi()->getOnlinePayment($eSale);
 			} else {
-				$h = $this->getPaymentForm($eSale);
+				$h = new PaymentTransactionUi()->getPaymentForm($eSale);
 			}
 		}
 
@@ -2280,104 +2220,6 @@ class SaleUi {
 				s("Changer le règlement"),
 			body: $h
 		);
-
-	}
-
-	protected function getOnlinePayment(Sale $eSale): string {
-
-		$content = '<div class="flex-justify-space-between flex-align-center">';
-			$content .= '<div>'.SaleUi::getPaymentMethodName($eSale).' '.SaleUi::getPaymentStatus($eSale).'</div>';
-			$content .= '<a data-ajax="/selling/sale:doDeletePayment" post-id="'.$eSale['id'].'" class="btn btn-xs btn-danger" data-confirm="'.s("Voulez-vous vraiment supprimer ce mode de règlement pour la vente ?").'">'.s("Supprimer").'</a>';
-		$content .= '</div>';
-
-		$h = '<div class="util-block bg-background-light">';
-			$h .= $content;
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function getPaymentBox(Sale $eSale, bool $optimize = FALSE): string {
-
-		$h = '';
-
-		if($eSale['paymentStatus'] === Sale::NEVER_PAID) {
-			$h .= '<span class="util-badge sale-payment-status-never-paid">'.self::p('paymentStatus')->values[Sale::NEVER_PAID].'</span>';
-		} else if($eSale['cPayment']->empty()) {
-
-			if($eSale->acceptUpdatePayment()) {
-				$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary">'.s("Choisir").'</a>';
-			}
-
-		} else {
-
-			if($eSale->acceptUpdatePayment() and $eSale['paymentStatus'] !== Sale::PAID) {
-				$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary sale-button">';
-			}
-
-				$h .= self::getPaymentMethodName($eSale);
-
-				$paymentStatus = self::getPaymentStatus($eSale);
-
-				if($paymentStatus) {
-
-					if(
-						$optimize and
-						$eSale['cPayment']->count() === 1 and
-						$eSale['paymentStatus'] !== Sale::PARTIAL_PAID
-					) {
-						$h .= '  '.$paymentStatus;
-					} else {
-						$h .= '<div style="margin-top: 0.25rem">'.$paymentStatus.'</div>';
-					}
-
-				}
-
-			if($eSale->acceptUpdatePayment() and $eSale['paymentStatus'] !== Sale::PAID) {
-				$h .= '</a>';
-			}
-
-		}
-
-		return $h;
-
-	}
-
-	protected function getPaymentForm(Sale $eSale): string {
-
-		$form = new \util\FormUi();
-
-		$h = '';
-
-		$h .= $form->openAjax('/selling/sale:doUpdatePayment');
-
-			$h .= $form->hidden('id', $eSale['id']);
-
-			if($eSale['paymentStatus'] === Sale::NEVER_PAID) {
-				$h .= $form->group(
-					content: '<div class="util-block-info">'.s("Cette vente est actuellement enregistrée comme une vente qui ne sera pas payée, mais vous pouvez revenir sur votre choix.").'</div>'
-				);
-			}
-
-			$never = $eSale->acceptNeverPaid() ? '<a data-ajax="/selling/sale:doUpdateNeverPaid" post-id="'.$eSale['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez indiquer que cette vente ne sera jamais payée. Voulez-vous continuer ?").'">'.s("Ne sera pas payée").'</a>' : '';
-
-			$h .= $form->group(content: '<div class="util-title">'.
-				'<h4>'.s("Vente de {value}", \util\TextUi::money($eSale['priceIncludingVat'])).'</h4>'.
-				$never.
-			'</div>');
-			$h .= new PaymentTransactionUi()->update($eSale, $eSale['cPayment'], $eSale['cPaymentMethod']);
-
-			$h .= $form->group(
-				content: '<div class="flex-justify-space-between">'.
-					$form->submit(s("Enregistrer")).
-					'<a class="btn btn-outline-primary" onclick="Payment.add()">'.\Asset::icon('plus-circle').' '.s("Ajouter un autre paiement").'</a>'.
-				'</div>'
-		);
-
-		$h .= $form->close();
-
-		return $h;
 
 	}
 

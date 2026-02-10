@@ -25,11 +25,17 @@ Class ReconciliateLib {
 
 		if($eInvoice->notEmpty()) {
 
-			$eInvoice['paymentMethod'] = $eSuggestion['paymentMethod'];
-			$eInvoice['paymentStatus'] = \selling\Invoice::PAID;
+			\selling\PaymentTransactionLib::replace($eInvoice, new \Collection([
+				new \selling\Payment([
+					'method' => $eSuggestion['paymentMethod'],
+					'status' => \selling\Invoice::PAID,
+					'amountIncludingVat' => $eCashflow['amount'],
+					'paidAt' => $eCashflow['date'],
+				])
+			]));
+
 			$eInvoice['cashflow'] = $eCashflow;
-			$eInvoice['paidAt'] = $eCashflow['date'];
-			\selling\InvoiceLib::update($eInvoice, ['paymentMethod', 'paymentStatus', 'cashflow', 'paidAt']);
+			\selling\InvoiceLib::update($eInvoice, ['cashflow']);
 
 		}
 

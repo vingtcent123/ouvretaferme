@@ -2,63 +2,38 @@
 new Page()
 	->cli('index', function($data) {
 
-		$c = \selling\Sale::model()
-			->select('id', 'paymentStatus')
-			->whereProfile('NOT IN', [\selling\Sale::COMPOSITION, \selling\Sale::MARKET])
-			->where('paymentStatus IS NULL OR paymentStatus != "'.\selling\Sale::NEVER_PAID.'"')
-			->sort([
-				'id' => SORT_ASC
+		$c = \selling\Invoice::model()
+			->select(\selling\Invoice::getSelection() + [
+				'm' => new Sql('paymentMethod', '?int'),
 			])
+			->wherePaymentStatus('IN', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID])
 			->getCollection();
 
 		foreach($c as $e) {
 
-			if(
-				$e['paymentStatus'] === NULL and
-				\selling\Payment::model()
-					->whereSale($e)
-					->exists() === FALSE
-			) {
-				continue;
-			}
+			$m = \payment\MethodLib::getById($e['m']);
 
+			if($e['paymentStatus'] === \selling\Invoice::NOT_PAID) {
 
-			if($e['paymentStatus'] === \selling\Sale::NOT_PAID) {
+				$p = new \selling\Payment([
+					'status' => \selling\Invoice::NOT_PAID,
+					'method' => $m,
+					'paidAt' => NULL,
+					'amountIncludingVat' => NULL
+				]);
 
-				if(
-					\selling\Payment::model()
-						->whereSale($e)
-						->whereStatus(\selling\Payment::NOT_PAID)
-						->exists() and
-					\selling\Payment::model()
-						->whereSale($e)
-						->whereStatus('!=', \selling\Payment::NOT_PAID)
-						->exists() === FALSE
-				) {
-					continue;
-				} else {
-					echo '!';
-					continue;
-				}
-
-			}
-
-			if(
-				$e['paymentStatus'] === \selling\Sale::PAID and
-				\selling\Payment::model()
-					->whereStatus(\selling\Payment::PAID)
-					->whereSale($e)
-					->exists()
-			) {
-
-				\selling\Sale::model()
-					->select(\selling\Sale::getSelection())
-					->get($e);
-
-				\selling\PaymentTransactionLib::recalculate($e);
 			} else {
-				echo $e['id'];
+
+				$p = new \selling\Payment([
+					'status' => \selling\Invoice::PAID,
+					'method' => $m,
+					'paidAt' => $e['paidAt'],
+					'amountIncludingVat' => $e['priceIncludingVat']
+				]);
+
 			}
+
+			\selling\PaymentTransactionLib::replace($e, new Collection([$p]));
 
 			echo '.';
 

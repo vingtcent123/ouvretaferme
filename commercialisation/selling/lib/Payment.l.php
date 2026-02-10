@@ -3,6 +3,25 @@ namespace selling;
 
 class PaymentLib extends PaymentCrud {
 
+	public static function isOnline(\Collection $cPayment, ?string $status = NULL): bool {
+
+		if($cPayment->empty()) {
+			return FALSE;
+		}
+
+		foreach($cPayment as $ePayment) {
+			if(
+				$ePayment['method']->isOnline() and
+				($status === NULL or $ePayment['status'] === $status)
+			) {
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+
+	}
+
 	/**
 	 * Ajoute un moyen de paiement
 	 * Si les moyens de paiement sont fournis, ils doivent être garantis par une transaction
@@ -13,15 +32,30 @@ class PaymentLib extends PaymentCrud {
 			'source',
 			'customer', 'farm',
 			'method' => ['fqn', 'name'],
-			'sale' => ['profile'],
 			'status'
 		]);
 
-		if(
-			$e['sale']->isMarketSale() === FALSE and
-			$e['sale']->isSale() === FALSE
-		) {
-			throw new \UnsupportedException();
+		switch($e['source']) {
+
+			case Payment::SALE :
+
+				$e->expects([
+					'sale' => ['profile']
+				]);
+
+				if(
+					$e['sale']->isMarketSale() === FALSE and
+					$e['sale']->isSale() === FALSE
+				) {
+					throw new \UnsupportedException();
+				}
+
+				break;
+
+			case Payment::INVOICE :
+				$e->expects(['invoice']);
+				break;
+
 		}
 
 		Payment::model()->beginTransaction();
@@ -41,7 +75,7 @@ class PaymentLib extends PaymentCrud {
 
 			parent::create($e);
 
-			PaymentTransactionLib::recalculate($e['sale']);
+			PaymentTransactionLib::recalculate($e->getElement());
 
 		Payment::model()->commit();
 
@@ -76,7 +110,7 @@ class PaymentLib extends PaymentCrud {
 			parent::update($ePayment, $properties);
 
 			if(array_intersect($properties, ['amountIncludingVat', 'status', 'paidAt']) !== []) {
-				PaymentTransactionLib::recalculate($ePayment['sale']);
+				PaymentTransactionLib::recalculate($ePayment->getElement());
 			}
 
 		Payment::model()->commit();
@@ -85,13 +119,11 @@ class PaymentLib extends PaymentCrud {
 
 	public static function delete(Payment $ePayment): void {
 
-		$ePayment->expects(['sale']);
-
 		Payment::model()->beginTransaction();
 
 			parent::delete($ePayment);
 
-			PaymentTransactionLib::recalculate($ePayment['sale']);
+			PaymentTransactionLib::recalculate($ePayment->getElement());
 
 		Payment::model()->commit();
 

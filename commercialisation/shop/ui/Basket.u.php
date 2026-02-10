@@ -920,7 +920,7 @@ class BasketUi {
 
 						$h .= '<dt>'.s("Paiement").'</dt>';
 						$h .= '<dd>';
-							$payment = \selling\SaleUi::getPaymentMethodName($eSaleReference);
+							$payment = \selling\PaymentTransactionUi::getPaymentMethodName($eSaleReference);
 							if(mb_strlen($payment) === 0) {
 								$h .= s("Direct avec le producteur");
 							} else {

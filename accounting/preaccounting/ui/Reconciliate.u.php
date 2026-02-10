@@ -309,6 +309,8 @@ Class ReconciliateUi {
 
 	public function reconciliate(\farm\Farm $eFarm, \Collection $cSuggestion): \Panel {
 
+		\Asset::css('selling', 'payment.css');
+
 		$urlReconciliate = \farm\FarmUi::urlConnected($eFarm).'/preaccounting/reconciliate:doReconciliateCollection';
 
 		$form = new \util\FormUi();
@@ -322,7 +324,7 @@ Class ReconciliateUi {
 
 				$h .= '<p>';
 					\Asset::css('selling', 'sale.css');
-					$h .= s("Chaque facture deviendra <span>payée</span> avec le moyen de paiement indiqué, et l'opération bancaire sera rattachée à la facture.", ['span' => '<span class="util-badge sale-payment-status sale-payment-status-success">']);
+					$h .= s("Chaque facture deviendra <span>payée</span> avec le moyen de paiement indiqué, et l'opération bancaire sera rattachée à la facture.", ['span' => '<span class="util-badge payment-status payment-status-success">']);
 				$h .= '</p>';
 			$h .= '</div>';
 

@@ -7,20 +7,8 @@ class InvoiceLib extends InvoiceCrud {
 		return ['customer', 'sales', 'date', 'dueDate', 'paymentCondition', 'header', 'footer', 'status'];
 	}
 
-	public static function getPropertiesUpdate(): \Closure {
-
-		return function(Invoice $e) {
-
-			$properties = ['comment'];
-
-			if($e->isPaymentOnline() === FALSE) {
-				$properties[] = 'paymentMethod';
-				$properties[] = 'paymentStatus';
-			}
-
-			return $properties;
-
-		};
+	public static function getPropertiesUpdate(): array {
+		return ['comment'];
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm, int $page = 0, \Search $search = new \Search()): array {
@@ -365,10 +353,9 @@ class InvoiceLib extends InvoiceCrud {
 				},
 			]);
 
-			$e['paymentMethod'] = $cSale->first()['cPayment']->first()['method'] ?? NULL;
-			$e['paymentStatus'] = $cSale->first()['paymentStatus'] ?? Invoice::NOT_PAID;
-
 			parent::create($e);
+
+			PaymentTransactionLib::importInvoice($e, $cSale->first()['cPayment']);
 
 			Sale::model()
 				->whereId('IN', $e['cSale'])
@@ -438,104 +425,9 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
-	public static function updateNeverPaid(Invoice $e): void {
-
-		$e['paymentMethod'] = new \payment\Method();
-		$e['paymentStatus'] = Invoice::NEVER_PAID;
-		$e['paidAt'] = NULL;
-
-		self::update($e, ['paymentMethod', 'paymentStatus', 'paidAt']);
-
-	}
-
-	public static function updatePaymentCollection(\Collection $c, array $payment): void {
-
-		foreach($c as $e) {
-
-			Invoice::model()->beginTransaction();
-
-			$e['paymentMethod'] = $payment['paymentMethod'];
-			$e['paymentStatus'] = $payment['paymentStatus'];
-
-			self::update($e, array_keys($payment));
-
-			Invoice::model()->commit();
-		}
-
-	}
-
-	public static function updatePaymentMethodCollection(\Collection $c, \payment\Method $eMethod): void {
-
-		foreach($c as $e) {
-
-			$e['paymentMethod'] = $eMethod;
-			self::update($e, ['paymentMethod']);
-
-		}
-
-	}
-
-	public static function updatePaymentStatusCollection(\Collection $c, string $paymentStatus): void {
-
-		$properties = ['paymentStatus'];
-
-		if($paymentStatus === Invoice::PAID) {
-			$properties[] = 'paidAt';
-		}
-
-		foreach($c as $e) {
-
-			$e['paymentStatus'] = $paymentStatus;
-
-			if($paymentStatus === Invoice::PAID) {
-				$e['paidAt'] = currentDate();
-			}
-
-			self::update($e, $properties);
-
-		}
-
-	}
-
-	public static function 	update(Invoice $e, array $properties): void {
+	public static function update(Invoice $e, array $properties): void {
 
 		Invoice::model()->beginTransaction();
-
-			if(in_array('paymentMethod', $properties)) {
-
-				// On met un statut de paiement par défaut s'il n'est pas renseigné
-				if(
-					$e['paymentMethod']->notEmpty() and
-					$e['paymentStatus'] === NULL
-				) {
-
-					$e['paymentStatus'] = Invoice::NOT_PAID;
-					$properties[] = 'paymentStatus';
-
-				}
-
-				if(
-					$e['paymentMethod']->empty() and
-					in_array($e['paymentStatus'], [Invoice::PAID, Invoice::NOT_PAID])
-				) {
-
-					$e['paymentStatus'] = NULL;
-					$properties[] = 'paymentStatus';
-
-				}
-
-			}
-
-			if(in_array('paymentStatus', $properties)) {
-
-				if($e['paymentStatus'] !== Invoice::PAID) {
-
-					$e['paidAt'] = NULL;
-					$properties[] = 'paidAt';
-
-				}
-
-			}
 
 			if(in_array('status', $properties)) {
 
@@ -557,7 +449,7 @@ class InvoiceLib extends InvoiceCrud {
 			parent::update($e, $properties);
 
 			if(
-				in_array('paymentMethod', $properties) or
+				in_array('paymentAmount', $properties) or
 				in_array('paymentStatus', $properties) or
 				in_array('paidAt', $properties)
 			) {
@@ -745,15 +637,6 @@ class InvoiceLib extends InvoiceCrud {
 		}
 
 		return $cInvoice;
-
-	}
-
-	public static function deletePayment(Invoice $e): void {
-
-		$e['paymentMethod'] = new \payment\Method();
-		$e['paymentStatus'] = NULL;
-
-		self::update($e, ['paymentMethod', 'paymentStatus']);
 
 	}
 

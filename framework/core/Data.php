@@ -1664,6 +1664,21 @@ class Element extends ArrayObject {
 
 	}
 
+	public function getCopy($keys, ?Closure $callback = NULL): self {
+
+		$output = new $this;
+
+		foreach($keys as $key) {
+			if($this->offsetExists($key)) {
+				$value = $this->offsetGet($key);
+				$output[$key] = ($callback !== NULL) ? $callback($value) : $value;
+			}
+		}
+
+		return $output;
+
+	}
+
 	private function checkExpected(Element $e, array $keys): array {
 
 		$lacks = [];

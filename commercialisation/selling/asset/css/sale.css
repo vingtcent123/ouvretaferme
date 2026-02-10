@@ -113,30 +113,6 @@ div.selling-label-example > * {
 
 }
 
-.sale-payment-status {
-	font-size: 0.8rem;
-}
-
-.sale-payment-status-paid {
-	background-color: var(--success);
-}
-
-.sale-payment-status-not-paid {
-	background-color: var(--muted);
-}
-
-.sale-payment-status-partial-paid {
-	background-color: var(--warning);
-}
-
-.sale-payment-status-never-paid {
-	background-color: var(--primary);
-}
-
-.sale-payment-status-failed {
-	background-color: var(--danger);
-}
-
 .sale-preparation-status-draft {
 	color: var(--draft);
 }

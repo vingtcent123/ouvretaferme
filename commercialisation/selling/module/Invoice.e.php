@@ -7,8 +7,8 @@ class Invoice extends InvoiceElement {
 
 		return parent::getSelection() + [
 			'customer' => CustomerElement::getSelection(),
-			'paymentMethod' => ['name', 'fqn'],
 			'farm' => \farm\FarmElement::getSelection(),
+			'cPayment' => PaymentTransactionLib::delegateByInvoice(),
 		];
 
 	}
@@ -132,15 +132,10 @@ class Invoice extends InvoiceElement {
 
 	}
 
-	public function isPaymentOnline(): bool {
+	public function isPaymentOnline(?string $status = Payment::PAID): bool {
 
-		if($this['paymentMethod']->empty()) {
-			return FALSE;
-		}
-
-		$this->expects(['paymentMethod' => ['fqn']]);
-
-		return ($this['paymentMethod']['fqn'] === \payment\MethodLib::ONLINE_CARD);
+		$this->expects(['cPayment']);
+		return PaymentLib::isOnline($this['cPayment'], $status);
 
 	}
 
@@ -154,7 +149,8 @@ class Invoice extends InvoiceElement {
 
 		return (
 			$this->acceptUpdatePayment() and
-			$this['paymentStatus'] !== Sale::PAID
+			$this['paymentStatus'] !== Sale::PAID and
+			$this['paymentStatus'] !== Sale::PARTIAL_PAID
 		);
 
 	}
@@ -243,15 +239,16 @@ class Invoice extends InvoiceElement {
 
 	public function isReadyForAccounting(): bool {
 
-		$this->expects(['status', 'accountingHash', 'paymentMethod', 'accountingDifference', 'priceIncludingVat']);
+		$this->expects(['status', 'accountingHash', 'accountingDifference', 'priceIncludingVat']);
 
 		if($this['cashflow']->notEmpty()) {
 			$this['cashflow']->expects(['amount']);
 		}
 
-		return ($this['status'] !== Invoice::DRAFT and
+		return (
+			$this['status'] !== Invoice::DRAFT and
 			$this['accountingHash'] === NULL and
-			$this['paymentMethod']->notEmpty() and
+			$this['cPayment']->notEmpty() and
 			(
 				$this['cashflow']->empty() or
 				$this['cashflow']['amount'] === $this['priceIncludingVat'] or
@@ -428,51 +425,9 @@ class Invoice extends InvoiceElement {
 				return ($dueDate >= $this['date']);
 
 			})
-			->setCallback('paymentMethod.check', function(\payment\Method $eMethod): bool {
-
-				if($eMethod->empty()) {
-					return TRUE;
-				}
-
-				$this->expects(['farm']);
-
-				return \payment\MethodLib::isSelectable($this['farm'], $eMethod);
-
-			})
 			->setCallback('status.check', function(string &$status) use($p): bool {
 
 				return in_array($status, [Invoice::DRAFT, Invoice::CONFIRMED]);
-
-			})
-			->setCallback('paymentStatus.check', function(string &$status) use($p): bool {
-
-				$this->expects(['paymentMethod']);
-
-				if($this['paymentMethod']->empty()) {
-					$status = NULL;
-					return TRUE;
-				} else {
-					return in_array($status, [Invoice::PAID, Invoice::NOT_PAID]);
-				}
-
-			})
-			->setCallback('paidAt.prepare', function(?string &$paidAt) use($p): bool {
-
-				$this->expects(['paymentStatus']);
-
-				if($this['paymentStatus'] !== Invoice::PAID) {
-					$paidAt = NULL;
-				}
-
-				return TRUE;
-
-			})
-			->setCallback('paidAt.future', function(?string &$paidAt) use($p): bool {
-
-				return (
-					$paidAt === NULL or
-					$paidAt <= currentDate()
-				);
 
 			});
 		
