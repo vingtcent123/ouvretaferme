@@ -139,7 +139,6 @@ class PaymentTransactionLib {
 		$e->expects(['farm', 'customer']);
 
 		$ePayment->merge([
-			'sale' => $e,
 			'customer' => $e['customer'],
 			'farm' => $e['farm'],
 		]);
