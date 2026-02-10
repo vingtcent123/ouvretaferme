@@ -43,34 +43,19 @@ class ConfigurationLib extends ConfigurationCrud {
 
 		Configuration::model()->beginTransaction();
 
-		$newValue = Configuration::model()
-			->whereFarm($eFarm)
-			->getValue('documentSales');
+			Configuration::model()
+				->whereFarm($eFarm)
+				->update([
+					'documentSales' => new \Sql('documentSales + 1')
+				]);
 
-		for($i = 0; ; $i++) {
+			$newValue = Configuration::model()
+				->whereFarm($eFarm)
+				->getValue('documentSales');
 
-			$newValue++;
+		Configuration::model()->commit();
 
-			if(
-				Configuration::model()
-					->whereFarm($eFarm)
-					->whereDocumentSales('<', $newValue)
-					->update([
-						'documentSales' => $newValue
-					]) > 0
-			) {
-
-				Configuration::model()->commit();
-
-				return $newValue;
-
-			}
-
-			if($i === 100) {
-				throw new \Exception("Possible infinite loop");
-			}
-
-		}
+		return $newValue;
 
 	}
 
@@ -78,34 +63,19 @@ class ConfigurationLib extends ConfigurationCrud {
 
 		Configuration::model()->beginTransaction();
 
-		$newValue = Configuration::model()
-			->whereFarm($eFarm)
-			->getValue('documentCustomers');
+			Configuration::model()
+				->whereFarm($eFarm)
+				->update([
+					'documentCustomers' => new \Sql('documentCustomers + 1')
+				]);
 
-		for($i = 0; ; $i++) {
+			$newValue = Configuration::model()
+				->whereFarm($eFarm)
+				->getValue('documentCustomers');
 
-			$newValue++;
+		Configuration::model()->commit();
 
-			if(
-				Configuration::model()
-					->whereFarm($eFarm)
-					->whereDocumentCustomers('<', $newValue)
-					->update([
-						'documentCustomers' => $newValue
-					]) > 0
-			) {
-
-				Configuration::model()->commit();
-
-				return $newValue;
-
-			}
-
-			if($i === 100) {
-				throw new \Exception("Possible infinite loop");
-			}
-
-		}
+		return $newValue;
 
 	}
 
