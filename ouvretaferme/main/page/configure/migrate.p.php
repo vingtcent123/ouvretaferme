@@ -6,6 +6,7 @@ new Page()
 			->select(\selling\Invoice::getSelection() + [
 				'm' => new Sql('paymentMethod', '?int'),
 			])
+			->whereFarm(7)
 			->wherePaymentStatus('IN', [\selling\Invoice::PAID, \selling\Invoice::NOT_PAID])
 			->getCollection();
 
@@ -13,29 +14,39 @@ new Page()
 
 			$m = \payment\MethodLib::getById($e['m']);
 
-			if($e['paymentStatus'] === \selling\Invoice::NOT_PAID) {
+			if($m->empty()) {
 
-				$p = new \selling\Payment([
-					'status' => \selling\Invoice::NOT_PAID,
-					'method' => $m,
-					'paidAt' => NULL,
-					'amountIncludingVat' => NULL
-				]);
+				\selling\PaymentTransactionLib::delete($e);
+
+			echo '!';
 
 			} else {
 
-				$p = new \selling\Payment([
-					'status' => \selling\Invoice::PAID,
-					'method' => $m,
-					'paidAt' => $e['paidAt'],
-					'amountIncludingVat' => $e['priceIncludingVat']
-				]);
+				if($e['paymentStatus'] === \selling\Invoice::NOT_PAID) {
 
-			}
+					$p = new \selling\Payment([
+						'status' => \selling\Invoice::NOT_PAID,
+						'method' => $m,
+						'paidAt' => NULL,
+						'amountIncludingVat' => NULL
+					]);
 
-			\selling\PaymentTransactionLib::replace($e, new Collection([$p]));
+				} else {
+
+					$p = new \selling\Payment([
+						'status' => \selling\Invoice::PAID,
+						'method' => $m,
+						'paidAt' => $e['paidAt'],
+						'amountIncludingVat' => $e['priceIncludingVat']
+					]);
+
+				}
+
+				\selling\PaymentTransactionLib::replace($e, new Collection([$p]));
 
 			echo '.';
+
+			}
 
 		}
 

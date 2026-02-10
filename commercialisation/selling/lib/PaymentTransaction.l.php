@@ -476,7 +476,13 @@ class PaymentTransactionLib {
 		$e['paymentAmount'] = NULL;
 		$e['paidAt'] = NULL;
 
-		SaleLib::update($e, ['paymentStatus', 'paymentAmount', 'paidAt']);
+		$properties = ['paymentStatus', 'paymentAmount', 'paidAt'];
+
+		if($e instanceof Sale) {
+			SaleLib::update($e, $properties);
+		} else if($e instanceof Invoice) {
+			InvoiceLib::update($e, $properties);
+		}
 
 	}
 
