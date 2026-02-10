@@ -177,7 +177,7 @@ class PaymentTransactionLib {
 
 				PaymentTransactionLib::withRecalculate(FALSE);
 
-					$cPaymentDelete = PaymentTransactionLib::getAll($e, index: 'id');
+					$cPaymentToDelete = PaymentTransactionLib::getAll($e, index: 'id');
 
 					foreach($cPayment as $ePayment) {
 
@@ -190,8 +190,8 @@ class PaymentTransactionLib {
 								$ePayment['invoice'] = $e;
 							}
 
-							if($cPaymentDelete->offsetExists($ePayment['id'])) {
-								$cPaymentDelete->offsetUnset($ePayment['id']);
+							if($cPaymentToDelete->offsetExists($ePayment['id'])) {
+								$cPaymentToDelete->offsetUnset($ePayment['id']);
 							}
 
 							PaymentLib::update($ePayment, ['method', 'amountIncludingVat', 'status', 'paidAt']);
@@ -202,8 +202,8 @@ class PaymentTransactionLib {
 
 					}
 
-					if($cPaymentDelete->notEmpty()) {
-						PaymentLib::deleteCollection($cPaymentDelete);
+					if($cPaymentToDelete->notEmpty()) {
+						PaymentLib::deleteCollection($cPaymentToDelete);
 					}
 
 				PaymentTransactionLib::withRecalculate(TRUE);

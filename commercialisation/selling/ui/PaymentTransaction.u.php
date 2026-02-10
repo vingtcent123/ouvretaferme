@@ -245,18 +245,19 @@ class PaymentTransactionUi {
 						$ePayment['paidAt'] = currentDate();
 					}
 
-					$h .= $this->getUpdatePayment($form, $position++, $ePayment, $cMethod);
+					$h .= $this->getUpdatePayment($form, $ePayment, $position++, $cMethod);
 
 				}
 
 				if($cPayment->empty()) {
 
-					$h .= $this->getUpdatePayment($form, $position++, new Payment([
+					$h .= $this->getUpdatePayment($form, new Payment([
 						'status' => Payment::NOT_PAID,
 						'amountIncludingVat' => $saleAmount,
 						'farm' => $eFarm,
-						'paidAt' => currentDate()
-					]), $cMethod);
+						'paidAt' => currentDate(),
+						'closed' => FALSE
+					]), $position++, $cMethod);
 
 				}
 
@@ -270,11 +271,12 @@ class PaymentTransactionUi {
 			$h .= '</div>';
 
 			$h .= '<div id="payment-update-new" data-position="'.$position.'">';
-				$h .= $this->getUpdatePayment($form, '', new Payment([
+				$h .= $this->getUpdatePayment($form, new Payment([
 					'farm' => $eFarm,
 					'status' => Payment::PAID,
-					'paidAt' => currentDate()
-				]), $cMethod);
+					'paidAt' => currentDate(),
+					'closed' => FALSE
+				]), '', $cMethod);
 			$h .= '</div>';
 
 		$h .= '</div>';
@@ -283,9 +285,13 @@ class PaymentTransactionUi {
 
 	}
 
-	protected function getUpdatePayment(\util\FormUi $form, int|string $position, Payment $ePayment, \Collection $cMethod): string {
+	protected function getUpdatePayment(\util\FormUi $form, Payment $ePayment, int|string $position, \Collection $cMethod): string {
 
 		$ePayment['cMethod'] = $cMethod;
+
+		if($ePayment['closed']) {
+			return $this->getClosedPayment($form, $ePayment);
+		}
 
 		$h = '<div class="payment-update util-block bg-background-light">';
 			$h .= $form->group(
@@ -295,15 +301,6 @@ class PaymentTransactionUi {
 				'</div>',
 				attributes: ['class' => 'payment-update-title']
 			);
-			$h .= $form->hidden('payment['.$position.']', $ePayment->exists() ? $ePayment['id'] : '');
-			if($ePayment->exists() and ($ePayment['accountingHash'] !== NULL or $ePayment['cashflow']->notEmpty())) {
-				if($ePayment['accountingHash'] !== NULL) {
-					$accountingStatus = '<a class="util-badge bg-accounting" href="'.\farm\FarmUi::urlConnected($ePayment['farm']).'/journal/livre-journal?hash='.$ePayment['accountingHash'].'&financialYearReset">'.\Asset::icon('journal-text').'</a> '.s("Paiement intégré en comptabilité");
-				} else {
-					$accountingStatus = '<a class="util-badge bg-accounting" href="'.\farm\FarmUi::urlConnected($ePayment['farm']).'/banque/operations?id='.$ePayment['cashflow']['id'].'">'.\Asset::icon('bank').'</a> '.s("Paiement rapproché");
-				}
-				$h .= $form->group(s("Statut comptable"), $accountingStatus);
-			}
 			$h .= $form->dynamicGroup($ePayment, 'method['.$position.']');
 			$h .= '<div class="payment-update-status">';
 				$h .= $form->dynamicGroup($ePayment, 'status['.$position.']');
@@ -316,6 +313,55 @@ class PaymentTransactionUi {
 				'</div>'
 			);
 			$h .= $form->dynamicGroup($ePayment, 'paidAt['.$position.']');
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected function getClosedPayment(\util\FormUi $form, Payment $ePayment): string {
+
+		$h = '<div class="payment-update util-block bg-background-light">';
+
+			$h .= $form->group(
+				content: '<div class="util-action">'.
+					'<h4>'.s("Paiement n°{value}", '<span class="payment-update-counter"></span>').'  '.\Asset::icon('lock-fill').'</h4>'.
+				'</div>',
+				attributes: ['class' => 'payment-update-title']
+			);
+
+			$accountingStatus = [];
+
+			if($ePayment['accountingHash'] !== NULL) {
+				$accountingStatus[] = '<a class="util-badge bg-accounting" href="'.\farm\FarmUi::urlConnected($ePayment['farm']).'/journal/livre-journal?hash='.$ePayment['accountingHash'].'&financialYearReset">'.\Asset::icon('journal-text').'</a> '.s("Paiement intégré en comptabilité");
+			} else if($ePayment['cashflow']->notEmpty()) {
+				$accountingStatus[] = '<a class="util-badge bg-accounting" href="'.\farm\FarmUi::urlConnected($ePayment['farm']).'/banque/operations?id='.$ePayment['cashflow']['id'].'">'.\Asset::icon('bank').'</a> '.s("Paiement rapproché");
+			}
+
+			if($accountingStatus) {
+
+				$h .= $form->group(
+					s("Comptabilité"),
+					implode('<br/>', $accountingStatus)
+				);
+
+			}
+
+			$h .= $form->group(
+				PaymentUi::p('method')->label,
+				encode($ePayment['method']['name'])
+			);
+
+			$h .= $form->group(
+				PaymentUi::p('amountIncludingVat')->label,
+				\util\TextUi::money($ePayment['amountIncludingVat'])
+			);
+
+			$h .= $form->group(
+				PaymentUi::p('paidAt')->label,
+				\util\DateUi::numeric($ePayment['paidAt'])
+			);
+
 		$h .= '</div>';
 
 		return $h;
