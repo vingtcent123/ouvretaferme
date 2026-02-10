@@ -128,7 +128,7 @@ class PaymentLib extends PaymentCrud {
 		$ePayment['closed'] = TRUE;
 		$ePayment['closedAt'] = Sale::model()->now();
 
-		Sale::model()
+		Payment::model()
 			->select(['closed', 'closedAt'])
 			->whereClosed(FALSE)
 			->update($ePayment);

@@ -3,6 +3,8 @@ namespace selling;
 
 class PaymentTransactionLib {
 
+	private static bool $recalculate = TRUE;
+
 	/**
 	 * Vérification intégrale des données car le build() ne fait pas les vérifications métier
 	 * Trop de comportements différents avec le paiement en ligne et le logiciel de caisse
@@ -171,14 +173,45 @@ class PaymentTransactionLib {
 
 		Payment::model()->beginTransaction();
 
-			self::delete($e, recalculate: FALSE);
-
 			if($cPayment->notEmpty()) {
 
-				self::createCollectionForTransaction($e, $cPayment);
+				PaymentTransactionLib::withRecalculate(FALSE);
+
+					$cPaymentDelete = PaymentTransactionLib::getAll($e, index: 'id');
+
+					foreach($cPayment as $ePayment) {
+
+						if($ePayment->exists()) {
+
+							// Propriétés nécessaires pour la mise à jour
+							if($e instanceof Sale) {
+								$ePayment['sale'] = $e;
+							} else if($e instanceof Invoice) {
+								$ePayment['invoice'] = $e;
+							}
+
+							if($cPaymentDelete->offsetExists($ePayment['id'])) {
+								$cPaymentDelete->offsetUnset($ePayment['id']);
+							}
+
+							PaymentLib::update($ePayment, ['method', 'amountIncludingVat', 'status', 'paidAt']);
+
+						} else {
+							self::createForTransaction($e, $ePayment);
+						}
+
+					}
+
+					if($cPaymentDelete->notEmpty()) {
+						PaymentLib::deleteCollection($cPaymentDelete);
+					}
+
+				PaymentTransactionLib::withRecalculate(TRUE);
+
+				PaymentTransactionLib::recalculate($e, $cPayment);
 
 			} else {
-				PaymentTransactionLib::recalculate($e, new \Collection());
+				self::delete($e);
 			}
 
 		Payment::model()->commit();
@@ -367,7 +400,15 @@ class PaymentTransactionLib {
 
 	}
 
+	public static function withRecalculate(bool $recalculate): void {
+		self::$recalculate = $recalculate;
+	}
+
 	public static function recalculate(Sale|Invoice $e, ?\Collection $cPayment = NULL): void {
+
+		if(self::$recalculate === FALSE) {
+			return;
+		}
 
 		if($e instanceof Sale) {
 
