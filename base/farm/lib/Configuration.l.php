@@ -83,9 +83,11 @@ class ConfigurationLib extends ConfigurationCrud {
 
 		Configuration::model()->beginTransaction();
 
+			$prefix = rtrim($eFarm->getConf('invoicePrefix'), '#');
+
 			$current = \selling\Invoice::model()
 				->whereFarm($eFarm)
-				->where('number REGEXP '.\selling\Invoice::model()->format($eFarm->getConf('invoicePrefix').'[0-9]+$'))
+				->where('number REGEXP '.\selling\Invoice::model()->format($prefix.'[0-9]+$'))
 				->getValue(new \Sql('MAX(document)'));
 
 			Configuration::model()
