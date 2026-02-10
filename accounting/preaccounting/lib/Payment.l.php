@@ -113,14 +113,18 @@ Class PaymentLib {
 			->select(\selling\Payment::getSelection() + [
 			'sale' => [
 				'id', 'document',
-				'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'shippingExcludingVat', 'shippingVatRate',
+				'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'shippingExcludingVat', 'shippingVatRate', 'paymentAmount',
 				'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
 				'cItem' => \selling\Item::model()
 					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 					->delegateCollection('sale'),
+				'totalPaid' => new \selling\PaymentModel()
+					->select('amountIncludingVat')
+					->whereStatus(\selling\Payment::PAID)
+					->delegateCollection('sale', callback: fn(\Collection $cPayment) => $cPayment->sum('amountIncludingVat'))
 			],
 			'invoice' => [
-				'id', 'number', 'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat',
+				'id', 'number', 'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'paymentAmount',
 				'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
 				'cSale' => \selling\Sale::model()
 					->select([
@@ -130,6 +134,10 @@ Class PaymentLib {
 							->delegateCollection('sale')
 					])
 					->delegateCollection('invoice'),
+				'totalPaid' => new \selling\PaymentModel()
+					->select('amountIncludingVat')
+					->whereStatus(\selling\Payment::PAID)
+					->delegateCollection('invoice', callback: fn(\Collection $cPayment) => $cPayment->sum('amountIncludingVat'))
 			],
 			'cashflow' => \bank\Cashflow::getSelection()
 		])

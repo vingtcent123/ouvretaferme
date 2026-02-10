@@ -183,6 +183,7 @@ Class SuggestionLib extends SuggestionCrud {
 				fn() => $this->where(new \Sql(join(' AND ', $paidConditions)))
 			)
 			->where('m1.accountingHash IS NULL')
+			->where('m1.invoice IS NOT NULL') // Rapprochement que sur factures pour le moment
 			->where('m1.cashflow IS NULL')
 			->getCollection();
 

@@ -11,7 +11,16 @@ new \selling\PaymentPage()
 		}
 
 		$data->e['cashflow'] = \bank\CashflowLib::getById($data->e['cashflow']['id']);
-		$data->e->validate('acceptUpdateAccountingDifference');
+
+		$priceIncludingVat = match($data->e['source']) {
+			\selling\Payment::INVOICE => \selling\Invoice::model()->select('priceIncludingVat')->whereId($data->e['invoice']['id'])->get()['priceIncludingVat'],
+			\selling\Payment::SALE => \selling\Sale::model()->select('priceIncludingVat')->whereId($data->e['sale']['id'])->get()['priceIncludingVat'],
+		};
+
+		$totalPaid = \selling\PaymentLib::sumTotalPaid($data->e);
+		if($totalPaid === $priceIncludingVat) {
+			throw new NotExpectedAction();
+		}
 
 		\preaccounting\PaymentLib::updateAccountingDifference($data->e, POST('accountingDifference'));
 

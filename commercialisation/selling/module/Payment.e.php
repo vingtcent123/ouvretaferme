@@ -34,26 +34,6 @@ class Payment extends PaymentElement {
 		return $this['accountingHash'] === NULL;
 	}
 
-	public function hasAccountingDifference(): bool {
-
-		$this->expects(['amountIncludingVat', 'cashflow']);
-
-		if($this['cashflow']->notEmpty()) {
-			$this['cashflow']->expects(['amount']);
-		}
-
-		return ($this['cashflow']->notEmpty() and $this['cashflow']['amount'] !== $this['amountIncludingVat']);
-
-	}
-
-	public function acceptUpdateAccountingDifference(): bool {
-
-		$this->expects(['accountingHash', 'cashflow', 'amountIncludingVat']);
-
-		return ($this['accountingHash'] === NULL and $this['cashflow']->notEmpty() and $this['cashflow']['amount'] !== $this['amountIncludingVat']);
-
-	}
-
 	public static function validateBatch(\Collection $cInvoice): void {
 
 		if($cInvoice->empty()) {

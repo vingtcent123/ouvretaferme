@@ -8,7 +8,7 @@ class Suggestion extends SuggestionElement {
 		return parent::getSelection() + [
 				'cashflow' => \bank\Cashflow::getSelection(),
 				'payment' => [
-					'id', 'source', 'amountIncludingVat',
+					'id', 'source', 'amountIncludingVat', 'closed',
 					'invoice' => \selling\Invoice::getSelection(),
 					'sale' => \selling\Sale::getSelection()
 				],

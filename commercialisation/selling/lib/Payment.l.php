@@ -81,11 +81,52 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function update(Payment $ePayment, array $properties): void {
+	public static function cancelAccounting(string $hash): void {
 
-		$ePayment->expects(['closed']);
+		\selling\Payment::model()
+      ->whereAccountingHash($hash)
+      ->update(['accountingHash' => NULL, 'accountingDifference' => NULL]);
+	}
 
-		if($ePayment['closed']) {
+	public static function cancelReconciliation(\bank\Cashflow $eCashflow): void {
+
+		\selling\Payment::model()
+			->whereCashflow($eCashflow)
+			->update(['cashflow' => NULL, 'readyForAccounting' => FALSE]);
+
+	}
+
+	public static function updateForReconciliation(Payment $ePayment, array $properties): void {
+
+		$propertiesForbidden = array_intersect($properties, ['method', 'amountIncludingVat', 'status', 'paidAt']);
+
+		if(count($propertiesForbidden) > 0) {
+			throw new \UnsupportedException();
+		}
+
+		parent::update($ePayment, $properties);
+
+		self::close($ePayment);
+
+	}
+
+	public static function sumTotalPaid(Payment $ePayment): float {
+
+		return Payment::model()
+			->select('amountIncludingVat')
+			->whereStatus(\selling\Payment::PAID)
+			->whereInvoice($ePayment['invoice'], if: $ePayment['source'] === Payment::INVOICE)
+			->whereSale($ePayment['sale'], if: $ePayment['source'] === Payment::SALE)
+			->getCollection()
+			->sum('amountIncludingVat');
+
+	}
+
+	public static function update(Payment $e, array $properties): void {
+
+		$e->expects(['closed']);
+
+		if($e['closed']) {
 			return;
 		}
 
@@ -95,17 +136,17 @@ class PaymentLib extends PaymentCrud {
 
 		if(in_array('method', $properties)) {
 
-			$ePayment['method']->expects(['name']);
+			$e['method']->expects(['name']);
 
-			$ePayment['methodName'] = $ePayment['method']['name'];
+			$e['methodName'] = $e['method']['name'];
 			$properties[] = 'methodName';
 
 		}
 
 		if(
 			array_intersect($properties, ['status', 'paidAt']) !== [] and (
-				($ePayment['status'] === Payment::PAID and $ePayment['paidAt'] === NULL) or
-				($ePayment['status'] !== Payment::PAID and $ePayment['paidAt'] !== NULL)
+				($e['status'] === Payment::PAID and $e['paidAt'] === NULL) or
+				($e['status'] !== Payment::PAID and $e['paidAt'] !== NULL)
 			)
 		) {
 			throw new \UnsupportedException();
@@ -113,10 +154,10 @@ class PaymentLib extends PaymentCrud {
 
 		Payment::model()->beginTransaction();
 
-			parent::update($ePayment, $properties);
+			parent::update($e, $properties);
 
 			if(array_intersect($properties, ['amountIncludingVat', 'status', 'paidAt']) !== []) {
-				PaymentTransactionLib::recalculate($ePayment->getElement());
+				PaymentTransactionLib::recalculate($e->getElement());
 			}
 
 		Payment::model()->commit();
@@ -126,7 +167,7 @@ class PaymentLib extends PaymentCrud {
 	public static function close(Payment $ePayment): void {
 
 		$ePayment['closed'] = TRUE;
-		$ePayment['closedAt'] = Sale::model()->now();
+		$ePayment['closedAt'] = Payment::model()->now();
 
 		Payment::model()
 			->select(['closed', 'closedAt'])
@@ -135,19 +176,19 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function delete(Payment $ePayment): void {
+	public static function delete(Payment $e): void {
 
-		$ePayment->expects(['id', 'closed']);
+		$e->expects(['id', 'closed']);
 
-		if($ePayment['closed']) {
+		if($e['closed']) {
 			return;
 		}
 
 		Payment::model()->beginTransaction();
 
-			parent::delete($ePayment);
+			parent::delete($e);
 
-			PaymentTransactionLib::recalculate($ePayment->getElement());
+			PaymentTransactionLib::recalculate($e->getElement());
 
 		Payment::model()->commit();
 

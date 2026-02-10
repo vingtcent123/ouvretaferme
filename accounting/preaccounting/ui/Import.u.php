@@ -138,9 +138,9 @@ Class ImportUi {
 									$h .= '</span>';
 								}
 
-								if($ePayment->hasAccountingDifference()) {
+								if($eElement['totalPaid'] !== $eElement['priceIncludingVat']) {
 									$h .= '<div class="mb-1">';
-										$difference = abs($eElement['priceIncludingVat'] - $ePayment['cashflow']['amount']);
+										$difference = abs($eElement['priceIncludingVat'] - $eElement['totalPaid']);
 										$form = new \util\FormUi();
 										$h .= $form->openAjax(\farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:updateInvoiceAccountingDifference', ['id' => 'difference-'.$ePayment['id'], 'name' => 'difference-'.$ePayment['id']]);
 											$h .= $form->hidden('id', $ePayment['id']);
@@ -205,7 +205,9 @@ Class ImportUi {
 									if($ePayment['amountIncludingVat'] !== $eElement['priceIncludingVat']) {
 
 										$class = 'color-danger';
-										$h .= '<span class="util-badge bg-warning">'.s("Partiel").'</span> ';
+										if($ePayment['amountIncludingVat'] < $eElement['priceIncludingVat']) {
+											$h .= '<span class="util-badge bg-warning">'.s("Partiel").'</span> ';
+										}
 
 										if($ePayment['source'] === \selling\Payment::INVOICE and $ePayment['invoice']['taxes'] === \selling\Invoice::EXCLUDING) {
 

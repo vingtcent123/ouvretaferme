@@ -432,11 +432,17 @@ Class AccountingLib {
 
 				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
 
+					if($ePayment['cashflow']->notEmpty() and $ePayment['cashflow']['account']['account']->is($eAccount)) {
+						$ecritureLib = $ePayment['cashflow']->getMemo();
+					} else {
+						$ecritureLib = $document;
+					}
+
 					$fecDataItemPayment = self::getFecLine(
 						eAccount    : $eAccount,
 						date        : $referenceDate,
 						eCode       : $eAccount['journalCode'],
-						ecritureLib : $document,
+						ecritureLib : $ecritureLib,
 						document    : $document,
 						documentDate: $documentDate,
 						amount      : $item['amount'],
@@ -464,7 +470,20 @@ Class AccountingLib {
 			// S'il y a une différence de montant et qu'il faut la régulariser automatiquement
 			if($ePayment['cashflow']->notEmpty()) {
 
-				$difference = round($ePayment['amountIncludingVat'] - $ePayment['cashflow']['amount'], 2);
+				// Récupérer tous les paiements effectués de cette vente ou cette facture
+				$totalPaid = \selling\Payment::model()
+					->select('amountIncludingVat')
+					->whereSale($ePayment['sale'], if: $ePayment['source'] === \selling\Payment::SALE)
+					->whereInvoice($ePayment['invoice'], if: $ePayment['source'] === \selling\Payment::INVOICE)
+					->whereStatus(\selling\Payment::PAID)
+					->getCollection()
+					->sum('amountIncludingVat');
+				$priceIncludingVat = match($ePayment['source']) {
+					\selling\Payment::INVOICE => $ePayment['invoice']['priceIncludingVat'],
+					\selling\Payment::SALE => $ePayment['sale']['priceIncludingVat'],
+				};
+
+				$difference = round($priceIncludingVat - $totalPaid, 2);
 
 				if($difference !== 0.0 and $ePayment['accountingDifference'] === \selling\Invoice::AUTOMATIC) {
 
@@ -505,8 +524,6 @@ Class AccountingLib {
 					}
 
 				}
-
-				// Dans ce cas, il faut marquer la vente ou la facture comme payée entièrement si ce n'est pas déjà le cas
 
 			}
 
