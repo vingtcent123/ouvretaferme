@@ -83,50 +83,24 @@ class ConfigurationLib extends ConfigurationCrud {
 
 		Configuration::model()->beginTransaction();
 
-		$eConfiguration = Configuration::model()
-			->select('documentInvoices', 'invoicePrefix')
-			->whereFarm($eFarm)
-			->get();
-
-		$newValue = $eConfiguration['documentInvoices'];
-
-		for($i = 0; ; $i++) {
-
-			$currentValue = $newValue;
-			$newValue++;
-
-			$number = Configuration::getNumber($eConfiguration['invoicePrefix'], $newValue);
-
-			if(\selling\Invoice::model()
+			$current = \selling\Invoice::model()
 				->whereFarm($eFarm)
-				->whereNumber($number)
-				->exists()) {
+				->where('number REGEXP '.\selling\Invoice::model()->format($eFarm->getConf('invoicePrefix').'[0-9]+$'))
+				->getValue(new \Sql('MAX(document)'));
 
-				if($i === 100) {
-					throw new \Exception("Possible infinite loop");
-				}
-				
-				continue;
-
-			}
-
-			$affected = Configuration::model()
+			Configuration::model()
 				->whereFarm($eFarm)
-				->whereDocumentInvoices($currentValue)
 				->update([
-					'documentInvoices' => $newValue
+					'documentInvoices' => new \Sql('GREATEST(documentInvoices, '.($current ?? 0).') + 1')
 				]);
 
-			// Le numéro a pu être incrémenté entre temps
-			if($affected > 0) {
+			$newValue = Configuration::model()
+				->whereFarm($eFarm)
+				->getValue('documentInvoices');
 
-				Configuration::model()->commit();
+		Configuration::model()->commit();
 
-				return $newValue;
-
-			}
-
-		}
+		return $newValue;
 
 	}
 
