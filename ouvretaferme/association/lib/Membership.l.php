@@ -473,21 +473,18 @@ class MembershipLib {
 				->update([
 					'onlineCheckoutId' => $eHistory['onlineCheckoutId'],
 					'onlinePaymentIntentId' => $eHistory['onlinePaymentIntentId'],
-					'status' => \selling\Payment::PAID
+					'status' => \selling\Payment::PAID,
+					'amountIncludingVat' => $eSale['priceIncludingVat']
 				]);
 
 		}
 
-		$cPayment = new \Collection([
-			new \selling\Payment([
-				'method' => $eMethod,
-				'amountIncludingVat' => $eSale['priceIncludingVat'],
-				'status' => \selling\Payment::PAID,
-				'paidAt' => currentDate()
-			])
-		]);
+		$eSale['paymentStatus'] = \selling\Sale::PAID;
+		$eSale['paidAt'] = currentDate();
 
-		\selling\PaymentTransactionLib::replace($eSale, $cPayment);
+		\selling\Sale::model()
+			->select(['paymentStatus', 'paidAt'])
+			->update($eSale);
 
 		$properties = [
 			'customer' => $eCustomer,
