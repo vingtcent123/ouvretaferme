@@ -548,8 +548,6 @@ class InvoiceLib extends InvoiceCrud {
 			'emailedAt' => NULL
 		]);
 
-		$content = FacturXLib::generate($e, self::build($e));
-
 		if(Invoice::model()
 			->whereGeneration('IN', [Invoice::NOW, Invoice::WAITING])
 			->update($e, [
@@ -565,6 +563,7 @@ class InvoiceLib extends InvoiceCrud {
 
 			$e['customer'] = CustomerLib::getById($e['customer']['id']);
 
+			$content = FacturXLib::generate($e, self::build($e));
 			$ePdfContent = \selling\PdfLib::generateDocument($content);
 
 			$e['content'] = $ePdfContent;
