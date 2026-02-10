@@ -113,7 +113,7 @@ Class PaymentLib {
 			->select(\selling\Payment::getSelection() + [
 			'sale' => [
 				'id', 'document',
-				'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'shippingExcludingVat', 'shippingVatRate', 'paymentAmount',
+				'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'shippingExcludingVat', 'shippingVatRate',
 				'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
 				'cItem' => \selling\Item::model()
 					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
@@ -124,7 +124,7 @@ Class PaymentLib {
 					->delegateCollection('sale', callback: fn(\Collection $cPayment) => $cPayment->sum('amountIncludingVat'))
 			],
 			'invoice' => [
-				'id', 'number', 'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'paymentAmount',
+				'id', 'number', 'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat',
 				'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
 				'cSale' => \selling\Sale::model()
 					->select([

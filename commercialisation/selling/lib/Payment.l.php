@@ -84,8 +84,9 @@ class PaymentLib extends PaymentCrud {
 	public static function cancelAccounting(string $hash): void {
 
 		\selling\Payment::model()
-      ->whereAccountingHash($hash)
-      ->update(['accountingHash' => NULL, 'accountingDifference' => NULL]);
+			->whereAccountingHash($hash)
+			->update(['accountingHash' => NULL, 'accountingDifference' => NULL]);
+
 	}
 
 	public static function cancelReconciliation(\bank\Cashflow $eCashflow): void {
