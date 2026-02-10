@@ -112,7 +112,7 @@ Class InvoiceLib {
 		return InvoiceLib::filterForAccounting($eFarm, $search, $forImport)
 			->select([
 				'id', 'date', 'number', 'document', 'farm',
-				'priceExcludingVat', 'priceIncludingVat', 'vat', 'taxes', 'hasVat',
+				'priceExcludingVat', 'priceIncludingVat', 'vat', 'taxes', 'hasVat', 'vatByRate',
 				'customer' => [
 					'id', 'name', 'type', 'destination',
 					'thirdParty' => \account\ThirdParty::model()
@@ -125,10 +125,10 @@ Class InvoiceLib {
 				'cPayment' => \selling\PaymentTransactionLib::delegateByInvoice(),
 				'cSale' => \selling\Sale::model()
 					->select([
-						'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate',
+						'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',
 						'cItem' => \selling\Item::model()
 							->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
-							->delegateCollection('sale')
+							->delegateCollection('sale'),
 					])
 					->delegateCollection('invoice'),
 			])

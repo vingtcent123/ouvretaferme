@@ -281,7 +281,7 @@ Class AccountingLib {
 
 					self::mergeFecLineIntoItemData($items, $fecDataItemPayment);
 
-			}
+				}
 
 			}
 
@@ -299,11 +299,12 @@ Class AccountingLib {
 
 	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport, \account\Account $eAccountFilter = new \account\Account()): array {
 
-		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+		$eAccountBank = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 
 		$fecData = [];
 		$nInvoices = 0;
 		$number = 0;
+
 		foreach($cInvoice as $eInvoice) {
 
 			if($eInvoice['cashflow']->notEmpty()) {
@@ -313,232 +314,67 @@ Class AccountingLib {
 			}
 
 			$document = $eInvoice['number'];
-			$documentDate = $eInvoice['date'];
+			$documentDate = $referenceDate;
 			$compAuxLib = ($eInvoice['customer']['name'] ?? '');
 			$compAuxNum = '';
 
-			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $referenceDate);
-			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
+			$items = [];
 
-			$items = []; // groupement par accountlabel
-			$payment = ($eInvoice['paymentMethod']['name'] ?? '');
+			$cItems = new \Collection();
+			foreach($eInvoice['cSale']->getColumnCollection('cItem') as $itemCollection) {
+				$cItems->mergeCollection($itemCollection);
+			}
+			$eInvoice['cItem'] = $cItems;
 
-			$totalExcludingVat = $eInvoice['priceExcludingVat'];
-			$totalVat = $eInvoice['vat'];
+			$allEntries = self::computeRatios($eInvoice, $cFinancialYear, $cAccount);
 
-			$currentExcludingVat = 0;
-			$currentVat = 0;
+			foreach($allEntries as $item) {
 
-			$eSaleLast = $eInvoice['cSale']->last();
+				$eAccount = $cAccount->offsetGet($item['account']);
 
-			foreach($eInvoice['cSale'] as $eSale) {
+				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
 
-				$eItemLast = $eSale['cItem']->last();
-
-				foreach($eSale['cItem'] as $eItem) {
-
-					$eAccountDefault = self::getDefaultAccount($eItem['vatRate'], $eAccountVatDefault);
-
-					$eAccount = self::extractAccountFromItem($eItem, $cAccount, $eAccountDefault);
-
-					$amountExcludingVat = $eItem['priceStats'];
-
-					if(round($eItem['vatRate'], 2) !== 0.0) {
-						$amountVat = round($amountExcludingVat * $eItem['vatRate'] / 100, 2);
+					if($eInvoice['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->count() > 0) {
+						$ePayment = $eInvoice['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->first();
+						$date = $ePayment['paidAt'] ?? $referenceDate;
+						$payment = $ePayment['methodName'];
 					} else {
-						$amountVat = 0.0;
+						$date = $referenceDate;
+						$payment = '';
 					}
 
-					$currentExcludingVat += $amountExcludingVat;
-					$currentVat += $amountVat;
+					$fecDataItemPayment = self::getFecLine(
+						eAccount    : $eAccount,
+						date        : $date,
+						eCode       : $eAccount['journalCode'],
+						ecritureLib : $document,
+						document    : $document,
+						documentDate: $documentDate,
+						amount      : $item['amount'],
+						type        : $item['amount'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+						payment     : $payment,
+						compAuxNum  : $compAuxNum,
+						compAuxLib  : $compAuxLib,
+						number      : $forImport ? ++$number : NULL,
+						isSummed    : $eAccountBank['id'] !== $eAccount['id'],
+						origin      : 'invoice',
+					);
 
-					// Si on n'est pas redevable de la TVA => On enregistre TTC
-					if($hasVat === FALSE) {
-						$amountExcludingVat += $amountVat;
-						$amountVat = 0.0;
-					}
-
-					// Fera l'objet d'une autre entrée.
-					if($eSale['shippingExcludingVat'] > 0) {
-						$amountExcludingVat -= $eSale['shippingExcludingVat'];
-						if($eSale['shipping'] != $eSale['shippingExcludingVat']) {
-							$amountVat += ($eSale['shipping'] - $eSale['shippingExcludingVat']);
-						}
-					}
-
-					// On utilise le dernier item de la dernière vente pour réharmoniser les centimes
-					if($eSale->is($eSaleLast) and $eItem->is($eItemLast)) {
-
-						// Cts manquants sur la TVA
-						if($totalVat !== $currentVat) {
-							$amountVat += ($totalVat - $currentVat);
-						}
-
-						// Cts manquants sur le HT
-						if($totalExcludingVat !== $currentExcludingVat) {
-							$amountExcludingVat += ($totalExcludingVat - $currentExcludingVat);
-						}
-
-					}
-
-					// Montant HT
-					if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
-
-						$fecDataExcludingVat = self::getFecLine(
-							eAccount    : $eAccount,
-							date        : $referenceDate,
-							eCode       : $eAccount['journalCode'],
-							ecritureLib : $document,
-							document    : $document,
-							documentDate: $documentDate,
-							amount      : $amountExcludingVat,
-							type        : $amountExcludingVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-							payment     : $payment,
-							compAuxNum  : $compAuxNum,
-							compAuxLib  : $compAuxLib,
-							number      : $forImport ? ++$number : NULL,
-							isSummed    : TRUE,
-							origin      : 'invoice',
-						);
-
+					if($item['accountReference'] === NULL) {
 						$numberWithoutVat = $number;
-						self::mergeFecLineIntoItemData($items, $fecDataExcludingVat);
-
+					} else if($forImport) {
+						$fecDataItemPayment[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
 					}
 
-					// TVA
-					if($hasVat and $amountVat !== 0.0) {
-
-						$eAccountVat = $eAccount['vatAccount'];
-						if($eAccountVat->empty()) {
-							$eAccountVat = $eAccountVatDefault;
-						}
-
-						if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountVat['class'])) {
-
-							$fecDataVat = self::getFecLine(
-								eAccount    : $eAccountVat,
-								date        : $referenceDate,
-								eCode       : $eAccount['journalCode'],
-								ecritureLib : $document,
-								document    : $document,
-								documentDate: $documentDate,
-								amount      : $amountVat,
-								type        : $amountVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-								payment     : $payment,
-								compAuxNum  : $compAuxNum,
-								compAuxLib  : $compAuxLib,
-								number      : $forImport ? ++$number : NULL,
-								for         : $eAccount['class'],
-								isSummed    : TRUE,
-								origin      : 'invoice',
-							);
-							if($forImport) {
-								$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
-							}
-
-							self::mergeFecLineIntoItemData($items, $fecDataVat);
-
-						}
-					}
-
-				}
-
-				// Si la vente a des frais de port
-				if($eSale['shippingExcludingVat'] !== NULL and $eSale['shippingExcludingVat'] > 0) {
-
-					$eAccountShipping = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS)->first();
-
-					if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountShipping['class'])) {
-
-						$fecDataShipping = self::getFecLine(
-							eAccount    : $eAccountShipping,
-							date        : $referenceDate,
-							eCode       : $eAccountShipping['journalCode'],
-							ecritureLib : $document,
-							document    : $document,
-							documentDate: $documentDate,
-							amount      : $eSale['shippingExcludingVat'],
-							type        : $eSale['shippingExcludingVat'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-							payment     : $payment,
-							compAuxNum  : $compAuxNum,
-							compAuxLib  : $compAuxLib,
-							number      : $forImport ? ++$number : NULL,
-							isSummed    : TRUE,
-							origin      : 'invoice',
-						);
-						$numberShipping = $number;
-
-						self::mergeFecLineIntoItemData($items, $fecDataShipping);
-					}
-					// Si les frais de port ont de la TVA
-					if($eSale['shippingVatRate'] !== 0.0 and $eSale['shipping'] !== $eSale['shippingExcludingVat']) {
-
-						$eAccountVat = $eAccountShipping['vatAccount'];
-						if($eAccountVat->empty()) {
-							$eAccountVat = $eAccountVatDefault;
-						}
-
-						$amountVat = $eSale['shipping'] - $eSale['shippingExcludingVat'];
-
-						if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountVat['class'])) {
-
-							$fecDataVat = self::getFecLine(
-								eAccount    : $eAccountVat,
-								date        : $referenceDate,
-								eCode       : $eAccountShipping['journalCode'],
-								ecritureLib : $document,
-								document    : $document,
-								documentDate: $documentDate,
-								amount      : $amountVat,
-								type        : $amountVat > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
-								payment     : $payment,
-								compAuxNum  : $compAuxNum,
-								compAuxLib  : $compAuxLib,
-								number      : $forImport ? ++$number : NULL,
-								isSummed    : TRUE,
-								origin      : 'invoice',
-							);
-							if($forImport) {
-								$fecDataVat[self::FEC_COLUMN_NUMBER] .= '-'.$numberShipping;
-							}
-
-							self::mergeFecLineIntoItemData($items, $fecDataVat);
-
-						}
-
-					}
+					self::mergeFecLineIntoItemData($items, $fecDataItemPayment);
 
 				}
 
 			}
 
-			if($eInvoice['cashflow']->notEmpty()) { // Contrepartie en 512 directe si un rapprochement a déjà été réalisé
+			// S'il y a une différence de montant et qu'il faut la régulariser automatiquement
+			if($eInvoice['cashflow']->notEmpty()) {
 
-				$eAccountBank = $eInvoice['cashflow']['account']['account'];
-				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountBank['class'])) {
-
-					$fecDataBank = self::getFecLine(
-						eAccount    : $eAccountBank,
-						date        : $eInvoice['cashflow']['date'],
-						eCode       : new \journal\JournalCode(),
-						ecritureLib : $eInvoice['cashflow']->getMemo(),
-						document    : $document,
-						documentDate: $documentDate,
-						amount      : $eInvoice['cashflow']['amount'],
-						type        : $eInvoice['cashflow']['amount'] > 0 ? \journal\Operation::DEBIT : \journal\Operation::CREDIT,
-						payment     : $payment,
-						compAuxNum  : $compAuxNum,
-						compAuxLib  : $compAuxLib,
-						number      : $forImport ? ++$number : NULL,
-						isSummed    : FALSE,
-						origin      : 'invoice',
-					);
-
-					self::mergeFecLineIntoItemData($items, $fecDataBank);
-				}
-
-				// S'il y a une différence de montant et qu'il faut la régulariser automatiquement
 				$difference = round($eInvoice['priceIncludingVat'] - $eInvoice['cashflow']['amount'], 2);
 
 				if($difference !== 0.0 and $eInvoice['accountingDifference'] === \selling\Invoice::AUTOMATIC) {
@@ -583,10 +419,11 @@ Class AccountingLib {
 
 			}
 
+			$fecData = array_merge($fecData, $items);
+
 			if(count($items) > 0) {
 				$nInvoices++;
 			}
-			$fecData = array_merge($fecData, $items);
 
 		}
 
@@ -622,12 +459,12 @@ Class AccountingLib {
 
 	}
 
-	private static function computeAccountRatios(\selling\Sale $eSale, \Collection $cAccount, bool $hasVat): array {
+	private static function computeAccountRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount, bool $hasVat): array {
 
 		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 		$items = [];
 
-		foreach($eSale['cItem'] as $eItem) {
+		foreach($eElement['cItem'] as $eItem) {
 
 			$eAccountDefault = self::getDefaultAccount($eItem['vatRate'], $eAccountVatDefault);
 
@@ -649,8 +486,8 @@ Class AccountingLib {
 
 			}
 
-			$keyForTotal = array_find_key($eSale['vatByRate'], fn($vatByRate) => ((float)$vatByRate['vatRate'] === (float)$eItem['vatRate']));
-			$totalByVatRateExcludingVat = $eSale['vatByRate'][$keyForTotal]['amount'] - $eSale['vatByRate'][$keyForTotal]['vat'];
+			$keyForTotal = array_find_key($eElement['vatByRate'], fn($vatByRate) => ((float)$vatByRate['vatRate'] === (float)$eItem['vatRate']));
+			$totalByVatRateExcludingVat = $eElement['vatByRate'][$keyForTotal]['amount'] - $eElement['vatByRate'][$keyForTotal]['vat'];
 
 			// Montant HT
 			$key = array_find_key($items, fn($item) => ($item['account'] === $eAccount['id'] and $item['accountReference'] === NULL));
@@ -680,11 +517,11 @@ Class AccountingLib {
 					$items[] = [
 						'account' => $eAccountVat['id'],
 						'accountReference' => $eAccount['id'],
-						'ratio' => $amountVat / $eSale['vatByRate'][$keyForTotal]['vat'],
+						'ratio' => $amountVat / $eElement['vatByRate'][$keyForTotal]['vat'],
 						'vatRate' => $eItem['vatRate'],
 					];
 				} else {
-					$items[$key]['ratio'] += $amountVat / $eSale['vatByRate'][$keyForTotal]['vat'];
+					$items[$key]['ratio'] += $amountVat / $eElement['vatByRate'][$keyForTotal]['vat'];
 				}
 
 			}
@@ -692,81 +529,107 @@ Class AccountingLib {
 		}
 
 		// Si la vente a des frais de port
-		if($eSale['shippingExcludingVat'] !== NULL) {
+		if($eElement instanceof \selling\Sale) {
+			$cSale = new \Collection();
+			$cSale->append($eElement);
+		} else {
+			$cSale = $eElement['cSale'];
+		}
 
-			$eAccountShipping = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS)->first();
+		foreach($cSale as $eSale) {
 
-			if($hasVat === FALSE) {
+			if($eSale['shippingExcludingVat'] !== NULL) {
 
-				$shippingExcludingVat = $eSale['shipping'];
-				$shippingVatRate = 0.0;
+				$eAccountShipping = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS)->first();
 
-			} else {
+				if($hasVat === FALSE) {
 
-				$shippingExcludingVat = $eSale['shippingExcludingVat'];
-				$shippingVatRate = $eSale['shippingVatRate'];
+					$shippingExcludingVat = $eSale['shipping'];
+					$shippingVatRate = 0.0;
 
-			}
+				} else {
 
-			$keyForTotal = array_find_key($eSale['vatByRate'], fn($vatByRate) => ($vatByRate['vatRate'] === $eSale['shippingVatRate']));
-			$totalByVatRateExcludingVat = $eSale['vatByRate'][$keyForTotal]['amount'] - $eSale['vatByRate'][$keyForTotal]['vat'];
+					$shippingExcludingVat = $eSale['shippingExcludingVat'];
+					$shippingVatRate = $eSale['shippingVatRate'];
 
-			$key = array_find_key($items, fn($item) => ($item['account'] === $eAccountShipping['id'] and $item['accountReference'] === NULL));
-
-			if($key === NULL) {
-				$items[] = [
-					'account' => $eAccountShipping['id'],
-					'accountReference' => NULL,
-					'ratio' => $shippingExcludingVat / $totalByVatRateExcludingVat,
-					'vatRate' => $shippingVatRate,
-				];
-			} else {
-				$items[$key]['ratio'] += $shippingExcludingVat / $totalByVatRateExcludingVat;
-			}
-
-			// Si les frais de port ont de la TVA
-			if($hasVat and $eSale['shippingVatRate'] !== 0.0 and $eSale['shipping'] !== $eSale['shippingExcludingVat']) {
-
-				$eAccountVat = $eAccountShipping['vatAccount'];
-				if($eAccountVat->empty()) {
-					$eAccountVat = $eAccountVatDefault;
 				}
 
-				$amountVat = $eSale['shipping'] - $eSale['shippingExcludingVat'];
+				$keyForTotal = array_find_key($eElement['vatByRate'], fn($vatByRate) => ($vatByRate['vatRate'] === $eSale['shippingVatRate']));
+				$totalByVatRateExcludingVat = $eElement['vatByRate'][$keyForTotal]['amount'] - $eElement['vatByRate'][$keyForTotal]['vat'];
 
-				$key = array_find_key($items, fn($item) => ($item['account'] === $eAccountVat['id'] and $item['accountReference'] === $eAccountShipping['id']));
+				$key = array_find_key($items, fn($item) => ($item['account'] === $eAccountShipping['id'] and $item['accountReference'] === NULL));
 
 				if($key === NULL) {
 					$items[] = [
-						'account' => $eAccountVat['id'],
-						'accountReference' => $eAccountShipping['id'],
-						'ratio' => $amountVat / $eSale['vatByRate'][$keyForTotal]['vat'],
-						'vatRate' => $eSale['shippingVatRate'],
+						'account' => $eAccountShipping['id'],
+						'accountReference' => NULL,
+						'ratio' => $shippingExcludingVat / $totalByVatRateExcludingVat,
+						'vatRate' => $shippingVatRate,
 					];
 				} else {
-					$items[$key]['ratio'] += $amountVat / $eSale['vatByRate'][$keyForTotal]['vat'];
+					$items[$key]['ratio'] += $shippingExcludingVat / $totalByVatRateExcludingVat;
 				}
 
+				// Si les frais de port ont de la TVA
+				if($hasVat and $eSale['shippingVatRate'] !== 0.0 and $eSale['shipping'] !== $eSale['shippingExcludingVat']) {
+
+					$eAccountVat = $eAccountShipping['vatAccount'];
+					if($eAccountVat->empty()) {
+						$eAccountVat = $eAccountVatDefault;
+					}
+
+					$amountVat = $eSale['shipping'] - $eSale['shippingExcludingVat'];
+
+					$key = array_find_key($items, fn($item) => ($item['account'] === $eAccountVat['id'] and $item['accountReference'] === $eAccountShipping['id']));
+
+					if($key === NULL) {
+						$items[] = [
+							'account' => $eAccountVat['id'],
+							'accountReference' => $eAccountShipping['id'],
+							'ratio' => $amountVat / $eElement['vatByRate'][$keyForTotal]['vat'],
+							'vatRate' => $eSale['shippingVatRate'],
+						];
+					} else {
+						$items[$key]['ratio'] += $amountVat / $eElement['vatByRate'][$keyForTotal]['vat'];
+					}
+
+				}
 			}
 		}
 
 		return $items;
 	}
 
-	public static function computeRatios(\selling\Sale $eSale, \Collection $cFinancialYear, \Collection $cAccount): array {
+	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cFinancialYear, \Collection $cAccount): array {
 
-		$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $eSale['deliveredAt']);
+		if($eElement instanceof \selling\Sale) {
+			$date = $eElement['deliveredAt'];
+		} else if($eElement['cashflow']->notEmpty()) {
+			$date = $eElement['cashflow']['date'];
+		} else {
+			$date = $eElement['date'];
+		}
+		$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $date);
 		$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
 
 		// Construire le ratio par classe de compte
-		$amountRatios = self::computeAccountRatios($eSale, $cAccount, $hasVat);
+		$amountRatios = self::computeAccountRatios($eElement, $cAccount, $hasVat);
 
 		// Niveau 1 : éclater par moyen de paiement
 		$items = [];
 
-		foreach($eSale['cPayment'] as $ePayment) {
+		foreach($eElement['cPayment'] as $ePayment) {
 
-			$paymentRatio = $ePayment['amountIncludingVat'] / $eSale['priceIncludingVat'];
+			if($ePayment['status'] === \selling\Payment::PAID) {
+
+				$paymentRatio = $ePayment['amountIncludingVat'] / $eElement['priceIncludingVat'];
+
+			} else { // On simule une vente payée
+
+				$ePayment['amountIncludingVat'] = $eElement['priceIncludingVat'];
+				$paymentRatio = 1;
+
+			}
 
 			// Niveau 2 : Éclater par taux de TVA
 			if($hasVat === FALSE) {
@@ -777,7 +640,7 @@ Class AccountingLib {
 
 				$vatByRates = [];
 
-				foreach($eSale['vatByRate'] as $vatByRate) {
+				foreach($eElement['vatByRate'] as $vatByRate) {
 					$vatByRates[] = [
 						'amountWithoutRatio' => $vatByRate['amount'],
 						'amount' => round($vatByRate['amount'] * round($paymentRatio, 2), 2),
@@ -814,6 +677,53 @@ Class AccountingLib {
 					$amountVat = round($vatByRate['amount'] * $vatByRate['vatRate'] / 100, 2);
 					$amountExcludingVat = $vatByRate['amount'] - $amountVat;
 
+				} else {
+
+					$amountExcludingVat = $eElement['priceExcludingVat'];
+
+				}
+				// HT
+				$ratioItems = [];
+				foreach($amountRatios as $amountRatio) {
+
+					// On ne prend que les ratio non TVA
+					if($amountRatio['accountReference'] !== NULL or $amountRatio['vatRate'] !== $vatByRate['vatRate']) {
+						continue;
+					}
+
+					$ratioItems[] = [
+						'payment' => $ePayment['status'] === \selling\Payment::PAID ? $ePayment['id'] : '',
+						'vatRate' => $vatByRate['vatRate'],
+						'account' => $amountRatio['account'],
+						'accountReference' => $amountRatio['accountReference'],
+						'ratio' => $amountRatio['ratio'],
+						'amount' => round($amountExcludingVat * $amountRatio['ratio'], 2),
+						'method' => $ePayment['method']['id'],
+					];
+				}
+
+				// Vérification des écarts
+				$totalRatio = array_sum(array_column($ratioItems, 'amount'));
+
+				if($totalRatio !== $amountExcludingVat) {
+
+					$difference = $totalRatio - $amountExcludingVat;
+
+					// Tri par numéro de compte référencé
+					usort($ratioItems, fn($ratio1, $ratio2) => $ratio1['accountReference'] <=> $ratio2['accountReference']);
+
+					foreach($ratioItems as &$ratioItem) {
+						if(is_int($amountExcludingVat * $ratioItem['ratio']) === FALSE) {
+							$ratioItem['amount'] = round($ratioItem['amount'] - $difference, 2);
+							break;
+						}
+					}
+				}
+
+				$items = array_merge($items, $ratioItems);
+
+				if($hasVat) {
+
 					$ratioItems = [];
 					foreach($amountRatios as $amountRatio) {
 
@@ -823,7 +733,7 @@ Class AccountingLib {
 						}
 
 						$ratioItems[] = [
-							'payment' => $ePayment['id'],
+							'payment' => $ePayment['status'] === \selling\Payment::PAID ? $ePayment['id'] : '',
 							'vatRate' => $vatByRate['vatRate'],
 							'account' => $amountRatio['account'],
 							'accountReference' => $amountRatio['accountReference'],
@@ -854,65 +764,26 @@ Class AccountingLib {
 
 					$items = array_merge($items, $ratioItems);
 
-				} else {
-					$amountExcludingVat = $eSale['priceExcludingVat'];
 				}
 
-
-				// HT
-				$ratioItems = [];
-				foreach($amountRatios as $amountRatio) {
-
-					// On ne prend que les ratio non TVA
-					if($amountRatio['accountReference'] !== NULL or $amountRatio['vatRate'] !== $vatByRate['vatRate']) {
-						continue;
-					}
-
-					$ratioItems[] = [
-						'payment' => $ePayment['id'],
-						'vatRate' => $vatByRate['vatRate'],
-						'account' => $amountRatio['account'],
-						'accountReference' => $amountRatio['accountReference'],
-						'ratio' => $amountRatio['ratio'],
-						'amount' => round($amountExcludingVat * $amountRatio['ratio'], 2),
-						'method' => $ePayment['method']['id'],
-					];
-				}
-
-				// Vérification des écarts
-				$totalRatio = array_sum(array_column($ratioItems, 'amount'));
-
-				if($totalRatio !== $amountExcludingVat) {
-
-					$difference = $totalRatio - $amountExcludingVat;
-
-					// Tri par numéro de compte référencé
-					usort($ratioItems, fn($ratio1, $ratio2) => $ratio1['accountReference'] <=> $ratio2['accountReference']);
-
-					foreach($ratioItems as &$ratioItem) {
-						if(is_int($amountExcludingVat * $ratioItem['ratio']) === FALSE) {
-							$ratioItem['amount'] = round($ratioItem['amount'] - $difference, 2);
-							break;
-						}
-					}
-				}
-
-				$items = array_merge($items, $ratioItems);
 			}
 
+			// Ajout de l'écriture de banque
+			if($ePayment['status'] === \selling\Payment::PAID) {
 
-			$eAccountPayment = $ePayment['account'] ?? $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
+				$eAccountPayment = $ePayment['account'] ?? $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 
-			$items[] = [
-				'account' => $eAccountPayment['id'],
-				'accountReference' => NULL,
-				'vatRate' => NULL,
-				'amount' => $ePayment['amountIncludingVat'] * -1,
-				'type' => 'payment',
-				'method' => $ePayment['method']['id'],
-				'payment' => $ePayment['id'],
-			];
+				$items[] = [
+					'account' => $eAccountPayment['id'],
+					'accountReference' => NULL,
+					'vatRate' => NULL,
+					'amount' => $ePayment['amountIncludingVat'] * -1,
+					'type' => 'payment',
+					'method' => $ePayment['method']['id'],
+					'payment' => $ePayment['id'],
+				];
 
+			}
 		}
 
 		return $items;
