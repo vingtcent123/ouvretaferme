@@ -1,7 +1,7 @@
 <?php
 
-new AdaptativeView('importInvoiceCollection', function($data, PanelTemplate $t) {
+new AdaptativeView('importPaymentCollection', function($data, PanelTemplate $t) {
 
-		return new \preaccounting\InvoiceUi()->importInvoiceCollection($data->eFarm);
+		return new \preaccounting\PaymentUi()->importPaymentCollection($data->eFarm);
 
 });

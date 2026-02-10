@@ -1,6 +1,10 @@
 <?php
-new \selling\InvoicePage()
+new \selling\PaymentPage()
 	->write('updateInvoiceAccountingDifference', function($data) {
+
+		if(in_array(POST('accountingDifference'), [\selling\Payment::AUTOMATIC, \selling\Payment::NOTHING]) === FALSE) {
+			throw new ReloadAction();
+		}
 
 		if($data->e['cashflow']->empty()) {
 			throw new NotExpectedAction('Invoice does not accept accountingDifference update.');
@@ -9,68 +13,68 @@ new \selling\InvoicePage()
 		$data->e['cashflow'] = \bank\CashflowLib::getById($data->e['cashflow']['id']);
 		$data->e->validate('acceptUpdateAccountingDifference');
 
-		\preaccounting\InvoiceLib::updateAccountingDifference($data->e, POST('accountingDifference'));
+		\preaccounting\PaymentLib::updateAccountingDifference($data->e, POST('accountingDifference'));
 
 		throw new ReloadAction();
 
 	});
 
 new Page()
-->post('doImportInvoice', function($data) {
+->post('doImportPayment', function($data) {
 
-	$eInvoice = \preaccounting\ImportLib::getInvoiceById(POST('id', 'int'));
+	$ePayment = \preaccounting\ImportLib::getPaymentById(POST('id', 'int'));
 
-	$eInvoice->validate('acceptAccountingImport');
+	$ePayment->validate('acceptAccountingImport');
 
 	$fw = new FailWatch();
 
-	\preaccounting\ImportLib::importInvoice($data->eFarm, $eInvoice);
+	\preaccounting\ImportLib::importPayment($data->eFarm, $ePayment);
 
 	$fw->validate();
 
-	\account\LogLib::save('import', 'Invoice', ['id' => $eInvoice['id']]);
+	\account\LogLib::save('import', 'Payment', ['id' => $ePayment['id']]);
 
-	throw new ReloadAction('preaccounting', 'Invoice::imported');
+	throw new ReloadAction('preaccounting', 'Payment::imported');
 
 })
-->post('doIgnoreInvoice', function($data) {
+->post('doIgnorePayment', function($data) {
 
-	$eInvoice = \selling\InvoiceLib::getById(POST('id'))->validate('acceptAccountingIgnore');
+	$ePayment = \selling\PaymentLib::getById(POST('id'))->validate('acceptAccountingIgnore');
 
-	\preaccounting\ImportLib::ignoreInvoice($eInvoice);
+	\preaccounting\ImportLib::ignorePayment($ePayment);
 
-	\account\LogLib::save('ignore', 'Invoice', ['id' => $eInvoice['id']]);
+	\account\LogLib::save('ignore', 'Payment', ['id' => $ePayment['id']]);
 
-	throw new ReloadAction('preaccounting', 'Invoice::ignored');
+	throw new ReloadAction('preaccounting', 'Payment::ignored');
 })
-->get('importInvoiceCollection', function($data) {
+->get('importPaymentCollection', function($data) {
 
 	throw new ViewAction($data);
 
 })
-->post('doImportInvoiceCollection', function($data) {
+->post('doImportPaymentCollection', function($data) {
 
-	$cInvoice = \preaccounting\ImportLib::getInvoicesByIds(POST('ids', 'array'));
+	$cPayment = \preaccounting\ImportLib::getPaymentsByIds(POST('ids', 'array'));
 
-	\selling\Invoice::validateBatch($cInvoice);
+	\selling\Payment::validateBatch($cPayment);
 
-	\preaccounting\ImportLib::importInvoices($data->eFarm, $cInvoice);
+	\preaccounting\ImportLib::importPayments($data->eFarm, $cPayment);
 
-	\account\LogLib::save('importSeveral', 'Invoice', ['ids' => $cInvoice->getIds()]);
+	\account\LogLib::save('importSeveral', 'Payment', ['ids' => $cPayment->getIds()]);
 
-	throw new ReloadAction('preaccounting', $cInvoice->count() > 1 ? 'Invoice::importedSeveral' : 'Invoice::imported');
+	throw new ReloadAction('preaccounting', $cPayment->count() > 1 ? 'Payment::importedSeveral' : 'Payment::imported');
 
 })
 ->post('doIgnoreCollection', function($data) {
 
-	$cInvoice = \selling\InvoiceLib::getByIds(POST('ids', 'array'))->validate('acceptAccountingIgnore');
+	$cPayment = \selling\PaymentLib::getByIds(POST('ids', 'array'))->validate('acceptAccountingIgnore');
 
-	\selling\Invoice::validateBatchIgnore($cInvoice);
-	\preaccounting\ImportLib::ignoreInvoices($cInvoice);
+	\selling\Payment::validateBatchIgnore($cPayment);
+	\preaccounting\ImportLib::ignorePayments($cPayment);
 
-	\account\LogLib::save('ignoreSeveral', 'Invoice', ['ids' => $cInvoice->getIds()]);
+	\account\LogLib::save('ignoreSeveral', 'Payment', ['ids' => $cPayment->getIds()]);
 
-	throw new ReloadAction('preaccounting', 'Invoice::ignoredSeveral');
+	throw new ReloadAction('preaccounting', 'Payment::ignoredSeveral');
 
 })
 ;

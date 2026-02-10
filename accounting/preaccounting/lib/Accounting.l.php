@@ -246,7 +246,10 @@ Class AccountingLib {
 
 			$items = [];
 
-			$allEntries = self::computeRatios($eSale, $cFinancialYear, $cAccount);
+			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $eSale['deliveredAt']);
+			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
+
+			$allEntries = self::computeRatios($eSale, $hasVat, $cAccount);
 
 			foreach($allEntries as $item) {
 
@@ -307,14 +310,8 @@ Class AccountingLib {
 
 		foreach($cInvoice as $eInvoice) {
 
-			if($eInvoice['cashflow']->notEmpty()) {
-				$referenceDate = $eInvoice['cashflow']['date'];
-			} else {
-				$referenceDate = $eInvoice['date'];
-			}
-
 			$document = $eInvoice['number'];
-			$documentDate = $referenceDate;
+			$documentDate = $eInvoice['date'];
 			$compAuxLib = ($eInvoice['customer']['name'] ?? '');
 			$compAuxNum = '';
 
@@ -326,7 +323,10 @@ Class AccountingLib {
 			}
 			$eInvoice['cItem'] = $cItems;
 
-			$allEntries = self::computeRatios($eInvoice, $cFinancialYear, $cAccount);
+			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $eInvoice['date']);
+			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
+
+			$allEntries = self::computeRatios($eInvoice, $hasVat, $cAccount);
 
 			foreach($allEntries as $item) {
 
@@ -336,10 +336,10 @@ Class AccountingLib {
 
 					if($eInvoice['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->count() > 0) {
 						$ePayment = $eInvoice['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->first();
-						$date = $ePayment['paidAt'] ?? $referenceDate;
+						$date = $ePayment['paidAt'] ?? $eInvoice['date'];
 						$payment = $ePayment['methodName'];
 					} else {
-						$date = $referenceDate;
+						$date = $eInvoice['date'];
 						$payment = '';
 					}
 
@@ -372,12 +372,101 @@ Class AccountingLib {
 
 			}
 
+			$fecData = array_merge($fecData, $items);
+
+			if(count($items) > 0) {
+				$nInvoices++;
+			}
+
+		}
+
+		return [$fecData, $nInvoices];
+
+	}
+
+	public static function generatePaymentsFec(\Collection $cPayment, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport, \account\Account $eAccountFilter = new \account\Account()): array {
+
+		$eAccountBank = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
+
+		$fecData = [];
+		$nPayment = 0;
+		$number = 0;
+
+		foreach($cPayment as $ePayment) {
+
+			if($ePayment['source'] === \selling\Payment::INVOICE) {
+
+				$document = $ePayment['invoice']['number'];
+
+				$cItems = new \Collection();
+				foreach($ePayment['invoice']['cSale']->getColumnCollection('cItem') as $itemCollection) {
+					$cItems->mergeCollection($itemCollection);
+				}
+				$ePayment['invoice']['cItem'] = $cItems;
+
+				$eElement = $ePayment['invoice'];
+
+			} else {
+
+				$document = $ePayment['sale']['document'];
+
+				$eElement = $ePayment['sale'];
+
+			}
+
+			$referenceDate = $ePayment['paidAt'];
+			$documentDate = $referenceDate;
+			$compAuxLib = ($eElement['customer']['name'] ?? '');
+			$compAuxNum = '';
+
+			$items = [];
+
+			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $ePayment['paidAt']);
+			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
+
+			$allEntries = self::computeRatios($eElement, $hasVat, $cAccount, ePaymentFilter: $ePayment);
+
+			foreach($allEntries as $item) {
+
+				$eAccount = $cAccount->offsetGet($item['account']);
+
+				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
+
+					$fecDataItemPayment = self::getFecLine(
+						eAccount    : $eAccount,
+						date        : $referenceDate,
+						eCode       : $eAccount['journalCode'],
+						ecritureLib : $document,
+						document    : $document,
+						documentDate: $documentDate,
+						amount      : $item['amount'],
+						type        : $item['amount'] > 0 ? \journal\Operation::CREDIT : \journal\Operation::DEBIT,
+						payment     : $ePayment['methodName'],
+						compAuxNum  : $compAuxNum,
+						compAuxLib  : $compAuxLib,
+						number      : $forImport ? ++$number : NULL,
+						isSummed    : $eAccountBank['id'] !== $eAccount['id'],
+						origin      : 'invoice',
+					);
+
+					if($item['accountReference'] === NULL) {
+						$numberWithoutVat = $number;
+					} else if($forImport) {
+						$fecDataItemPayment[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
+					}
+
+					self::mergeFecLineIntoItemData($items, $fecDataItemPayment);
+
+				}
+
+			}
+
 			// S'il y a une différence de montant et qu'il faut la régulariser automatiquement
-			if($eInvoice['cashflow']->notEmpty()) {
+			if($ePayment['cashflow']->notEmpty()) {
 
-				$difference = round($eInvoice['priceIncludingVat'] - $eInvoice['cashflow']['amount'], 2);
+				$difference = round($ePayment['amountIncludingVat'] - $ePayment['cashflow']['amount'], 2);
 
-				if($difference !== 0.0 and $eInvoice['accountingDifference'] === \selling\Invoice::AUTOMATIC) {
+				if($difference !== 0.0 and $ePayment['accountingDifference'] === \selling\Invoice::AUTOMATIC) {
 
 					if($difference > 0) { // Arrondi défavorable
 
@@ -403,7 +492,7 @@ Class AccountingLib {
 							documentDate: $documentDate,
 							amount      : abs($difference),
 							type        : $type,
-							payment     : $payment,
+							payment     : $ePayment['methodName'],
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
 							number      : $forImport ? ++$number : NULL,
@@ -417,17 +506,19 @@ Class AccountingLib {
 
 				}
 
+				// Dans ce cas, il faut marquer la vente ou la facture comme payée entièrement si ce n'est pas déjà le cas
+
 			}
 
 			$fecData = array_merge($fecData, $items);
 
 			if(count($items) > 0) {
-				$nInvoices++;
+				$nPayment++;
 			}
 
 		}
 
-		return [$fecData, $nInvoices];
+		return [$fecData, $nPayment];
 
 	}
 
@@ -600,17 +691,7 @@ Class AccountingLib {
 		return $items;
 	}
 
-	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cFinancialYear, \Collection $cAccount): array {
-
-		if($eElement instanceof \selling\Sale) {
-			$date = $eElement['deliveredAt'];
-		} else if($eElement['cashflow']->notEmpty()) {
-			$date = $eElement['cashflow']['date'];
-		} else {
-			$date = $eElement['date'];
-		}
-		$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $date);
-		$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
+	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, bool $hasVat, \Collection $cAccount, \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
 
 		// Construire le ratio par classe de compte
 		$amountRatios = self::computeAccountRatios($eElement, $cAccount, $hasVat);
@@ -618,7 +699,13 @@ Class AccountingLib {
 		// Niveau 1 : éclater par moyen de paiement
 		$items = [];
 
-		foreach($eElement['cPayment'] as $ePayment) {
+		if($ePaymentFilter->notEmpty()) {
+			$cPayment = new \Collection([$ePaymentFilter]);
+		} else {
+			$cPayment = $eElement['cPayment'];
+		}
+
+		foreach($cPayment as $ePayment) {
 
 			if($ePayment['status'] === \selling\Payment::PAID) {
 
@@ -771,8 +858,8 @@ Class AccountingLib {
 			// Ajout de l'écriture de banque
 			if($ePayment['status'] === \selling\Payment::PAID) {
 
-				if(isset($eElement['cashflow']) and $eElement['cashflow']->notEmpty()) {
-					$eAccountPayment = $eElement['cashflow']['account']['account'];
+				if(isset($ePayment['cashflow']) and $ePayment['cashflow']->notEmpty()) {
+					$eAccountPayment = $ePayment['cashflow']['account']['account'];
 				} else {
 					$eAccountPayment = $ePayment['account'] ?? $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 				}
@@ -781,7 +868,7 @@ Class AccountingLib {
 					'account' => $eAccountPayment['id'],
 					'accountReference' => NULL,
 					'vatRate' => NULL,
-					'amount' => $ePayment['amountIncludingVat'] * -1,
+					'amount' => $ePayment['cashflow']['amount'] * -1,
 					'type' => 'payment',
 					'method' => $ePayment['method']['id'],
 					'payment' => $ePayment['id'],

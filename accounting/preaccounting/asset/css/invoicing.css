@@ -5,44 +5,44 @@
 	min-height: 20rem;
 }
 
-.invoicing-import-table tbody:nth-of-type(even) {
+.preaccounting-import-table tbody:nth-of-type(even) {
 	background-color: var(--background-even);
 }
-.invoicing-import-table tbody:nth-of-type(odd) {
+.preaccounting-import-table tbody:nth-of-type(odd) {
 	background-color: var(--background-odd);
 }
 
-.invoicing-import-table tbody:hover td {
+.preaccounting-import-table tbody:hover td {
 	background-color: rgba(0, 0, 0, 0.03) !important;
 }
-.invoicing-import-table tbody:hover tr:has(td.invoicing-import-td-operation:hover) td.invoicing-import-td-operation {
+.preaccounting-import-table tbody:hover tr:has(td.preaccounting-import-td-operation:hover) td.preaccounting-import-td-operation {
 	background-color: rgba(0, 0, 0, 0.06) !important;
 }
 
-.invoicing-import-table tbody:has(input[type="checkbox"]:checked) {
+.preaccounting-import-table tbody:has(input[type="checkbox"]:checked) {
 	background-color: rgba(201, 236, 253, 0.25) !important
 }
 
 
-.invoicing-import-table tbody td.invoicing-import-td-operation {
+.preaccounting-import-table tbody td.preaccounting-import-td-operation {
 	white-space: nowrap;
 }
-.invoicing-import-table tbody td div.invoicing-import-td-action {
+.preaccounting-import-table tbody td div.preaccounting-import-td-action {
 	display: flex;
 	gap: 0.5rem;
 	align-items: center;
 	margin-top: 0.5rem;
 }
-.invoicing-import-table tbody td.invoicing-import-td-amount a.util-badge {
+.preaccounting-import-table tbody td.preaccounting-import-td-amount a.util-badge {
 	margin-left: 0.15rem !important;
 }
-.invoicing-import-table tbody tr:first-child td.invoicing-import-td-operation {
+.preaccounting-import-table tbody tr:first-child td.preaccounting-import-td-operation {
 	padding-bottom: 0;
 }
-.invoicing-import-table tbody tr:last-child td.invoicing-import-td-operation {
+.preaccounting-import-table tbody tr:last-child td.preaccounting-import-td-operation {
 	padding-top: 0;
 }
-.invoicing-import-table tbody tr:not(:first-child):not(:last-child) td.invoicing-import-td-operation {
+.preaccounting-import-table tbody tr:not(:first-child):not(:last-child) td.preaccounting-import-td-operation {
 	padding-top: 0;
 	padding-bottom: 0;
 }

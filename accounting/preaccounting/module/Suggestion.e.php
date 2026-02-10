@@ -7,14 +7,11 @@ class Suggestion extends SuggestionElement {
 
 		return parent::getSelection() + [
 				'cashflow' => \bank\Cashflow::getSelection(),
-				'invoice' => \selling\Invoice::getSelection() + ['cSale' => \selling\Sale::model()
-					->select([
-						'id',
-						'cItem' => \selling\Item::model()
-						->select(['id', 'price', 'priceStats', 'vatRate', 'account'])
-						->delegateCollection('sale')
-					])
-					->delegateCollection('invoice'),],
+				'payment' => [
+					'id', 'source', 'amountIncludingVat',
+					'invoice' => \selling\Invoice::getSelection(),
+					'sale' => \selling\Sale::getSelection()
+				],
 				'paymentMethod' => \payment\Method::getSelection(),
 			];
 

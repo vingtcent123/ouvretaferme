@@ -39,7 +39,7 @@ class Cashflow extends CashflowElement {
 			return FALSE;
 		}
 
-		return $this['status'] === Cashflow::WAITING or $this['status'] === Cashflow::ALLOCATED;
+		return $this['status'] === Cashflow::WAITING;
 	}
 
 	public function accept(): bool {
@@ -49,7 +49,7 @@ class Cashflow extends CashflowElement {
 	}
 
 	public function acceptDelete(): bool {
-		return $this['status'] === Cashflow::WAITING and $this['invoice']->empty() and $this['isReconciliated'] === FALSE;
+		return $this['status'] === Cashflow::WAITING and $this['payment']->empty() and $this['isReconciliated'] === FALSE;
 	}
 
 	public function getMemo(): string {

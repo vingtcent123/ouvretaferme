@@ -66,7 +66,7 @@ new Page(function($data) {
 				'hash' => GET('hash'),
 				'amount' => GET('amount'),
 				'margin' => GET('margin'),
-				'financialYear' => $data->eFarm['eFinancialYear'],
+				'financialYear' => get_exists('financialYearReset') ? GET('financialYearReset', 'account\FinancialYear') : $data->eFarm['eFinancialYear'],
 			], GET('sort', default: 'date')
 		);
 

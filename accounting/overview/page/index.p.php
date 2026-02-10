@@ -21,10 +21,6 @@ new Page(function($data) {
 				'to' => $data->eFarm['eFinancialYear']['endDate'],
 			]);
 
-			\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);
-
-			$data->eFarm['nInvoiceToImport'] = \preaccounting\InvoiceLib::countForAccounting($data->eFarm, $search);
-
 			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-financial-year-created');
 			$data->tipNavigation = 'inline';
 

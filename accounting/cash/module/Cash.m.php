@@ -73,7 +73,7 @@ class CashModel extends \ModuleModel {
 			'sourceCashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'sourceInvoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'sourceSale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
-			'sourceSalePayment' => ['element32', 'selling\Payment', 'null' => TRUE, 'cast' => 'element'],
+			'payment' => ['element32', 'selling\Payment', 'null' => TRUE, 'cast' => 'element'],
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
 			'thirdParty' => ['element32', 'account\ThirdParty', 'null' => TRUE, 'cast' => 'element'],
@@ -83,7 +83,7 @@ class CashModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'position', 'type', 'vat', 'vatRate', 'description', 'source', 'sourceBankAccount', 'sourceCashflow', 'sourceInvoice', 'sourceSale', 'sourceSalePayment', 'account', 'financialYear', 'thirdParty', 'operation', 'status', 'createdAt'
+			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'position', 'type', 'vat', 'vatRate', 'description', 'source', 'sourceBankAccount', 'sourceCashflow', 'sourceInvoice', 'sourceSale', 'payment', 'account', 'financialYear', 'thirdParty', 'operation', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -92,12 +92,18 @@ class CashModel extends \ModuleModel {
 			'sourceCashflow' => 'bank\Cashflow',
 			'sourceInvoice' => 'selling\Invoice',
 			'sourceSale' => 'selling\Sale',
-			'sourceSalePayment' => 'selling\Payment',
+			'payment' => 'selling\Payment',
 			'account' => 'account\Account',
 			'financialYear' => 'account\FinancialYear',
 			'thirdParty' => 'account\ThirdParty',
 			'operation' => 'journal\Operation',
 		];
+
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['sourceSale'],
+			['sourceInvoice'],
+			['payment']
+		]);
 
 	}
 
@@ -207,8 +213,8 @@ class CashModel extends \ModuleModel {
 		return $this->where('sourceSale', ...$data);
 	}
 
-	public function whereSourceSalePayment(...$data): CashModel {
-		return $this->where('sourceSalePayment', ...$data);
+	public function wherePayment(...$data): CashModel {
+		return $this->where('payment', ...$data);
 	}
 
 	public function whereAccount(...$data): CashModel {

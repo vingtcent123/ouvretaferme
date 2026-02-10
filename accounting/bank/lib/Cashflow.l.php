@@ -62,8 +62,11 @@ class CashflowLib extends CashflowCrud {
 				'cOperationHash' => \journal\Operation::model()
 					->select(['id', 'hash', 'accountLabel', 'asset', 'type', 'amount', 'number', 'financialYear' => ['id', 'status', 'closeDate']])
 					->delegateCollection('hash', propertyParent: 'hash'),
-				'invoice' => ['id', 'number', 'document', 'customer' => ['id', 'name']],
-				'sale' => ['id', 'document', 'customer' => ['id', 'name']],
+				'payment' => [
+					'source',
+					'invoice' => ['id', 'number', 'document', 'customer' => ['id', 'name']],
+					'sale' => ['id', 'document', 'customer' => ['id', 'name']],
+				]
 			])
 			->option('count')
 			->sort($hasSort === TRUE ? $search->buildSort() : ['date' => SORT_DESC, 'fitid' => SORT_DESC]);

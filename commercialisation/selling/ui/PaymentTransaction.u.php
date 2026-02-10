@@ -20,7 +20,22 @@ class PaymentTransactionUi {
 
 		foreach($cPayment as $ePayment) {
 
-			$payment = \payment\MethodUi::getName($ePayment['method']);
+			$payment = '';
+			if($ePayment['accountingHash'] !== NULL) {
+				if($e['paymentStatus'] === Invoice::PAID) {
+					$payment .= '<a class="util-badge bg-accounting" title="'.s("Paiement intégré en comptabilité").'" href="'.\farm\FarmUi::urlConnected($e['farm']).'/journal/livre-journal?hash='.$ePayment['accountingHash'].'&financialYearReset">'.\Asset::icon('journal-text').'</a> ';
+				} else {
+					$payment .= '<span class="util-badge bg-accounting" title="'.s("Paiement intégré en comptabilité").'">'.\Asset::icon('journal-text').'</span> ';
+				}
+			} else if($ePayment['cashflow']->notEmpty()) {
+				if($e['paymentStatus'] === Invoice::PAID) {
+					$payment .= '<a class="util-badge bg-accounting" title="'.s("Paiement rapproché").'" href="'.\farm\FarmUi::urlConnected($e['farm']).'/banque/operations?id='.$ePayment['cashflow']['id'].'">'.\Asset::icon('bank').'</a> ';
+				} else {
+					$payment .= '<span class="util-badge bg-accounting" title="'.s("Paiement rapproché").'">'.\Asset::icon('bank').'</span> ';
+				}
+			}
+
+			$payment .= \payment\MethodUi::getName($ePayment['method']);
 
 			if(
 				$ePayment['amountIncludingVat'] !== NULL and
@@ -64,7 +79,7 @@ class PaymentTransactionUi {
 
 	}
 
-	public static function getPaymentBox(Sale|Invoice $e, bool $optimize = FALSE, string $late = '', string $reconciliate = ''): string {
+	public static function getPaymentBox(Sale|Invoice $e, bool $optimize = FALSE, string $late = ''): string {
 
 		$e->expects([
 			'paymentStatus',
@@ -76,7 +91,9 @@ class PaymentTransactionUi {
 		$h = '';
 
 		if($e['paymentStatus'] === Sale::NEVER_PAID) {
+
 			$h .= PaymentTransactionUi::getPaymentStatusBadge($e);
+
 		} else if($e['cPayment']->empty()) {
 
 			if($e->acceptUpdatePayment()) {
@@ -94,7 +111,6 @@ class PaymentTransactionUi {
 
 				$paymentStatus = PaymentTransactionUi::getPaymentStatusBadge($e);
 				$paymentStatus .= $late;
-				$paymentStatus .= $reconciliate;
 
 				if($paymentStatus) {
 
@@ -280,6 +296,14 @@ class PaymentTransactionUi {
 				attributes: ['class' => 'payment-update-title']
 			);
 			$h .= $form->hidden('payment['.$position.']', $ePayment->exists() ? $ePayment['id'] : '');
+			if($ePayment->exists() and ($ePayment['accountingHash'] !== NULL or $ePayment['cashflow']->notEmpty())) {
+				if($ePayment['accountingHash'] !== NULL) {
+					$accountingStatus = '<a class="util-badge bg-accounting" href="'.\farm\FarmUi::urlConnected($ePayment['farm']).'/journal/livre-journal?hash='.$ePayment['accountingHash'].'&financialYearReset">'.\Asset::icon('journal-text').'</a> '.s("Paiement intégré en comptabilité");
+				} else {
+					$accountingStatus = '<a class="util-badge bg-accounting" href="'.\farm\FarmUi::urlConnected($ePayment['farm']).'/banque/operations?id='.$ePayment['cashflow']['id'].'">'.\Asset::icon('bank').'</a> '.s("Paiement rapproché");
+				}
+				$h .= $form->group(s("Statut comptable"), $accountingStatus);
+			}
 			$h .= $form->dynamicGroup($ePayment, 'method['.$position.']');
 			$h .= '<div class="payment-update-status">';
 				$h .= $form->dynamicGroup($ePayment, 'status['.$position.']');

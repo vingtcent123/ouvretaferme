@@ -273,7 +273,7 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 	$t->menuSelected = 'accounting:import';
 
-	$t->title = s("Importer les factures dans le logiciel de comptabilité de {siteName}");
+	$t->title = s("Importer les paiements dans le logiciel de comptabilité de {siteName}");
 	$t->subTitle = s("... et créer les écritures comptables en un clic");
 
 	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir préparé les données de vos factures</link>", ['link' => '<a href="/doc/accounting">']).'</h4>';

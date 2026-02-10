@@ -19,6 +19,9 @@ abstract class PaymentElement extends \Element {
 	const VALID = 'valid';
 	const IGNORED = 'ignored';
 
+	const AUTOMATIC = 'automatic';
+	const NOTHING = 'nothing';
+
 	public static function getSelection(): array {
 		return Payment::model()->getProperties();
 	}
@@ -66,14 +69,17 @@ class PaymentModel extends \ModuleModel {
 			'status' => ['enum', [\selling\Payment::NOT_PAID, \selling\Payment::PAID, \selling\Payment::FAILED], 'cast' => 'enum'],
 			'statusCash' => ['enum', [\selling\Payment::WAITING, \selling\Payment::DRAFT, \selling\Payment::VALID, \selling\Payment::IGNORED], 'cast' => 'enum'],
 			'paidAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'accountingDifference' => ['enum', [\selling\Payment::AUTOMATIC, \selling\Payment::NOTHING], 'null' => TRUE, 'cast' => 'enum'],
+			'readyForAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'closed' => ['bool', 'cast' => 'bool'],
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'status', 'statusCash', 'paidAt', 'accountingHash', 'createdAt', 'closed', 'closedAt'
+			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'status', 'statusCash', 'paidAt', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'createdAt', 'closed', 'closedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -82,6 +88,7 @@ class PaymentModel extends \ModuleModel {
 			'customer' => 'selling\Customer',
 			'farm' => 'farm\Farm',
 			'method' => 'payment\Method',
+			'cashflow' => 'bank\Cashflow',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -103,6 +110,9 @@ class PaymentModel extends \ModuleModel {
 
 			case 'statusCash' :
 				return Payment::WAITING;
+
+			case 'readyForAccounting' :
+				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -128,6 +138,9 @@ class PaymentModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'statusCash' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'accountingDifference' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -201,8 +214,20 @@ class PaymentModel extends \ModuleModel {
 		return $this->where('paidAt', ...$data);
 	}
 
+	public function whereCashflow(...$data): PaymentModel {
+		return $this->where('cashflow', ...$data);
+	}
+
 	public function whereAccountingHash(...$data): PaymentModel {
 		return $this->where('accountingHash', ...$data);
+	}
+
+	public function whereAccountingDifference(...$data): PaymentModel {
+		return $this->where('accountingDifference', ...$data);
+	}
+
+	public function whereReadyForAccounting(...$data): PaymentModel {
+		return $this->where('readyForAccounting', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): PaymentModel {

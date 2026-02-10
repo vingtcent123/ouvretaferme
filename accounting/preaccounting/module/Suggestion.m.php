@@ -53,8 +53,9 @@ class SuggestionModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'cast' => 'element'],
-			'invoice' => ['element32', 'selling\Invoice', 'cast' => 'element'],
+			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
+			'payment' => ['element32', 'selling\Payment', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', [\preaccounting\Suggestion::WAITING, \preaccounting\Suggestion::REJECTED, \preaccounting\Suggestion::VALIDATED, \preaccounting\Suggestion::OUT], 'cast' => 'enum'],
 			'reason' => ['set', [\preaccounting\Suggestion::AMOUNT, \preaccounting\Suggestion::THIRD_PARTY, \preaccounting\Suggestion::REFERENCE, \preaccounting\Suggestion::DATE, \preaccounting\Suggestion::PAYMENT_METHOD], 'cast' => 'set'],
 			'weight' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
@@ -62,17 +63,19 @@ class SuggestionModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'cashflow', 'invoice', 'paymentMethod', 'status', 'reason', 'weight', 'createdAt'
+			'id', 'cashflow', 'invoice', 'paymentMethod', 'payment', 'status', 'reason', 'weight', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'cashflow' => 'bank\Cashflow',
 			'invoice' => 'selling\Invoice',
 			'paymentMethod' => 'payment\Method',
+			'payment' => 'selling\Payment',
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['cashflow', 'invoice']
+			['cashflow', 'invoice'],
+			['cashflow', 'payment']
 		]);
 
 	}
@@ -130,6 +133,10 @@ class SuggestionModel extends \ModuleModel {
 
 	public function wherePaymentMethod(...$data): SuggestionModel {
 		return $this->where('paymentMethod', ...$data);
+	}
+
+	public function wherePayment(...$data): SuggestionModel {
+		return $this->where('payment', ...$data);
 	}
 
 	public function whereStatus(...$data): SuggestionModel {

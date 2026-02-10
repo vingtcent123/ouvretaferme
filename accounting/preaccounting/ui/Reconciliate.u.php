@@ -19,13 +19,30 @@ Class ReconciliateUi {
 			$cSuggestion->sort(['weight' => SORT_DESC]);
 
 			$eSuggestion = $cSuggestion->first();
+
+			if($eSuggestion['payment']['source'] === \selling\Payment::INVOICE) {
+
+				$eCustomer = $eSuggestion['payment']['invoice']['customer'];
+				$reference = '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?invoice='.$eSuggestion['payment']['invoice']['id'].'">'.s("Facture {value}", encode($eSuggestion['payment']['invoice']['number'])).'</a>';
+				$date = $eSuggestion['payment']['invoice']['date'];
+				$amount = $eSuggestion['payment']['invoice']['priceIncludingVat'];
+
+			} else {
+
+				$eCustomer = $eSuggestion['payment']['sale']['customer'];
+				$reference = '<a href="'.\selling\SaleUi::url($eSuggestion['payment']['sale']).'">'.s("Vente {value}", encode($eSuggestion['payment']['sale']['document'])).'</a>';
+				$date = $eSuggestion['payment']['sale']['deliveredAt'];
+				$amount = $eSuggestion['payment']['sale']['priceIncludingVat'];
+
+			}
+
 			$element = [
 				'suggestion' => $eSuggestion,
-				'date'=> $eSuggestion['invoice']['date'],
-				'amount'=> $eSuggestion['invoice']['priceIncludingVat'],
-				'customer'=> $eSuggestion['invoice']['customer']->getName(),
-				'customerType'=> $eSuggestion['invoice']['customer']['type'],
-				'reference'=> '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?invoice='.$eSuggestion['invoice']['id'].'">'.s("Facture {value}", encode($eSuggestion['invoice']['number'])).'</a>',
+				'date'=> $eSuggestion['payment']['status'] === \selling\Payment::PAID ? $eSuggestion['payment']['paidAt'] : $date,
+				'amount'=> $eSuggestion['payment']['status'] === \selling\Payment::PAID ? $eSuggestion['payment']['amountIncludingVat'] : $amount,
+				'customer'=> $eCustomer->getName(),
+				'customerType'=> $eCustomer['type'],
+				'reference'=> $reference,
 				'confidence' => $this->confidenceValue($eSuggestion),
 			];
 

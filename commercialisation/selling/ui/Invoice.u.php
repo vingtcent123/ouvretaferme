@@ -281,9 +281,7 @@ class InvoiceUi {
 									$late = '';
 								}
 
-								$reconciliate = ($eInvoice['cashflow']['id'] ?? NULL) ? ' <a href="'.\farm\FarmUi::urlConnected($eInvoice['farm']).'/banque/operations?id='.$eInvoice['cashflow']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('bank').' '.s("Rapprochée").'</a>' :  '';
-
-								$h .= PaymentTransactionUi::getPaymentBox($eInvoice, late: $late, reconciliate: $reconciliate);
+								$h .= PaymentTransactionUi::getPaymentBox($eInvoice, late: $late);
 
 							}
 

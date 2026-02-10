@@ -68,13 +68,14 @@ class CashflowModel extends \ModuleModel {
 			'isSuggestionCalculated' => ['bool', 'cast' => 'bool'],
 			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
+			'payment' => ['element32', 'selling\Payment', 'null' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'date', 'hash', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'statusCash', 'isReconciliated', 'isSuggestionCalculated', 'invoice', 'sale', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'date', 'hash', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'statusCash', 'isReconciliated', 'isSuggestionCalculated', 'invoice', 'sale', 'payment', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -82,6 +83,7 @@ class CashflowModel extends \ModuleModel {
 			'import' => 'bank\Import',
 			'invoice' => 'selling\Invoice',
 			'sale' => 'selling\Sale',
+			'payment' => 'selling\Payment',
 			'createdBy' => 'user\User',
 		];
 
@@ -217,6 +219,10 @@ class CashflowModel extends \ModuleModel {
 
 	public function whereSale(...$data): CashflowModel {
 		return $this->where('sale', ...$data);
+	}
+
+	public function wherePayment(...$data): CashflowModel {
+		return $this->where('payment', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): CashflowModel {

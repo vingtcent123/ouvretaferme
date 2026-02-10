@@ -7,6 +7,97 @@ class Payment extends PaymentElement {
 		return ($this['closed'] === FALSE);
 	}
 
+	public function acceptAccountingImport(): bool {
+
+		$this->expects(['readyForAccounting', 'amountIncludingVat', 'status', 'invoice', 'sale', 'accountingHash', 'accountingDifference', 'cashflow']);
+
+		if($this['cashflow']->empty()) {
+			return FALSE;
+		}
+
+		$this['cashflow']->expects(['amount']);
+
+		if($this['source'] === Payment::INVOICE) {
+			$hasAccount = $this['invoice']->hasAllAccounts();
+		} else {
+			$hasAccount = $this['sale']->hasAllAccounts();
+		}
+
+		return (
+			$this['accountingHash'] === NULL and
+			($this['cashflow']->empty() or ($this['cashflow']['amount'] === $this['amountIncludingVat']) or $this['accountingDifference'] !== NULL) and
+			$hasAccount
+		);
+	}
+
+	public function acceptAccountingIgnore(): bool {
+		return $this['accountingHash'] === NULL;
+	}
+
+	public function hasAccountingDifference(): bool {
+
+		$this->expects(['amountIncludingVat', 'cashflow']);
+
+		if($this['cashflow']->notEmpty()) {
+			$this['cashflow']->expects(['amount']);
+		}
+
+		return ($this['cashflow']->notEmpty() and $this['cashflow']['amount'] !== $this['amountIncludingVat']);
+
+	}
+
+	public function acceptUpdateAccountingDifference(): bool {
+
+		$this->expects(['accountingHash', 'cashflow', 'amountIncludingVat']);
+
+		return ($this['accountingHash'] === NULL and $this['cashflow']->notEmpty() and $this['cashflow']['amount'] !== $this['amountIncludingVat']);
+
+	}
+
+	public static function validateBatch(\Collection $cInvoice): void {
+
+		if($cInvoice->empty()) {
+
+			throw new \FailAction('selling\Payment::payments.check');
+
+		} else {
+
+			$eFarm = $cInvoice->first()['farm'];
+
+			foreach($cInvoice as $eInvoice) {
+
+				if($eInvoice['farm']['id'] !== $eFarm['id']) {
+					throw new \NotExpectedAction('Different farms');
+				}
+
+			}
+		}
+
+	}
+
+	public static function validateBatchIgnore(\Collection $cPayment): void {
+
+		if($cPayment->empty()) {
+
+			throw new \FailAction('selling\Payment::payments.check');
+
+		} else {
+
+			$eFarm = $cPayment->first()['farm'];
+
+			foreach($cPayment as $ePayment) {
+
+				if($ePayment['farm']['id'] !== $eFarm['id']) {
+					throw new \NotExpectedAction('Different farms');
+				}
+
+				$ePayment->validate('acceptAccountingIgnore');
+
+			}
+		}
+
+	}
+
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
@@ -23,6 +114,26 @@ class Payment extends PaymentElement {
 			Payment::SALE => $this['sale'],
 			Payment::INVOICE => $this['invoice'],
 		};
+
+	}
+
+	public function isReadyForAccounting(): bool {
+
+		$this->expects(['status', 'accountingHash', 'accountingDifference', 'amountIncludingVat']);
+
+		if($this['cashflow']->notEmpty()) {
+			$this['cashflow']->expects(['amount']);
+		}
+
+		return (
+			$this['status'] !== Payment::FAILED and
+			$this['accountingHash'] === NULL and
+			$this['cashflow']->notEmpty() and
+			(
+				$this['cashflow']['amount'] === $this['amountIncludingVat'] or
+				$this['accountingDifference'] !== NULL
+			)
+		);
 
 	}
 

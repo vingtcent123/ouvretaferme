@@ -595,14 +595,14 @@ Class PreaccountingUi {
 
 			$h .= '<div class="util-block step-block-item">';
 
-				$h .= '<h3>'.s("Intégrez vos factures dans le logiciel comptable de Ouvretaferme").'</h3>';
+				$h .= '<h3>'.s("Intégrez les paiements dans le logiciel comptable de Ouvretaferme").'</h3>';
 
 				if($eFarm->usesAccounting() === FALSE) {
 					$h .= '<p class="util-info">'.s("L'import sera possible dès lors que vous utiliserez le logiciel comptable de {siteName} pour tenir votre comptabilité !").'</p>';
 				} else if($nProduct > 0) {
 					$h .= '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
 				} else {
-					$h .= '<p>'.s("Rendez-vous dans votre journal pour y importer les factures avec lesquelles vous avez fait un rapprochement bancaire !").'</p>';
+					$h .= '<p>'.s("Importez les paiements pour lesquels vous avez fait un rapprochement bancaire !").'</p>';
 				}
 				$class = 'btn btn-primary';
 				if($nProduct > 0 or $eFarm->usesAccounting() === FALSE) {
@@ -611,7 +611,7 @@ Class PreaccountingUi {
 				} else {
 					$url = \farm\FarmUi::urlConnected($eFarm).'/precomptabilite:importer';
 				}
-				$h .= '<a href="'.$url.'" class="'.$class.'">'.s("Importer les factures").'</a>';
+				$h .= '<a href="'.$url.'" class="'.$class.'">'.s("Importer les paiements").'</a>';
 
 			$h .= '</div>';
 

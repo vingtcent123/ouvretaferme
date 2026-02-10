@@ -1,12 +1,14 @@
 Suggestion:
   id: serial32
   cashflow: bank\Cashflow
-  invoice: selling\Invoice
+  invoice: ?selling\Invoice
   paymentMethod: ?payment\Method
+  payment: ?selling\Payment
   status: enum(WAITING, REJECTED, VALIDATED, OUT) = WAITING
   reason: set(AMOUNT, THIRD_PARTY, REFERENCE, DATE, PAYMENT_METHOD)
   weight: int16(0, NULL)
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
     ["cashflow", "invoice"],
+    ["cashflow", "payment"],
   ]

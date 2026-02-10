@@ -59,10 +59,6 @@ class Invoice extends InvoiceElement {
 		return $this->acceptUpdate();
 	}
 
-	public function acceptAccounting(): bool {
-		return in_array($this['status'], [Invoice::GENERATED, Invoice::DELIVERED]);
-	}
-
 	public function acceptDownload(): bool {
 		return $this['content']->notEmpty();
 	}
@@ -109,28 +105,6 @@ class Invoice extends InvoiceElement {
 
 	}
 
-	public static function validateBatchIgnore(\Collection $cInvoice): void {
-
-		if($cInvoice->empty()) {
-
-			throw new \FailAction('selling\Invoice::invoices.check');
-
-		} else {
-
-			$eFarm = $cInvoice->first()['farm'];
-
-			foreach($cInvoice as $eInvoice) {
-
-				if($eInvoice['farm']['id'] !== $eFarm['id']) {
-					throw new \NotExpectedAction('Different farms');
-				}
-
-				$eInvoice->validate('acceptAccountingIgnore');
-
-			}
-		}
-
-	}
 
 	public function isPaymentOnline(?string $status = Payment::PAID): bool {
 
@@ -218,86 +192,18 @@ class Invoice extends InvoiceElement {
 		return ($this['status'] === Invoice::GENERATED);
 	}
 
-	//-------- Accounting features -------
+	public function hasAllAccounts(): bool {
 
-	public function acceptAccountingIgnore(): bool {
-		return $this['accountingHash'] === NULL;
-	}
-
-	public function hasAccountingDifference(): bool {
-
-		$this->expects(['priceIncludingVat', 'cashflow']);
-
-		if($this['cashflow']->notEmpty()) {
-			$this['cashflow']->expects(['amount']);
-		}
-
-		return ($this['cashflow']->notEmpty() and $this['cashflow']['amount'] !== $this['priceIncludingVat']);
-
-	}
-
-
-	public function isReadyForAccounting(): bool {
-
-		$this->expects(['status', 'accountingHash', 'accountingDifference', 'priceIncludingVat']);
-
-		if($this['cashflow']->notEmpty()) {
-			$this['cashflow']->expects(['amount']);
-		}
-
-		return (
-			$this['status'] !== Invoice::DRAFT and
-			$this['accountingHash'] === NULL and
-			$this['cPayment']->notEmpty() and
-			(
-				$this['cashflow']->empty() or
-				$this['cashflow']['amount'] === $this['priceIncludingVat'] or
-				$this['accountingDifference'] !== NULL
-			)
-		);
-
-	}
-
-	public function acceptUpdateAccountingDifference(): bool {
-
-		$this->expects(['accountingHash', 'cashflow', 'priceIncludingVat']);
-
-		return ($this['accountingHash'] === NULL and $this['cashflow']->notEmpty() and $this['cashflow']['amount'] !== $this['priceIncludingVat']);
-
-	}
-
-	public function acceptAccountingImport(): bool {
-
-		$this->expects(['readyForAccounting', 'priceIncludingVat', 'cashflow', 'cSale']);
-
-		if($this['cashflow']->empty()) {
-			return FALSE;
-		}
-
-		$this['cashflow']->expects(['amount']);
+		$this->expects(['cSale']);
 
 		// Vérifie si tous les items ont un numéro de compte
-		$hasAccount = TRUE;
 		foreach($this['cSale'] as $eSale) {
-			foreach($eSale['cItem'] as $eItem) {
-				if($hasAccount === FALSE) {
-					break 2;
-				}
-				if($eItem['account']->notEmpty()) {
-					continue;
-				}
-				if($eItem['product']->empty() or ($eItem['product']['proAccount']->empty() and $eItem['product']['privateAccount']->empty())) {
-					$hasAccount = FALSE;
-				}
+			if($eSale->hasAllAccounts() === FALSE) {
+				return FALSE;
 			}
 		}
 
-		return (
-			$this['accountingHash'] === NULL and
-			$this['readyForAccounting'] === TRUE and
-			($this['cashflow']->empty() or ($this['cashflow']['amount'] === $this['priceIncludingVat']) or $this['accountingDifference'] !== NULL) and
-			$hasAccount
-		);
+		return TRUE;
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {

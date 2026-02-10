@@ -3,67 +3,51 @@ namespace preaccounting;
 
 Class InvoiceLib {
 
-	public static function updateAccountingDifference(\selling\Invoice $eInvoice, string $accountingDifference): void {
-
-		$update = ['accountingDifference' => $accountingDifference];
-
-		$fw = new \FailWatch();
-
-		$eInvoice->build(['accountingDifference'], $update);
-
-		$fw->validate();
-
-		if($eInvoice->isReadyForAccounting()) {
-			$update['readyForAccounting'] = TRUE;
-		}
-
-		\selling\Invoice::model()->update($eInvoice, $update);
-
-	}
-
-	private static function getReadyForAccountingFields(\selling\Invoice $eInvoice, \bank\Cashflow $eCashflow): array {
-
-		$updateFields = [];
-
-		if($eInvoice['priceIncludingVat'] === $eCashflow['amount']) { // Si les montants sont identiques
-
-			$updateFields['readyForAccounting'] = TRUE;
-
-		} else if($eInvoice['accountingDifference'] === NULL) { // Ou si on n'a pas encore traité comment gérer la différence
-
-			$updateFields['readyForAccounting'] = TRUE;
-			$updateFields['accountingDifference'] = \selling\Invoice::AUTOMATIC;
-
-		}
-
-		$updateFields['accountingHash'] = $eCashflow['hash'];
-
-		return $updateFields;
-	}
-
 	public static function setReadyForAccounting(\farm\Farm $eFarm): void {
 
 		$cInvoice = \selling\Invoice::model()
-			->select('id', 'cashflow', 'priceIncludingVat', 'accountingDifference')
+			->select([
+				'id', 'cashflow', 'priceIncludingVat', 'accountingDifference',
+				'cPayment' => \selling\Payment::model()
+					->select(\selling\Payment::getSelection() + ['cashflow' => \bank\Cashflow::getSelection()])
+					->whereStatus(\selling\Payment::PAID)
+					->whereCashflow('!=', NULL)
+					->delegateCollection('sale', 'id')
+			])
+			->join(\selling\Payment::model(), 'm1.id = m2.invoice AND m2.status = "'.\selling\Payment::PAID.'" AND m2.cashflow IS NOT NULL AND m1.priceIncludingVat = m2.amountIncludingVat')
 			->where('m1.farm', $eFarm)
 			->where('m1.status', 'NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
-			->where('paymentStatus IS NULL')
-			->where('m1.accountingHash', NULL)
-			->whereCashflow('!=', NULL)
+			->wherePaymentStatus(\selling\Invoice::PAID)
 			->whereReadyForAccounting(FALSE)
 			->getCollection();
 
-		$cCashflow = \bank\CashflowLib::getByIds($cInvoice->getColumnCollection('cashflow')->getIds(), index: 'id');
 
 		foreach($cInvoice as $eInvoice) {
 
-			$eCashflow = $cCashflow->offsetGet($eInvoice['cashflow']['id']);
-
-			$updateFields = self::getReadyForAccountingFields($eInvoice, $eCashflow);
-
-			if(count($updateFields) > 0) {
-				\selling\Invoice::model()->update($eInvoice, $updateFields);
+			if($eInvoice['cPayment']->count() === 0) {
+				continue;
 			}
+
+			if($eInvoice['cPayment']->count() !== 1 or $eInvoice['cPayment']->first()['amountIncludingVat'] !== $eInvoice['priceIncludingVat']) {
+				continue;
+			}
+
+			$ePayment = $eInvoice['cPayment']->first();
+
+			$updateFields = [];
+
+			if($eInvoice['priceIncludingVat'] === $ePayment['cashflow']['amount']) { // Si les montants sont identiques
+
+				$updateFields['readyForAccounting'] = TRUE;
+
+			} else if($ePayment['accountingDifference'] === NULL) { // Ou si on n'a pas encore traité comment gérer la différence
+
+				$updateFields['readyForAccounting'] = TRUE;
+				$updateFields['accountingDifference'] = \selling\Invoice::AUTOMATIC;
+
+			}
+
+			\selling\Invoice::model()->update($eInvoice, $updateFields);
 		}
 
 	}
@@ -109,7 +93,7 @@ Class InvoiceLib {
 
 	public static function getForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport = FALSE) {
 
-		return InvoiceLib::filterForAccounting($eFarm, $search, $forImport)
+		return self::filterForAccounting($eFarm, $search, $forImport)
 			->select([
 				'id', 'date', 'number', 'document', 'farm',
 				'priceExcludingVat', 'priceIncludingVat', 'vat', 'taxes', 'hasVat', 'vatByRate',
@@ -120,9 +104,10 @@ Class InvoiceLib {
 						->delegateElement('customer')
 
 				],
-				'cashflow' => \bank\Cashflow::getSelection(),
-				'accountingDifference', 'readyForAccounting', 'accountingHash',
-				'cPayment' => \selling\PaymentTransactionLib::delegateByInvoice(),
+				'cPayment' => \selling\Payment::model()
+					->select(\selling\Payment::getSelection() + ['cashflow' => ['id', 'amount', 'account' => ['account']]])
+					->whereStatus(\selling\Payment::PAID)
+					->delegateCollection('sale', 'id'),
 				'cSale' => \selling\Sale::model()
 					->select([
 						'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',

@@ -392,11 +392,10 @@ new Page(function($data) {
 			'to' => $data->eFarm['eFinancialYear']['endDate'],
 		]);
 
-		\preaccounting\InvoiceLib::setReadyForAccounting($data->eFarm);
+		\preaccounting\PaymentLib::setReadyForAccounting($data->eFarm);
 
-		$data->nInvoice = \preaccounting\InvoiceLib::countForAccounting($data->eFarm, $data->search);
-
-		$data->cInvoice = \preaccounting\ImportLib::getInvoiceSales($data->eFarm, $data->search);
+		$data->nPayment = \preaccounting\PaymentLib::countForAccounting($data->eFarm, $data->search);
+		$data->cPayment = \preaccounting\ImportLib::getPayments($data->eFarm, $data->search);
 
 		$data->lastValidationDate = \journal\OperationLib::getLastValidationDate($data->eFarm['eFinancialYear']);
 
@@ -408,7 +407,7 @@ new Page(function($data) {
 		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-invoice-cashflow');
 		$data->tipNavigation = 'inline';
 
-		$data->countsByInvoice = \preaccounting\SuggestionLib::countWaiting();
+		$data->nSuggestionWaiting = \preaccounting\SuggestionLib::countWaiting();
 
 		$data->eImportLast = \bank\ImportLib::getLastImport();
 

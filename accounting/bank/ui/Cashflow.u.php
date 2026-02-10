@@ -231,12 +231,15 @@ class CashflowUi {
 
 						if($showReconciliate) {
 							$h .= '<td class="text-center td-vertical-align-top td-min-content">';
-								if($eCashflow['isReconciliated']) {
-									if($eCashflow['sale']->notEmpty()) {
-										$h .= '<a href="/vente/'.$eCashflow['sale']['id'].'">'.encode($eCashflow['sale']['document']).'</a>';
-									} else if($eCashflow['invoice']->notEmpty()) {
-										$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?invoice='.$eCashflow['invoice']['id'].'&customer='.encode($eCashflow['invoice']['customer']['name']).'">'.encode($eCashflow['invoice']['number']).'</a>';
+								if($eCashflow['isReconciliated'] and $eCashflow['payment']->notEmpty()) {
+									if(isset($eCashflow['payment']['source']) == FALSE) {
+										dd($eCashflow);
 									}
+									$h .= match($eCashflow['payment']['source']) {
+										\selling\Payment::INVOICE => '<a href="/ferme/'.$eFarm['id'].'/factures?invoice='.$eCashflow['payment']['invoice']['id'].'&customer='.encode($eCashflow['payment']['invoice']['customer']['name']).'">'.encode($eCashflow['payment']['invoice']['number']).'</a>',
+										\selling\Payment::SALE => '<a href="'.\selling\SaleUi::url($eCashflow['payment']['sale']).'">'.encode($eCashflow['payment']['sale']['document']).'</a>',
+										NULL => '',
+									};
 								}
 							$h .= '</td>';
 						}

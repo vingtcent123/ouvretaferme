@@ -17,19 +17,10 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Sale::imported' => s("La vente a bien été importée."),
-			'Sale::importedSeveral' => s("Les ventes ont bien été importées."),
-			'Sale::imported.market' => s("Le marché a bien été importé."),
-			'Sale::imported.marketSeveral' => s("Les marchés ont bien été importés."),
-			'Invoice::imported' => s("La facture a bien été importée."),
-			'Invoice::importedSeveral' => s("Les factures ont bien été importées."),
-
-			'Invoice::ignored' => s("La facture a bien été ignorée."),
-			'Invoice::ignoredSeveral' => s("Les factures ont bien été ignorées."),
-			'Sale::ignored' => s("La vente a bien été ignorée."),
-			'Sales::ignoredSeveral' => s("Les ventes ont bien été ignorées."),
-			'Sale::ignored.market' => s("Le marché a bien été ignoré."),
-			'Market::ignoredSeveral' => s("Les marchés ont bien été ignorés."),
+			'Payment::imported' => s("La facture a bien été importée."),
+			'Payment::importedSeveral' => s("Les factures ont bien été importées."),
+			'Payment::ignored' => s("Le paiement a bien été ignoré."),
+			'Payment::ignoredSeveral' => s("Les paiements ont bien été ignorés."),
 
 			'Reconciliation::reconciliate' => s("Le rapprochement sélectionné a bien été réalisé."),
 			'Reconciliation::reconciliateSeveral' => s("Les rapprochements sélectionnés ont bien été réalisés."),

@@ -119,6 +119,22 @@ class Sale extends SaleElement {
 
 	}
 
+	public function hasAllAccounts(): bool {
+
+		// Vérifie si tous les items ont un numéro de compte
+		foreach($this['cItem'] as $eItem) {
+			if($eItem['account']->notEmpty()) {
+				continue;
+			}
+			if($eItem['product']->empty() or ($eItem['product']['proAccount']->empty() and $eItem['product']['privateAccount']->empty())) {
+				return FALSE;
+			}
+		}
+
+		return TRUE;
+
+	}
+
 	public function hasDeliveryAddress(): bool {
 		return ($this['deliveryCity'] !== NULL);
 	}
@@ -879,12 +895,6 @@ class Sale extends SaleElement {
 			in_array($this['preparationStatus'], $this->isMarketSale() ? [Sale::CANCELED, Sale::DELIVERED] : [Sale::CONFIRMED])
 		);
 
-	}
-
-	//-------- Accounting features -------
-
-	public function acceptAccountingIgnore(): bool {
-		return $this['accountingHash'] === NULL;
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {

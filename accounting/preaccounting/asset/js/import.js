@@ -1,4 +1,4 @@
-class Invoicing {
+class Import {
 
 	static submit(target) {
 
@@ -24,7 +24,8 @@ class Invoicing {
 
 	static changeSelection(target) {
 
-		return Batch.changeSelection('#batch-invoice', null, function(selection) {
+
+		return Batch.changeSelection('#batch-payment', null, function(selection) {
 
 			let ids = '';
 			let idsList = [];
@@ -32,12 +33,10 @@ class Invoicing {
 
 			let taxes = null;
 			let amountIncluding = 0.0;
-			let amountExcluding = 0.0;
 
 			selection.forEach(node => {
 
 				amountIncluding += parseFloat(node.dataset.batchAmountIncluding);
-				amountExcluding += parseFloat(node.dataset.batchAmountExcluding);
 
 				if(node.dataset.batchTaxes !== '') {
 
