@@ -83,6 +83,12 @@ class PaymentLib extends PaymentCrud {
 
 	public static function update(Payment $ePayment, array $properties): void {
 
+		$ePayment->expects(['closed']);
+
+		if($ePayment['closed']) {
+			return;
+		}
+
 		if(array_diff($properties, ['method', 'amountIncludingVat', 'status', 'paidAt']) !== []) {
 			throw new \UnsupportedException();
 		}
@@ -117,7 +123,25 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
+	public static function close(Payment $ePayment): void {
+
+		$ePayment['closed'] = TRUE;
+		$ePayment['closedAt'] = Sale::model()->now();
+
+		Sale::model()
+			->select(['closed', 'closedAt'])
+			->whereClosed(FALSE)
+			->update($ePayment);
+
+	}
+
 	public static function delete(Payment $ePayment): void {
+
+		$ePayment->expects(['id', 'closed']);
+
+		if($ePayment['closed']) {
+			return;
+		}
 
 		Payment::model()->beginTransaction();
 
@@ -126,6 +150,34 @@ class PaymentLib extends PaymentCrud {
 			PaymentTransactionLib::recalculate($ePayment->getElement());
 
 		Payment::model()->commit();
+
+	}
+
+	public static function deleteCollection(\Collection $cPayment): void {
+
+		Payment::model()->beginTransaction();
+
+			foreach($cPayment as $ePayment) {
+				self::delete($ePayment);
+			}
+
+		Payment::model()->commit();
+
+
+	}
+
+	public static function deleteFailed(Sale|Invoice $e): void {
+
+		Payment::model()->beginTransaction();
+
+			Payment::model()
+				->whereSale($e, if: $e instanceof Sale)
+				->whereInvoice($e, if: $e instanceof Invoice)
+				->whereStatus(Payment::FAILED)
+				->delete();
+
+		Payment::model()->commit();
+
 
 	}
 

@@ -277,6 +277,14 @@ class PaymentTransactionLib {
 
 			foreach($cPayment as $ePayment) {
 
+				// Besoin de reporter les propriétés pour la suppression
+				if($e instanceof Sale) {
+					$ePayment['sale'] = $e;
+				} else if($e instanceof Invoice) {
+					$ePayment['invoice'] = $e;
+				}
+
+
 				if(
 					$ePayment['status'] === Payment::NOT_PAID and
 					$ePayment['onlineCheckoutId'] !== NULL
@@ -297,7 +305,8 @@ class PaymentTransactionLib {
 
 			}
 
-			Payment::model()->delete($cPayment);
+			PaymentLib::deleteCollection($cPayment);
+
 
 			if($recalculate) {
 				PaymentTransactionLib::recalculate($e, new \Collection());
@@ -454,11 +463,7 @@ class PaymentTransactionLib {
 			($paid > 0 or $notPaid > 0)
 		) {
 
-			Payment::model()
-				->whereSale($e, if: $e instanceof Sale)
-				->whereInvoice($e, if: $e instanceof Invoice)
-				->whereStatus(Payment::FAILED)
-				->delete();
+			PaymentLib::deleteFailed($e);
 
 		}
 
