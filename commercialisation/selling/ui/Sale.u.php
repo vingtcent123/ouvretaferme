@@ -584,7 +584,11 @@ class SaleUi {
 						if($hasDocuments and in_array('paymentMethod', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
-								$h .= PaymentTransactionUi::getPaymentBox($eSale);
+								if($eSale['invoice']->empty()) {
+									$h .= PaymentTransactionUi::getPaymentBox($eSale);
+								} else {
+									$h .= PaymentTransactionUi::getPaymentBox($eSale['invoice']);
+								}
 							$h .= '</td>';
 
 						}

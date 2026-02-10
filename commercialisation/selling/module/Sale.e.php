@@ -12,7 +12,9 @@ class Sale extends SaleElement {
 			'shopPoint' => ['type', 'name'],
 			'farm' => ['name', 'siret', 'legalName', 'legalEmail', 'legalCity', 'legalCountry', 'url', 'vignette', 'emailBanner', 'emailFooter', 'hasSales', 'hasAccounting'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
-			'invoice' => ['number', 'emailedAt', 'paidAt', 'sales', 'date', 'content', 'createdAt', 'priceExcludingVat', 'generation', 'status'],
+			'invoice' => InvoiceElement::getSelection() + [
+				'cPayment' => PaymentTransactionLib::delegateByInvoice(),
+			],
 			'compositionOf' => ['name'],
 			'marketParent' => [
 				'customer' => ['type', 'name']

@@ -306,21 +306,25 @@ class PaymentTransactionLib {
 
 		$eInvoice->expects(['sales']);
 
-		Payment::model()->beginTransaction();
+		if(count($eInvoice['sales']) !== 1) {
+			return;
+		}
 
-			$cPayment = PaymentTransactionLib::getAll($eInvoice, selection: [
-				'method' => \payment\Method::getSelection(),
-				'status', 'amountIncludingVat', 'paidAt'
-			]);
+		Payment::model()->beginTransaction();
 
 			$cSale = SaleLib::getByIds($eInvoice['sales']);
 
-			foreach($cSale as $eSale) {
+			if($cSale->count() === 1) { // En théorie inutile
 
-				$cPaymentClone = $cPayment->find();
+				$cPayment = PaymentTransactionLib::getAll($eInvoice, selection: [
+					'method' => \payment\Method::getSelection(),
+					'status', 'amountIncludingVat', 'paidAt'
+				]);
 
-				if($cPaymentClone->notEmpty()) {
-					self::replace($eSale, $cPaymentClone);
+				$eSale = $cSale->first();
+
+				if($cPayment->notEmpty()) {
+					self::replace($eSale, $cPayment);
 				} else {
 					self::delete($eSale);
 				}
