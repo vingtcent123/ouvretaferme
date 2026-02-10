@@ -946,6 +946,7 @@ Class AccountingLib {
 	private static function getDefaultAccount(float $vatRate, \account\Account $eAccountVatDefault): \account\Account {
 
 		return new \account\Account([
+			'id' => NULL,
 			'class' => '',
 			'description' => '',
 			'vatRate' => $vatRate,
