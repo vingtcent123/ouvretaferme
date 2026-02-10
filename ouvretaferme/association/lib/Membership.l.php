@@ -478,12 +478,16 @@ class MembershipLib {
 
 		}
 
-		$eSale['paymentStatus'] = \selling\Sale::PAID;
-		$eSale['paidAt'] = currentDate();
+		$cPayment = new \Collection([
+			new \selling\Payment([
+				'method' => $eMethod,
+				'amountIncludingVat' => $eSale['priceIncludingVat'],
+				'status' => \selling\Payment::PAID,
+				'paidAt' => currentDate()
+			])
+		]);
 
-		\selling\Sale::model()
-			->select(['paymentStatus', 'paidAt'])
-			->update($eSale);
+		\selling\PaymentTransactionLib::replace($eSale, $cPayment);
 
 		$properties = [
 			'customer' => $eCustomer,
