@@ -474,7 +474,8 @@ class MembershipLib {
 					'onlineCheckoutId' => $eHistory['onlineCheckoutId'],
 					'onlinePaymentIntentId' => $eHistory['onlinePaymentIntentId'],
 					'status' => \selling\Payment::PAID,
-					'amountIncludingVat' => $eSale['priceIncludingVat']
+					'amountIncludingVat' => $eSale['priceIncludingVat'],
+					'paidAt' => currentDate()
 				]);
 
 		}
