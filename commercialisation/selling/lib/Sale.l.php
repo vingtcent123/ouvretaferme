@@ -1654,7 +1654,7 @@ class SaleLib extends SaleCrud {
 
 		if(
 			$e['paymentStatus'] === Sale::PAID and
-			$e['priceIncludingVat'] !== $e['paymentAmount']
+			$e['priceIncludingVat'] > $e['paymentAmount']
 		) {
 			$newValues['paymentStatus'] = Sale::PARTIAL_PAID;
 		}
