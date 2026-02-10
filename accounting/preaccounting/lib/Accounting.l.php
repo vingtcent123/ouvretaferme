@@ -257,7 +257,7 @@ Class AccountingLib {
 
 				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
 
-					if($eSale['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->count() > 0) {
+					if($eSale['cPayment']->find(fn($e) => $e['id'] === ($item['payment'] and $e['status'] === \selling\Payment::PAID))->count() > 0) {
 						$ePayment = $eSale['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->first();
 						$date = $ePayment['paidAt'];
 						$payment = $ePayment['methodName'];
@@ -595,20 +595,24 @@ Class AccountingLib {
 			}
 
 			$keyForTotal = array_find_key($eElement['vatByRate'], fn($vatByRate) => ((float)$vatByRate['vatRate'] === (float)$eItem['vatRate']));
-			$totalByVatRateExcludingVat = $eElement['vatByRate'][$keyForTotal]['amount'] - $eElement['vatByRate'][$keyForTotal]['vat'];
+			$totalByVatRateExcludingVat = (float)($eElement['vatByRate'][$keyForTotal]['amount'] - $eElement['vatByRate'][$keyForTotal]['vat']);
 
 			// Montant HT
-			$key = array_find_key($items, fn($item) => ($item['account'] === $eAccount['id'] and $item['accountReference'] === NULL));
+			if($totalByVatRateExcludingVat !== 0.0) {
 
-			if($key === NULL) {
-				$items[] = [
-					'account' => $eAccount['id'],
-					'accountReference' => NULL,
-					'ratio' => $amountExcludingVat / $totalByVatRateExcludingVat,
-					'vatRate' => $eItem['vatRate'],
-				];
-			} else {
-				$items[$key]['ratio'] += $amountExcludingVat / $totalByVatRateExcludingVat;
+				$key = array_find_key($items, fn($item) => ($item['account'] === $eAccount['id'] and $item['accountReference'] === NULL));
+
+				if($key === NULL) {
+					$items[] = [
+						'account' => $eAccount['id'],
+						'accountReference' => NULL,
+						'ratio' => $amountExcludingVat / $totalByVatRateExcludingVat,
+						'vatRate' => $eItem['vatRate'],
+					];
+				} else {
+					$items[$key]['ratio'] += $amountExcludingVat / $totalByVatRateExcludingVat;
+				}
+
 			}
 
 			// TVA
@@ -873,16 +877,10 @@ Class AccountingLib {
 			}
 
 			// Ajout de l'écriture de banque
-			if($ePayment['status'] === \selling\Payment::PAID) {
-
-				if(isset($ePayment['cashflow']) and $ePayment['cashflow']->notEmpty()) {
-					$eAccountPayment = $ePayment['cashflow']['account']['account'];
-				} else {
-					$eAccountPayment = $ePayment['account'] ?? $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
-				}
+			if($ePayment['status'] === \selling\Payment::PAID and $ePayment['cashflow']->notEmpty()) {
 
 				$items[] = [
-					'account' => $eAccountPayment['id'],
+					'account' => $ePayment['cashflow']['account']['account']['id'],
 					'accountReference' => NULL,
 					'vatRate' => NULL,
 					'amount' => $ePayment['cashflow']['amount'] * -1,
