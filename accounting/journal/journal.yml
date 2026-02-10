@@ -60,7 +60,7 @@ Operation:
   isSelfConsumption: bool = FALSE
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
-  validatedAt: ?datetime = SPECIAL(now)
+  validatedAt: ?datetime
   createdBy: ?user\User = SPECIAL(user)
   INDEX: [
     ["document"],

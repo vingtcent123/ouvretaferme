@@ -121,9 +121,6 @@ class OperationModel extends \ModuleModel {
 			case 'updatedAt' :
 				return new \Sql('NOW()');
 
-			case 'validatedAt' :
-				return new \Sql('NOW()');
-
 			case 'createdBy' :
 				return \user\ConnectionLib::getOnline();
 
