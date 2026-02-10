@@ -132,7 +132,16 @@ class InvoiceLib extends InvoiceCrud {
 
 	public static function getForCash(\farm\Farm $eFarm, \payment\Method $eMethod, string $dateAfter): \Collection {
 
-		return Invoice::model()
+		return Payment::model()
+			->join(Invoice::model(), 'm1.invoice = 2.id')
+			->where('m1.farm', $eFarm)
+			->where('m1.source', Payment::INVOICE)
+			->where('m1.method', $eMethod)
+			->where('m1.paidAt', '>', $dateAfter)
+			->where('m2.status', 'IN', [Invoice::GENERATED, Invoice::DELIVERED]);
+
+
+			Invoice::model()
 			->select([
 				'id',
 				'date' => new \Sql('paidAt'),
@@ -146,9 +155,6 @@ class InvoiceLib extends InvoiceCrud {
 				'vatByRate',
 				'description' => fn($e) => InvoiceUi::getName($e)
 			])
-			->wherePaymentMethod($eMethod)
-			->whereFarm($eFarm)
-			->wherePaidAt('>', $dateAfter)
 			->whereStatus('IN', [Invoice::GENERATED, Invoice::DELIVERED])
 			->whereStatusCash(Invoice::WAITING)
 			->whereDate('>', $dateAfter)
@@ -542,6 +548,8 @@ class InvoiceLib extends InvoiceCrud {
 			'emailedAt' => NULL
 		]);
 
+		$content = FacturXLib::generate($e, self::build($e));
+
 		if(Invoice::model()
 			->whereGeneration('IN', [Invoice::NOW, Invoice::WAITING])
 			->update($e, [
@@ -551,12 +559,11 @@ class InvoiceLib extends InvoiceCrud {
 			return;
 		}
 
-		self::associateDocument($e);
-
 		Invoice::model()->beginTransaction();
 
+			self::associateDocument($e);
+
 			$e['customer'] = CustomerLib::getById($e['customer']['id']);
-			$content = FacturXLib::generate($e, self::build($e));
 
 			$ePdfContent = \selling\PdfLib::generateDocument($content);
 

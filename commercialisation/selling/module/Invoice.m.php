@@ -27,9 +27,6 @@ abstract class InvoiceElement extends \Element {
 	const CANCELED = 'canceled';
 
 	const WAITING = 'waiting';
-	const VALID = 'valid';
-	const IGNORED = 'ignored';
-
 	const NOW = 'now';
 	const PROCESSING = 'processing';
 	const FAIL = 'fail';
@@ -96,7 +93,6 @@ class InvoiceModel extends \ModuleModel {
 			'header' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'footer' => ['editor16', 'min' => 1, 'max' => 400, 'null' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\selling\Invoice::DRAFT, \selling\Invoice::CONFIRMED, \selling\Invoice::GENERATED, \selling\Invoice::DELIVERED, \selling\Invoice::CANCELED], 'cast' => 'enum'],
-			'statusCash' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::DRAFT, \selling\Invoice::VALID, \selling\Invoice::IGNORED], 'cast' => 'enum'],
 			'generation' => ['enum', [\selling\Invoice::WAITING, \selling\Invoice::NOW, \selling\Invoice::PROCESSING, \selling\Invoice::FAIL, \selling\Invoice::SUCCESS], 'null' => TRUE, 'cast' => 'enum'],
 			'generationAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closed' => ['bool', 'cast' => 'bool'],
@@ -113,7 +109,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'number', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentStatus', 'paymentAmount', 'paymentCondition', 'header', 'footer', 'status', 'statusCash', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
+			'id', 'document', 'number', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentStatus', 'paymentAmount', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -137,9 +133,6 @@ class InvoiceModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
-
-			case 'statusCash' :
-				return Invoice::WAITING;
 
 			case 'closed' :
 				return FALSE;
@@ -177,9 +170,6 @@ class InvoiceModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'statusCash' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'generation' :
@@ -318,10 +308,6 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereStatus(...$data): InvoiceModel {
 		return $this->where('status', ...$data);
-	}
-
-	public function whereStatusCash(...$data): InvoiceModel {
-		return $this->where('statusCash', ...$data);
 	}
 
 	public function whereGeneration(...$data): InvoiceModel {
