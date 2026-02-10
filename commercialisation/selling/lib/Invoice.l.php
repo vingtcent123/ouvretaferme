@@ -557,15 +557,15 @@ class InvoiceLib extends InvoiceCrud {
 			return;
 		}
 
+		self::associateDocument($e);
+
+		// À faire décaler ça au premier accès à la facture
+		$content = FacturXLib::generate($e, self::build($e));
+		$ePdfContent = \selling\PdfLib::generateDocument($content);
+
 		Invoice::model()->beginTransaction();
 
-			self::associateDocument($e);
-
 			$e['customer'] = CustomerLib::getById($e['customer']['id']);
-
-			$content = FacturXLib::generate($e, self::build($e));
-			$ePdfContent = \selling\PdfLib::generateDocument($content);
-
 			$e['content'] = $ePdfContent;
 			$e['status'] = Invoice::GENERATED;
 			$e['generation'] = Invoice::SUCCESS;
