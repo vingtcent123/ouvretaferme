@@ -37,7 +37,7 @@ new \account\FinancialYearPage(function($data) {
 			$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->e);
 			$hasPrevious = $data->eFinancialYearPrevious->notEmpty();
 			$eFinancialYearDocument = FinancialYearDocumentLib::getDocument($data->e, $type);
-			$hasContent = ($hasPrevious and $data->e->isOpen() and in_array($type, [FinancialYearDocumentLib::OPENING, FinancialYearDocumentLib::OPENING_DETAILED]) and $eFinancialYearDocument->notEmpty() and $eFinancialYearDocument['status'] === FinancialYearDocument::SUCCESS);
+			$hasContent = ($hasPrevious and $data->e->isOpen() and in_array($type, [FinancialYearDocumentLib::OPENING, FinancialYearDocumentLib::OPENING_DETAILED]) and $eFinancialYearDocument->notEmpty() and $eFinancialYearDocument['generation'] === FinancialYearDocument::SUCCESS);
 		} else {
 			$hasContent = FALSE;
 		}
