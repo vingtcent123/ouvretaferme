@@ -19,14 +19,32 @@ Class ReconciliateLib {
 
 			$ePayment = $eSuggestion['payment'];
 
-			$ePayment['cashflow'] = $eCashflow;
-			$ePayment['method'] = $eSuggestion['paymentMethod'];
-			$ePayment['status'] = \selling\Payment::PAID;
-			$ePayment['amountIncludingVat'] = $eCashflow['amount'];
-			$ePayment['paidAt'] = $eCashflow['date'];
+			if($ePayment->notEmpty()) {
 
-			\selling\PaymentLib::updateForReconciliation($ePayment, ['cashflow']);
-			\selling\PaymentLib::update($ePayment, ['method', 'status', 'amountIncludingVat', 'paidAt']);
+				$ePayment['cashflow'] = $eCashflow;
+				$ePayment['method'] = $eSuggestion['paymentMethod'];
+				$ePayment['status'] = \selling\Payment::PAID;
+				$ePayment['amountIncludingVat'] = $eCashflow['amount'];
+				$ePayment['paidAt'] = $eCashflow['date'];
+
+				\selling\PaymentLib::updateForReconciliation($ePayment, ['cashflow']);
+				\selling\PaymentLib::update($ePayment, ['method', 'status', 'amountIncludingVat', 'paidAt']);
+
+			} else {
+
+				$eInvoice = \selling\InvoiceLib::getById($eSuggestion['invoice']['id']);
+
+				$ePayment = new \selling\Payment([
+					'cashflow' => $eCashflow,
+					'status' => \selling\Payment::PAID,
+					'amountIncludingVat' => $eCashflow['amount'],
+					'paidAt' => $eCashflow['date'],
+					'method' => $eSuggestion['paymentMethod'],
+				]);
+
+				\selling\PaymentTransactionLib::createForTransaction($eInvoice, $ePayment);
+			}
+
 
 			\bank\Cashflow::model()->update($eCashflow, [
 				'isReconciliated' => TRUE,

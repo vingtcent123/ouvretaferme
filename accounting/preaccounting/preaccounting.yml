@@ -3,10 +3,12 @@ Suggestion:
   cashflow: bank\Cashflow
   paymentMethod: ?payment\Method
   payment: ?selling\Payment
+  invoice: ?selling\Invoice
   status: enum(WAITING, REJECTED, VALIDATED, OUT) = WAITING
   reason: set(AMOUNT, THIRD_PARTY, REFERENCE, DATE, PAYMENT_METHOD)
   weight: int16(0, NULL)
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
     ["cashflow", "payment"],
+    ["cashflow", "invoice"],
   ]

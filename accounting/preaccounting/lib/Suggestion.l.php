@@ -21,6 +21,7 @@ Class SuggestionLib extends SuggestionCrud {
 			->select([
 				'id', 'status',
 				'cashflow' => ['id', 'name', 'memo', 'type', 'date', 'amount'],
+				'invoice' => ['id', 'number', 'document', 'date', 'priceIncludingVat', 'customer' => ['id', 'legalName', 'name', 'type']],
 				'payment' => \selling\Payment::getSelection() + [
 					'invoice' => ['id', 'number', 'document', 'date', 'priceIncludingVat', 'customer' => ['id', 'legalName', 'name', 'type']],
 					'sale' => ['id', 'document', 'deliveredAt', 'priceIncludingVat', 'customer' => ['id', 'legalName', 'name', 'type']]
@@ -161,7 +162,9 @@ Class SuggestionLib extends SuggestionCrud {
 		$notPaidConditions = [
 			'm1.paidAt IS NULL',
 			'm1.status = "'.\selling\Payment::NOT_PAID.'"',
-			'((m2.id IS NOT NULL AND m2.priceIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1).' AND m2.deliveredAt <= '.\selling\Payment::model()->format(date('Y-m-d', strtotime($eCashflow['date'].' + 1 MONTH'))).') OR (m3.id IS NOT NULL AND m3.priceIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1).' AND m3.date <= '.\selling\Payment::model()->format(date('Y-m-d', strtotime($eCashflow['date'].' + 1 MONTH'))).'))',
+			'm2.id IS NOT NULL',
+			'm2.priceIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1),
+			'm2.date <= '.\selling\Payment::model()->format(date('Y-m-d', strtotime($eCashflow['date'].' + 1 MONTH'))),
 		];
 		$paidConditions = [
 			'm1.paidAt IS NOT NULL',
@@ -170,22 +173,44 @@ Class SuggestionLib extends SuggestionCrud {
 			'amountIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1),
 		];
 
+		// Par rapport aux paiements
 		$cPayment = \selling\Payment::model()
 			->select(\selling\Payment::getSelection() + [
-				'sale' => ['id', 'priceIncludingVat',  'deliveredAt', 'customer' =>  $customerSelection],
 				'invoice' => ['id', 'priceIncludingVat', 'number', 'date', 'customer' => $customerSelection]
 			])
-			->join(\selling\Sale::model(), 'm1.sale = m2.id', 'LEFT')
-			->join(\selling\Invoice::model(), 'm1.invoice = m3.id', 'LEFT')
+			->join(\selling\Invoice::model(), 'm1.invoice = m2.id', 'LEFT')
 			->where('m1.farm = '.$eFarm['id'])
 			->or(
 				fn() => $this->where(new \Sql(join(' AND ', $notPaidConditions))),
-				fn() => $this->where(new \Sql(join(' AND ', $paidConditions)))
+				//fn() => $this->where(new \Sql(join(' AND ', $paidConditions)))
 			)
 			->where('m1.accountingHash IS NULL')
+			->whereSource(\selling\Payment::INVOICE)
 			->where('m1.invoice IS NOT NULL') // Rapprochement que sur factures pour le moment
 			->where('m1.cashflow IS NULL')
 			->getCollection();
+
+		// Par rapport aux restants de factures
+		$cInvoice = \selling\Invoice::model()
+			->select(
+				['id', 'priceIncludingVat', 'paymentAmount', 'number', 'date', 'customer' => $customerSelection]
+			)
+			->whereFarm($eFarm)
+			->where('priceIncludingVat - paymentAmount BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1))
+			->where(new \Sql('date <= '.\selling\Payment::model()->format(date('Y-m-d', strtotime($eCashflow['date'].' + 1 MONTH'))).'',
+			'amountIncludingVat BETWEEN '.($eCashflow['amount'] - 1).' AND '.($eCashflow['amount'] + 1)))
+			->getCollection();
+
+		foreach($cInvoice as $eInvoice) {
+
+			$cPayment->append(new \selling\Payment([
+				'invoice' => $eInvoice,
+				'status' => \selling\Payment::NOT_PAID,
+				'amountIncludingVat' => round($eInvoice['priceIncludingVat'] - $eInvoice['paymentAmount'], 2),
+				'method' => new \payment\Method(),
+			]));
+
+		}
 
 		foreach($cPayment as $ePayment) {
 
@@ -196,6 +221,7 @@ Class SuggestionLib extends SuggestionCrud {
 				self::createSuggestion(
 					new Suggestion([
 						'payment' => $ePayment,
+						'invoice' => $eInvoice,
 						'cashflow' => $eCashflow,
 						'reason' => $reason,
 						'weight' => $weight,
@@ -213,10 +239,10 @@ Class SuggestionLib extends SuggestionCrud {
 
 	public static function weightCashflow(\bank\Cashflow $eCashflow, \selling\Payment $ePayment): array {
 
-		$eElement = $ePayment['invoice']->notEmpty() ? $ePayment['invoice'] : $ePayment['sale'];
+		$eInvoice = $ePayment['invoice'];
 
-		if($eElement['customer']->notEmpty()) {
-			$weight = \account\ThirdPartyLib::scoreNameMatch($eElement['customer']['legalName'] ?? $eElement['customer']['name'], $eCashflow['name']);
+		if($eInvoice['customer']->notEmpty()) {
+			$weight = \account\ThirdPartyLib::scoreNameMatch($eInvoice['customer']['legalName'] ?? $eInvoice['customer']['name'], $eCashflow['name']);
 		} else {
 			$weight = 0;
 		}
@@ -238,14 +264,10 @@ Class SuggestionLib extends SuggestionCrud {
 			$reason->value(Suggestion::THIRD_PARTY, TRUE);
 		}
 
-		if($eElement instanceof \selling\Invoice) {
-
-			$score = SuggestionInvoiceLib::scoreInvoiceReference($eElement['number'], $eCashflow->getMemo());
-			if($score > 250 or mb_strpos(mb_strtolower($eCashflow->getMemo()), mb_strtolower($eElement['number'])) !== FALSE) {
-				$weight += 100;
-				$reason->value(Suggestion::REFERENCE, TRUE);
-			}
-
+		$score = SuggestionInvoiceLib::scoreInvoiceReference($eInvoice['number'], $eCashflow->getMemo());
+		if($score > 250 or mb_strpos(mb_strtolower($eCashflow->getMemo()), mb_strtolower($eInvoice['number'])) !== FALSE) {
+			$weight += 100;
+			$reason->value(Suggestion::REFERENCE, TRUE);
 		}
 
 		if(abs(abs($ePayment['amountIncludingVat']) - abs($eCashflow['amount'])) < 0.05) { // 5 cts d'écart
@@ -267,10 +289,8 @@ Class SuggestionLib extends SuggestionCrud {
 
 			if($ePayment['status'] === \selling\Payment::PAID) {
 				$date = $ePayment['paidAt'];
-			} else if($ePayment['source'] === \selling\Payment::INVOICE) {
-				$date = $ePayment['invoice']['date'];
 			} else {
-				$date = $ePayment['sale']['deliveredAt'];
+				$date = $eInvoice['date'];
 			}
 
 			$interval = abs((int)(\util\DateLib::interval($date, $eCashflow['date']) / 60 / 60 / 24));
@@ -286,7 +306,7 @@ Class SuggestionLib extends SuggestionCrud {
 
 		$fqn = self::determinePaymentMethod($eCashflow);
 
-		if($fqn === $ePayment['method']['fqn']) {
+		if($ePayment['method']->notEmpty() and $fqn === $ePayment['method']['fqn']) {
 
 			$weight += 80;
 			$reason->value(Suggestion::PAYMENT_METHOD, TRUE);

@@ -48,7 +48,7 @@ Class InvoiceLib {
 				'cPayment' => \selling\Payment::model()
 					->select(\selling\Payment::getSelection() + ['cashflow' => ['id', 'amount', 'account' => ['account']]])
 					->whereStatus(\selling\Payment::PAID)
-					->delegateCollection('sale', 'id'),
+					->delegateCollection('invoice', 'id'),
 				'cSale' => \selling\Sale::model()
 					->select([
 						'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',
