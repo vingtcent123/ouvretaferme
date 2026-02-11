@@ -176,7 +176,7 @@ class PaymentTransactionLib {
 
 	}
 
-	public static function replace(Sale|Invoice $e, \Collection $cPayment): void {
+	public static function replace(Sale|Invoice $e, \Collection $cPayment, array $updateAdditional = []): void {
 
 		$cPayment->expects([
 			'method', 'amountIncludingVat', 'status'
@@ -205,7 +205,7 @@ class PaymentTransactionLib {
 								$cPaymentToDelete->offsetUnset($ePayment['id']);
 							}
 
-							PaymentLib::update($ePayment, ['method', 'amountIncludingVat', 'status', 'paidAt']);
+							PaymentLib::update($ePayment, array_merge(['method', 'amountIncludingVat', 'status', 'paidAt'], $updateAdditional));
 
 						} else {
 							self::createForTransaction($e, $ePayment);

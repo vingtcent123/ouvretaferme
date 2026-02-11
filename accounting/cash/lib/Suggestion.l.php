@@ -115,22 +115,68 @@ class SuggestionLib extends CashCrud {
 		Cash::model()->beginTransaction();
 
 			$eCash = new Cash([
-				'register' => $eRegister
+				'register' => $eRegister,
 			]);
 
-			$eCash->merge(self::getWaiting($source)
-				->where('m1.id', $reference)
-				->get());
+			$eCash->merge(
+				self::getWaiting($source)
+					->where('m1.id', $reference)
+					->get()
+			);
 
-			$eCash['financialYear'] = \account\FinancialYearLib::getByDate($e['date']);
+			$eCash['financialYear'] = \account\FinancialYearLib::getByDate($eCash['date']);
 
-			if($e['financialYear']->empty()) {
+			if($eCash['financialYear']->empty()) {
 				Cash::model()->rollBack();
 				Cash::fail('date.financialYear');
 				return;
 			}
 
-			CashLib::create($e);
+			switch($source) {
+
+				case Cash::SELL_INVOICE :
+					break;
+				case Cash::SELL_SALE :
+
+					$ePayment = \selling\PaymentLib::getById($eCash['payment']);
+
+					$eSale = \selling\SaleLib::getById($eCash['sale']);
+					$eSale['cItem'] = \selling\SaleLib::getItems($eSale);
+
+					dd(\preaccounting\AccountingLib::computeRatios(
+						$eSale,
+						$eCash['financialYear']['hasVat'],
+						\account\AccountLib::getAll(),
+						$ePayment
+					));
+
+					break;
+
+			}
+
+			CashLib::create($eCash);
+
+
+			switch($source) {
+
+				case Cash::BANK_CASHFLOW :
+
+					\bank\Cashflow::model()->update($eCash['cashflow'], [
+						'statusCash' => \bank\Cashflow::VALID
+					]);
+
+					break;
+
+				case Cash::SELL_INVOICE :
+				case Cash::SELL_SALE :
+
+					\selling\Payment::model()->update($eCash['payment'], [
+						'statusCash' => \selling\Payment::VALID
+					]);
+
+					break;
+
+			}
 
 		Cash::model()->commit();
 
@@ -156,14 +202,14 @@ class SuggestionLib extends CashCrud {
 				return self::getModule($source)
 					->select([
 						'reference' => new \Sql('m1.id', 'int'),
-						'cashflow' => new \Sql('m1.id', 'bank\Cashflow'),
+						'cashflow' => fn($e) => new \bank\Cashflow(['id' => $e['reference']]),
 						'date',
 						'source' => fn() => Cash::BANK_CASHFLOW,
 						'type' => fn($e) => match($e['type']) {
 							\bank\Cashflow::CREDIT => Cash::DEBIT,
 							\bank\Cashflow::DEBIT => Cash::CREDIT,
 						},
-						'amountIncludingVat' => new \Sql('amount'),
+						'amountIncludingVat' => new \Sql('-1 * amount'),
 						'description' => new \Sql('memo'),
 						'customer' => fn() => new \selling\Customer(),
 					])
@@ -180,7 +226,7 @@ class SuggestionLib extends CashCrud {
 						]), 'm1.invoice = m2.id')
 					->select([
 						'reference' => new \Sql('m1.id', 'int'),
-						'payment' => new \Sql('m1.id', 'selling\Payment'),
+						'payment' => fn($e) => new \selling\Payment(['id' => $e['reference']]),
 						'amountIncludingVat',
 						'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT,
 						'date' => new \Sql('m1.paidAt'),
@@ -207,7 +253,7 @@ class SuggestionLib extends CashCrud {
 					]), 'm1.sale = m2.id')
 					->select([
 						'reference' => new \Sql('m1.id', 'int'),
-						'payment' => new \Sql('m1.id', 'selling\Payment'),
+						'payment' => fn($e) => new \selling\Payment(['id' => $e['reference']]),
 						'date' => new \Sql('m1.paidAt'),
 						'sale' => ['document', 'profile', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate', 'compositionEndAt'],
 						'source' => fn() => Cash::SELL_SALE,

@@ -729,6 +729,8 @@ Class AccountingLib {
 
 	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, bool $hasVat, \Collection $cAccount, \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
 
+		$eElement->expects(['cItem', 'cPayment']);
+
 		// Construire le ratio par classe de compte
 		$amountRatios = self::computeAccountRatios($eElement, $cAccount, $hasVat);
 

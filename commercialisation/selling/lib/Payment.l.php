@@ -132,7 +132,7 @@ class PaymentLib extends PaymentCrud {
 			return;
 		}
 
-		if(array_diff($properties, ['method', 'amountIncludingVat', 'status', 'paidAt']) !== []) {
+		if(array_diff($properties, ['method', 'amountIncludingVat', 'status', 'paidAt', 'cashflow']) !== []) {
 			throw new \UnsupportedException();
 		}
 
