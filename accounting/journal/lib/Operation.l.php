@@ -1172,7 +1172,7 @@ class OperationLib extends OperationCrud {
      ->delete();
 
 		// Suppression du lien écritures - paiement (mais pas du rapprochement)
-		\selling\PaymentLib::cancelAccounting($eCashflow['hash']);
+		\selling\PaymentAccountingLib::cancelAccounting($eCashflow['hash']);
 
 		if($action === 'delete') {
 

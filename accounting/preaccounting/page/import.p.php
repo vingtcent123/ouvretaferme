@@ -17,7 +17,7 @@ new \selling\PaymentPage()
 			\selling\Payment::SALE => \selling\Sale::model()->select('priceIncludingVat')->whereId($data->e['sale']['id'])->get()['priceIncludingVat'],
 		};
 
-		$totalPaid = \selling\PaymentLib::sumTotalPaid($data->e);
+		$totalPaid = \selling\PaymentAccountingLib::sumTotalPaid($data->e);
 		if($totalPaid === $priceIncludingVat and $data->e['cashflow']['amount'] === $data->e['amountIncludingVat']) {
 			throw new NotExpectedAction();
 		}

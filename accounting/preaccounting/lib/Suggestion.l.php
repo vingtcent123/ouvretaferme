@@ -183,7 +183,7 @@ Class SuggestionLib extends SuggestionCrud {
 			->where('m1.farm = '.$eFarm['id'])
 			->or(
 				fn() => $this->where(new \Sql(join(' AND ', $notPaidConditions))),
-				//fn() => $this->where(new \Sql(join(' AND ', $paidConditions)))
+				fn() => $this->where(new \Sql(join(' AND ', $paidConditions)))
 			)
 			->where('m1.accountingHash IS NULL')
 			->whereSource(\selling\Payment::INVOICE)

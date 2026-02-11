@@ -116,7 +116,7 @@ Class ImportLib {
 
 		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperationBase, $ePayment);
 
-		\selling\Payment::model()->update($ePayment, ['accountingHash' => $hash]);
+		\selling\PaymentAccountingLib::setImported($ePayment, $hash);
 		\bank\Cashflow::model()->update($ePayment['cashflow'], ['status' => \bank\Cashflow::ALLOCATED, 'hash' => $hash]);
 
 		\selling\Invoice::model()->commit();

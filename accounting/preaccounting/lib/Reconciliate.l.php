@@ -13,38 +13,38 @@ Class ReconciliateLib {
 
 	public static function reconciliateSuggestion(\preaccounting\Suggestion $eSuggestion): void {
 
-		\selling\Payment::model()->beginTransaction();
+		Suggestion::model()->beginTransaction();
 
 			$eCashflow = $eSuggestion['cashflow'];
 
 			$ePayment = $eSuggestion['payment'];
 
-			if($ePayment->notEmpty()) {
+			$eInvoice = \selling\InvoiceLib::getById($eSuggestion['invoice']['id']);
 
-				$ePayment['cashflow'] = $eCashflow;
-				$ePayment['method'] = $eSuggestion['paymentMethod'];
-				$ePayment['status'] = \selling\Payment::PAID;
-				$ePayment['amountIncludingVat'] = $eCashflow['amount'];
-				$ePayment['paidAt'] = $eCashflow['date'];
+			$ePayment['cashflow'] = $eCashflow;
+			$ePayment['method'] = $eSuggestion['paymentMethod'];
+			$ePayment['status'] = \selling\Payment::PAID;
+			$ePayment['amountIncludingVat'] = $eCashflow['amount'];
+			$ePayment['paidAt'] = $eCashflow['date'];
+			$ePayment['invoice'] = $eInvoice;
 
-				\selling\PaymentLib::update($ePayment, ['method', 'status', 'amountIncludingVat', 'paidAt']);
-				\selling\PaymentLib::updateForReconciliation($ePayment, ['cashflow']);
+			if(
+				$ePayment->exists() or
+				$ePayment['amountIncludingVat'] === $eInvoice['priceIncludingVat']
+			) {
 
-			} else {
+				\selling\PaymentTransactionLib::replace($eInvoice, new \Collection([$ePayment]), ['cashflow']);
 
-				$eInvoice = \selling\InvoiceLib::getById($eSuggestion['invoice']['id']);
+			} else if($ePayment->exists() === FALSE and $ePayment['amountIncludingVat'] <= ($eInvoice['priceIncludingVat'] - $eInvoice['paymentAmount'])) {
 
-				$ePayment = new \selling\Payment([
-					'cashflow' => $eCashflow,
-					'status' => \selling\Payment::PAID,
-					'amountIncludingVat' => $eCashflow['amount'],
-					'paidAt' => $eCashflow['date'],
-					'method' => $eSuggestion['paymentMethod'],
-				]);
+				\selling\PaymentTransactionLib::add($eInvoice, new \Collection([$ePayment]));
 
-				\selling\PaymentTransactionLib::createForTransaction($eInvoice, $ePayment);
 			}
 
+			$ePayment = \selling\Payment::model()
+				->select('id')
+				->whereInvoice($eInvoice)
+				->get();
 
 			\bank\Cashflow::model()->update($eCashflow, [
 				'isReconciliated' => TRUE,
@@ -54,31 +54,34 @@ Class ReconciliateLib {
 
 			self::invalidateSuggestions($eSuggestion);
 
-		\selling\Payment::model()->commit();
+		Suggestion::model()->commit();
 
 	}
 
 	public static function invalidateSuggestions(Suggestion $eSuggestionValidated): void {
 
-		// Invalidation de toutes les suggestions de l'opération, de la facture, de la vente et du cashflow concernés (out)
-		\preaccounting\Suggestion::model()
-			->or(
-				fn() => $this->whereCashflow($eSuggestionValidated['cashflow']),
-				fn() => $this->wherePayment($eSuggestionValidated['payment']),
-			)
-			->whereStatus(\preaccounting\Suggestion::WAITING)
-			->update(['status' => \preaccounting\Suggestion::OUT]);
+		Suggestion::model()->beginTransaction();
 
-		// Enregistrement de la suggestion validée
-		\preaccounting\Suggestion::model()->update($eSuggestionValidated, ['status' => \preaccounting\Suggestion::VALIDATED]);
+			// Invalidation de toutes les suggestions de l'opération, de la facture, de la vente et du cashflow concernés (out)
+			\preaccounting\Suggestion::model()
+				->or(
+					fn() => $this->whereCashflow($eSuggestionValidated['cashflow']),
+					fn() => $this->wherePayment($eSuggestionValidated['payment']),
+				)
+				->whereStatus(\preaccounting\Suggestion::WAITING)
+				->update(['status' => \preaccounting\Suggestion::OUT]);
 
+			// Enregistrement de la suggestion validée
+			\preaccounting\Suggestion::model()->update($eSuggestionValidated, ['status' => \preaccounting\Suggestion::VALIDATED]);
+
+		Suggestion::model()->commit();
 	}
 
 	public static function cancelReconciliation(\farm\Farm $eFarm, \bank\Cashflow $eCashflow): void {
 
-		\selling\Payment::model()->beginTransaction();
+		Suggestion::model()->beginTransaction();
 
-			\selling\PaymentLib::cancelReconciliation($eCashflow);
+			\selling\PaymentAccountingLib::cancelReconciliation($eCashflow);
 
 			\bank\Cashflow::model()->update($eCashflow, ['payment' => NULL, 'isReconciliated' => FALSE, 'isSuggestionCalculated' => FALSE]);
 
@@ -88,7 +91,7 @@ Class ReconciliateLib {
 
 			SuggestionLib::calculateForCashflow($eFarm, $eCashflow);
 
-		\selling\Payment::model()->commit();
+		Suggestion::model()->commit();
 
 	}
 

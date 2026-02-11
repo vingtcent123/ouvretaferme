@@ -82,48 +82,6 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function cancelAccounting(string $hash): void {
-
-		\selling\Payment::model()
-			->whereAccountingHash($hash)
-			->update(['accountingHash' => NULL, 'accountingDifference' => NULL]);
-
-	}
-
-	public static function cancelReconciliation(\bank\Cashflow $eCashflow): void {
-
-		\selling\Payment::model()
-			->whereCashflow($eCashflow)
-			->update(['cashflow' => NULL, 'accountingReady' => FALSE]);
-
-	}
-
-	public static function updateForReconciliation(Payment $ePayment, array $properties): void {
-
-		$propertiesForbidden = array_intersect($properties, ['method', 'amountIncludingVat', 'status', 'paidAt']);
-
-		if(count($propertiesForbidden) > 0) {
-			throw new \UnsupportedException();
-		}
-
-		parent::update($ePayment, $properties);
-
-		self::close($ePayment);
-
-	}
-
-	public static function sumTotalPaid(Payment $ePayment): float {
-
-		return Payment::model()
-			->select('amountIncludingVat')
-			->whereStatus(\selling\Payment::PAID)
-			->whereInvoice($ePayment['invoice'], if: $ePayment['source'] === Payment::INVOICE)
-			->whereSale($ePayment['sale'], if: $ePayment['source'] === Payment::SALE)
-			->getCollection()
-			->sum('amountIncludingVat');
-
-	}
-
 	public static function update(Payment $e, array $properties): void {
 
 		$e->expects(['closed']);
