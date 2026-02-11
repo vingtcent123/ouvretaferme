@@ -20,6 +20,7 @@ Cash:
   amountExcludingVat: ?decimal(10, 2, 0.0, null)
   position: ?int(1, null)
   type: enum(DEBIT, CREDIT)
+  hasVat: ?bool
   vat: ?decimal(10, 2, 0.0, null)
   vatRate: ?decimal(5, 2)
   description: ?text8(1, null)

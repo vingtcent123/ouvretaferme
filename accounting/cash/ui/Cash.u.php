@@ -276,8 +276,8 @@ class CashUi {
 
 			Cash::BUY_MANUAL => \Asset::icon('wallet').'  '.s("Achat à un fournisseur"),
 			Cash::SELL_MANUAL => \Asset::icon('wallet').'  '.s("Vente à un client"),
-			Cash::SELL_INVOICE => \Asset::icon('wallet').'  '.s("Facture {value}", \selling\CustomerUi::link($eCustomer)),
-			Cash::SELL_SALE => \Asset::icon('wallet').'  '.s("Vente {value}", \selling\CustomerUi::link($eCustomer))
+			Cash::SELL_INVOICE => \Asset::icon('wallet').'  '.s("Facture {value}", '<u>'.encode($eCustomer->getName()).'</u>'),
+			Cash::SELL_SALE => \Asset::icon('wallet').'  '.s("Vente {value}", '<u>'.encode($eCustomer->getName()).'</u>')
 
 		};
 
@@ -439,7 +439,7 @@ class CashUi {
 
 							$h .= '<td>';
 
-								$h .= CashUi::getOperation($eCash['source'], $eCash['type']);
+								$h .= CashUi::getOperation($eCash['source'], $eCash['type'], $eCash['customer']);
 
 								if($eCash['status'] === Cash::DRAFT) {
 									$h .= '<span class="util-badge bg-muted ml-1">'.s("Non validé").'</span>';
@@ -540,7 +540,17 @@ class CashUi {
 		}
 
 		if($eCash['description'] !== NULL) {
-			$list[] = encode($eCash['description']);
+
+			$description = encode($eCash['description']);
+
+			if($eCash['sale']->notEmpty()) {
+				$list[] = '<a href="'.\selling\SaleUi::url($eCash['sale']).'">'.$description.'</a>';
+			} else if($eCash['invoice']->notEmpty()) {
+				$list[] = '<a href="'.\selling\InvoiceUi::url($eCash['invoice']).'">'.$description.'</a>';
+			} else {
+				$list[] = $description;
+			}
+
 		}
 
 		return implode(' | ', $list);

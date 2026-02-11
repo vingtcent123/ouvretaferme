@@ -195,7 +195,7 @@ class CashLib extends CashCrud {
 			// Propriétés requises
 			$e->expects([
 				'amountIncludingVat', 'amountExcludingVat',
-				'vat', 'vatRate',
+				'hasVat', 'vat', 'vatRate',
 				'type', 'status'
 			]);
 
@@ -227,6 +227,7 @@ class CashLib extends CashCrud {
 		$e->expects(['amountIncludingVat']);
 
 		$e['amountExcludingVat'] = NULL;
+		$e['hasVat'] = NULL;
 		$e['vat'] = NULL;
 		$e['vatRate'] = NULL;
 		$e['description'] = NULL;
@@ -239,6 +240,7 @@ class CashLib extends CashCrud {
 		$e->expects(['amountIncludingVat']);
 
 		$e['amountExcludingVat'] = NULL;
+		$e['hasVat'] = NULL;
 		$e['vat'] = NULL;
 		$e['vatRate'] = NULL;
 		$e['status'] = Cash::DRAFT;
@@ -269,6 +271,7 @@ class CashLib extends CashCrud {
 		$e->expects(['amountIncludingVat']);
 
 		$e['amountExcludingVat'] = NULL;
+		$e['hasVat'] = NULL;
 		$e['vat'] = NULL;
 		$e['vatRate'] = NULL;
 		$e['status'] = Cash::DRAFT;
@@ -280,9 +283,10 @@ class CashLib extends CashCrud {
 		$e['status'] = Cash::DRAFT;
 
 		if($e->requireVat() === FALSE) {
-			$e['amountExcludingVat'] = NULL;
-			$e['vat'] = NULL;
-			$e['vatRate'] = NULL;
+			$e['amountExcludingVat'] = $e['amountIncludingVat'];
+			$e['hasVat'] = FALSE;
+			$e['vat'] = 0.0;
+			$e['vatRate'] = 0.0;
 		}
 
 	}
@@ -290,10 +294,6 @@ class CashLib extends CashCrud {
 	private static function createTransaction(Cash $e): void {
 
 		$e['status'] = Cash::DRAFT;
-
-			$e['amountExcludingVat'] = NULL;
-			$e['vat'] = NULL;
-			$e['vatRate'] = NULL;
 
 	}
 

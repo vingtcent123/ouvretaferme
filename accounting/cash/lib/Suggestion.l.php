@@ -143,12 +143,7 @@ class SuggestionLib extends CashCrud {
 					$eInvoice['cSale'] = \selling\SaleLib::getByIds($eInvoice['sales']);
 					$eInvoice['cItem'] = \selling\SaleLib::getItemsBySales($eInvoice['cSale']);
 
-					dd(\preaccounting\AccountingLib::computeRatios(
-						$eInvoice,
-						$eCash['financialYear']['hasVat'],
-						\account\AccountLib::getAll(),
-						$ePayment
-					));
+					self::importCreateFromRatios($eCash, $eInvoice, $ePayment);
 
 					break;
 				case Cash::SELL_SALE :
@@ -157,43 +152,87 @@ class SuggestionLib extends CashCrud {
 
 					$eSale = \selling\SaleLib::getById($eCash['sale']);
 					$eSale['cItem'] = \selling\SaleLib::getItems($eSale);
-/*
-					dd(\preaccounting\AccountingLib::computeRatios(
-						$eSale,
-						$eCash['financialYear']['hasVat'],
-						\account\AccountLib::getAll(),
-						$ePayment
-					));
-*/
+
+					self::importCreateFromRatios($eCash, $eSale, $ePayment);
+
 					break;
-
-			}
-
-			CashLib::create($eCash);
-
-
-			switch($source) {
 
 				case Cash::BANK_CASHFLOW :
-
-					\bank\Cashflow::model()->update($eCash['cashflow'], [
-						'statusCash' => \bank\Cashflow::VALID
-					]);
-
-					break;
-
-				case Cash::SELL_INVOICE :
-				case Cash::SELL_SALE :
-
-					\selling\Payment::model()->update($eCash['payment'], [
-						'statusCash' => \selling\Payment::VALID
-					]);
-
+					self::importCreate($eCash);
 					break;
 
 			}
 
 		Cash::model()->commit();
+
+	}
+
+	public static function importCreateFromRatios(Cash $eCash, \selling\Sale|\selling\Invoice $e, \selling\Payment $ePayment): void {
+
+		$ratios = \preaccounting\AccountingLib::computeRatios(
+			$e,
+			$e['hasVat'],
+			\account\AccountLib::getAll(),
+			$ePayment
+		);
+
+		$amounts = [];
+
+		foreach($ratios['amountsExcludingVat'] as ['vatRate' => $vatRate, 'amount' => $amount]) {
+
+			$amounts[(string)$vatRate] ??= [
+				'amountExcludingVat' => 0.0,
+				'vat' => 0.0
+			];
+
+			$amounts[(string)$vatRate]['amountExcludingVat'] += $amount;
+
+		}
+
+		foreach($ratios['amountsVat'] as ['vatRate' => $vatRate, 'amount' => $amount]) {
+			$amounts[(string)$vatRate]['vat'] += $amount;
+		}
+
+		foreach($amounts as $vatRate => $amount) {
+
+			$amount['amountExcludingVat'] = round($amount['amountExcludingVat'], 2);
+			$amount['hasVat'] = $e['hasVat'];
+			$amount['vat'] = round($amount['vat'], 2);
+			$amount['vatRate'] = (float)$vatRate;
+			$amount['amountIncludingVat'] = round($amount['amountExcludingVat'] + $amount['vat'], 2);
+
+			$eCashCreate = (clone $eCash)->merge($amount);
+
+			self::importCreate($eCashCreate);
+
+		}
+
+	}
+
+	public static function importCreate(Cash $eCash): void {
+
+		CashLib::create($eCash);
+
+		switch($eCash['source']) {
+
+			case Cash::BANK_CASHFLOW :
+
+				\bank\Cashflow::model()->update($eCash['cashflow'], [
+					'statusCash' => \bank\Cashflow::VALID
+				]);
+
+				break;
+
+			case Cash::SELL_INVOICE :
+			case Cash::SELL_SALE :
+
+				\selling\Payment::model()->update($eCash['payment'], [
+					'statusCash' => \selling\Payment::VALID
+				]);
+
+				break;
+
+		}
 
 	}
 

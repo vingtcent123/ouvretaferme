@@ -67,6 +67,7 @@ class CashModel extends \ModuleModel {
 			'amountExcludingVat' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => 0.0, 'max' => 99999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'position' => ['int32', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'type' => ['enum', [\cash\Cash::DEBIT, \cash\Cash::CREDIT], 'cast' => 'enum'],
+			'hasVat' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'vat' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => 0.0, 'max' => 99999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'vatRate' => ['decimal', 'digits' => 5, 'decimal' => 2, 'min' => -999.99, 'max' => 999.99, 'null' => TRUE, 'cast' => 'float'],
 			'description' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -83,7 +84,7 @@ class CashModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'register', 'parent', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'position', 'type', 'vat', 'vatRate', 'description', 'source', 'cashflow', 'invoice', 'sale', 'customer', 'payment', 'account', 'financialYear', 'status', 'createdAt'
+			'id', 'register', 'parent', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'position', 'type', 'hasVat', 'vat', 'vatRate', 'description', 'source', 'cashflow', 'invoice', 'sale', 'customer', 'payment', 'account', 'financialYear', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -184,6 +185,10 @@ class CashModel extends \ModuleModel {
 
 	public function whereType(...$data): CashModel {
 		return $this->where('type', ...$data);
+	}
+
+	public function whereHasVat(...$data): CashModel {
+		return $this->where('hasVat', ...$data);
 	}
 
 	public function whereVat(...$data): CashModel {

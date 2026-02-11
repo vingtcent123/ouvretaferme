@@ -245,7 +245,7 @@ class PaymentMarketLib {
 
 						}
 
-						foreach($eSale['vatByRate'] as $rate) {
+						foreach($eSaleMarket['vatByRate'] as $rate) {
 
 							$key = (string)$rate['vatRate'];
 
