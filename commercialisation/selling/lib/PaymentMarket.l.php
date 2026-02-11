@@ -200,5 +200,94 @@ class PaymentMarketLib {
 
 	}
 
+	/**
+	 * Mets à jour les données agrégées des ventes dans la caisse
+	 */
+	public static function calculateAggregation(Sale $eSale): void {
+
+		if($eSale->isMarket() === FALSE) {
+			throw new \UnsupportedException();
+		}
+
+		Payment::model()->beginTransaction();
+
+			$cPayment = new \Collection();
+
+			$aggregate = [
+				'priceIncludingVat' => 0.0,
+				'priceExcludingVat' => 0.0,
+				'vatByRate' => []
+			];
+
+			$ccSale = \selling\SaleLib::getByParent($eSale);
+
+			if($ccSale->notEmpty()) {
+
+				$ccSale[Sale::DELIVERED]
+					->map(function($eSaleMarket) use($eSale, $cPayment, &$aggregate) {
+
+						$aggregate['priceIncludingVat'] += $eSaleMarket['priceIncludingVat'];
+						$aggregate['priceExcludingVat'] += $eSaleMarket['priceExcludingVat'];
+
+						foreach($eSaleMarket['cPayment'] as $ePayment) {
+
+							$eMethod = $ePayment['method'];
+
+							$cPayment[$eMethod['id']] ??= new Payment([
+								'method' => $eMethod,
+								'status' => Payment::PAID,
+								'paidAt' => $eSale['deliveredAt'],
+								'amountIncludingVat' => 0.0
+							]);
+
+							$cPayment[$eMethod['id']]['amountIncludingVat'] += $ePayment['amountIncludingVat'];
+							$cPayment[$eMethod['id']]['amountIncludingVat'] = round($cPayment[$eMethod['id']]['amountIncludingVat'], 2);
+
+						}
+
+						foreach($eSale['vatByRate'] as $rate) {
+
+							$key = (string)$rate['vatRate'];
+
+							$aggregate['vatByRate'][$key] ??= [
+								'vatRate' => $rate['vatRate'],
+								'vat' => 0.0,
+								'amount' => 0.0
+							];
+
+							$aggregate['vatByRate'][$key]['vat'] += $rate['vat'];
+							$aggregate['vatByRate'][$key]['vat'] = round($aggregate['vatByRate'][$key]['vat'], 2);
+
+							$aggregate['vatByRate'][$key]['amount'] += $rate['amount'];
+							$aggregate['vatByRate'][$key]['amount'] = round($aggregate['vatByRate'][$key]['amount'], 2);
+
+
+						}
+
+					});
+
+			}
+
+			$cPayment->filter(fn($ePayment) => $ePayment['amountIncludingVat'] !== 0.0);
+
+			$aggregate['vatByRate'] = array_values($aggregate['vatByRate']);
+
+			if(
+				$eSale['priceIncludingVat'] !== NULL and
+				$eSale['priceIncludingVat'] !== round($aggregate['priceIncludingVat'], 2)
+			) {
+				trigger_error('Price inconsistency ('.$eSale['priceIncludingVat'].' expected, '.$aggregate['priceIncludingVat'].' calculated)');
+			}
+
+			PaymentTransactionLib::replace($eSale, $cPayment);
+
+			$aggregate['vat'] = round($aggregate['priceIncludingVat'] - $aggregate['priceExcludingVat'], 2);
+
+			Sale::model()->update($eSale, $aggregate);
+
+		Payment::model()->commit();
+
+	}
+
 }
 ?>

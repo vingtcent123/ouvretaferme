@@ -154,7 +154,7 @@ class MarketLib {
 
 		$cItemMarket = SaleLib::getItems($eSaleMarket);
 
-		$cItemSaled = Item::model()
+		$cItemSold = Item::model()
 			->select([
 				'parent',
 				'totalNumber' => new \Sql('SUM(number)', 'float'),
@@ -168,14 +168,14 @@ class MarketLib {
 
 		foreach($cItemMarket as $eItemMarket) {
 
-			if($cItemSaled->offsetExists($eItemMarket['id'])) {
+			if($cItemSold->offsetExists($eItemMarket['id'])) {
 
-				$eItemSaled = $cItemSaled[$eItemMarket['id']];
+				$eItemSold = $cItemSold[$eItemMarket['id']];
 
 				$eItemMarket->merge([
-					'number' => round($eItemSaled['totalNumber'], 2),
-					'price' => round($eItemSaled['totalPrice'], 2),
-					'priceStats' => round($eItemSaled['totalPriceStats'], 2)
+					'number' => round($eItemSold['totalNumber'], 2),
+					'price' => round($eItemSold['totalPrice'], 2),
+					'priceStats' => round($eItemSold['totalPriceStats'], 2)
 				]);
 
 			} else {
@@ -196,12 +196,26 @@ class MarketLib {
 
 		}
 
-		Sale::model()->update($eSaleMarket, [
-			'marketSales' => Sale::model()
-				->whereMarketParent($eSaleMarket)
-				->wherePreparationStatus(Sale::DELIVERED)
-				->count()
-		]);
+		$properties = Sale::model()
+			->select([
+				'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float'),
+				'priceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
+				'marketSales' => new \Sql('COUNT(*)', 'int')
+			])
+			->whereMarketParent($eSaleMarket)
+			->wherePreparationStatus(Sale::DELIVERED)
+			->get()
+			->getArrayCopy();
+
+		if($properties['marketSales'] > 0) {
+			Sale::model()->update($eSaleMarket, $properties);
+		} else {
+			Sale::model()->update($eSaleMarket, [
+				'priceIncludingVat' => 0.0,
+				'priceExcludingVat' => 0.0,
+				'marketSales' => 0
+			]);
+		}
 
 		Item::model()->commit();
 

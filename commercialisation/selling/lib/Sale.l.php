@@ -1683,6 +1683,10 @@ class SaleLib extends SaleCrud {
 
 	public static function closeMarket(Sale $eSale): void {
 
+		if($eSale->isMarket() === FALSE) {
+			throw new \UnsupportedException();
+		}
+
 		$now = Sale::model()->now();
 
 		Sale::model()
@@ -1703,6 +1707,8 @@ class SaleLib extends SaleCrud {
 				'closedAt' => $now,
 				'closedBy' => \user\ConnectionLib::getOnline()
 			]);
+
+		\selling\PaymentMarketLib::calculateAggregation($eSale);
 
 	}
 

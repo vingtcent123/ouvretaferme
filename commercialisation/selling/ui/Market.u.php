@@ -75,6 +75,7 @@ class MarketUi {
 		$h = '<h2>'.s("Répartition des ventes").'</h2>';
 
 		\Asset::jsUrl('https://cdn.jsdelivr.net/npm/chart.js');
+		\Asset::js('analyze', 'chart.js');
 
 		$turnovers = array_column($hours, 'turnover');
 		$sales = array_column($hours, 'sales');

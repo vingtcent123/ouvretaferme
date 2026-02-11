@@ -45,6 +45,7 @@ class PaymentLib extends PaymentCrud {
 
 				if(
 					$e['sale']->isMarketSale() === FALSE and
+					$e['sale']->isMarket() === FALSE and
 					$e['sale']->isSale() === FALSE
 				) {
 					throw new \UnsupportedException();
