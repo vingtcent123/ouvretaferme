@@ -135,6 +135,21 @@ class SuggestionLib extends CashCrud {
 			switch($source) {
 
 				case Cash::SELL_INVOICE :
+
+					$ePayment = \selling\PaymentLib::getById($eCash['payment']);
+
+					$eInvoice = \selling\InvoiceLib::getById($eCash['invoice']);
+
+					$eInvoice['cSale'] = \selling\SaleLib::getByIds($eInvoice['sales']);
+					$eInvoice['cItem'] = \selling\SaleLib::getItemsBySales($eInvoice['cSale']);
+
+					dd(\preaccounting\AccountingLib::computeRatios(
+						$eInvoice,
+						$eCash['financialYear']['hasVat'],
+						\account\AccountLib::getAll(),
+						$ePayment
+					));
+
 					break;
 				case Cash::SELL_SALE :
 
@@ -142,14 +157,14 @@ class SuggestionLib extends CashCrud {
 
 					$eSale = \selling\SaleLib::getById($eCash['sale']);
 					$eSale['cItem'] = \selling\SaleLib::getItems($eSale);
-
+/*
 					dd(\preaccounting\AccountingLib::computeRatios(
 						$eSale,
 						$eCash['financialYear']['hasVat'],
 						\account\AccountLib::getAll(),
 						$ePayment
 					));
-
+*/
 					break;
 
 			}

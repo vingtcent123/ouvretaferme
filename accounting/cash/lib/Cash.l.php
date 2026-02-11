@@ -188,6 +188,7 @@ class CashLib extends CashCrud {
 				Cash::PRIVATE => self::createPrivate($e),
 				Cash::BANK_MANUAL, Cash::BANK_CASHFLOW => self::createWithoutVat($e),
 				Cash::OTHER, Cash::BUY_MANUAL, Cash::SELL_MANUAL => self::createWithVat($e),
+				Cash::SELL_INVOICE, Cash::SELL_SALE => self::createTransaction($e),
 
 			};
 
@@ -286,6 +287,16 @@ class CashLib extends CashCrud {
 
 	}
 
+	private static function createTransaction(Cash $e): void {
+
+		$e['status'] = Cash::DRAFT;
+
+			$e['amountExcludingVat'] = NULL;
+			$e['vat'] = NULL;
+			$e['vatRate'] = NULL;
+
+	}
+
 	public static function validateUntil(Cash $eCashUntil): void {
 
 		$eCashUntil->expects(['register']);
@@ -350,6 +361,25 @@ class CashLib extends CashCrud {
 		Cash::model()
 			->select('balance', 'position')
 			->update($e);
+
+		if($e['source'] === Cash::SELL_SALE) {
+			self::validateSale($e['sale']);
+		}
+
+	}
+
+	private static function validateSale(\selling\Sale $e): void {
+
+		\selling\Sale::model()
+			->select(\selling\SaleElement::getSelection())
+			->get($e);
+
+		if($e->isMarket()) {
+
+			$cSaleMarket = \selling\Sale::model();
+
+
+		}
 
 	}
 
