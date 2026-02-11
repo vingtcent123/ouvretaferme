@@ -508,23 +508,6 @@ class Sale extends SaleElement {
 
 	}
 
-	public function extractFirstValidPayment(): Payment {
-
-		$this->expects(['cPayment']);
-
-		if($this['cPayment']->empty()) {
-			return new Payment();
-		}
-
-		foreach($this['cPayment'] as $ePayment) {
-			if($ePayment->isPaid()) {
-				return $ePayment;
-			}
-		}
-
-		return new Payment();
-	}
-
 	public function isReadonly(): bool {
 
 		return (

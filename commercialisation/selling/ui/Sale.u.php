@@ -1219,6 +1219,7 @@ class SaleUi {
 
 		switch($eSale['paymentStatus']) {
 
+			case Sale::PARTIAL_PAID :
 			case Sale::NOT_PAID :
 				$color = '--text';
 				$text = s("Non payé");
