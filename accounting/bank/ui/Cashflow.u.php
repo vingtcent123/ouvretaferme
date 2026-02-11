@@ -691,6 +691,7 @@ class CashflowUi {
 				'third-party-create-index' => 0,
 				'class' => 'panel-dialog',
 				'data-has-vat' => (int)$eFinancialYear['hasVat'],
+				'data-cashflow' => 1,
 			]
 		);
 

@@ -254,6 +254,10 @@
 .operation-amounts-container div fieldset {
 	background: #00000005;
 }
+form[data-cashflow="0"] .operation-create-validation [data-field="amount"] > div,
+form[data-cashflow="0"] .operation-create-validation [data-field="vatValue"] > div {
+	display: none !important;
+}
 
 body[data-touch="no"].panel-open {
 

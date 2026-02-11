@@ -217,7 +217,7 @@ class OperationUi {
 				'third-party-create-index' => 0,
 				'class' => 'panel-dialog',
 				'data-has-vat' => (int)$eFinancialYear['hasVat'],
-			], $eCashflow->empty() ? [] : ['data-cashflow']),
+			], $eCashflow->empty() ? [] : ['data-cashflow' => 1]),
 		);
 
 		$h = '';
@@ -680,6 +680,7 @@ class OperationUi {
 				'third-party-create-index' => 0,
 				'class' => 'panel-dialog',
 				'data-has-vat' => (int)$eFinancialYear['hasVat'],
+				'data-cashflow' => 0,
 			],
 		);
 

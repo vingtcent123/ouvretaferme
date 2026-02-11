@@ -393,7 +393,15 @@ class Operation {
 		Operation.showOrHideDeleteOperation();
 		Operation.updateSingularPluralText();
 
-		Cashflow.checkValidationValues();
+		if(typeof Cashflow !== "undefined") {
+
+			Cashflow.checkValidationValues();
+
+		} else {
+
+			OperationAmount.setValidationValues(1);
+
+		}
 
 	}
 
