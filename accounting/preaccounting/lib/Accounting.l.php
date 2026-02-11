@@ -334,7 +334,11 @@ Class AccountingLib {
 
 			foreach($allEntries as $item) {
 
-				$eAccount = $cAccount->offsetGet($item['account']);
+				if($cAccount->offsetExists($item['account'])) {
+					$eAccount = $cAccount->offsetGet($item['account']);
+				} else {
+					$eAccount = new \account\Account();
+				}
 
 				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
 
@@ -432,7 +436,11 @@ Class AccountingLib {
 
 			foreach($allEntries as $item) {
 
-				$eAccount = $cAccount->offsetGet($item['account']);
+				if($cAccount->offsetExists($item['account'])) {
+					$eAccount = $cAccount->offsetGet($item['account']);
+				} else {
+					$eAccount = new \account\Account();
+				}
 
 				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
 
