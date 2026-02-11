@@ -354,7 +354,7 @@ Class AccountingLib {
 					$fecDataItemPayment = self::getFecLine(
 						eAccount    : $eAccount,
 						date        : $date,
-						eCode       : $eAccount['journalCode'],
+						eCode       : $eAccount['journalCode'] ?? new \journal\JournalCode(),
 						ecritureLib : $document,
 						document    : $document,
 						documentDate: $documentDate,
@@ -364,7 +364,7 @@ Class AccountingLib {
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
 						number      : $forImport ? ++$number : NULL,
-						isSummed    : $eAccountBank['id'] !== $eAccount['id'],
+						isSummed    : $eAccountBank['id'] !== ($eAccount['id'] ?? NULL),
 						origin      : 'invoice',
 					);
 
@@ -453,7 +453,7 @@ Class AccountingLib {
 					$fecDataItemPayment = self::getFecLine(
 						eAccount    : $eAccount,
 						date        : $referenceDate,
-						eCode       : $eAccount['journalCode'],
+						eCode       : $eAccount['journalCode'] ?? new \journal\JournalCode,
 						ecritureLib : $ecritureLib,
 						document    : $document,
 						documentDate: $documentDate,
@@ -463,7 +463,7 @@ Class AccountingLib {
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
 						number      : $forImport ? ++$number : NULL,
-						isSummed    : $eAccountBank['id'] !== $eAccount['id'],
+						isSummed    : $eAccountBank['id'] !== ($eAccount['id'] ?? ''),
 						origin      : 'invoice',
 					);
 
