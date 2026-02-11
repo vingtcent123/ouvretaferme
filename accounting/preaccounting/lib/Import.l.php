@@ -3,27 +3,6 @@ namespace preaccounting;
 
 Class ImportLib {
 
-	public static function getInvoiceSales(\farm\Farm $eFarm, \Search $search): \Collection {
-
-		$eFarm->expects(['cFinancialYear']);
-
-		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
-
-		$cInvoice = InvoiceLib::getForAccounting($eFarm, $search, TRUE);
-
-		[$fec, ] = AccountingLib::generateInvoicesFec($cInvoice, $eFarm['cFinancialYear'], $cAccount, TRUE);
-
-		// Rattacher les opérations aux invoices
-		foreach($cInvoice as &$eInvoice) {
-
-			$eInvoice['operations'] = self::filterOperations($fec, (string)$eInvoice['number']);
-
-		}
-
-		return $cInvoice;
-
-	}
-
 	public static function getPayments(\farm\Farm $eFarm, \Search $search): \Collection {
 
 		$eFarm->expects(['cFinancialYear']);
@@ -138,11 +117,6 @@ Class ImportLib {
 		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperationBase, $ePayment);
 
 		\selling\Payment::model()->update($ePayment, ['accountingHash' => $hash]);
-		if($ePayment['source'] === \selling\Payment::INVOICE) {
-			\selling\Invoice::model()->whereId($ePayment['invoice']['id'])->update(['accountingHash' => $hash]);
-		} else {
-			\selling\Sale::model()->whereInvoice($ePayment['sale']['id'])->update(['accountingHash' => $hash]);
-		}
 		\bank\Cashflow::model()->update($ePayment['cashflow'], ['status' => \bank\Cashflow::ALLOCATED, 'hash' => $hash]);
 
 		\selling\Invoice::model()->commit();

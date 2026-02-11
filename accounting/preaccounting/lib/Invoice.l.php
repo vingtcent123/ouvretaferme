@@ -3,75 +3,14 @@ namespace preaccounting;
 
 Class InvoiceLib {
 
-	public static function setReadyForAccounting(\farm\Farm $eFarm): void {
-
-		$cInvoice = \selling\Invoice::model()
-			->select([
-				'id', 'cashflow', 'priceIncludingVat', 'accountingDifference',
-				'cPayment' => \selling\Payment::model()
-					->select(\selling\Payment::getSelection() + ['cashflow' => \bank\Cashflow::getSelection()])
-					->whereStatus(\selling\Payment::PAID)
-					->whereCashflow('!=', NULL)
-					->delegateCollection('sale', 'id')
-			])
-			->join(\selling\Payment::model(), 'm1.id = m2.invoice AND m2.status = "'.\selling\Payment::PAID.'" AND m2.cashflow IS NOT NULL AND m1.priceIncludingVat = m2.amountIncludingVat')
-			->where('m1.farm', $eFarm)
-			->where('m1.status', 'NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
-			->wherePaymentStatus(\selling\Invoice::PAID)
-			->whereReadyForAccounting(FALSE)
-			->getCollection();
-
-
-		foreach($cInvoice as $eInvoice) {
-
-			if($eInvoice['cPayment']->count() === 0) {
-				continue;
-			}
-
-			if($eInvoice['cPayment']->count() !== 1 or $eInvoice['cPayment']->first()['amountIncludingVat'] !== $eInvoice['priceIncludingVat']) {
-				continue;
-			}
-
-			$ePayment = $eInvoice['cPayment']->first();
-
-			$updateFields = [];
-
-			if($eInvoice['priceIncludingVat'] === $ePayment['cashflow']['amount']) { // Si les montants sont identiques
-
-				$updateFields['readyForAccounting'] = TRUE;
-
-			} else if($ePayment['accountingDifference'] === NULL) { // Ou si on n'a pas encore traité comment gérer la différence
-
-				$updateFields['readyForAccounting'] = TRUE;
-				$updateFields['accountingDifference'] = \selling\Invoice::AUTOMATIC;
-
-			}
-
-			\selling\Invoice::model()->update($eInvoice, $updateFields);
-		}
-
-	}
-
 	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\InvoiceModel {
 
 		return \selling\Invoice::model()
-			->where('m1.status', 'NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
-			->where('paymentStatus IS NULL')
-			->where('priceExcludingVat != 0.0')
-			->where('m1.farm = '.$eFarm['id'])
+			->whereStatus('NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
+			->wherePaymentStatus('=' , NULL)
+			->wherePriceExcludingVat('!=', 0.0)
+			->whereFarm($eFarm)
 			->where('date BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')));
-
-	}
-
-	public static function countForAccountingPaymentCheck(\farm\Farm $eFarm, \Search $search): int {
-
-		return self::filterForAccountingCheck($eFarm, $search)->count();
-
-	}
-
-	public static function countEligible(\farm\Farm $eFarm, \Search $search): int {
-
-		return self::filterForAccountingCheck($eFarm, $search)->count();
 
 	}
 
@@ -79,15 +18,17 @@ Class InvoiceLib {
 
 		return self::filterForAccountingCheck($eFarm, $search)
 			->select(\selling\Invoice::getSelection())
-			->where('m1.closed', FALSE)
+			->whereClosed(FALSE)
 			->sort(['date' => SORT_DESC])
 			->getCollection(NULL, NULL, 'id');
 
 	}
+	public static function countForPaymentAccountingCheck(\farm\Farm $eFarm, \Search $search): int {
 
-	public static function countForAccounting(\farm\Farm $eFarm, \Search $search) {
-
-		return self::filterForAccounting($eFarm, $search, TRUE)->count();
+		return self::filterForAccountingCheck($eFarm, $search)
+			->select(\selling\Invoice::getSelection())
+			->whereClosed(FALSE)
+			->count();
 
 	}
 
@@ -128,9 +69,9 @@ Class InvoiceLib {
 		if($forImport) {
 
 			\selling\Invoice::model()
-				->whereCashflow('!=', NULL)
-				->whereAccountingHash(NULL)
-				->whereReadyForAccounting(TRUE)
+				//->whereCashflow('!=', NULL)
+				//->whereAccountingHash(NULL)
+				//->whereReadyForAccounting(TRUE)
 			;
 
 		} else {
@@ -144,14 +85,11 @@ Class InvoiceLib {
 		}
 		return \selling\Invoice::model()
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
-			->join(\bank\Cashflow::model(), 'm1.cashflow = m3.id', 'LEFT')
 			->where('m1.status NOT IN ("'.\selling\Invoice::DRAFT.'", "'.\selling\Invoice::CANCELED.'")')
 			->where('m1.paymentStatus IS NULL OR m1.paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
 			->where('m2.type = '.\selling\Customer::model()->format($search->get('type')), if: $search->get('type'))
 			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->has('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
-			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
-			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
 		;
 
 	}

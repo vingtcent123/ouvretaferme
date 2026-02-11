@@ -18,7 +18,7 @@ new \selling\PaymentPage()
 		};
 
 		$totalPaid = \selling\PaymentLib::sumTotalPaid($data->e);
-		if($totalPaid === $priceIncludingVat) {
+		if($totalPaid === $priceIncludingVat and $data->e['cashflow']['amount'] === $data->e['amountIncludingVat']) {
 			throw new NotExpectedAction();
 		}
 

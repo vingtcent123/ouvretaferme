@@ -58,7 +58,6 @@ class InvoiceLib extends InvoiceCrud {
 			->whereFarm($eFarm)
 			->whereStatus('LIKE', $search->get('status'), if: $search->get('status'))
 			->whereDate('LIKE', '%'.$search->get('date').'%', if: $search->get('date'))
-			->whereAccountingHash($search->get('accountingHash'), if: $search->has('accountingHash'))
 			->sort($search->buildSort())
 			->getCollection($position, $number);
 

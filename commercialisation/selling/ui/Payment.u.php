@@ -61,6 +61,13 @@ class PaymentUi {
 				];
 				break;
 
+			case 'accountingDifference' :
+				$d->values = [
+					Payment::AUTOMATIC => s("Écriture de régularisation créée automatiquement"),
+					Payment::NOTHING => s("Ne créer aucune écriture"),
+				];
+				$d->attributes['mandatory'] = TRUE;
+				break;
 		}
 
 		return $d;

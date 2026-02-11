@@ -515,13 +515,10 @@ class OperationLib extends OperationCrud {
 				// Si ce lot d'opérations était lié à une facture => Mise à jour du hash de l'invoice et de ses sales
 				if($for === 'update') {
 
-					\selling\Invoice::model()
+					\selling\Payment::model()
 			      ->whereAccountingHash($input['hash'])
 			      ->update(['accountingHash' => $hash]);
 
-					\selling\Sale::model()
-			      ->whereAccountingHash($input['hash'])
-			      ->update(['accountingHash' => $hash]);
 				}
 
 				// On supprime tout et on recommence !

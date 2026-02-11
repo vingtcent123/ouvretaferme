@@ -407,7 +407,15 @@ class OperationUi {
 		$h .= '</div>';
 		$h .= '<div class="operation-view-value">';
 			$document = $eOperation['document'] ? $eOperation['document'] : '<i>'.s("Non indiqué").'</i>';
-			$h .= $document;
+			if($eOperation['document'] and $eOperation['payment']->notEmpty()) {
+				$url = match($eOperation['payment']['source']) {
+					\selling\Payment::INVOICE => '/ferme/'.$eFarm['id'].'/factures?invoice='.encode($eOperation['payment']['invoice']['id']).'&customer='.encode($eOperation['payment']['invoice']['customer']['name']),
+					\selling\Payment::SALE => \selling\SaleUi::url($eOperation['payment']['sale']),
+				};
+				$h .= '<a href="'.$url.'" target="_blank">'.$document.'</a>';
+			} else {
+				$h .= $document;
+			}
 		$h .= '</div>';
 
 		$h .= '<div class="operation-view-label">';
@@ -469,14 +477,16 @@ class OperationUi {
 				$h .= '<table class="tr-even">';
 					$h .= '<tr>';
 						$h .= '<th colspan="2" class="text-center">';
-							$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?id='.$eCashflow['id'].'&bankAccount='.$eCashflow['account']['id'].'" target="_blank">';
+							$h .= '<div class="flex-justify-space-between">';
 								$h .= s("Opération #{id} du {date}", [
 									'id' => encode($eCashflow['id']),
 									'icon' => \Asset::icon('box-arrow-up-right').'</a>',
 									'date' => \util\DateUi::numeric($eCashflow['date']),
 								]);
-								$h .= ' '.\Asset::icon('box-arrow-up-right').'</a>';
-							$h .= '</a>';
+								$h .= '<a class="util-badge bg-accounting" href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?id='.$eCashflow['id'].'&bankAccount='.$eCashflow['account']['id'].'" target="_blank">';
+									$h .= \Asset::icon('bank');
+								$h .= '</a>';
+							$h .= '</div>';
 						$h .= '</th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
@@ -595,8 +605,8 @@ class OperationUi {
 								};
 						$h .= '</div>';
 						$h .= '<div>';
-							$h .= ' <a href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">';
-								$h .= s("détails");
+							$h .= ' <a class="util-badge bg-accounting" href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'">';
+								$h .= \Asset::icon('journal-text');
 							$h .= '</a>';
 						$h .= '</div>';
 					$h .= '</div>';

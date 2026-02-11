@@ -32,9 +32,6 @@ abstract class InvoiceElement extends \Element {
 	const FAIL = 'fail';
 	const SUCCESS = 'success';
 
-	const AUTOMATIC = 'automatic';
-	const NOTHING = 'nothing';
-
 	public static function getSelection(): array {
 		return Invoice::model()->getProperties();
 	}
@@ -98,9 +95,6 @@ class InvoiceModel extends \ModuleModel {
 			'closed' => ['bool', 'cast' => 'bool'],
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
-			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
-			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'accountingDifference' => ['enum', [\selling\Invoice::AUTOMATIC, \selling\Invoice::NOTHING], 'null' => TRUE, 'cast' => 'enum'],
 			'readyForAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'paidAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -109,7 +103,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'number', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentStatus', 'paymentAmount', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
+			'id', 'document', 'number', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentStatus', 'paymentAmount', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'readyForAccounting', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -117,7 +111,6 @@ class InvoiceModel extends \ModuleModel {
 			'content' => 'selling\PdfContent',
 			'farm' => 'farm\Farm',
 			'closedBy' => 'user\User',
-			'cashflow' => 'bank\Cashflow',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -173,9 +166,6 @@ class InvoiceModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'generation' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'accountingDifference' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -328,18 +318,6 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereClosedBy(...$data): InvoiceModel {
 		return $this->where('closedBy', ...$data);
-	}
-
-	public function whereCashflow(...$data): InvoiceModel {
-		return $this->where('cashflow', ...$data);
-	}
-
-	public function whereAccountingHash(...$data): InvoiceModel {
-		return $this->where('accountingHash', ...$data);
-	}
-
-	public function whereAccountingDifference(...$data): InvoiceModel {
-		return $this->where('accountingDifference', ...$data);
 	}
 
 	public function whereReadyForAccounting(...$data): InvoiceModel {

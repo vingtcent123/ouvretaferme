@@ -1,7 +1,6 @@
 Suggestion:
   id: serial32
   cashflow: bank\Cashflow
-  invoice: ?selling\Invoice
   paymentMethod: ?payment\Method
   payment: ?selling\Payment
   status: enum(WAITING, REJECTED, VALIDATED, OUT) = WAITING
@@ -9,6 +8,5 @@ Suggestion:
   weight: int16(0, NULL)
   createdAt: datetime = SPECIAL(now)
   UNIQUE: [
-    ["cashflow", "invoice"],
     ["cashflow", "payment"],
   ]

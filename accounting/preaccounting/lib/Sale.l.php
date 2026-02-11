@@ -32,12 +32,6 @@ Class SaleLib {
 
 	}
 
-	public static function countEligible(\farm\Farm $eFarm, \Search $search): int {
-
-		return self::filterForAccountingCheck($eFarm, $search)->count();
-
-	}
-
 	public static function getForAccounting(\farm\Farm $eFarm, \Search $search): \Collection {
 
 		$selectSale = [

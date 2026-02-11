@@ -137,10 +137,18 @@ Class ImportUi {
 										$h .= s("Non rapprochée");
 									$h .= '</span>';
 								}
-
-								if($eElement['totalPaid'] !== $eElement['priceIncludingVat']) {
+								if(
+									$eElement['totalPaid'] !== $eElement['priceIncludingVat'] or
+									$ePayment['cashflow']['amount'] !== $ePayment['amountIncludingVat']
+								) {
 									$h .= '<div class="mb-1">';
-										$difference = abs($eElement['priceIncludingVat'] - $eElement['totalPaid']);
+
+									if($ePayment['cashflow']['amount'] !== $ePayment['amountIncludingVat']) {
+											$difference = abs($ePayment['cashflow']['amount'] - $ePayment['amountIncludingVat']);
+										} else if($eElement['totalPaid'] !== $eElement['priceIncludingVat']) {
+											$difference = abs($eElement['priceIncludingVat'] - $eElement['totalPaid']);
+										}
+
 										$form = new \util\FormUi();
 										$h .= $form->openAjax(\farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:updateInvoiceAccountingDifference', ['id' => 'difference-'.$ePayment['id'], 'name' => 'difference-'.$ePayment['id']]);
 											$h .= $form->hidden('id', $ePayment['id']);
@@ -148,7 +156,7 @@ Class ImportUi {
 												$h .= '<legend>';
 													$h .= s("Traitement comptable de l'écart de {value}", \util\TextUi::money(round($difference, 2)));
 												$h .= '</legend>';
-												$h .= $form->select('accountingDifference', \selling\InvoiceUi::p('accountingDifference')->values, $ePayment['accountingDifference'], attributes: ['onchange' => 'Import.submit(this);'] + ($ePayment['accountingDifference'] !== NULL ? ['mandatory' => TRUE] : []));
+												$h .= $form->select('accountingDifference', \selling\PaymentUi::p('accountingDifference')->values, $ePayment['accountingDifference'], attributes: ['onchange' => 'Import.submit(this);'] + ($ePayment['accountingDifference'] !== NULL ? ['mandatory' => TRUE] : []));
 											$h .= '</fieldset>';
 										$h .= $form->close();
 									$h .= '</div>';

@@ -53,7 +53,6 @@ class SuggestionModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'cast' => 'element'],
-			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'payment' => ['element32', 'selling\Payment', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', [\preaccounting\Suggestion::WAITING, \preaccounting\Suggestion::REJECTED, \preaccounting\Suggestion::VALIDATED, \preaccounting\Suggestion::OUT], 'cast' => 'enum'],
@@ -63,18 +62,16 @@ class SuggestionModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'cashflow', 'invoice', 'paymentMethod', 'payment', 'status', 'reason', 'weight', 'createdAt'
+			'id', 'cashflow', 'paymentMethod', 'payment', 'status', 'reason', 'weight', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'cashflow' => 'bank\Cashflow',
-			'invoice' => 'selling\Invoice',
 			'paymentMethod' => 'payment\Method',
 			'payment' => 'selling\Payment',
 		];
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['cashflow', 'invoice'],
 			['cashflow', 'payment']
 		]);
 
@@ -125,10 +122,6 @@ class SuggestionModel extends \ModuleModel {
 
 	public function whereCashflow(...$data): SuggestionModel {
 		return $this->where('cashflow', ...$data);
-	}
-
-	public function whereInvoice(...$data): SuggestionModel {
-		return $this->where('invoice', ...$data);
 	}
 
 	public function wherePaymentMethod(...$data): SuggestionModel {

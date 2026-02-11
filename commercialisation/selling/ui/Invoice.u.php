@@ -981,14 +981,6 @@ class InvoiceUi {
 				];
 				break;
 
-			case 'accountingDifference' :
-				$d->values = [
-					Invoice::AUTOMATIC => s("Écriture de régularisation créée automatiquement"),
-					Invoice::NOTHING => s("Ne créer aucune écriture"),
-				];
-				$d->attributes['mandatory'] = TRUE;
-				break;
-
 			case 'date' :
 				$d->labelAfter = fn(Invoice $e) => \util\FormUi::info($e['lastDate'] !== NULL ? s("Vous devez respecter la chronologie des dates de facturation dans l'édition de vos factures. Compte tenu des factures déjà générées, vous ne pouvez pas facturer antérieurement au {value}.", \util\DateUi::numeric($e['lastDate'])) : s("Vous devez respecter la chronologie des dates de facturation dans l'édition de vos factures. Dès lors que vous aurez généré une première facture, vous ne pourrez plus générer d'autres factures à une date antérieure."));
 				break;

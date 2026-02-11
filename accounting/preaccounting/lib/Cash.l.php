@@ -21,12 +21,6 @@ Class CashLib {
 
 	}
 
-	public static function countEligible(\farm\Farm $eFarm, \Search $search): int {
-
-		return self::filterForAccounting($eFarm, $search)->count();
-
-	}
-
 	private static function filterForAccounting(\farm\Farm $eFarm, \Search $search): \cash\CashModel {
 
 		if($search->has('register') and $search->get('register')->notEmpty()) {

@@ -46,7 +46,7 @@ Class ReconciliateLib {
 		\preaccounting\Suggestion::model()
 			->or(
 				fn() => $this->whereCashflow($eSuggestionValidated['cashflow']),
-				fn() => $this->whereInvoice($eSuggestionValidated['invoice']),
+				fn() => $this->wherePayment($eSuggestionValidated['payment']),
 			)
 			->whereStatus(\preaccounting\Suggestion::WAITING)
 			->update(['status' => \preaccounting\Suggestion::OUT]);

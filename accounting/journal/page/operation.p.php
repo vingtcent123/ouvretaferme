@@ -16,6 +16,7 @@ new \journal\OperationPage(function($data) {
 ->read('/journal/operation/{id}', function($data) {
 
 	$data->e['cOperationHash'] = \journal\OperationLib::getByHash($data->e['hash']);
+	$data->e['payment'] = \preaccounting\PaymentLib::getByHash($data->e['hash']);
 
 	throw new ViewAction($data);
 })

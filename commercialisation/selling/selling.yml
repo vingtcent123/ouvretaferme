@@ -135,9 +135,6 @@ Invoice:
   closed: bool = FALSE
   closedAt: ?datetime
   closedBy: ?user\User
-  cashflow: ?bank\Cashflow
-  accountingHash: ?textFixed(20, 20) @charset(ascii)
-  accountingDifference: ?enum(AUTOMATIC, NOTHING)
   readyForAccounting: ?bool = FALSE
   emailedAt: ?datetime
   paidAt: ?date
@@ -362,7 +359,6 @@ Sale:
   expiresAt: ?datetime
   statusAt: datetime = SPECIAL(now)
   statusBy: ?user\User = SPECIAL(user)
-  accountingHash: ?textFixed(20, 20) @charset(ascii)
   INDEX: [
     ["customer"],
     ["shopDate"],

@@ -10,40 +10,6 @@ Class PreaccountingUi {
 
 	}
 
-	public function summarize(int $nInvoice, int $nSale, int $nCash): string {
-
-		$h = '<ul class="util-summarize">';
-
-			$h .= '<li>';
-				$h .= '<div>';
-					$h .= '<h5>'.p("Vente", "Ventes", $nSale).'</h5>';
-					$h .= '<div>'.$nSale.'</div>';
-				$h .= '</div>';
-			$h .= '</li>';
-
-			$h .= '<li>';
-				$h .= '<div>';
-					$h .= '<h5>'.p("Facture", "Factures", $nInvoice).'</h5>';
-					$h .= '<div>'.$nInvoice.'</div>';
-				$h .= '</div>';
-			$h .= '</li>';
-
-			if(CashLib::isActive()) {
-
-				$h .= '<li>';
-					$h .= '<div>';
-						$h .= '<h5>'.p("Opération de caisse", "Opérations de caisse", $nCash).'</h5>';
-						$h .= '<div>'.$nCash.'</div>';
-					$h .= '</div>';
-				$h .= '</li>';
-
-			}
-		$h .= '</ul>';
-
-		return $h;
-
-	}
-
 	public function getSearchPeriod(\Search $search): string {
 
 		$h = '<div class="util-block-search">';
@@ -599,13 +565,13 @@ Class PreaccountingUi {
 
 				if($eFarm->usesAccounting() === FALSE) {
 					$h .= '<p class="util-info">'.s("L'import sera possible dès lors que vous utiliserez le logiciel comptable de {siteName} pour tenir votre comptabilité !").'</p>';
-				} else if($nProduct > 0) {
+				} else if($nProduct > 0 or $nPaymentToCheck > 0) {
 					$h .= '<p class="util-info">'.s("Des données étant manquantes, l'import n'est pas possible.").'</p>';
 				} else {
 					$h .= '<p>'.s("Importez les paiements pour lesquels vous avez fait un rapprochement bancaire !").'</p>';
 				}
 				$class = 'btn btn-primary';
-				if($nProduct > 0 or $eFarm->usesAccounting() === FALSE) {
+				if($nProduct > 0 or $nPaymentToCheck > 0 or $eFarm->usesAccounting() === FALSE) {
 					$class .= ' disabled';
 					$url = 'javascript: void(0);';
 				} else {

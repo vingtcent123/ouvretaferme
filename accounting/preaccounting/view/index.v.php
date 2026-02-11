@@ -23,20 +23,6 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 	if($data->eFarm['hasSales']) {
 
 		echo new \preaccounting\PreaccountingUi()->getSearchPeriod($data->search);
-		echo new \preaccounting\PreaccountingUi()->summarize($data->nInvoice, $data->nSale, $data->nCash);
-
-		if($data->nInvoice === 0 and $data->nSale === 0) {
-
-			echo '<div class="util-block-info">';
-				echo '<h3>'.s("Aucune donnée disponible").'</h3>';
-				echo '<p>'.s("Aucune vente ni facture éligible à la comptabilité n'a été trouvée sur {siteName} pour cette période.<br/>Modifiez la période de recherche, ou <linkSales>consultez vos ventes</linkSales> ou <linkInvoice>vos factures</linkInvoice>.", [
-					'linkSales' => '<a href="'.\farm\FarmUi::urlSellingSales($data->eFarm).'">',
-					'linkInvoice' => '<a href="'.\farm\FarmUi::urlSellingInvoices($data->eFarm).'">',
-					]).'</p>';
-			echo '</div>';
-			return;
-
-		}
 
 	} else {
 
@@ -63,7 +49,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		],
 		[
 			'position' => 2,
-			'number' => $data->nPaymentToCheck,
+			'number' => $data->nInvoiceForPaymentToCheck,
 			'type' => 'payment',
 			'title' => s("Moyens de paiement"),
 			'description' => s("Renseignez le moyen de paiement des factures"),
@@ -140,12 +126,12 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		case 'payment':
 			echo '<div data-step="'.$data->type.'" class="stick-md util-overflow-md">';
-				echo new \preaccounting\PreaccountingUi()->invoices($data->eFarm, $data->cInvoice, $data->cPaymentMethod, $data->search);
+				echo new \preaccounting\PreaccountingUi()->invoices($data->eFarm, $data->cInvoiceForPayment, $data->cPaymentMethod, $data->search);
 			echo '</div>';
 			break;
 
 		case 'export':
-			echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $data->nProductToCheck + $data->nItemToCheck,  $data->nPaymentToCheck, $data->isSearchValid, $data->search);
+			echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $data->nProductToCheck + $data->nItemToCheck,  $data->nInvoiceForPaymentToCheck, $data->isSearchValid, $data->search);
 			break;
 	}
 

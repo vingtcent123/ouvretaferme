@@ -483,9 +483,16 @@ Class AccountingLib {
 					\selling\Payment::SALE => $ePayment['sale']['priceIncludingVat'],
 				};
 
-				$difference = round($priceIncludingVat - $totalPaid, 2);
+				// Différence sur ce paiement précisément
+				if($ePayment['amountIncludingVat'] !== $ePayment['cashflow']['amount']) {
+					$difference = round($ePayment['amountIncludingVat'] - $ePayment['cashflow']['amount'], 2);
+				} else if($priceIncludingVat !== $totalPaid) {// Différence au global
+					$difference = round($priceIncludingVat - $totalPaid, 2);
+				} else {
+					$difference = 0.0;
+				}
 
-				if($difference !== 0.0 and $ePayment['accountingDifference'] === \selling\Invoice::AUTOMATIC) {
+				if($difference !== 0.0 and $ePayment['accountingDifference'] === \selling\Payment::AUTOMATIC) {
 
 					if($difference > 0) { // Arrondi défavorable
 

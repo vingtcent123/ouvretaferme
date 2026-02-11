@@ -92,8 +92,9 @@ class LogUi {
 			'superpdp' => [s("Factures électroniques"), $this->getSuperPdpAction($action, $params)],
 			'sales' => [s("Ventes"), $this->getSalesAction($action, $params)],
 			'invoice' => [s("Factures"), $this->getInvoiceAction($action, $params)],
-			'market' => [s("Marchés", $this->getMarketAction($action, $params))],
-			default => throw new \Exception("unknown"),
+			'market' => [s("Marchés"), $this->getMarketAction($action, $params)],
+			'payment' => [s("Paiements"), $this->getPaymentAction($action, $params)],
+			default => throw new \Exception("unknown element $element"),
 		};
 
 	}
@@ -105,6 +106,17 @@ class LogUi {
 			'ignore' => s("Marché ignoré pour l'import"),
 			'importseveral' => s("Import de marchés"),
 			'ignoreseveral' => s("Marchés ignorés pour l'import"),
+		};
+
+	}
+
+	public function getPaymentAction(string $action, array $params): string {
+
+		return match(strtolower($action)) {
+			'import' => s("Import de paiement en comptabilité"),
+			'ignore' => s("Paiement ignoré pour l'import en comptabilité"),
+			'importseveral' => s("Import de paiements en comptabilité"),
+			'ignoreseveral' => s("Paiements ignorés pour l'import en comptabilité"),
 		};
 
 	}

@@ -3,6 +3,45 @@ namespace preaccounting;
 
 Class PaymentLib {
 
+	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\PaymentModel {
+
+		return \selling\Payment::model()
+			->whereStatus(\selling\Payment::NOT_PAID)
+			->whereFarm($eFarm)
+			->where('paidAt IS NULL OR paidAt BETWEEN '.\selling\Sale::model()->format($search->get('from')).' AND '.\selling\Sale::model()->format($search->get('to')));
+
+	}
+
+	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): \Collection {
+
+		return self::filterForAccountingCheck($eFarm, $search)
+			->select(\selling\Payment::getSelection() + [
+					'invoice' => ['id', 'number', 'document', 'date', 'priceIncludingVat', 'customer' => ['id', 'legalName', 'name', 'type']],
+					'sale' => ['id', 'document', 'deliveredAt', 'priceIncludingVat', 'customer' => ['id', 'legalName', 'name', 'type']]
+				])
+			->getCollection(NULL, NULL, 'id');
+
+	}
+	public static function countForAccountingCheck(\farm\Farm $eFarm, \Search $search, bool $searchProblems = TRUE): int {
+
+		return (self::filterForAccountingCheck($eFarm, $search, $searchProblems)
+			->select(['count' => new \Sql('COUNT(DISTINCT(m1.id))', 'int')])
+			->get()['count'] ?? 0);
+
+	}
+
+	public static function getByHash(string $hash): \selling\Payment {
+
+		return \selling\Payment::model()
+			->select(\selling\Payment::getSelection() + [
+					'invoice' => ['id', 'number', 'document', 'date', 'priceIncludingVat', 'customer' => ['id', 'legalName', 'name', 'type']],
+					'sale' => ['id', 'document', 'deliveredAt', 'priceIncludingVat', 'customer' => ['id', 'legalName', 'name', 'type']]
+				])
+			->whereAccountingHash($hash)
+			->get();
+
+	}
+
 	public static function updateAccountingDifference(\selling\Payment $ePayment, string $accountingDifference): void {
 
 		$update = ['accountingDifference' => $accountingDifference];

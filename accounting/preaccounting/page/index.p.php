@@ -50,27 +50,14 @@ new Page(function($data) {
 			$data->nProductToCheck = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
 			$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search, 'invoice');
 
-			$data->nPaymentToCheck = \preaccounting\InvoiceLib::countForAccountingPaymentCheck($data->eFarm, $data->search);
-
-			$data->nSale = \preaccounting\SaleLib::countEligible($data->eFarm, $data->search);
-			$data->nInvoice = \preaccounting\InvoiceLib::countEligible($data->eFarm, $data->search);
-
-			if(\preaccounting\CashLib::isActive()) {
-				$data->nCash = \preaccounting\CashLib::countEligible($data->eFarm, $data->search);
-			} else {
-				$data->nCash = 0;
-			}
+			$data->nInvoiceForPaymentToCheck = \preaccounting\InvoiceLib::countForPaymentAccountingCheck($data->eFarm, $data->search);
 
 		} else {
 
 			$data->nProductToCheck = 0;
 			$data->nItemToCheck = 0;
 
-			$data->nPaymentToCheck = 0;
-
-			$data->nSale = 0;
-			$data->nInvoice = 0;
-			$data->nCash = 0;
+			$data->nInvoiceForPaymentToCheck = 0;
 
 		}
 
@@ -91,7 +78,7 @@ new Page(function($data) {
 
 		}
 
-		if($data->nProductToCheck === 0 and $data->nItemToCheck === 0 and $data->nPaymentToCheck === 0) {
+		if($data->nProductToCheck === 0 and $data->nItemToCheck === 0 and $data->nInvoiceForPaymentToCheck === 0) {
 
 			$data->type = 'export';
 
@@ -106,7 +93,7 @@ new Page(function($data) {
 		} else if($data->type === 'product') { // On bascule sur l'onglet suivant si + pertinent
 
 			if($data->nProductToCheck + $data->nItemToCheck === 0) {
-				if($data->nPaymentToCheck > 0) {
+				if($data->nInvoiceForPaymentToCheck > 0) {
 					$data->type = 'payment';
 				} else {
 					$data->type = 'export';
@@ -114,7 +101,7 @@ new Page(function($data) {
 			}
 		} else if($data->type === 'payment') { // On bascule sur l'onglet suivant si + pertinent
 
-			if($data->nPaymentToCheck === 0) {
+			if($data->nInvoiceForPaymentToCheck === 0) {
 				if($data->nProductToCheck + $data->nItemToCheck > 0) {
 					$data->type = 'product';
 				} else {
@@ -140,7 +127,7 @@ new Page(function($data) {
 
 				case 'payment':
 					$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
-					$data->cInvoice = \preaccounting\InvoiceLib::getForAccountingCheck($data->eFarm, $data->search);
+					$data->cInvoiceForPayment = \preaccounting\InvoiceLib::getForAccountingCheck($data->eFarm, $data->search);
 					$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 					break;
 
