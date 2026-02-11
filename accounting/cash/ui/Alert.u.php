@@ -35,6 +35,7 @@ class AlertUi {
 			'Cash::updatedBalance' => s("Le solde du journal de caisse a bien été mis à jour"),
 			'Cash::validated' => s("Les opérations ont bien été validées"),
 			'Cash::deleted' => s("L'opération a bien été supprimée"),
+			'Cash::imported' => s("L'opération a bien été importée dans les opérations à valider"),
 
 			'Register::created' => s("Le journal de caisse a bien été créé"),
 			'Register::updated' => s("Le journal de caisse a bien été paramétré"),

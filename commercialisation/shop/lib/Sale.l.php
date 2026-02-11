@@ -454,7 +454,7 @@ class SaleLib {
 			SaleLib::changePaymentForShop($eSaleReference);
 
 			// On annule les précédentes tentatives de paiement pour cette vente
-			\selling\PaymentTransactionLib::delete($eSaleReference);
+			\selling\PaymentTransactionLib::deleteAll($eSaleReference);
 
 		}
 
@@ -564,7 +564,7 @@ class SaleLib {
 			\selling\SaleLib::update($eSale, ['preparationStatus']);
 
 			if($eMethod->empty()) {
-				\selling\PaymentTransactionLib::delete($eSale);
+				\selling\PaymentTransactionLib::deleteAll($eSale);
 			} else {
 
 				$cPayment = new \Collection([

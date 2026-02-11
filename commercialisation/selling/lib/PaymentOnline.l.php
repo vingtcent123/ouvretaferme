@@ -128,7 +128,7 @@ class PaymentOnlineLib {
 
 		}
 
-		PaymentTransactionLib::delete($eSale);
+		PaymentTransactionLib::deleteAll($eSale);
 
 	}
 

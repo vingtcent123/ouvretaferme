@@ -34,20 +34,7 @@ class SuggestionLib extends CashCrud {
 
 		}
 
-		return self::getModule(Cash::BANK_CASHFLOW)
-			->select([
-				'id',
-				'date',
-				'source' => fn() => Cash::BANK_CASHFLOW,
-				'type' => fn($e) => match($e['type']) {
-					\bank\Cashflow::CREDIT => Cash::DEBIT,
-					\bank\Cashflow::DEBIT => Cash::CREDIT,
-				},
-				'amountIncludingVat' => new \Sql('amount'),
-				'description' => new \Sql('memo'),
-				'customer' => fn() => new \selling\Customer()
-			])
-			->where('m1.statusCash', \bank\Cashflow::WAITING)
+		return self::getWaiting(Cash::BANK_CASHFLOW)
 			->whereDate('>', $dateAfter)
 			->getCollection();
 
@@ -55,30 +42,7 @@ class SuggestionLib extends CashCrud {
 
 	public static function getForInvoice(\payment\Method $eMethod, string $dateAfter): \Collection {
 
-		$eFarm = \farm\Farm::getConnected();
-
-		return self::getModule(Cash::SELL_INVOICE)
-			->join(\selling\Invoice::model()
-				->select([
-					'customer' => \selling\CustomerElement::getSelection(),
-				]), 'm1.invoice = m2.id')
-			->select([
-				'id',
-				'amountIncludingVat',
-				'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT,
-				'date' => new \Sql('m1.paidAt'),
-				'invoice' => [
-					'number',
-					'priceIncludingVat', 'priceExcludingVat',
-					'vat',
-					'vatByRate',
-				],
-				'source' => fn() => Cash::SELL_INVOICE,
-				'description' => fn($e) => \selling\InvoiceUi::getName($e['invoice'])
-			])
-			->where('m1.statusCash', \selling\Payment::WAITING)
-			->where('m1.farm', $eFarm)
-			->where('m1.source', \selling\Payment::INVOICE)
+		return self::getWaiting(Cash::SELL_INVOICE)
 			->where('m1.method', $eMethod)
 			->where('m1.paidAt', '>', $dateAfter)
 			->getCollection();
@@ -87,28 +51,9 @@ class SuggestionLib extends CashCrud {
 
 	public static function getForSale(\payment\Method $eMethod, string $dateAfter): \Collection {
 
-		$eFarm = \farm\Farm::getConnected();
-
-		return self::getModule(Cash::SELL_SALE)
-			->join(\selling\Sale::model()->select([
-				'customer' => \selling\CustomerElement::getSelection(),
-			]), 'm1.sale = m2.id')
-			->select([
-				'id',
-				'payment' => new \Sql('m1.id', 'selling\Payment'),
-				'date' => new \Sql('m1.paidAt'),
-				'sale' => ['document', 'profile', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate', 'compositionEndAt'],
-				'source' => fn() => Cash::SELL_SALE,
-				'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT,
-				'amountIncludingVat',
-				'description' => fn($e) => \selling\SaleUi::getName($e['sale'])
-			])
-			->where('m1.statusCash', \selling\Payment::WAITING)
+		return self::getWaiting(Cash::SELL_SALE)
 			->whereMethod($eMethod)
-			->where('m1.farm', $eFarm)
 			->where('m2.paidAt', '>', $dateAfter)
-			->where('m2.profile', 'IN', [\selling\Sale::SALE, \selling\Sale::MARKET])
-			->where('m2.invoice', NULL)
 			->getCollection();
 
 	}
@@ -165,6 +110,32 @@ class SuggestionLib extends CashCrud {
 
 	}
 
+	public static function import(Register $eRegister, string $source, int $reference): void {
+
+		Cash::model()->beginTransaction();
+
+			$eCash = new Cash([
+				'register' => $eRegister
+			]);
+
+			$eCash->merge(self::getWaiting($source)
+				->where('m1.id', $reference)
+				->get());
+
+			$eCash['financialYear'] = \account\FinancialYearLib::getByDate($e['date']);
+
+			if($e['financialYear']->empty()) {
+				Cash::model()->rollBack();
+				Cash::fail('date.financialYear');
+				return;
+			}
+
+			CashLib::create($e);
+
+		Cash::model()->commit();
+
+	}
+
 	public static function ignore(string $source, int $reference): void {
 
 		self::getModule($source)
@@ -173,6 +144,84 @@ class SuggestionLib extends CashCrud {
 			->update([
 				'statusCash' => \selling\Payment::IGNORED
 			]);
+
+	}
+
+	protected static function getWaiting(string $source): \ModuleModel {
+
+		switch($source) {
+
+			case Cash::BANK_CASHFLOW :
+
+				return self::getModule($source)
+					->select([
+						'reference' => new \Sql('m1.id', 'int'),
+						'cashflow' => new \Sql('m1.id', 'bank\Cashflow'),
+						'date',
+						'source' => fn() => Cash::BANK_CASHFLOW,
+						'type' => fn($e) => match($e['type']) {
+							\bank\Cashflow::CREDIT => Cash::DEBIT,
+							\bank\Cashflow::DEBIT => Cash::CREDIT,
+						},
+						'amountIncludingVat' => new \Sql('amount'),
+						'description' => new \Sql('memo'),
+						'customer' => fn() => new \selling\Customer(),
+					])
+					->where('m1.statusCash', \bank\Cashflow::WAITING);
+
+			case Cash::SELL_INVOICE :
+
+				$eFarm = \farm\Farm::getConnected();
+
+				return self::getModule($source)
+					->join(\selling\Invoice::model()
+						->select([
+							'customer' => \selling\CustomerElement::getSelection(),
+						]), 'm1.invoice = m2.id')
+					->select([
+						'reference' => new \Sql('m1.id', 'int'),
+						'payment' => new \Sql('m1.id', 'selling\Payment'),
+						'amountIncludingVat',
+						'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT,
+						'date' => new \Sql('m1.paidAt'),
+						'invoice' => [
+							'number',
+							'priceIncludingVat', 'priceExcludingVat',
+							'vat',
+							'vatByRate',
+						],
+						'source' => fn() => Cash::SELL_INVOICE,
+						'description' => fn($e) => \selling\InvoiceUi::getName($e['invoice'])
+					])
+					->where('m1.statusCash', \selling\Payment::WAITING)
+					->where('m1.farm', $eFarm)
+					->where('m1.source', \selling\Payment::INVOICE);
+
+			case Cash::SELL_SALE :
+
+				$eFarm = \farm\Farm::getConnected();
+
+				return self::getModule(Cash::SELL_SALE)
+					->join(\selling\Sale::model()->select([
+						'customer' => \selling\CustomerElement::getSelection(),
+					]), 'm1.sale = m2.id')
+					->select([
+						'reference' => new \Sql('m1.id', 'int'),
+						'payment' => new \Sql('m1.id', 'selling\Payment'),
+						'date' => new \Sql('m1.paidAt'),
+						'sale' => ['document', 'profile', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate', 'compositionEndAt'],
+						'source' => fn() => Cash::SELL_SALE,
+						'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT,
+						'amountIncludingVat',
+						'description' => fn($e) => \selling\SaleUi::getName($e['sale'])
+					])
+					->where('m1.statusCash', \selling\Payment::WAITING)
+					->where('m1.farm', $eFarm)
+					->where('m2.profile', 'IN', [\selling\Sale::SALE, \selling\Sale::MARKET])
+					->where('m2.invoice', NULL);
+
+		}
+
 
 	}
 

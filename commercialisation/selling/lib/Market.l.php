@@ -296,7 +296,7 @@ class MarketLib {
 				return;
 			}
 
-			PaymentTransactionLib::delete($eSale);
+			PaymentTransactionLib::deleteAll($eSale);
 
 			// On sort la vente du logiciel de caisse
 			$eSale['profile'] = Sale::SALE;

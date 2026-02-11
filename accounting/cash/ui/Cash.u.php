@@ -235,8 +235,11 @@ class CashUi {
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
 
-							$h .= '<a class="btn btn-secondary">'.s("Importer dans le journal").'</a> ';
-							$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doIgnore" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['id'].'" class="btn btn-outline-secondary" data-confirm="'.s("Cette ligne ne vous sera plus jamais proposée à l'importation dans vos journaux de caisse. Continuer ?").'">'.s("Ignorer").'</a>';
+							$h .= '<div class="flex-buttons" style="justify-content: end">';
+								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doImport" post-id="'.$eRegister['id'].'" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['reference'].'" class="btn btn-secondary">'.s("Importer dans le journal").'</a> ';
+								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doIgnore" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['reference'].'" class="btn btn-outline-secondary" data-confirm="'.s("Cette ligne ne vous sera plus jamais proposée à l'importation dans vos journaux de caisse. Continuer ?").'">'.s("Ignorer").'</a>';
+							$h .= '</div>';
+
 						$h .= '</td>';
 					$h .= '</tr>';
 				}

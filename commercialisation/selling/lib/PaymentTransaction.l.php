@@ -103,6 +103,17 @@ class PaymentTransactionLib {
 
 	}
 
+	public static function getNotPaid(Sale|Invoice $e): Payment {
+
+		return Payment::model()
+			->select(Payment::getSelection())
+			->whereSale($e, if: $e instanceof Sale)
+			->whereInvoice($e, if: $e instanceof Invoice)
+			->whereStatus(Payment::NOT_PAID)
+			->get();
+
+	}
+
 	public static function getByMethod(Sale|Invoice $e, \payment\Method $eMethod): Payment {
 
 		return Payment::model()
@@ -211,8 +222,40 @@ class PaymentTransactionLib {
 				PaymentTransactionLib::recalculate($e);
 
 			} else {
-				self::delete($e);
+				self::deleteAll($e);
 			}
+
+		Payment::model()->commit();
+
+	}
+
+	public static function add(Sale|Invoice $e, \Collection $cPayment): void {
+
+		if($cPayment->empty()) {
+			return;
+		}
+
+		$cPayment->expects([
+			'method', 'amountIncludingVat', 'status'
+		]);
+
+		Payment::model()->beginTransaction();
+
+			PaymentTransactionLib::withRecalculate(FALSE);
+
+				$ePaymentNotPaid = self::getNotPaid($e);
+
+				if($ePaymentNotPaid->notEmpty()) {
+					PaymentLib::delete($ePaymentNotPaid);
+				}
+
+				foreach($cPayment as $ePayment) {
+					self::createForTransaction($e, $ePayment);
+				}
+
+			PaymentTransactionLib::withRecalculate(TRUE);
+
+			PaymentTransactionLib::recalculate($e);
 
 		Payment::model()->commit();
 
@@ -241,12 +284,7 @@ class PaymentTransactionLib {
 
 		Payment::model()->beginTransaction();
 
-			$ePayment = Payment::model()
-				->select(Payment::getSelection())
-				->whereSale($e, if: $e instanceof Sale)
-				->whereInvoice($e, if: $e instanceof Invoice)
-				->whereStatus(Payment::NOT_PAID)
-				->get();
+			$ePayment = self::getNotPaid($e);
 
 			if($ePayment->notEmpty()) {
 
@@ -276,7 +314,7 @@ class PaymentTransactionLib {
 
 		Payment::model()->beginTransaction();
 
-			self::delete($e, recalculate: FALSE);
+			self::deleteAll($e, recalculate: FALSE);
 			self::reset($e, Sale::NEVER_PAID);
 
 		Payment::model()->commit();
@@ -294,7 +332,7 @@ class PaymentTransactionLib {
 
 	}
 
-	public static function delete(Sale|Invoice $e, bool $recalculate = TRUE): void {
+	public static function deleteAll(Sale|Invoice $e, bool $recalculate = TRUE): void {
 
 		$e->expects(['id']);
 
@@ -373,7 +411,7 @@ class PaymentTransactionLib {
 				if($cPayment->notEmpty()) {
 					self::replace($eSale, $cPayment);
 				} else {
-					self::delete($eSale);
+					self::deleteAll($eSale);
 				}
 
 			}

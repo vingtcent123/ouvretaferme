@@ -50,7 +50,7 @@ class PaymentPageLib {
 
 		return function($data) {
 
-			\selling\PaymentTransactionLib::delete($data->e);
+			\selling\PaymentTransactionLib::deleteAll($data->e);
 
 			throw new \ReloadLayerAction();
 

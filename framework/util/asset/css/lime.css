@@ -1197,6 +1197,13 @@ tbody .td-checkbox > label {
 	justify-content: center;
 }
 
+
+.util-buttons {
+	display: grid;
+	grid-gap: 1rem;
+	grid-template-columns: 1fr 1fr 1fr;
+}
+
 .util-title,
 .util-action {
 	display: flex;
@@ -1833,6 +1840,13 @@ td.util-manage-vignette {
 /* Flex */
 .flex-wrap {
 	flex-wrap: wrap;
+}
+
+.flex-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
 }
 
 .flex-align-center {

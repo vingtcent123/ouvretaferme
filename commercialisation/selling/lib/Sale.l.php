@@ -1318,7 +1318,7 @@ class SaleLib extends SaleCrud {
 					self::reorderComposition($e);
 				}
 
-				PaymentTransactionLib::delete($e, recalculate: FALSE);
+				PaymentTransactionLib::deleteAll($e, recalculate: FALSE);
 
 			}
 

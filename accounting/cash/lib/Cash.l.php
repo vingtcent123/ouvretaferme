@@ -186,7 +186,7 @@ class CashLib extends CashCrud {
 				Cash::INITIAL => self::createInitial($e),
 				Cash::BALANCE => self::createBalance($e),
 				Cash::PRIVATE => self::createPrivate($e),
-				Cash::BANK_MANUAL => self::createWithoutVat($e),
+				Cash::BANK_MANUAL, Cash::BANK_CASHFLOW => self::createWithoutVat($e),
 				Cash::OTHER, Cash::BUY_MANUAL, Cash::SELL_MANUAL => self::createWithVat($e),
 
 			};
