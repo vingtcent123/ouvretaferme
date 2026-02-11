@@ -430,7 +430,6 @@ Class AccountingLib {
 			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $ePayment['paidAt']);
 			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
 
-			$eElement['cPayment'] = $cPayment;
 			$ratios = self::computeRatios($eElement, $hasVat, $cAccount, ePaymentFilter: $ePayment);
 			$allEntries = array_merge(...array_values($ratios));
 
@@ -738,10 +737,14 @@ Class AccountingLib {
 
 	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, bool $hasVat, \Collection $cAccount, \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
 
-		$eElement->expects(['cItem', 'cPayment', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat']);
+		$eElement->expects(['cItem', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat']);
 
 		if($eElement instanceof \selling\Invoice) {
 			$eElement->expects(['cSale']);
+		}
+
+		if($ePaymentFilter->empty()) {
+			$eElement->expects(['cPayment']);
 		}
 
 		// Construire le ratio par classe de compte de manière générale
