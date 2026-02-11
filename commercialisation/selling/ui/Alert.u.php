@@ -20,10 +20,7 @@ class AlertUi {
 			'Customer::invoiceAddress.empty' => s("L'adresse de facturation est incomplète (la première ligne, le code postal et la ville sont requis)"),
 			'Customer::deliveryAddress.empty' => s("L'adresse de livraison est incomplète (la première ligne, le code postal et la ville sont requis)"),
 			'Customer::email.check' => s("L'adresse e-mail est incorrecte"),
-			'Customer::phone.check' => s("Le numéro de téléphone est incorrect"),
 			'Customer::contactName.check' => s("Le contact est incorrect"),
-			'Customer::siret.check' => s("Le SIRET est incorrect"),
-			'Customer::vatNumber.check' => s("Le numéro de TVA est incorrect"),
 
 			'CustomerGroup::name.comma' => s("Le nom du groupe ne peut pas contenir de virgule."),
 			'CustomerGroup::name.duplicate' => s("Vous avez déjà utilisé ce nom de groupe."),
