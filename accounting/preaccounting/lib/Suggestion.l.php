@@ -221,13 +221,13 @@ Class SuggestionLib extends SuggestionCrud {
 				self::createSuggestion(
 					new Suggestion([
 						'payment' => $ePayment,
-						'invoice' => $eInvoice,
+						'invoice' => $ePayment['invoice'],
 						'cashflow' => $eCashflow,
 						'reason' => $reason,
 						'weight' => $weight,
 						'paymentMethod' => $eMethod,
 					]),
-					$eCashflow['amount'] === $ePayment['amountIncludingVat']
+					$eCashflow['amount'] === ($ePayment['amountIncludingVat'] ?? $ePayment['invoice']['priceIncludingVat'])
 				);
 			}
 
