@@ -849,13 +849,8 @@ class OperationLib extends OperationCrud {
 		OperationCashflow::model()->whereOperation('IN', $cOperation->getIds())->delete();
 		Operation::model()->whereId('IN', $cOperation->getIds())->delete();
 
-		// Si l'opération est issue d'un import en compta => supprimer le lien dans la facture et ses ventes
-		\selling\Invoice::model()
-			->whereAccountingHash($hash)
-			->update(['accountingHash' => NULL]);
-		\selling\Sale::model()
-			->whereAccountingHash($hash)
-			->update(['accountingHash' => NULL]);
+		// Si l'opération est issue d'un import en compta => supprimer le lien avec les paiements
+		\selling\Payment::model()->whereAccountingHash($hash)->update(['accountingHash' => NULL]);
 
 	}
 
