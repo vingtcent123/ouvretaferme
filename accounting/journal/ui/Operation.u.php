@@ -994,7 +994,7 @@ class OperationUi {
 
 					$vatRateDefault = 0;
 
-					if($eOperation->exists() === TRUE) { // Cas d'un update
+					if(isset($eOperation['vatRate'])) { // Cas d'un update ou d'une copie
 
 						$vatRateDefault = $eOperation['vatRate'];
 

@@ -1155,11 +1155,12 @@ class OperationLib extends OperationCrud {
 		$hash = $eCashflow['hash'];
 
 		$cOperation = Operation::model()
-			->select(['id', 'hash', 'asset'])
+			->select(['id', 'hash', 'asset', 'number', 'financialYear' => \account\FinancialYear::getSelection()])
 			->whereHash($hash)
 			->getCollection();
 
 		if($action === 'delete') {
+			Operation::validateBatch($cOperation);
 			// On vérifie qu'il n'y a pas d'immos impliqués
 			$eOperation = new Operation(['cOperationHash' => $cOperation]);
 			$eOperation->validate('isNotLinkedToAsset');
