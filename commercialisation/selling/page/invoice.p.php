@@ -241,5 +241,6 @@ new Page(function($data) {
 
 		throw new ReloadAction('selling', 'Invoice::deletedCollection');
 
-	});
+	})
+;
 ?>

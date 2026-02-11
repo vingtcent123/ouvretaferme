@@ -90,14 +90,6 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function updateAccountingReadyCollection(\Collection $cPayment, ?bool $accountingReady): void {
-
-		Invoice::model()
-			->whereId('IN', $cPayment->getIds())
-			->update(['accountingReady' => $accountingReady]);
-
-	}
-
 	public static function cancelReconciliation(\bank\Cashflow $eCashflow): void {
 
 		\selling\Payment::model()

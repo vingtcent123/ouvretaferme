@@ -239,7 +239,7 @@ Class AccountingLib {
 
 		foreach($cSale as $eSale) {
 
-			$document = $eSale['document'];
+			$document = $eSale['document'] ?? '';
 			$documentDate = $eSale['deliveredAt'];
 			$compAuxLib = ($eSale['customer']['name'] ?? '');
 			$compAuxNum = '';
@@ -314,7 +314,7 @@ Class AccountingLib {
 
 		foreach($cInvoice as $eInvoice) {
 
-			$document = $eInvoice['number'];
+			$document = $eInvoice['number'] ?? '';
 			$documentDate = $eInvoice['date'];
 			$compAuxLib = ($eInvoice['customer']['name'] ?? '');
 			$compAuxNum = '';
@@ -404,7 +404,7 @@ Class AccountingLib {
 
 			if($ePayment['source'] === \selling\Payment::INVOICE) {
 
-				$document = $ePayment['invoice']['number'];
+				$document = $ePayment['invoice']['number'] ?? '';
 
 				$cItems = new \Collection();
 				foreach($ePayment['invoice']['cSale']->getColumnCollection('cItem') as $itemCollection) {
