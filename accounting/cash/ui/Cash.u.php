@@ -115,7 +115,7 @@ class CashUi {
 
 			$h .= '</div>';
 
-			$h .= $this->getAuto($eRegister, $cCashflow, $cInvoice, $cSale);
+			$h .= $this->getSuggestions($eRegister, $cCashflow, $cInvoice, $cSale);
 
 		$h .= '</div>';
 
@@ -123,7 +123,7 @@ class CashUi {
 
 	}
 
-	protected static function getAuto(Register $eRegister, \Collection $cCashflow, \Collection $cInvoice, \Collection $cSale): string {
+	protected static function getSuggestions(Register $eRegister, \Collection $cCashflow, \Collection $cInvoice, \Collection $cSale): string {
 
 		$summarize = '';
 
@@ -161,14 +161,14 @@ class CashUi {
 		$h = '<br/>';
 		$h .= '<div class="util-title">';
 			$h .= '<h3>'.\Asset::icon('fire').' '.s("Opérations en {method} automatiquement trouvées depuis le {value}", ['method' => '<span style="text-transform: uppercase">'.encode($eRegister['paymentMethod']['name']).'</span>', 'value' => \util\DateUi::numeric($eRegister['openedSince'])]).'</h3>';
-			$h .= '<a href="" class="btn btn-outline-secondary">'.s("Tout ignorer").'</a>';
+			$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doIgnoreByMethod" post-id="'.$eRegister['id'].'" class="btn btn-outline-secondary" data-confirm="'.s("Ces opérations ne vous seront plus jamais proposées à l'importation dans vos journaux de caisse. Continuer ?").'">'.s("Tout ignorer").'</a>';
 		$h .= '</div>';
 
 		$h .= '<ul class="util-summarize util-summarize-overflow">';
 			$h .= $summarize;
 		$h .= '</ul>';
 
-		$cAuto = new \Collection()
+		$cSuggestion = new \Collection()
 			->mergeCollection($cCashflow)
 			->mergeCollection($cInvoice)
 			->mergeCollection($cSale)
@@ -192,29 +192,29 @@ class CashUi {
 
 				$h .= '<tbody>';
 
-				foreach($cAuto as $eAuto) {
+				foreach($cSuggestion as $eSuggestion) {
 
 					$h .= '<tr>';
 						$h .= '<td class="td-vertical-align-top">';
-							$h .= \util\DateUi::numeric($eAuto['date']);
+							$h .= \util\DateUi::numeric($eSuggestion['date']);
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= self::getOperation($eAuto['source'], $eAuto['type'], $eAuto['customer']).'</div>';
+							$h .= self::getOperation($eSuggestion['source'], $eSuggestion['type'], $eSuggestion['customer']).'</div>';
 							$h .= '<div class="cash-auto-description">';
 								$h .= \Asset::icon('arrow-return-right').'  ';
 
-								switch($eAuto['source']) {
+								switch($eSuggestion['source']) {
 
 									case Cash::SELL_INVOICE :
-										$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$eAuto['invoice']['id'].'">'.encode($eAuto['description']).'</a>';
+										$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$eSuggestion['invoice']['id'].'">'.encode($eSuggestion['description']).'</a>';
 										break;
 
 									case Cash::SELL_SALE :
-										$h .= '<a href="'.\selling\SaleUi::url($eAuto['sale']).'">'.encode($eAuto['description']).'</a>';
+										$h .= '<a href="'.\selling\SaleUi::url($eSuggestion['sale']).'">'.encode($eSuggestion['description']).'</a>';
 										break;
 
 									default :
-										$h .= encode($eAuto['description']);
+										$h .= encode($eSuggestion['description']);
 										break;
 
 								}
@@ -223,20 +223,20 @@ class CashUi {
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
-							if($eAuto['type'] === Cash::DEBIT) {
-								$h .= \util\TextUi::money(abs($eAuto['amountIncludingVat']));
+							if($eSuggestion['type'] === Cash::DEBIT) {
+								$h .= \util\TextUi::money(abs($eSuggestion['amountIncludingVat']));
 							}
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
-							if($eAuto['type'] === Cash::CREDIT) {
-								$h .= \util\TextUi::money(abs($eAuto['amountIncludingVat']));
+							if($eSuggestion['type'] === Cash::CREDIT) {
+								$h .= \util\TextUi::money(abs($eSuggestion['amountIncludingVat']));
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
 
-							$h .= '<a class="btn btn-secondary dropdown-toggle">'.s("Importer dans le journal").'</a> ';
-							$h .= '<a data-url="" class="btn btn-outline-secondary dropdown-toggle">'.s("Ignorer").'</a>';
+							$h .= '<a class="btn btn-secondary">'.s("Importer dans le journal").'</a> ';
+							$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doIgnore" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['id'].'" class="btn btn-outline-secondary" data-confirm="'.s("Cette ligne ne vous sera plus jamais proposée à l'importation dans vos journaux de caisse. Continuer ?").'">'.s("Ignorer").'</a>';
 						$h .= '</td>';
 					$h .= '</tr>';
 				}
@@ -261,7 +261,7 @@ class CashUi {
 				Cash::DEBIT => \Asset::icon('person-fill').'  '.s("Prélèvement par l'exploitant dans la caisse"),
 			},
 
-			Cash::BANK_MANUAL => match($type) {
+			Cash::BANK_MANUAL, Cash::BANK_CASHFLOW => match($type) {
 				Cash::CREDIT => \Asset::icon('bank').'  '.s("Retrait depuis la banque"),
 				Cash::DEBIT => \Asset::icon('bank').'  '.s("Dépôt à la banque"),
 			},

@@ -15,7 +15,6 @@ abstract class CashflowElement extends \Element {
 	const ALLOCATED = 'allocated';
 	const DELETED = 'deleted';
 
-	const DRAFT = 'draft';
 	const VALID = 'valid';
 	const IGNORED = 'ignored';
 
@@ -63,7 +62,7 @@ class CashflowModel extends \ModuleModel {
 			'account' => ['element32', 'bank\BankAccount', 'null' => TRUE, 'cast' => 'element'],
 			'import' => ['element32', 'bank\Import', 'cast' => 'element'],
 			'status' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::ALLOCATED, \bank\Cashflow::DELETED], 'cast' => 'enum'],
-			'statusCash' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::DRAFT, \bank\Cashflow::VALID, \bank\Cashflow::IGNORED], 'cast' => 'enum'],
+			'statusCash' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::VALID, \bank\Cashflow::IGNORED], 'cast' => 'enum'],
 			'isReconciliated' => ['bool', 'cast' => 'bool'],
 			'isSuggestionCalculated' => ['bool', 'cast' => 'bool'],
 			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],

@@ -46,8 +46,8 @@ new Page()
 				$data->ccCash = \cash\CashLib::getByRegister($data->eRegisterCurrent, $data->page, $data->search);
 
 				$data->cCashflow = \cash\SuggestionLib::getForCashflow($data->eRegisterCurrent['paymentMethod'], $data->eRegisterCurrent['closedAt']);
-				$data->cInvoice = \cash\SuggestionLib::getForInvoice($data->eFarm, $data->eRegisterCurrent['paymentMethod'], $data->eRegisterCurrent['closedAt']);
-				$data->cSale = \cash\SuggestionLib::getForSale($data->eFarm, $data->eRegisterCurrent['paymentMethod'], $data->eRegisterCurrent['closedAt']);
+				$data->cInvoice = \cash\SuggestionLib::getForInvoice($data->eRegisterCurrent['paymentMethod'], $data->eRegisterCurrent['closedAt']);
+				$data->cSale = \cash\SuggestionLib::getForSale($data->eRegisterCurrent['paymentMethod'], $data->eRegisterCurrent['closedAt']);
 
 			}
 

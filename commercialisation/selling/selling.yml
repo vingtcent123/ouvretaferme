@@ -204,7 +204,7 @@ Payment:
   onlineCheckoutId: ?text8
   onlinePaymentIntentId: ?text8
   status: enum(NOT_PAID, PAID, FAILED)
-  statusCash: enum(WAITING, DRAFT, VALID, IGNORED) = WAITING
+  statusCash: enum(WAITING, VALID, IGNORED) = WAITING
   paidAt: ?date
   cashflow: ?bank\Cashflow
   accountingHash: ?textFixed(20, 20) @charset(ascii)

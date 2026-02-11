@@ -22,7 +22,7 @@ Cashflow:
   account: ?bank\BankAccount
   import: bank\Import
   status: enum(WAITING, ALLOCATED, DELETED) = WAITING
-  statusCash: enum(WAITING, DRAFT, VALID, IGNORED) = WAITING
+  statusCash: enum(WAITING, VALID, IGNORED) = WAITING
   isReconciliated: bool = FALSE
   isSuggestionCalculated: bool = FALSE
   invoice: ?selling\Invoice

@@ -4569,36 +4569,34 @@ abstract class ModuleModel {
 		$suffix = $this->resetSuffix();
 
 		$table = $this->field($this->getDatabase()).'.'.$this->field($this->getTable($suffix));
-		if($join) {
-			$table .= " AS ".$this->field('m1');
-		}
+		$table .= ' AS '.$this->field('m1');
 
-		$sql = "UPDATE";
+		$sql = 'UPDATE';
 
 		if(isset($options['update-ignore'])) {
-			$sql .= " IGNORE";
+			$sql .= ' IGNORE';
 		}
 
-		$sql.= " ".$table;
+		$sql.= ' '.$table;
 
 
 		$sql .= $this->index($options, $suffix);
 		$sql .= $join;
 
-		$sql .= " SET ".$update;
+		$sql .= ' SET '.$update;
 
 		if($condition !== NULL and $condition !== '1') {
-			$sql .= " WHERE ".$condition;
+			$sql .= ' WHERE '.$condition;
 		}
 
 		$sortBuild = $this->buildSort($this->resetSort());
 		if($sortBuild !== NULL) {
-			$sql .= " ORDER BY ".$sortBuild;
+			$sql .= ' ORDER BY '.$sortBuild;
 		}
 
 		$limit = $this->resetLimit();
 		if($limit !== NULL) {
-			$sql .= " ".$this->buildLimit(0, $limit);
+			$sql .= ' '.$this->buildLimit(0, $limit);
 		}
 
 		if(isset($options['highlight'])) {

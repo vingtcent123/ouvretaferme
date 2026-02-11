@@ -15,7 +15,6 @@ abstract class PaymentElement extends \Element {
 	const FAILED = 'failed';
 
 	const WAITING = 'waiting';
-	const DRAFT = 'draft';
 	const VALID = 'valid';
 	const IGNORED = 'ignored';
 
@@ -67,7 +66,7 @@ class PaymentModel extends \ModuleModel {
 			'onlineCheckoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'onlinePaymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\selling\Payment::NOT_PAID, \selling\Payment::PAID, \selling\Payment::FAILED], 'cast' => 'enum'],
-			'statusCash' => ['enum', [\selling\Payment::WAITING, \selling\Payment::DRAFT, \selling\Payment::VALID, \selling\Payment::IGNORED], 'cast' => 'enum'],
+			'statusCash' => ['enum', [\selling\Payment::WAITING, \selling\Payment::VALID, \selling\Payment::IGNORED], 'cast' => 'enum'],
 			'paidAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
