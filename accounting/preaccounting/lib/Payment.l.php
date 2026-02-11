@@ -52,8 +52,8 @@ Class PaymentLib {
 
 		$fw->validate();
 
-		if($ePayment->isReadyForAccounting()) {
-			$update['readyForAccounting'] = TRUE;
+		if($ePayment->isAccountingReady()) {
+			$update['accountingReady'] = TRUE;
 		}
 
 		\selling\Payment::model()->update($ePayment, $update);
@@ -90,7 +90,7 @@ Class PaymentLib {
 			\selling\Payment::model()
 				->whereCashflow('!=', NULL)
 				->whereAccountingHash(NULL)
-				->whereReadyForAccounting(TRUE)
+				->whereAccountingReady(TRUE)
 			;
 
 		} else {
@@ -117,12 +117,12 @@ Class PaymentLib {
 
 	}
 
-	public static function setReadyForAccounting(\farm\Farm $eFarm): void {
+	public static function setAccountingReady(\farm\Farm $eFarm): void {
 
 		$cPayment = \selling\Payment::model()
 			->select(self::getPaymentSelection())
 			->whereFarm($eFarm)
-			->whereReadyForAccounting(FALSE)
+			->whereAccountingReady(FALSE)
 			->whereStatus(\selling\Payment::PAID)
 			->whereCashflow('!=', NULL)
 			->whereAccountingHash(NULL)
@@ -131,7 +131,7 @@ Class PaymentLib {
 		foreach($cPayment as $ePayment) {
 
 			if($ePayment->acceptAccountingImport()) {
-				$update = ['readyForAccounting' => TRUE];
+				$update = ['accountingReady' => TRUE];
 				if($ePayment['amountIncludingVat'] !== $ePayment['cashflow']['amount']) {
 					if(abs($ePayment['amountIncludingVat'] - $ePayment['cashflow']['amount']) < 1) {
 						$update['accountingDifference'] = \selling\Payment::AUTOMATIC;

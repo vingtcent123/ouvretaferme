@@ -379,7 +379,7 @@ new Page(function($data) {
 			'to' => $data->eFarm['eFinancialYear']['endDate'],
 		]);
 
-		\preaccounting\PaymentLib::setReadyForAccounting($data->eFarm);
+		\preaccounting\PaymentLib::setAccountingReady($data->eFarm);
 
 		$data->nPayment = \preaccounting\PaymentLib::countForAccounting($data->eFarm, $data->search);
 		$data->cPayment = \preaccounting\ImportLib::getPayments($data->eFarm, $data->search);

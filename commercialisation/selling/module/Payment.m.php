@@ -72,14 +72,14 @@ class PaymentModel extends \ModuleModel {
 			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'accountingDifference' => ['enum', [\selling\Payment::AUTOMATIC, \selling\Payment::NOTHING], 'null' => TRUE, 'cast' => 'enum'],
-			'readyForAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
+			'accountingReady' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'closed' => ['bool', 'cast' => 'bool'],
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'status', 'statusCash', 'paidAt', 'cashflow', 'accountingHash', 'accountingDifference', 'readyForAccounting', 'createdAt', 'closed', 'closedAt'
+			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'status', 'statusCash', 'paidAt', 'cashflow', 'accountingHash', 'accountingDifference', 'accountingReady', 'createdAt', 'closed', 'closedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -111,7 +111,7 @@ class PaymentModel extends \ModuleModel {
 			case 'statusCash' :
 				return Payment::WAITING;
 
-			case 'readyForAccounting' :
+			case 'accountingReady' :
 				return FALSE;
 
 			case 'createdAt' :
@@ -226,8 +226,8 @@ class PaymentModel extends \ModuleModel {
 		return $this->where('accountingDifference', ...$data);
 	}
 
-	public function whereReadyForAccounting(...$data): PaymentModel {
-		return $this->where('readyForAccounting', ...$data);
+	public function whereAccountingReady(...$data): PaymentModel {
+		return $this->where('accountingReady', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): PaymentModel {

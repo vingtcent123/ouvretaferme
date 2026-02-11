@@ -36,14 +36,14 @@ Class ImportLib {
 
 	public static function ignorePayment(\selling\Payment $ePayment): void {
 
-		\selling\Payment::model()->update($ePayment, ['readyForAccounting' => NULL]);
+		\selling\Payment::model()->update($ePayment, ['accountingReady' => NULL]);
 
 	}
 	public static function ignorePayments(\Collection $cPayment): void {
 
 		\selling\Payment::model()
 			->whereId('IN', $cPayment->getIds())
-			->update(['readyForAccounting' => NULL]);
+			->update(['accountingReady' => NULL]);
 
 	}
 
@@ -74,7 +74,7 @@ Class ImportLib {
 		$eFarm->expects(['eFinancialYear']);
 
 
-		if($ePayment->acceptAccountingImport() === FALSE or $ePayment['readyForAccounting'] === FALSE) {
+		if($ePayment->acceptAccountingImport() === FALSE or $ePayment['accountingReady'] === FALSE) {
 			return;
 		}
 

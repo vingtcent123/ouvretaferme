@@ -218,7 +218,7 @@ class AlertUi {
 			'Unit::deleted' => s("L'unité a bien été supprimée."),
 
 			'Payment::deleted' => s("Le moyen de paiement a bien été supprimé."),
-			'Payement::readyForAccountingRefused' => s("Les paiements sont maintenant ignorés pour les exports comptables."),
+			'Payement::accountingReadyRefused' => s("Les paiements sont maintenant ignorés pour les exports comptables."),
 
 			'Quality::updated' => s("Le signe de qualité a bien été modifié."),
 			'Quality::deleted' => s("Le signe de qualité a bien été supprimé et retiré des produits."),

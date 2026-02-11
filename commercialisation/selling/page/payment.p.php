@@ -22,7 +22,7 @@ new Page(function($data) {
 
 	})
 
-	->post('doUpdateRefuseReadyForAccountingCollection', function($data) {
+	->post('doUpdateRefuseAccountingReadyCollection', function($data) {
 
 		$data->c->validate('canWrite');
 
@@ -30,9 +30,9 @@ new Page(function($data) {
 
 			$data->c->first()['farm']->validate('hasAccounting');
 
-			\selling\PaymentLib::updateReadyForAccountingCollection($data->c, NULL);
+			\selling\PaymentLib::updateAccountingReadyCollection($data->c, NULL);
 
-			throw new ReloadAction('selling', 'Payment::readyForAccountingRefused');
+			throw new ReloadAction('selling', 'Payment::accountingReadyRefused');
 
 		}
 

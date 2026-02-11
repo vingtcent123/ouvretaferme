@@ -89,11 +89,11 @@ class PaymentLib extends PaymentCrud {
 
 	}
 
-	public static function updateReadyForAccountingCollection(\Collection $cPayment, ?bool $readyForAccounting): void {
+	public static function updateAccountingReadyCollection(\Collection $cPayment, ?bool $accountingReady): void {
 
 		Invoice::model()
 			->whereId('IN', $cPayment->getIds())
-			->update(['readyForAccounting' => $readyForAccounting]);
+			->update(['accountingReady' => $accountingReady]);
 
 	}
 
@@ -101,7 +101,7 @@ class PaymentLib extends PaymentCrud {
 
 		\selling\Payment::model()
 			->whereCashflow($eCashflow)
-			->update(['cashflow' => NULL, 'readyForAccounting' => FALSE]);
+			->update(['cashflow' => NULL, 'accountingReady' => FALSE]);
 
 	}
 

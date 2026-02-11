@@ -209,7 +209,7 @@ Payment:
   cashflow: ?bank\Cashflow
   accountingHash: ?textFixed(20, 20) @charset(ascii)
   accountingDifference: ?enum(AUTOMATIC, NOTHING)
-  readyForAccounting: ?bool = FALSE
+  accountingReady: ?bool = FALSE
   createdAt: datetime = SPECIAL(now)
   closed: bool = FALSE
   closedAt: ?datetime

@@ -9,7 +9,7 @@ class Payment extends PaymentElement {
 
 	public function acceptAccountingImport(): bool {
 
-		$this->expects(['readyForAccounting', 'amountIncludingVat', 'status', 'invoice', 'sale', 'accountingHash', 'accountingDifference', 'cashflow']);
+		$this->expects(['accountingReady', 'amountIncludingVat', 'status', 'invoice', 'sale', 'accountingHash', 'accountingDifference', 'cashflow']);
 
 		if($this['cashflow']->empty()) {
 			return FALSE;
@@ -97,7 +97,7 @@ class Payment extends PaymentElement {
 
 	}
 
-	public function isReadyForAccounting(): bool {
+	public function isAccountingReady(): bool {
 
 		$this->expects(['status', 'accountingHash', 'accountingDifference', 'amountIncludingVat']);
 
