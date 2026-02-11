@@ -27,8 +27,8 @@ Class ReconciliateLib {
 				$ePayment['amountIncludingVat'] = $eCashflow['amount'];
 				$ePayment['paidAt'] = $eCashflow['date'];
 
-				\selling\PaymentLib::updateForReconciliation($ePayment, ['cashflow']);
 				\selling\PaymentLib::update($ePayment, ['method', 'status', 'amountIncludingVat', 'paidAt']);
+				\selling\PaymentLib::updateForReconciliation($ePayment, ['cashflow']);
 
 			} else {
 

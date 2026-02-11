@@ -111,13 +111,14 @@ Class SuggestionLib extends SuggestionCrud {
 
 	}
 
-	public static function calculateSuggestionsByFarm(\farm\Farm $eFarm): void {
+	public static function calculateSuggestionsByFarm(\farm\Farm $eFarm, ?int $importId = NULL): void {
 
 		Suggestion::model()->beginTransaction();
 
 		$cImport = \bank\Import::model()
 			->select('id')
-			->whereReconciliation(\bank\Import::WAITING)
+			->whereReconciliation(\bank\Import::WAITING, if: $importId === NULL)
+			->whereId($importId, if: $importId !== NULL)
 			->getCollection();
 
 		foreach($cImport as $eImport) {

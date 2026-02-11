@@ -447,6 +447,16 @@ class CashflowUi {
 					$actions .= s("Supprimer l'opération bancaire");
 				$actions .= '</a>';
 
+			} else if($reconciliate) {
+
+				if($actions) {
+					$actions .= '<div class="dropdown-divider"></div>';
+				}
+
+				$actions .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
+
+				$actions .= $reconciliate;
+
 			}
 
 			$h .= $actions;
