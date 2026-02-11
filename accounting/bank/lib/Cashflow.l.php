@@ -130,57 +130,6 @@ class CashflowLib extends CashflowCrud {
 		\account\LogLib::save('attach', 'Cashflow', ['id' => $eCashflow['id'], 'operations' => $cOperation->getIds()]);
 	}
 
-	public static function getForCash(\payment\Method $eMethod, string $dateAfter): \Collection {
-
-		switch($eMethod['fqn']) {
-
-			case \payment\MethodLib::CASH :
-
-				Cashflow::model()->or(
-					fn() => $this->whereMemo('LIKE', 'vrst %'),
-					fn() => $this->whereMemo('LIKE', 'versement %'),
-					fn() => $this->whereMemo('LIKE', 'vers%espece%'),
-					fn() => $this->whereMemo('LIKE', 'ret%espece%'),
-					fn() => $this->whereMemo('LIKE', 'ret%dab%'),
-					fn() => $this->whereMemo('LIKE', 'ret%distrib%'),
-				);
-
-				break;
-
-			case \payment\MethodLib::CHECK :
-
-				Cashflow::model()->or(
-					fn() => $this->whereMemo('LIKE', 'rem%cheq'),
-					fn() => $this->whereMemo('LIKE', 'rem%chq'),
-				);
-
-				break;
-
-			default :
-				return new \Collection();
-
-		}
-
-		return Cashflow::model()
-			->select([
-				'id',
-				'date',
-				'source' => fn() => \cash\Cash::BANK_MANUAL,
-				'type' => fn($e) => match($e['type']) {
-					Cashflow::CREDIT => \cash\Cash::DEBIT,
-					Cashflow::DEBIT => \cash\Cash::CREDIT,
-				},
-				'amountIncludingVat' => new \Sql('amount'),
-				'description' => new \Sql('memo'),
-				'customer' => fn() => new \selling\Customer()
-			])
-			->whereStatus('!=', Cashflow::DELETED)
-			->whereStatusCash(Cashflow::WAITING)
-			->whereDate('>', $dateAfter)
-			->getCollection();
-
-	}
-
 	public static function deleteCasfhlow(Cashflow $eCashflow): void {
 
 		$eCashflow->expects(['id']);
