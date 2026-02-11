@@ -33,6 +33,10 @@ class FinancialYearLib extends FinancialYearCrud {
 
 		$eFinancialYear ??= FinancialYearLib::getLastFinancialYear();
 
+		if($eFinancialYear->empty()) {
+			$eFinancialYear['endDate'] = ((int)date('Y') - 1).'-12-31'; // last year
+		}
+
 		return [
 			'startDate' => date('Y-m-d', strtotime($eFinancialYear['endDate'].' +1 day')),
 			'endDate' => date('Y-m-d', strtotime($eFinancialYear['endDate'].' +1 year'))
