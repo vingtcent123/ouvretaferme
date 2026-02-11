@@ -364,7 +364,7 @@ Class AccountingLib {
 						origin      : 'invoice',
 					);
 
-					if($item['accountReference'] === NULL) {
+					if($item['isVat'] === FALSE) {
 						$numberWithoutVat = $number;
 					} else if($forImport) {
 						$fecDataItemPayment[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
@@ -463,7 +463,7 @@ Class AccountingLib {
 						origin      : 'invoice',
 					);
 
-					if($item['accountReference'] === NULL) {
+					if($item['isVat'] === FALSE) {
 						$numberWithoutVat = $number;
 					} else if($forImport) {
 						$fecDataItemPayment[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
@@ -584,7 +584,12 @@ Class AccountingLib {
 
 	private static function computeAccountRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount, bool $hasVat): array {
 
-		$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+		if($cAccount->empty()) {
+			$eAccountVatDefault = new \account\Account(['id' => 0, 'class' => \account\AccountSetting::VAT_CLASS]);
+		} else {
+			$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
+		}
+
 		$items = [];
 
 		foreach($eElement['cItem'] as $eItem) {
@@ -634,7 +639,7 @@ Class AccountingLib {
 			if($hasVat and $amountVat !== 0.0) {
 
 				$eAccountVat = $eAccount['vatAccount'];
-				if($eAccountVat->empty()) {
+				if($eAccountVat->exists() === FALSE) {
 					$eAccountVat = $eAccountVatDefault;
 				}
 
@@ -729,25 +734,29 @@ Class AccountingLib {
 
 	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, bool $hasVat, \Collection $cAccount, \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
 
-		$eElement->expects(['cItem', 'cPayment']);
+		$eElement->expects(['cItem', 'cPayment', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat']);
 
-		// Construire le ratio par classe de compte
+		if($eElement instanceof \selling\Invoice) {
+			$eElement->expects(['cSale']);
+		}
+
+		// Construire le ratio par classe de compte de manière générale
 		$amountRatios = self::computeAccountRatios($eElement, $cAccount, $hasVat);
 
 		// Niveau 1 : éclater par moyen de paiement
 		$items = [];
 
-		if($ePaymentFilter->notEmpty()) { // Pour l'import en compta
+		if($ePaymentFilter->notEmpty()) {
 
 			$cPayment = new \Collection([$ePaymentFilter]);
 
-		} else if($eElement['cPayment'] ->notEmpty()) { // 2 autres cas : pour l'export FEC / CSV
+		} else if($eElement['cPayment'] ->notEmpty()) { // pour l'export FEC / CSV
 
 			$cPayment = $eElement['cPayment'];
 
 			$totalPaid = $cPayment->sum('amountIncludingVat');
 
-			if($totalPaid < $eElement['priceIncludingVat']) { // On simule le non-payé
+			if($totalPaid < $eElement['priceIncludingVat']) { // On simule le restant à payer (pour avoir 100% de la evnte)
 				$cPayment->append(new \selling\Payment([
 					'id' => NULL,
 					'status' => \selling\Payment::NOT_PAID,
@@ -863,7 +872,7 @@ Class AccountingLib {
 					usort($ratioItems, fn($ratio1, $ratio2) => $ratio1['accountReference'] <=> $ratio2['accountReference']);
 
 					foreach($ratioItems as &$ratioItem) {
-						if(is_int($amountExcludingVat * $ratioItem['ratio']) === FALSE) {
+						if(is_int($amountExcludingVat * $ratioItem['ratio']) === FALSE) { // Arbitrairement : on prend le premier qui ne tombe pas juste
 							$ratioItem['amount'] = round($ratioItem['amount'] - $difference, 2);
 							break;
 						}
@@ -901,12 +910,27 @@ Class AccountingLib {
 
 						$difference = $totalRatio - $amountVat;
 
-						// Tri par numéro de compte référencé
-						usort($ratioItems, fn($ratio1, $ratio2) => $ratio1['accountReference'] <=> $ratio2['accountReference']);
+						// Tri par numéro de compte et si les numéros de compte sont identiques (ex: TVA), par celui référencé
+						usort($ratioItems, function($ratio1, $ratio2) {
+							if($ratio1['account'] and $ratio2['account']) {
+								return $ratio1['account'] <=> $ratio2['account'];
+							}
+
+							if($ratio1['accountReference'] and $ratio2['accountReference']) {
+								return $ratio1['accountReference'] <=> $ratio2['accountReference'];
+							}
+
+							if($ratio1['account']) {
+								return 1;
+							}
+
+							return -1;
+
+						});
 
 						foreach($ratioItems as &$ratioItem) {
 							if(is_int($amountVat * $ratioItem['ratio']) === FALSE) {
-								$ratioItem['amount'] -= $difference;
+								$ratioItem['amount'] = round($ratioItem['amount'] - $difference, 2);
 								break;
 							}
 						}
@@ -925,7 +949,7 @@ Class AccountingLib {
 					'account' => $ePayment['cashflow']['account']['account']['id'],
 					'accountReference' => NULL,
 					'vatRate' => NULL,
-					'amount' => $ePayment['cashflow']['amount'] * -1,
+					'amount' => round($ePayment['cashflow']['amount'] * -1, 2),
 					'type' => 'payment',
 					'method' => $ePayment['method']['id'],
 					'payment' => $ePayment['id'],
@@ -933,7 +957,22 @@ Class AccountingLib {
 
 			}
 		}
-		return $items;
+
+		// Format items
+		$ratios = [];
+
+		foreach($items as $item) {
+			$ratios[] = [
+				'payment' => $item['payment'],
+				'isVat' => $item['accountReference'] !== NULL,
+				'vatRate' => $item['vatRate'],
+				'account' => $item['account'] !== 0 ? $item['account'] : NULL,
+				'amount' => $item['amount'],
+				'method' => $item['method'],
+			];
+		}
+
+		return $ratios;
 	}
 
 	private static function extractAccountFromItem(\selling\Item $eItem, \Collection $cAccount, \account\Account $eAccountDefault): \account\Account {
