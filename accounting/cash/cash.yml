@@ -13,6 +13,7 @@ Register:
 Cash:
   id: serial32
   register: cash\Register
+  parent: ?cash\Cash
   date: date
   balance: ?decimal(10, 2)
   amountIncludingVat: decimal(10, 2, 0.0, null)
@@ -22,20 +23,20 @@ Cash:
   vat: ?decimal(10, 2, 0.0, null)
   vatRate: ?decimal(5, 2)
   description: ?text8(1, null)
-  source: enum(BANK, PRIVATE, OTHER, INITIAL, BALANCE, BUY_MANUAL, SELL_MANUAL, SELL_INVOICE, SELL_SALE)
-  sourceBankAccount: ?bank\BankAccount
-  sourceCashflow: ?bank\Cashflow
-  sourceInvoice: ?selling\Invoice
-  sourceSale: ?selling\Sale
+  source: enum(BANK_MANUAL, BANK_CASHFLOW, PRIVATE, OTHER, INITIAL, BALANCE, BUY_MANUAL, SELL_MANUAL, SELL_INVOICE, SELL_SALE)
+  cashflow: ?bank\Cashflow
+  invoice: ?selling\Invoice
+  sale: ?selling\Sale
+  customer: ?selling\Customer
   payment: ?selling\Payment
   account: ?account\Account
   financialYear: ?account\FinancialYear
-  thirdParty: ?account\ThirdParty
-  operation: ?journal\Operation
   status: enum(DRAFT, VALID, DELETED)
   createdAt: datetime = SPECIAL(now)
   INDEX: [
-    ["sourceSale"],
-    ["sourceInvoice"],
+    ["register"],
+    ["parent"],
+    ["sale"],
+    ["invoice"],
     ["payment"]
   ]

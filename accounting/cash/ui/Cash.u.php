@@ -85,7 +85,7 @@ class CashUi {
 				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('journal-plus').'</div>'.s("Créditer la caisse").'</a>';
 				$h .= '<div class="dropdown-list">';
 					$h .= '<div class="dropdown-title">'.s("Créditer la caisse").'</div>';
-					foreach([Cash::BANK, Cash::SELL_MANUAL, Cash::PRIVATE, Cash::OTHER] as $source) {
+					foreach([Cash::BANK_MANUAL, Cash::SELL_MANUAL, Cash::PRIVATE, Cash::OTHER] as $source) {
 						if($eRegister->acceptOperation($source, Cash::CREDIT)) {
 							$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.$source.'&type='.Cash::CREDIT.'" class="dropdown-item">'.self::getOperation($source, Cash::CREDIT).'</a>';
 						}
@@ -94,7 +94,7 @@ class CashUi {
 				$h .= '<a class="btn btn-secondary" data-dropdown="bottom-start"><div class="btn-icon">'.\Asset::icon('journal-minus').'</div>'.s("Débiter la caisse").'</a>';
 				$h .= '<div class="dropdown-list">';
 					$h .= '<div class="dropdown-title">'.s("Débiter la caisse").'</div>';
-					foreach([Cash::BANK, Cash::BUY_MANUAL, Cash::PRIVATE, Cash::OTHER] as $source) {
+					foreach([Cash::BANK_MANUAL, Cash::BUY_MANUAL, Cash::PRIVATE, Cash::OTHER] as $source) {
 						if($eRegister->acceptOperation($source, Cash::DEBIT)) {
 							$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:create?register='.$eRegister['id'].'&source='.$source.'&type='.Cash::DEBIT.'" class="dropdown-item">'.self::getOperation($source, Cash::DEBIT).'</a>';
 						}
@@ -199,18 +199,18 @@ class CashUi {
 							$h .= \util\DateUi::numeric($eAuto['date']);
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= self::getOperation($eAuto['source'], $eAuto['type']).'</div>';
+							$h .= self::getOperation($eAuto['source'], $eAuto['type'], $eAuto['customer']).'</div>';
 							$h .= '<div class="cash-auto-description">';
 								$h .= \Asset::icon('arrow-return-right').'  ';
 
 								switch($eAuto['source']) {
 
 									case Cash::SELL_INVOICE :
-										$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$eAuto['sourceInvoice']['id'].'">'.encode($eAuto['description']).'</a>';
+										$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$eAuto['invoice']['id'].'">'.encode($eAuto['description']).'</a>';
 										break;
 
 									case Cash::SELL_SALE :
-										$h .= '<a href="'.\selling\SaleUi::url($eAuto['sourceSale']).'">'.encode($eAuto['description']).'</a>';
+										$h .= '<a href="'.\selling\SaleUi::url($eAuto['sale']).'">'.encode($eAuto['description']).'</a>';
 										break;
 
 									default :
@@ -223,20 +223,20 @@ class CashUi {
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
-							if($eAuto['type'] === Cash::CREDIT) {
+							if($eAuto['type'] === Cash::DEBIT) {
 								$h .= \util\TextUi::money(abs($eAuto['amountIncludingVat']));
 							}
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
-							if($eAuto['type'] === Cash::DEBIT) {
+							if($eAuto['type'] === Cash::CREDIT) {
 								$h .= \util\TextUi::money(abs($eAuto['amountIncludingVat']));
 							}
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
 
 							$h .= '<a class="btn btn-secondary dropdown-toggle">'.s("Importer dans le journal").'</a> ';
-							$h .= '<a class="btn btn-outline-secondary dropdown-toggle">'.s("Ignorer").'</a>';
+							$h .= '<a data-url="" class="btn btn-outline-secondary dropdown-toggle">'.s("Ignorer").'</a>';
 						$h .= '</td>';
 					$h .= '</tr>';
 				}
@@ -249,7 +249,7 @@ class CashUi {
 
 	}
 
-	public static function getOperation(string $source, ?string $type = NULL): string {
+	public static function getOperation(string $source, ?string $type = NULL, \selling\Customer $eCustomer = new \selling\Customer()): string {
 
 		return match($source) {
 
@@ -261,7 +261,7 @@ class CashUi {
 				Cash::DEBIT => \Asset::icon('person-fill').'  '.s("Prélèvement par l'exploitant dans la caisse"),
 			},
 
-			Cash::BANK => match($type) {
+			Cash::BANK_MANUAL => match($type) {
 				Cash::CREDIT => \Asset::icon('bank').'  '.s("Retrait depuis la banque"),
 				Cash::DEBIT => \Asset::icon('bank').'  '.s("Dépôt à la banque"),
 			},
@@ -273,8 +273,8 @@ class CashUi {
 
 			Cash::BUY_MANUAL => \Asset::icon('wallet').'  '.s("Achat à un fournisseur"),
 			Cash::SELL_MANUAL => \Asset::icon('wallet').'  '.s("Vente à un client"),
-			Cash::SELL_INVOICE => \Asset::icon('wallet').'  '.s("Facture"),
-			Cash::SELL_SALE => \Asset::icon('wallet').'  '.s("Vente sans facture")
+			Cash::SELL_INVOICE => \Asset::icon('wallet').'  '.s("Facture {value}", \selling\CustomerUi::link($eCustomer)),
+			Cash::SELL_SALE => \Asset::icon('wallet').'  '.s("Vente {value}", \selling\CustomerUi::link($eCustomer))
 
 		};
 
@@ -872,7 +872,7 @@ class CashUi {
 				new \account\AccountUi()->query($d, \farm\Farm::getConnected(), query: function(Cash $e) {
 
 					return match($e['source']) {
-						Cash::BANK => ['classPrefix' => \account\AccountSetting::BANK_ACCOUNT_CLASS],
+						Cash::BANK_MANUAL => ['classPrefix' => \account\AccountSetting::BANK_ACCOUNT_CLASS],
 						Cash::BUY_MANUAL => ['classPrefixes[0]' => '2', 'classPrefixes[1]' => '6'],
 						Cash::SELL_MANUAL => ['classPrefixes[0]' => '7'],
 						default => []

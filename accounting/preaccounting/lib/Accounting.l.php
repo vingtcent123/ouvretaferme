@@ -41,7 +41,7 @@ Class AccountingLib {
 
 			switch($eCash['source']) {
 
-				case \cash\Cash::BANK:
+				case \cash\Cash::BANK_MANUAL:
 					$fecLines = self::generateCashBankLines($eCash, $eRegister, $cAccount);
 					break;
 
@@ -131,13 +131,9 @@ Class AccountingLib {
 	public static function generateCashBankLines(\cash\Cash $eCash, \cash\Register $eRegister, \Collection $cAccount): array {
 
 		// On cherche la contrepartie par ordre de priorité
-		if($eCash['sourceBankAccount']->notEmpty()) {
+		if($eCash['cashflow']->notEmpty()) {
 
-			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['sourceBankAccount']['account']['id'])->first();
-
-		} else if($eCash['sourceCashflow']->notEmpty()) {
-
-			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['sourceCashflow']['account']['id'])->first();
+			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['cashflow']['account']['id'])->first();
 
 		} else if($eCash['account']->notEmpty()) {
 

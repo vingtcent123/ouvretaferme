@@ -64,7 +64,7 @@ class HistoryLib extends HistoryCrud {
 	public static function updateByPaymentIntentId(string $paymentIntentId, array $values): void {
 
 		History::model()
-			->whereOnlinePaymentIntentId($onlinePaymentIntentId)
+			->whereOnlinePaymentIntentId($paymentIntentId)
 			->update($values);
 	}
 

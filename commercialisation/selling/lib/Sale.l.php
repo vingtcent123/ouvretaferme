@@ -307,6 +307,7 @@ class SaleLib extends SaleCrud {
 		return Payment::model()
 			->join(Sale::model()->select([
 				'id', 'document', 'profile', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate', 'compositionEndAt',
+				'customer' => CustomerElement::getSelection(),
 				'description' => fn($e) => SaleUi::getName($e)
 			]), 'm1.sale = m2.id')
 			->select([
@@ -314,7 +315,6 @@ class SaleLib extends SaleCrud {
 				'date' => new \Sql('m1.paidAt'),
 				'sale',
 				'source' => fn() => \cash\Cash::SELL_SALE,
-				'sourceSale' => fn($e) => $e['sale'],
 				'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? \cash\Cash::CREDIT : \cash\Cash::DEBIT,
 				'amountIncludingVat',
 			])
@@ -322,7 +322,7 @@ class SaleLib extends SaleCrud {
 			->where('m1.farm', $eFarm)
 			->where('m2.paidAt', '>', $dateAfter)
 			->where('m2.createdAt', '>', $dateAfter)
-			->where('m2.profile', 'IN', [Sale::SALE, Sale::SALE_MARKET])
+			->where('m2.profile', 'IN', [Sale::SALE, Sale::MARKET])
 			->where('m2.invoice', NULL)
 			->whereStatus(Payment::PAID)
 			->whereStatusCash(Payment::WAITING)

@@ -139,6 +139,7 @@ class InvoiceLib extends InvoiceCrud {
 					'priceIncludingVat', 'priceExcludingVat',
 					'vat',
 					'vatByRate',
+					'customer' => CustomerElement::getSelection(),
 					'description' => fn($e) => InvoiceUi::getName($e)
 				]), 'm1.invoice = m2.id')
 			->select([
@@ -147,7 +148,6 @@ class InvoiceLib extends InvoiceCrud {
 				'date' => new \Sql('m1.paidAt'),
 				'invoice',
 				'source' => fn() => \cash\Cash::SELL_INVOICE,
-				'sourceInvoice' => fn($e) => $e['invoice'],
 			])
 			->where('m1.farm', $eFarm)
 			->where('m1.source', Payment::INVOICE)

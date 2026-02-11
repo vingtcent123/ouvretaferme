@@ -37,9 +37,9 @@ class SaleUi {
 		if($eSale->isComposition()) {
 			return s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
 		} else if($eSale['priceExcludingVat'] < 0) {
-			return s("Avoir #{value}", $eSale['document']);
+			return s("Avoir n°{value}", $eSale['document']);
 		} else {
-			return s("Vente #{value}", $eSale['document']);
+			return s("Vente n°{value}", $eSale['document']);
 		}
 
 	}

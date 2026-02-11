@@ -65,7 +65,7 @@ class CashLib extends CashCrud {
 					Cash::DEBIT => \account\AccountLib::getByClass(\account\AccountSetting::CHARGES_OTHER_CLASS),
 				},
 
-				Cash::BANK => $eCash['register']['bankAccount']->notEmpty() ?
+				Cash::BANK_MANUAL => $eCash['register']['bankAccount']->notEmpty() ?
 					$eCash['register']['bankAccount'] :
 					\account\AccountLib::getByClass(\account\AccountSetting::BANK_ACCOUNT_CLASS),
 
@@ -88,6 +88,7 @@ class CashLib extends CashCrud {
 			->whereRegister($eRegister)
 			->whereType($search->get('type'), if: $search->get('type'))
 			->whereStatus('!=', Cash::DELETED)
+			->whereParent(NULL)
 			->sort(self::getOrder())
 			->getCollection($position, $number, index: ['status', NULL]);
 
@@ -185,7 +186,7 @@ class CashLib extends CashCrud {
 				Cash::INITIAL => self::createInitial($e),
 				Cash::BALANCE => self::createBalance($e),
 				Cash::PRIVATE => self::createPrivate($e),
-				Cash::BANK => self::createWithoutVat($e),
+				Cash::BANK_MANUAL => self::createWithoutVat($e),
 				Cash::OTHER, Cash::BUY_MANUAL, Cash::SELL_MANUAL => self::createWithVat($e),
 
 			};
@@ -200,10 +201,9 @@ class CashLib extends CashCrud {
 			// Propriétés requises pour signatures et complétées si besoin
 			$e->add([
 				'description' => NULL,
-				'sourceBankAccount' => new \bank\BankAccount(),
-				'sourceCashflow' => new \bank\Cashflow(),
-				'sourceSale' => new \selling\Sale(),
-				'sourceInvoice' => new \selling\Invoice(),
+				'cashflow' => new \bank\Cashflow(),
+				'sale' => new \selling\Sale(),
+				'invoice' => new \selling\Invoice(),
 			]);
 
 			// Ajout de l'opération
@@ -375,6 +375,7 @@ class CashLib extends CashCrud {
 		$cCash = Cash::model()
 			->select(Cash::getSelection())
 			->whereStatus(Cash::DRAFT)
+			->whereRegister($e)
 			->getCollection();
 
 		foreach($cCash as $eCash) {

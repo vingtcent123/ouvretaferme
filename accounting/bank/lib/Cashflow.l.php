@@ -165,13 +165,14 @@ class CashflowLib extends CashflowCrud {
 			->select([
 				'id',
 				'date',
-				'source' => fn() => \cash\Cash::BANK,
+				'source' => fn() => \cash\Cash::BANK_MANUAL,
 				'type' => fn($e) => match($e['type']) {
 					Cashflow::CREDIT => \cash\Cash::DEBIT,
 					Cashflow::DEBIT => \cash\Cash::CREDIT,
 				},
 				'amountIncludingVat' => new \Sql('amount'),
-				'description' => new \Sql('memo')
+				'description' => new \Sql('memo'),
+				'customer' => fn() => new \selling\Customer()
 			])
 			->whereStatus('!=', Cashflow::DELETED)
 			->whereStatusCash(Cashflow::WAITING)

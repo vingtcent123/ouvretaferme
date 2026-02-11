@@ -11,10 +11,8 @@ Class CashLib {
 
 	public static function getForAccounting(\farm\Farm $eFarm, \Search $search): \Collection {
 
-		$selectRegister = \cash\Cash::getSelection() + ['sourceBankAccount' => \bank\BankAccount::getSelection()];
-
 		return self::filterForAccounting($eFarm, $search)
-			->select($selectRegister)
+			->select(\cash\Cash::getSelection())
 			->sort(['date' => SORT_DESC])
 			->option('count')
 			->getCollection(NULL, NULL, 'id');

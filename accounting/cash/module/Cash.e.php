@@ -1,6 +1,42 @@
 <?php
 namespace cash;
 
+/**
+ * Tous
+ * > financialYear
+ *
+ * BANK_MANUAL
+ * > account (si accountingMode = ACCOUNTING)
+ *
+ * BANK_CASHFLOW
+ * > cashflow
+ *
+ * PRIVATE
+ * > account (si accountingMode = ACCOUNTING)
+ *
+ * OTHER
+ * > account (si accountingMode = ACCOUNTING)
+ *
+ * BALANCE
+ * > account (si accountingMode = ACCOUNTING)
+ *
+ * BUY_MANUAL
+ * > account (si accountingMode = ACCOUNTING)
+ *
+ * SELL_MANUAL
+ * > account (si accountingMode = ACCOUNTING)
+ *
+ * SELL_INVOICE
+ * > payment
+ * > invoice
+ * > customer
+ *
+ * SELL_SALE
+ * > payment
+ * > sale
+ * > customer
+ *
+ */
 class Cash extends CashElement {
 
 	public static function getSelection(): array {
@@ -8,6 +44,7 @@ class Cash extends CashElement {
 		return parent::getSelection() + [
 			'account' => \account\Account::getSelection(),
 			'financialYear' => \account\FinancialYear::getSelection(),
+			'customer' => \selling\CustomerElement::getSelection(),
 		];
 
 	}
@@ -55,7 +92,7 @@ class Cash extends CashElement {
 		]);
 
 		if(
-			in_array($this['source'], [Cash::BANK, Cash::BUY_MANUAL, Cash::SELL_MANUAL, Cash::OTHER]) === FALSE or
+			in_array($this['source'], [Cash::BANK_MANUAL, Cash::BUY_MANUAL, Cash::SELL_MANUAL, Cash::OTHER]) === FALSE or
 			$this['date'] === NULL
 		) {
 			return FALSE;

@@ -66,10 +66,9 @@ class SignatureLib {
 			'description' => $eCash['description'],
 			'status' => $eCash['status'],
 			'source' => $eCash['source'],
-			'sourceBankAccount' => $eCash['sourceBankAccount']->empty() ? NULL : $eCash['sourceBankAccount']['id'],
-			'sourceCashflow' => $eCash['sourceCashflow']->empty() ? NULL : $eCash['sourceCashflow']['id'],
-			'sourceSale' => $eCash['sourceSale']->empty() ? NULL : $eCash['sourceSale']['id'],
-			'sourceInvoice' => $eCash['sourceInvoice']->empty() ? NULL : $eCash['sourceInvoice']['id'],
+			'cashflow' => $eCash['cashflow']->empty() ? NULL : $eCash['cashflow']['id'],
+			'sale' => $eCash['sale']->empty() ? NULL : $eCash['sale']['id'],
+			'invoice' => $eCash['invoice']->empty() ? NULL : $eCash['invoice']['id'],
 		];
 
 	}
