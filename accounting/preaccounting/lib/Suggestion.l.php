@@ -103,7 +103,7 @@ Class SuggestionLib extends SuggestionCrud {
 			Suggestion::model()
 				->whereStatus(Suggestion::WAITING)
 				->whereCashflow($eSuggestion['cashflow'])
-				->whereInvoice($eSuggestion['invoice'] ?? new \selling\Invoice())
+				->wherePayment($eSuggestion['payment'] ?? new \selling\Payment())
 				->update($eSuggestion->extracts(['reason', 'weight']));
 
 		}
@@ -221,13 +221,13 @@ Class SuggestionLib extends SuggestionCrud {
 			$weight = 0;
 		}
 
-		if(abs(abs($eElement['priceIncludingVat']) - abs($eCashflow['amount'])) > self::AMOUNT_DIFFERENCE_MAX) {
+		if(abs(abs($ePayment['amountIncludingVat']) - abs($eCashflow['amount'])) > self::AMOUNT_DIFFERENCE_MAX) {
 			return [0, new \Set()];
 		}
 
 		if(
-			($eCashflow['amount'] < 0 and $eElement['priceIncludingVat'] > 0) or
-			($eCashflow['amount'] > 0 and $eElement['priceIncludingVat'] < 0)
+			($eCashflow['amount'] < 0 and $ePayment['amountIncludingVat'] > 0) or
+			($eCashflow['amount'] > 0 and $ePayment['amountIncludingVat'] < 0)
 		) {
 			return [0, new \Set()];
 		}
@@ -248,14 +248,14 @@ Class SuggestionLib extends SuggestionCrud {
 
 		}
 
-		if(abs(abs($eElement['priceIncludingVat']) - abs($eCashflow['amount'])) < 0.05) { // 5 cts d'écart
+		if(abs(abs($ePayment['amountIncludingVat']) - abs($eCashflow['amount'])) < 0.05) { // 5 cts d'écart
 
 			$weight += 100;
 			$reason->value(Suggestion::AMOUNT, TRUE);
 
 		} else if( // On autorise l'ouverture du montant à 50cts d'écart que si on a déjà le tiers ou la référence.
 			($reason->get() & Suggestion::REFERENCE or $reason->get() & Suggestion::THIRD_PARTY) and
-			abs(abs($eElement['priceIncludingVat']) - abs($eCashflow['amount'])) < 0.5
+			abs(abs($ePayment['amountIncludingVat']) - abs($eCashflow['amount'])) < 0.5
 		) {
 
 			$weight += 50;

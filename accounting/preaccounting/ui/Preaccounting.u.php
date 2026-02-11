@@ -509,7 +509,7 @@ Class PreaccountingUi {
 
 			$h = \Asset::icon('fire', ['class' => 'color-accounting']).' ';
 			$h .= '<a class="color-accounting" href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite:rapprocher">';
-				$h .= s("Aucune facture à rapprocher pour le moment");
+				$h .= s("Aucun paiement à rapprocher pour le moment");
 			$h .= '</a>';
 			
 		} else {
@@ -520,7 +520,7 @@ Class PreaccountingUi {
 					$h .= $nSuggestion;
 				$h .= '</span>';
 				$h .= '<span class="hide-sm-down">';
-					$h .= p("{value} facture à rapprocher", "{value} factures à rapprocher", $nSuggestion);
+					$h .= p("{value} paiement à rapprocher", "{value} paiements à rapprocher", $nSuggestion);
 				$h .= '</span>';
 			$h .= '</a>';
 
