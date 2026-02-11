@@ -9,8 +9,7 @@ class PaymentAccountingLib extends PaymentCrud {
 			throw new \NotExpectedAction();
 		}
 
-		$ePayment['hash'] = $hash;
-		Payment::model()->update($ePayment, ['hash']);
+		Payment::model()->update($ePayment, ['accountingHash' => $hash]);
 
 		PaymentLib::close($ePayment);
 

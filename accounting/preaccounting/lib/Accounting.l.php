@@ -245,7 +245,8 @@ Class AccountingLib {
 			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $eSale['deliveredAt']);
 			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
 
-			$allEntries = self::computeRatios($eSale, $hasVat, $cAccount);
+			$ratios = self::computeRatios($eSale, $hasVat, $cAccount);
+			$allEntries = array_merge(array_values(...$ratios));
 
 			foreach($allEntries as $item) {
 
@@ -326,7 +327,8 @@ Class AccountingLib {
 			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $eInvoice['date']);
 			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
 
-			$allEntries = self::computeRatios($eInvoice, $hasVat, $cAccount);
+			$ratios = self::computeRatios($eInvoice, $hasVat, $cAccount);
+			$allEntries = array_merge(...array_values($ratios));
 
 			foreach($allEntries as $item) {
 
@@ -428,7 +430,9 @@ Class AccountingLib {
 			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $ePayment['paidAt']);
 			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
 
-			$allEntries = self::computeRatios($eElement, $hasVat, $cAccount, ePaymentFilter: $ePayment);
+			$eElement['cPayment'] = $cPayment;
+			$ratios = self::computeRatios($eElement, $hasVat, $cAccount, ePaymentFilter: $ePayment);
+			$allEntries = array_merge(...array_values($ratios));
 
 			foreach($allEntries as $item) {
 
@@ -949,6 +953,7 @@ Class AccountingLib {
 					'account' => $ePayment['cashflow']['account']['account']['id'],
 					'accountReference' => NULL,
 					'vatRate' => NULL,
+					'isBank' => TRUE,
 					'amount' => round($ePayment['cashflow']['amount'] * -1, 2),
 					'type' => 'payment',
 					'method' => $ePayment['method']['id'],
@@ -959,10 +964,21 @@ Class AccountingLib {
 		}
 
 		// Format items
-		$ratios = [];
+		$ratios = [
+			'amountsExcludingVat' => [],
+			'amountsVat' => [],
+			'bank' => [],
+		];
 
 		foreach($items as $item) {
-			$ratios[] = [
+			if($item['accountReference'] !== NULL) {
+				$key = 'amountsVat';
+			} else if($item['isBank'] ?? FALSE) {
+				$key = 'bank';
+			} else {
+				$key = 'amountsExcludingVat';
+			}
+			$ratios[$key][] = [
 				'payment' => $item['payment'],
 				'isVat' => $item['accountReference'] !== NULL,
 				'vatRate' => $item['vatRate'],
