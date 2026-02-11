@@ -32,9 +32,9 @@ Class InvoiceLib {
 
 	}
 
-	public static function getForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport = FALSE) {
+	public static function getForExport(\farm\Farm $eFarm, \Search $search) {
 
-		return self::filterForAccounting($eFarm, $search, $forImport)
+		return \selling\Invoice::model()
 			->select([
 				'id', 'date', 'number', 'document', 'farm',
 				'priceExcludingVat', 'priceIncludingVat', 'vat', 'taxes', 'hasVat', 'vatByRate',
@@ -58,39 +58,18 @@ Class InvoiceLib {
 					])
 					->delegateCollection('invoice'),
 			])
-			->getCollection();
-
-	}
-
-	public static function filterForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport): \selling\InvoiceModel {
-
-		// Pas de contrainte de date dans le cas d'un import => Les factures peuvent avoir été payées l'année d'après mais on veut quand même les importer
-		// Attention, raisonnement tenable en compta de trésorerie et pas en compta d'engagement (ACCRUAL)
-		if($forImport) {
-
-			\selling\Invoice::model()
-				//->whereCashflow('!=', NULL)
-				//->whereAccountingHash(NULL)
-				//->whereReadyForAccounting(TRUE)
-			;
-
-		} else {
-
-			\selling\Invoice::model()
-				->where(
-					'm1.date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')),
-					if: $search->get('from') and $search->get('to')
-			);
-
-		}
-		return \selling\Invoice::model()
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
 			->where('m1.status NOT IN ("'.\selling\Invoice::DRAFT.'", "'.\selling\Invoice::CANCELED.'")')
+			->where(
+				'm1.date BETWEEN '.\selling\Invoice::model()->format($search->get('from')).' AND '.\selling\Invoice::model()->format($search->get('to')),
+				if: $search->get('from') and $search->get('to')
+			)
 			->where('m1.paymentStatus IS NULL OR m1.paymentStatus != "'.\selling\Invoice::NEVER_PAID.'"')
 			->where('m2.type = '.\selling\Customer::model()->format($search->get('type')), if: $search->get('type'))
 			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->has('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
-		;
+			->getCollection();
 
 	}
+
 }

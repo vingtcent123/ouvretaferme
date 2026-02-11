@@ -95,7 +95,6 @@ class InvoiceModel extends \ModuleModel {
 			'closed' => ['bool', 'cast' => 'bool'],
 			'closedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
-			'readyForAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'emailedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'paidAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'remindedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -103,7 +102,7 @@ class InvoiceModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'number', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentStatus', 'paymentAmount', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'readyForAccounting', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
+			'id', 'document', 'number', 'customer', 'sales', 'taxes', 'nature', 'organic', 'conversion', 'comment', 'content', 'farm', 'hasVat', 'vatByRate', 'vat', 'priceExcludingVat', 'priceIncludingVat', 'date', 'dueDate', 'paymentStatus', 'paymentAmount', 'paymentCondition', 'header', 'footer', 'status', 'generation', 'generationAt', 'closed', 'closedAt', 'closedBy', 'emailedAt', 'paidAt', 'remindedAt', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -128,9 +127,6 @@ class InvoiceModel extends \ModuleModel {
 		switch($property) {
 
 			case 'closed' :
-				return FALSE;
-
-			case 'readyForAccounting' :
 				return FALSE;
 
 			case 'createdAt' :
@@ -318,10 +314,6 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereClosedBy(...$data): InvoiceModel {
 		return $this->where('closedBy', ...$data);
-	}
-
-	public function whereReadyForAccounting(...$data): InvoiceModel {
-		return $this->where('readyForAccounting', ...$data);
 	}
 
 	public function whereEmailedAt(...$data): InvoiceModel {

@@ -135,7 +135,6 @@ Invoice:
   closed: bool = FALSE
   closedAt: ?datetime
   closedBy: ?user\User
-  readyForAccounting: ?bool = FALSE
   emailedAt: ?datetime
   paidAt: ?date
   remindedAt: ?date

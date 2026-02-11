@@ -680,13 +680,5 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
-	public static function updateReadyForAccountingCollection(\Collection $cInvoice, ?bool $readyForAccounting): void {
-
-		Invoice::model()
-			->whereId('IN', $cInvoice->getIds())
-			->update(['readyForAccounting' => $readyForAccounting]);
-
-	}
-
 }
 ?>

@@ -253,11 +253,15 @@ Class AccountingLib {
 
 			foreach($allEntries as $item) {
 
-				$eAccount = $cAccount->offsetGet($item['account']);
+				if($cAccount->offsetExists($item['account'])) {
+					$eAccount = $cAccount->offsetGet($item['account']);
+				} else {
+					$eAccount = new \account\Account();
+				}
 
 				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
 
-					if($eSale['cPayment']->find(fn($e) => $e['id'] === ($item['payment'] and $e['status'] === \selling\Payment::PAID))->count() > 0) {
+					if($eSale['cPayment']->find(fn($e) => ($e['id'] === $item['payment'] and $e['status'] === \selling\Payment::PAID))->count() > 0) {
 						$ePayment = $eSale['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->first();
 						$date = $ePayment['paidAt'];
 						$payment = $ePayment['methodName'];
@@ -269,7 +273,7 @@ Class AccountingLib {
 					$fecDataItemPayment = self::getFecLine(
 						eAccount    : $eAccount,
 						date        : $date,
-						eCode       : $eAccount['journalCode'],
+						eCode       : $eAccount['journalCode'] ?? new \journal\JournalCode(),
 						ecritureLib : $document,
 						document    : $document,
 						documentDate: $documentDate,
@@ -278,7 +282,7 @@ Class AccountingLib {
 						payment     : $payment,
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
-						isSummed    : $eAccountBank['id'] !== $eAccount['id'],
+						isSummed    : $eAccountBank['id'] !== ($eAccount['id'] ?? ''),
 						origin      : 'sale',
 					);
 
@@ -727,10 +731,34 @@ Class AccountingLib {
 		// Niveau 1 : éclater par moyen de paiement
 		$items = [];
 
-		if($ePaymentFilter->notEmpty()) {
+		if($ePaymentFilter->notEmpty()) { // Pour l'import en compta
+
 			$cPayment = new \Collection([$ePaymentFilter]);
-		} else {
+
+		} else if($eElement['cPayment'] ->notEmpty()) { // 2 autres cas : pour l'export FEC / CSV
+
 			$cPayment = $eElement['cPayment'];
+
+			$totalPaid = $cPayment->sum('amountIncludingVat');
+
+			if($totalPaid < $eElement['priceIncludingVat']) { // On simule le non-payé
+				$cPayment->append(new \selling\Payment([
+					'id' => NULL,
+					'status' => \selling\Payment::NOT_PAID,
+					'amountIncludingVat' => $eElement['priceIncludingVat'] - $totalPaid,
+					'method' => new \payment\Method(['id' => NULL]),
+				]));
+			}
+
+		} else {
+
+			$cPayment = new \Collection([new \selling\Payment([
+				'id' => NULL,
+				'status' => \selling\Payment::NOT_PAID,
+				'amountIncludingVat' => $eElement['priceIncludingVat'],
+				'method' => new \payment\Method(['id' => NULL]),
+			])]);
+
 		}
 
 		foreach($cPayment as $ePayment) {
@@ -757,8 +785,8 @@ Class AccountingLib {
 
 				foreach($eElement['vatByRate'] as $vatByRate) {
 					$vatByRates[] = [
-						'amountWithoutRatio' => $vatByRate['amount'],
-						'amount' => round($vatByRate['amount'] * round($paymentRatio, 2), 2),
+						'amountWithoutRatio' => $vatByRate['amount'], // TTC
+						'amount' => round($vatByRate['amount'] * round($paymentRatio, 2), 2), // TTC
 						'vatRate' => $vatByRate['vatRate']
 					];
 				}
@@ -789,14 +817,15 @@ Class AccountingLib {
 				if($hasVat) {
 
 					// TVA
-					$amountVat = round($vatByRate['amount'] * $vatByRate['vatRate'] / 100, 2);
-					$amountExcludingVat = $vatByRate['amount'] - $amountVat;
+					$amountExcludingVat = round($vatByRate['amount'] / (1 + $vatByRate['vatRate'] / 100), 2);
+					$amountVat = round($vatByRate['amount'] - $amountExcludingVat, 2);
 
 				} else {
 
 					$amountExcludingVat = $eElement['priceExcludingVat'];
 
 				}
+
 				// HT
 				$ratioItems = [];
 				foreach($amountRatios as $amountRatio) {
@@ -805,7 +834,6 @@ Class AccountingLib {
 					if($amountRatio['accountReference'] !== NULL or $amountRatio['vatRate'] !== $vatByRate['vatRate']) {
 						continue;
 					}
-
 					$ratioItems[] = [
 						'payment' => $ePayment['status'] === \selling\Payment::PAID ? $ePayment['id'] : '',
 						'vatRate' => $vatByRate['vatRate'],
@@ -815,6 +843,7 @@ Class AccountingLib {
 						'amount' => round($amountExcludingVat * $amountRatio['ratio'], 2),
 						'method' => $ePayment['method']['id'],
 					];
+
 				}
 
 				// Vérification des écarts
@@ -898,7 +927,6 @@ Class AccountingLib {
 
 			}
 		}
-
 		return $items;
 	}
 
@@ -953,7 +981,7 @@ Class AccountingLib {
 	private static function getDefaultAccount(float $vatRate, \account\Account $eAccountVatDefault): \account\Account {
 
 		return new \account\Account([
-			'id' => NULL,
+			'id' => 0,
 			'class' => '',
 			'description' => '',
 			'vatRate' => $vatRate,

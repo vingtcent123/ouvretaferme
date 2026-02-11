@@ -243,7 +243,7 @@ new Page(function($data) {
 			// Ventes facturées
 			if($data->search->get('filter') === NULL or $hasInvoice === TRUE) {
 
-				$cInvoice = \preaccounting\InvoiceLib::getForAccounting($data->eFarm, $data->search, FALSE);
+				$cInvoice = \preaccounting\InvoiceLib::getForExport($data->eFarm, $data->search);
 				[$fecInvoice, $data->nInvoice] = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $data->eFarm['cFinancialYear'], $cAccount, FALSE, $data->search->get('account'));
 
 				$documents = array_unique(array_column($fecInvoice, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT));
@@ -327,7 +327,7 @@ new Page(function($data) {
 
 			if($data->search->get('filter') === NULL or $hasInvoice === TRUE) {
 
-				$cInvoice = \preaccounting\InvoiceLib::getForAccounting($data->eFarm, $data->search, FALSE);
+				$cInvoice = \preaccounting\InvoiceLib::getForExport($data->eFarm, $data->search);
 				[$invoiceOperations, ] = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $data->eFarm['cFinancialYear'], $cAccount, FALSE, $data->search->get('account'));
 
 			} else {

@@ -243,10 +243,10 @@ Class PreaccountingUi {
 
 		$menu .= '</div>';
 
-		$menu .= '<a data-ajax-submit="/selling/invoice:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("En ignorant ces factures, elles ne seront jamais incluses dans les exports comptables. Continuer ?").'"  class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer les factures").'</span></a>';
+		$menu .= '<a data-ajax-submit="/selling/payment:doUpdateRefuseReadyForAccountingCollection" data-confirm="'.s("En ignorant ces paiements, ils ne seront jamais inclus dans les exports comptables. Continuer ?").'"  class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer les paiements").'</span></a>';
 
 
-		return \util\BatchUi::group('batch-accounting-invoice', $menu, title: s("Pour les factures sélectionnées"));
+		return \util\BatchUi::group('batch-accounting-invoice', $menu, title: s("Pour les paiements sélectionnés"));
 
 	}
 

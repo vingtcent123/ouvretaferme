@@ -241,22 +241,5 @@ new Page(function($data) {
 
 		throw new ReloadAction('selling', 'Invoice::deletedCollection');
 
-	})
-	->post('doUpdateRefuseReadyForAccountingCollection', function($data) {
-
-		$data->c->validate('canWrite');
-
-		if($data->c->notEmpty()) {
-
-			$data->c->first()['farm']->validate('hasAccounting');
-
-			\selling\InvoiceLib::updateReadyForAccountingCollection($data->c, NULL);
-
-			throw new ReloadAction('selling', 'Invoice::readyForAccountingRefused');
-
-		}
-
-		throw new VoidAction($data);
-
 	});
 ?>
