@@ -424,7 +424,7 @@ class JournalUi {
 
 						}
 
-						$referenceDate = ($eFinancialYearSelected->isCashAccounting() and $eOperation['paymentDate'])? $eOperation['paymentDate'] : $eOperation['date'];
+						$referenceDate = $eOperation['date'];
 
 						if($currentDate === NULL or $currentDate !== $referenceDate) {
 							$h .= '<tr class="tr-title">';
