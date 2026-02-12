@@ -64,7 +64,10 @@ class Invoice extends InvoiceElement {
 	}
 
 	public function acceptUpdate(): bool {
-		return in_array($this['status'], [Invoice::DRAFT, Invoice::GENERATED]);
+		return (
+			$this['closed'] === FALSE and
+			in_array($this['status'], [Invoice::DRAFT, Invoice::GENERATED])
+		);
 	}
 
 	public function acceptReminder(): bool {
@@ -181,7 +184,7 @@ class Invoice extends InvoiceElement {
 	}
 
 	public function acceptStatusCanceled(): bool {
-		return ($this['status'] === Invoice::GENERATED);
+		return ($this['closed'] === FALSE);
 	}
 
 	public function acceptStatusConfirmed(): bool {

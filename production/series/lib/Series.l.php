@@ -1099,6 +1099,10 @@ class SeriesLib extends SeriesCrud {
 		\analyze\Cultivation::model()
 			->whereSeries($e)
 			->delete();
+		
+		Timesheet::model()
+			->whereSeries($e)
+			->delete();
 
 		Series::model()->delete($e);
 

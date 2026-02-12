@@ -1686,6 +1686,8 @@ class SaleLib extends SaleCrud {
 
 	public static function close(Sale $eSale): void {
 
+		$eSale->expects(['type', 'closed', 'secured']);
+
 		$properties = ['closed', 'closedAt', 'closedBy'];
 
 		$eSale['closed'] = TRUE;

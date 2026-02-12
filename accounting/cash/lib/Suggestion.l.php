@@ -145,6 +145,8 @@ class SuggestionLib extends CashCrud {
 
 					self::importCreateFromRatios($eCash, $eInvoice, $ePayment);
 
+					\selling\InvoiceLib::close($eInvoice);
+
 					break;
 				case Cash::SELL_SALE :
 
@@ -154,6 +156,8 @@ class SuggestionLib extends CashCrud {
 					$eSale['cItem'] = \selling\SaleLib::getItems($eSale);
 
 					self::importCreateFromRatios($eCash, $eSale, $ePayment);
+
+					\selling\SaleLib::close($eSale);
 
 					break;
 
@@ -288,10 +292,12 @@ class SuggestionLib extends CashCrud {
 							'priceIncludingVat', 'priceExcludingVat',
 							'vat',
 							'vatByRate',
+							'closed',
 						],
 						'source' => fn() => Cash::SELL_INVOICE,
 						'description' => fn($e) => \selling\InvoiceUi::getName($e['invoice'])
 					])
+					->where('m2.status', 'IN', [\selling\Invoice::GENERATED, \selling\Invoice::DELIVERED])
 					->where('m1.statusCash', \selling\Payment::WAITING)
 					->where('m1.farm', $eFarm)
 					->where('m1.source', \selling\Payment::INVOICE);
@@ -308,7 +314,7 @@ class SuggestionLib extends CashCrud {
 						'reference' => new \Sql('m1.id', 'int'),
 						'payment' => fn($e) => new \selling\Payment(['id' => $e['reference']]),
 						'date' => new \Sql('m1.paidAt'),
-						'sale' => ['document', 'profile', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate', 'compositionEndAt'],
+						'sale' => ['document', 'profile', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate', 'compositionEndAt', 'closed'],
 						'source' => fn() => Cash::SELL_SALE,
 						'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT,
 						'amountIncludingVat',

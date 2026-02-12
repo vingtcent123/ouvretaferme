@@ -349,7 +349,7 @@ class InvoiceLib extends InvoiceCrud {
 
 	}
 
-	public static function updateStatusDelivered(Invoice $e, \Collection $cSale): bool {
+	public static function updateStatusDelivered(Invoice $e): bool {
 
 		Invoice::model()->beginTransaction();
 
@@ -366,6 +366,8 @@ class InvoiceLib extends InvoiceCrud {
 				return FALSE;
 
 			}
+
+			self::close($e);
 
 		Invoice::model()->commit();
 
@@ -449,6 +451,19 @@ class InvoiceLib extends InvoiceCrud {
 			}
 
 		Invoice::model()->commit();
+
+	}
+
+	public static function close(Invoice $eInvoice): void {
+
+		$eInvoice['closed'] = TRUE;
+		$eInvoice['closedAt'] = Invoice::model()->now();
+		$eInvoice['closedBy'] = \user\ConnectionLib::getOnline();
+
+		Invoice::model()
+			->select(['closed', 'closedAt', 'closedBy'])
+			->whereClosed(FALSE)
+			->update($eInvoice);
 
 	}
 

@@ -212,7 +212,7 @@ class PdfLib extends PdfCrud {
 
 		$cSale = SaleLib::getByInvoice($eInvoice);
 
-		if(InvoiceLib::updateStatusDelivered($eInvoice, $cSale) === FALSE) {
+		if(InvoiceLib::updateStatusDelivered($eInvoice) === FALSE) {
 			Invoice::fail('fileAlreadySent');
 			return;
 		}

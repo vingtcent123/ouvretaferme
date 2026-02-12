@@ -379,10 +379,6 @@ class InvoiceUi {
 			return '<span class="btn btn-readonly '.$btn.' invoice-status-'.$eInvoice['status'].'-button">'.self::p('status')->values[$eInvoice['status']].'</span>';
 		}
 
-		if($eInvoice['closed']) {
-			return '<span class="btn btn-readonly '.$btn.' invoice-status-closed-button" title="'.s("Il n'est pas possible de modifier une facture clôturée.").'">'.s("Clôturé").'  '.\Asset::icon('lock-fill').'</span>';
-		}
-
 		$button = function(string $status, ?string $confirm = NULL) use ($eInvoice) {
 
 			$h = '<a data-ajax="/selling/invoice:doUpdate'.ucfirst($status).'Collection" post-ids="'.$eInvoice['id'].'" class="dropdown-item" '.($confirm ? attr('data-confirm', $confirm) : '').'>';
