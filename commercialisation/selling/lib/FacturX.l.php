@@ -132,10 +132,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
  passe sur SUPER PDP : <ram:ID schemeID="0002">'.encode($sellerSiren).'</ram:ID>
  passe sur Chorus Pro : <ram:ID schemeID="0009">'.encode($sellerSiret).'</ram:ID>
  */
-				((LIME_ENV === 'dev' and $testChorusPro)
-					? '<ram:ID schemeID="0009">'.encode($sellerSiret).'</ram:ID>'
-					: '<ram:ID schemeID="0002">'.encode($sellerSiren).'</ram:ID>'
-				).'
+				'<ram:ID schemeID="0009">'.encode($sellerSiret).'</ram:ID>
 				</ram:SpecifiedLegalOrganization>
 				<ram:PostalTradeAddress><!--BG-5-->
 					<ram:CountryID>FR</ram:CountryID><!--BT-40-->
