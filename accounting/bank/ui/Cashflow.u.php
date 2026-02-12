@@ -326,8 +326,11 @@ class CashflowUi {
 
 						$h .= '<td class="td-min-content text-center">';
 
-								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
-								$h .= $this->getAction($eFarm, $eCashflow);
+								$action = $this->getAction($eFarm, $eCashflow);
+								if($action) {
+									$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
+									$h .= $this->getAction($eFarm, $eCashflow);
+								}
 
 						$h .= '</td>';
 
@@ -344,7 +347,15 @@ class CashflowUi {
 
 	protected function getAction(\farm\Farm $eFarm, Cashflow $eCashflow): string {
 
-		if($eFarm->canManage() === FALSE) {
+		if($eCashflow['cOperationHash']->notEmpty()) {
+			$canWrite = $eCashflow['cOperationHash']->first()->acceptWrite();
+			$nOperation = $eCashflow['cOperationHash']->count();
+		} else {
+			$canWrite = TRUE;
+			$nOperation = 0;
+		}
+
+		if($eFarm->canManage() === FALSE or $canWrite === FALSE) {
 			return '';
 		}
 
@@ -353,9 +364,6 @@ class CashflowUi {
 			$actions = '';
 
 			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
-
-				$nOperation = $eCashflow['cOperationHash']->count();
-				$canWrite = $eCashflow['cOperationHash']->first()->acceptWrite();
 
 				$isLinkedToAsset = $eCashflow['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->notEmpty();
 

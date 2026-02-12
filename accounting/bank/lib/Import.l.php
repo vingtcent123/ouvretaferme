@@ -202,8 +202,6 @@ class ImportLib extends ImportCrud {
 		}
 		try {
 
-
-
 			$ofx = \bank\OfxParserLib::extractFile($filepath);;
 
 			$eBankAccount = \bank\OfxParserLib::extractAccount($ofx);

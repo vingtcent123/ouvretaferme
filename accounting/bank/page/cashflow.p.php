@@ -232,6 +232,11 @@ new \bank\CashflowPage(function($data) {
 		$data->action = GET('action');
 
 		$data->cOperation = \journal\OperationLib::getByHash($data->e['hash']);
+
+		if($data->cOperation->first()->acceptWrite() === FALSE) {
+			throw new NotExpectedAction('Deallocate is forbidden');
+		}
+
 		list($data->cInvoice,) = \selling\InvoiceLib::getByFarm($data->eFarm, search: new Search(['accountingHash' => $data->e['hash']]));
 
 		throw new ViewAction($data);
