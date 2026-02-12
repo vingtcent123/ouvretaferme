@@ -60,7 +60,10 @@ class Cash extends CashElement {
 	}
 
 	public function acceptUpdate(): bool {
-		return ($this['status'] === Cash::DRAFT);
+		return (
+			$this['status'] === Cash::DRAFT and
+			in_array($this['source'], [Cash::BANK_CASHFLOW, Cash::SELL_SALE, Cash::SELL_INVOICE]) === FALSE
+		);
 	}
 
 	public function acceptValidate(): bool {

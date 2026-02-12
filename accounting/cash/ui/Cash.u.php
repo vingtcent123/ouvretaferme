@@ -356,8 +356,8 @@ class CashUi {
 												if($closeDate !== NULL) {
 
 													$h .= '<div class="mt-1">';
-														$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doClose" post-id="'.$eRegister['id'].'" post-date="'.$closeDate.'" class="btn btn-secondary" data-confirm="'.s("La clôture est définitive, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($closeDate)).'">';
-															$h .= '<div class="btn-icon">'.\Asset::icon('calendar-month').'</div>';
+														$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doClose" post-id="'.$eRegister['id'].'" post-date="'.$closeDate.'" class="btn btn-primary" data-confirm="'.s("ATTENTION !\nLa clôture est définitive, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($closeDate)).'">';
+															$h .= \Asset::icon('calendar-month').'  ';
 															$h .= s("Clôturer le journal au {value}", \util\DateUi::textual($closeDate));
 														$h .= '</a>';
 													$h .= '</div>';
@@ -517,7 +517,9 @@ class CashUi {
 									$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
 									$h .= '<div class="dropdown-list">';
 										$h .= '<div class="dropdown-title">'.s("Opération de caisse").'</div>';
-										$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:update?id='.$eCash['id'].'" class="dropdown-item">'.s("Modifier l'opération").'</a>';
+										if($eCash->acceptUpdate()) {
+											$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:update?id='.$eCash['id'].'" class="dropdown-item">'.s("Modifier l'opération").'</a>';
+										}
 										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCash['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération avant le {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="dropdown-item '.($eCash['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
 										$h .= '<div class="dropdown-divider"></div>';
 										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doDelete" data-confirm="'.s("Vous allez supprimer cette opération. Continuer ?").'" post-id="'.$eCash['id'].'" class="dropdown-item">'.s("Supprimer l'opération").'</a>';

@@ -67,7 +67,10 @@ class Register extends RegisterElement {
 			$date = date('Y-m-t', strtotime($date) + 86400);
 		}
 
-		if($date > currentDate()) {
+		if(
+			$date > currentDate() or
+			($this['pending?']('firstDraft') !== NULL and $this['pending?']('firstDraft') <= $date)
+		) {
 			return NULL;
 		} else {
 			return $date;
