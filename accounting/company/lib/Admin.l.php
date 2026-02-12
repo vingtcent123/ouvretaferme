@@ -50,6 +50,7 @@ Class AdminLib {
 			}
 
 			$eFarm['nBankAccount'] = \bank\BankAccount::model()->count();
+			$eFarm['nCash'] = \cash\Cash::model()->count();
 
 			if($eFarm['nBankAccount'] === 0) {
 

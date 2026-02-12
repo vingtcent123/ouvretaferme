@@ -45,6 +45,7 @@ Class AdminUi {
 						$h .= '<th class="text-center" rowspan="2">'.$search->linkSort('nProduct', s("Produits"), SORT_DESC).'</th>';
 						$h .= '<th class="text-center" colspan="3">'.s("Exercices comptables").'</th>';
 						$h .= '<th colspan="3" class="text-center">'.s("Banque").'</th>';
+						$h .= '<th class="text-center"  rowspan="2">'.$search->linkSort('cash', s("Opérations<br/>de caisse"), SORT_DESC).'</th>';
 						$h .= '<th class="text-center"  rowspan="2">'.s("Rapprochements").'<br />'.$search->linkSort('suggestion-validated', \Asset::icon('check'), SORT_DESC).' / '.$search->linkSort('suggestion-rejected', \Asset::icon('x'), SORT_DESC).'</th>';
 						$h .= '<th colspan="2" class="text-center">'.s("Écritures").'</th>';
 					$h .= '</tr>';
@@ -86,6 +87,7 @@ Class AdminUi {
 						$h .= '<td class="text-center">'.encode($eFarm['nBankAccount']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nBankImport']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nCashflow']).'</td>';
+						$h .= '<td class="text-center">'.encode($eFarm['nCash']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['suggestion-'.\preaccounting\Suggestion::VALIDATED] ?? 0).' / '.encode($eFarm['suggestion-'.\preaccounting\Suggestion::REJECTED] ?? 0).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nOperation']).'</td>';
 						$h .= '<td class="text-center">'.encode($eFarm['nAsset']).'</td>';
