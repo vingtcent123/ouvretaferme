@@ -257,7 +257,11 @@ Class AccountingLib {
 
 					if($eSale['cPayment']->find(fn($e) => ($e['id'] === $item['payment'] and $e['status'] === \selling\Payment::PAID))->count() > 0) {
 						$ePayment = $eSale['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->first();
-						$date = $ePayment['paidAt'];
+						if($ePayment['paidAt'] !== NULL) {
+							$date = $ePayment['paidAt'];
+						} else {
+							$date = $eSale['deliveredAt'];
+						}
 						$payment = $ePayment['methodName'];
 					} else {
 						$date = $eSale['deliveredAt'];
@@ -413,8 +417,14 @@ Class AccountingLib {
 				$eElement = $ePayment['sale'];
 
 			}
-
-			$referenceDate = $ePayment['paidAt'];
+			if($ePayment['paidAt'] !== NULL) {
+				$referenceDate = $ePayment['paidAt'];
+			} else {
+				$referenceDate = match($ePayment['source']) {
+					\selling\Payment::INVOICE => $ePayment['date'],
+					\selling\Payment::SALE => $ePayment['deliveredAt'],
+				};
+			}
 			$documentDate = $referenceDate;
 			$compAuxLib = ($eElement['customer']['name'] ?? '');
 			$compAuxNum = '';
