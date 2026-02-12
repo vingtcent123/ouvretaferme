@@ -21,11 +21,16 @@ class Register extends RegisterElement {
 			'paymentMethod' => ['fqn']
 		]);
 
-		if(
-			($source === Cash::BANK_MANUAL and $type === Cash::CREDIT) or
-			($source === Cash::PRIVATE)
-		) {
+		if($source === Cash::PRIVATE) {
 			return ($this['paymentMethod']['fqn'] === \payment\MethodLib::CASH);
+		}
+
+		if($source === Cash::BANK_MANUAL and $type === Cash::CREDIT) {
+			return ($this['paymentMethod']['fqn'] === \payment\MethodLib::CASH);
+		}
+
+		if($source === Cash::BUY_MANUAL) {
+			return ($this['paymentMethod']['fqn'] !== \payment\MethodLib::CHECK);
 		}
 
 		return TRUE;
@@ -84,6 +89,17 @@ class Register extends RegisterElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
+			->setCallback('paymentMethod.check', function(\payment\Method $eMethod) {
+
+				$this->expects(['cPaymentMethod']);
+
+
+				return (
+					$eMethod->notEmpty() and
+					$this['cPaymentMethod']->offsetExists($eMethod['id'])
+				);
+
+			})
 			->setCallback('account.check', function(\account\Account $eAccount) {
 
 				if($eAccount->empty()) {

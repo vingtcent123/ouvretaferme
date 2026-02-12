@@ -19,7 +19,7 @@ StripeFarm:
 
 Method:
   id: serial32
-  name: text8(1, null)
+  name: text8(1, null) @collate(general)
   fqn: ?fqn
   farm: ?farm\Farm
   online: bool = FALSE

@@ -546,7 +546,7 @@ class CashUi {
 			if($eCash['sale']->notEmpty()) {
 				$list[] = '<a href="'.\selling\SaleUi::url($eCash['sale']).'">'.$description.'</a>';
 			} else if($eCash['invoice']->notEmpty()) {
-				$list[] = '<a href="'.\selling\InvoiceUi::url($eCash['invoice']).'">'.$description.'</a>';
+				$list[] = '<a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$eCash['invoice']['id'].'">'.$description.'</a>';
 			} else {
 				$list[] = $description;
 			}

@@ -3,7 +3,7 @@ new \cash\RegisterPage()
 	->getCreateElement(function($data) {
 
 		return new \cash\Register([
-			'cPaymentMethod' => \payment\MethodLib::getByFarm($data->eFarm, FALSE)
+			'cPaymentMethod' => \payment\MethodLib::getForCash($data->eFarm)
 		]);
 
 	})
