@@ -82,7 +82,7 @@ class Register extends RegisterElement {
 
 		$this->expects(['operations']);
 
-		return ($this['operations'] === 0);
+		return ($this['operations'] <= CashSetting::DELETE_LIMIT);
 
 	}
 

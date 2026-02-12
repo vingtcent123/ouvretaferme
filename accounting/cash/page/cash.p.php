@@ -9,19 +9,20 @@ new \cash\CashPage()
 			'date' => \cash\Cash::INPUT('date', 'date')
 		]);
 
-		if($eCash['date'] !== NULL) {
-
-			$fw = new FailWatch();
-
-			$eCash->build(['date'], ['date' => $eCash['date']]);
-
-			$fw->validate();
-
-		}
-
 		if($eCash['register']->acceptOperation($eCash['source'], $eCash['type']) === FALSE) {
 			throw new NotExpectedAction();
 		}
+
+		$fw = new FailWatch();
+
+		if(
+			Page::getName() === 'doCreate' or
+			(Page::getName() === 'create' and $eCash['date'] !== NULL)
+		) {
+			$eCash->build(['date'], ['date' => $eCash['date']]);
+		}
+
+		$fw->validate();
 
 		return $eCash;
 

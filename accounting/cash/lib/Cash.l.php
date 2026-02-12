@@ -7,9 +7,6 @@ class CashLib extends CashCrud {
 
 		return function(Cash $e) {
 
-			// La date doit être vérifiée en amont
-			$e->expects(['date']);
-
 			$properties = ['type', 'amountIncludingVat'];
 
 			if(

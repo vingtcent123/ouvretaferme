@@ -192,6 +192,11 @@ class Cash extends CashElement {
 				return ($date <= currentDate());
 
 			})
+			->setCallback('date.year', function(string $date) {
+
+				return ($date >= date('Y-01-01'));
+
+			})
 			->setCallback('description.empty', function(?string $description = NULL) {
 
 				if($this->requireDescription()) {

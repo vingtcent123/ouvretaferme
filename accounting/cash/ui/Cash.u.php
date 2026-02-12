@@ -77,7 +77,17 @@ class CashUi {
 
 		}
 
-		$h = '<div class="util-block">';
+		$h = '';
+
+		if($eRegister['operations'] === 1) {
+			$h .= '<div class="util-block-info">';
+				$h .= '<h4>'.s("Bienvenue sur votre nouveau journal de caisse").'</h4>';
+				$h .= '<p>'.s("Ce journal vous permet de répondre à une obligation légale de traçabilité des espèces et est par conséquent soumis à des contraintes réglementaires d’inaltérabilité, de sécurisation, de conservation et d’archivage des données. Nous vous conseillons d'être rigoureux dans la saisie de vos données pour qu'elles reflètent précisément la situation de votre ferme.").'</p>';
+				$h .= '<p>'.s("Notez bien qu'une fois validée, une opération de caisse devient inaltérable et ne peut donc plus être modifiée.").'</p>';
+			$h .= '</div>';
+		}
+
+		$h .= '<div class="util-block">';
 
 			$h .= '<h3>'.s("Saisir une opération de caisse").'</h3>';
 
@@ -107,7 +117,7 @@ class CashUi {
 						$h .= '<div class="btn-icon">'.\Asset::icon('plus-slash-minus').'</div>';
 						$h .= s("Constater un écart de caisse");
 						if($eRegister->acceptUpdateBalance() === FALSE) {
-							$h .= '<div style="margin-top: 0.25rem" class="font-xs">'.\Asset::icon('exclamation-circle').' '.s("Opérations non validées").'</div>';
+							$h .= '<div style="margin-top: 0.25rem" class="font-xs">'.\Asset::icon('exclamation-circle').' '.s("Brouillard de caisse").'</div>';
 						}
 					$h .= '</a>';
 
@@ -310,7 +320,7 @@ class CashUi {
 							$h .= '<div class="util-title">';
 								$h .= '<h2 class="mt-2">';
 									$h .= match($status) {
-										Cash::DRAFT => s("Opérations non validées").' <span class="util-counter">'.$cCash->count().'</span>',
+										Cash::DRAFT => s("Brouillard de caisse").' <span class="util-counter">'.$cCash->count().'</span>',
 										Cash::VALID => s("Journal de caisse"),
 									};
 								$h .= '</h2>';
@@ -333,6 +343,8 @@ class CashUi {
 
 								case Cash::DRAFT :
 
+									$h .= '<div class="util-info">'.s("Les opérations du brouillard de caisse peuvent être modifiées jusqu'à leur validation. Une fois validée, une opération devient inaltérable et vous ne pouvez plus en ajouter antérieurement.").'</div>';
+
 									if($eCashLast['balanceNegative']) {
 										$h .= '<div class="util-block-danger">'.\Asset::icon('exclamation-circle').' '.s("Le solde de votre journal de caisse doit toujours être positif. </h3>Veuillez corriger vos saisies afin de pouvoir valider vos opérations.").'</div>';
 									}
@@ -343,30 +355,38 @@ class CashUi {
 
 									if($eRegister['closedAt'] !== NULL) {
 
-										$h .= '<div class="util-block-gradient">';
-											$h .= \Asset::icon('lock-fill').'  '.s("Votre journal de caisse est actuellement clôturé au {closed}, la saisie de nouvelles opérations est possible à partir du {open}.", [
-												'closed' => \util\DateUi::numeric($eRegister['closedAt']),
-												'open' => \util\DateUi::numeric(date('Y-m-d', strtotime($eRegister['closedAt'].' + 1 DAY'))),
-											]);
+										if($eRegister['operations'] > 1) {
 
-											if($eRegister->acceptClose()) {
+											$h .= '<div class="util-block-gradient">';
+												$h .= \Asset::icon('lock-fill').'  '.s("Votre journal de caisse est actuellement clôturé au {closed}, la saisie de nouvelles opérations est possible à partir du {open}.", [
+													'closed' => \util\DateUi::numeric($eRegister['closedAt']),
+													'open' => \util\DateUi::numeric(date('Y-m-d', strtotime($eRegister['closedAt'].' + 1 DAY'))),
+												]);
 
-												$closeDate = $eRegister->getCloseDate();
+												if($eRegister->acceptDelete()) {
+													$h .= '<br/>'.\Asset::icon('exclamation-circle').'  '.s("Si vous avez fait une erreur, vous pouvez supprimer votre journal de caisse tant qu'il contient moins de {value} opérations le temps de vous familiariser avec cette fonctionnalité.", CashSetting::DELETE_LIMIT);
+												}
 
-												if($closeDate !== NULL) {
+												if($eRegister->acceptClose()) {
 
-													$h .= '<div class="mt-1">';
-														$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doClose" post-id="'.$eRegister['id'].'" post-date="'.$closeDate.'" class="btn btn-primary" data-confirm="'.s("ATTENTION !\nLa clôture est définitive, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($closeDate)).'">';
-															$h .= \Asset::icon('calendar-month').'  ';
-															$h .= s("Clôturer le journal au {value}", \util\DateUi::textual($closeDate));
-														$h .= '</a>';
-													$h .= '</div>';
+													$closeDate = $eRegister->getCloseDate();
+
+													if($closeDate !== NULL) {
+
+														$h .= '<div class="mt-1">';
+															$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doClose" post-id="'.$eRegister['id'].'" post-date="'.$closeDate.'" class="btn btn-primary" data-confirm="'.s("ATTENTION !\nLa clôture est définitive, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($closeDate)).'">';
+																$h .= \Asset::icon('calendar-month').'  ';
+																$h .= s("Clôturer le journal au {value}", \util\DateUi::textual($closeDate));
+															$h .= '</a>';
+														$h .= '</div>';
+
+													}
 
 												}
 
-											}
+											$h .= '</div>';
 
-										$h .= '</div>';
+										}
 
 									}
 
@@ -575,6 +595,11 @@ class CashUi {
 
 		$h = '<h3>'.s("Indiquez le solde initial de la caisse").'</h3>';
 
+			$h .= '<div class="util-block-info">';
+				$h .= '<p>'.s("Le solde initial marque le point de départ de votre caisse. Choisissez bien la date du solide initial car toutes les opérations que vous enregistrerez ultérieurement dans votre journal devront être postérieures à cette date.").'</p>';
+				$h .= '<p>'.s("Votre journal de caisse peut commencer au plus tôt le {value}.", \util\DateUi::numeric(date('Y-01-01'))).'</p>';
+			$h .= '</div>';
+
 			$form = new \util\FormUi();
 
 			$h .= $form->openAjax(\farm\FarmUi::urlConnected().'/cash/cash:doCreate');
@@ -589,7 +614,7 @@ class CashUi {
 					s("Solde initial"),
 					$form->dynamicField($eCash, 'amountIncludingVat')
 				);
-				$h .= $form->group(content: $form->submit(s("Valider le solde initial", ['onclick' => s("Vous ne pourrez pas modifier votre choix. Valider ce solde initial ?")])));
+				$h .= $form->group(content: $form->submit(s("Valider le solde initial"), ['data-confirm' => s("Vous ne pourrez pas modifier votre choix. Valider ce solde initial ?")]));
 			$h .= $form->close();
 
 		return $h;

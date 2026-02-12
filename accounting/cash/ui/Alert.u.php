@@ -11,6 +11,7 @@ class AlertUi {
 			'Cash::date.check' => s("Indiquez la date de l'opération"),
 			'Cash::date.past' => s("La date de l'opération ne peut pas être antérieure à la dernière opération de caisse validée"),
 			'Cash::date.future' => s("La date de l'opération ne peut pas être dans le futur"),
+			'Cash::date.yea' => s("Votre journal de caisse ne peut pas démarrer avant le {value}", \util\DateUi::numeric(date('Y-01-01'))),
 			'Cash::account.empty' => s("Vous n'avez pas indiqué de numéro de compte"),
 			'Cash::description.empty' => s("Vous n'avez pas indiqué le motif de l'opération"),
 			'Cash::amountIncludingVat.check' => s("Vous devez saisir un montant"),
