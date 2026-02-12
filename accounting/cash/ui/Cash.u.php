@@ -362,10 +362,6 @@ class CashUi {
 														$h .= '</a>';
 													$h .= '</div>';
 
-													if(substr($closeDate, 0, 7) < date('Y-m', strtotime('last month'))) {
-														$h .= '<div class="util-info mt-1">'.s("Validez les opérations en attente pour clôturer le journal plus tard.").'</div>';
-													}
-
 												}
 
 											}
