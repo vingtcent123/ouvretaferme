@@ -836,7 +836,7 @@ class SaleLib extends SaleCrud {
 
 		self::create($e);
 
-		$eMethod = $eSale['farm']->getConf('marketSalePaymentMethod');
+		$eMethod = \payment\MethodLib::getById($eSale['farm']->getConf('marketSalePaymentMethod'));
 
 		if($eMethod->notEmpty()) {
 
