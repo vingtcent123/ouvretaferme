@@ -225,7 +225,7 @@ Class AccountingLib {
 
 	}
 
-	public static function generateSalesFec(\Collection $cSale, \Collection $cFinancialYear, \Collection $cAccount, \account\Account $eAccountFilter): array {
+	public static function generateSalesFec(\Collection $cSale, \Collection $cAccount, \account\Account $eAccountFilter): array {
 
 		$fecData = [];
 		$nSale = 0;
@@ -242,11 +242,8 @@ Class AccountingLib {
 
 			$items = [];
 
-			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $eSale['deliveredAt']);
-			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
-
-			$ratios = self::computeRatios($eSale, $hasVat, $cAccount);
-			$allEntries = array_merge(array_values(...$ratios));
+			$ratios = self::computeRatios($eSale, $cAccount);
+			$allEntries = array_merge(...array_values($ratios));
 
 			foreach($allEntries as $item) {
 
@@ -301,7 +298,7 @@ Class AccountingLib {
 
 	}
 
-	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport, \account\Account $eAccountFilter = new \account\Account()): array {
+	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cAccount, bool $forImport, \account\Account $eAccountFilter = new \account\Account()): array {
 
 		$eAccountBank = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 
@@ -324,10 +321,7 @@ Class AccountingLib {
 			}
 			$eInvoice['cItem'] = $cItems;
 
-			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $eInvoice['date']);
-			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
-
-			$ratios = self::computeRatios($eInvoice, $hasVat, $cAccount);
+			$ratios = self::computeRatios($eInvoice, $cAccount);
 			$allEntries = array_merge(...array_values($ratios));
 
 			foreach($allEntries as $item) {
@@ -390,7 +384,7 @@ Class AccountingLib {
 
 	}
 
-	public static function generatePaymentsFec(\Collection $cPayment, \Collection $cFinancialYear, \Collection $cAccount, bool $forImport, \account\Account $eAccountFilter = new \account\Account()): array {
+	public static function generatePaymentsFec(\Collection $cPayment, \Collection $cAccount, bool $forImport, \account\Account $eAccountFilter = new \account\Account()): array {
 
 		$eAccountBank = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 
@@ -427,10 +421,7 @@ Class AccountingLib {
 
 			$items = [];
 
-			$eFinancialYearFound = self::extractFinancialYearByDate($cFinancialYear, $ePayment['paidAt']);
-			$hasVat = ($eFinancialYearFound->empty() or $eFinancialYearFound['hasVat']);
-
-			$ratios = self::computeRatios($eElement, $hasVat, $cAccount, ePaymentFilter: $ePayment);
+			$ratios = self::computeRatios($eElement, $cAccount, ePaymentFilter: $ePayment);
 			$allEntries = array_merge(...array_values($ratios));
 
 			foreach($allEntries as $item) {
@@ -585,13 +576,15 @@ Class AccountingLib {
 
 	}
 
-	private static function computeAccountRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount, bool $hasVat): array {
+	private static function computeAccountRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount): array {
 
 		if($cAccount->empty()) {
 			$eAccountVatDefault = new \account\Account(['id' => 0, 'class' => \account\AccountSetting::VAT_CLASS]);
 		} else {
 			$eAccountVatDefault = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)->first();
 		}
+
+		$hasVat = $eElement['hasVat'];
 
 		$items = [];
 
@@ -609,16 +602,16 @@ Class AccountingLib {
 				$amountVat = 0.0;
 			}
 
-			// Si on n'est pas redevable de la TVA => On enregistre TTC
+			$keyForTotal = array_find_key($eElement['vatByRate'], fn($vatByRate) => ((float)$vatByRate['vatRate'] === (float)$eItem['vatRate']));
+			$totalByVatRateExcludingVat = (float)($eElement['vatByRate'][$keyForTotal]['amount'] - $eElement['vatByRate'][$keyForTotal]['vat']);
+
+			// Si on n'est pas redevable de la TVA => On manipule du TTC
 			if($hasVat === FALSE) {
 
 				$amountExcludingVat += $amountVat;
 				$amountVat = 0.0;
 
 			}
-
-			$keyForTotal = array_find_key($eElement['vatByRate'], fn($vatByRate) => ((float)$vatByRate['vatRate'] === (float)$eItem['vatRate']));
-			$totalByVatRateExcludingVat = (float)($eElement['vatByRate'][$keyForTotal]['amount'] - $eElement['vatByRate'][$keyForTotal]['vat']);
 
 			// Montant HT
 			if($totalByVatRateExcludingVat !== 0.0) {
@@ -663,12 +656,16 @@ Class AccountingLib {
 
 		}
 
-		// Si la vente a des frais de port
+		// Gestion des frais de port
 		if($eElement instanceof \selling\Sale) {
+
 			$cSale = new \Collection();
 			$cSale->append($eElement);
+
 		} else {
+
 			$cSale = $eElement['cSale'];
+
 		}
 
 		foreach($cSale as $eSale) {
@@ -735,9 +732,9 @@ Class AccountingLib {
 		return $items;
 	}
 
-	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, bool $hasVat, \Collection $cAccount, \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
+	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount, \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
 
-		$eElement->expects(['cItem', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat']);
+		$eElement->expects(['hasVat', 'cItem', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat']);
 
 		if($eElement instanceof \selling\Invoice) {
 			$eElement->expects(['cSale']);
@@ -746,9 +743,14 @@ Class AccountingLib {
 		if($ePaymentFilter->empty()) {
 			$eElement->expects(['cPayment']);
 		}
+		$hasVat = $eElement['hasVat'];
+
+		if($hasVat === FALSE and count($eElement['vatByRate']) > 1) {
+			throw new \NotExpectedAction('hasVat and vatByRate inconsistent.');
+		}
 
 		// Construire le ratio par classe de compte de manière générale
-		$amountRatios = self::computeAccountRatios($eElement, $cAccount, $hasVat);
+		$amountRatios = self::computeAccountRatios($eElement, $cAccount);
 
 		// Niveau 1 : éclater par moyen de paiement
 		$items = [];

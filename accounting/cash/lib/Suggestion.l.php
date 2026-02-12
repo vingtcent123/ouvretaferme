@@ -171,7 +171,6 @@ class SuggestionLib extends CashCrud {
 
 		$ratios = \preaccounting\AccountingLib::computeRatios(
 			$e,
-			$e['hasVat'],
 			\account\AccountLib::getAll(),
 			$ePayment
 		);

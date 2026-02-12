@@ -15,7 +15,7 @@ Class ImportLib {
 			return new \Collection();
 		}
 
-		[$fec, ] = AccountingLib::generatePaymentsFec($cPayment, $eFarm['cFinancialYear'], $cAccount, TRUE);
+		[$fec, ] = AccountingLib::generatePaymentsFec($cPayment, $cAccount, TRUE);
 
 		// Rattacher les opérations aux invoices
 		foreach($cPayment as &$ePayment) {
@@ -107,7 +107,7 @@ Class ImportLib {
 
 		$eThirdParty = self::getOrCreateThirdParty($eCustomer);
 
-		[$fecData, ] = \preaccounting\AccountingLib::generatePaymentsFec(new \Collection([$ePayment]), new \Collection([$eFinancialYear]), $cAccount, TRUE);
+		[$fecData, ] = \preaccounting\AccountingLib::generatePaymentsFec(new \Collection([$ePayment]), $cAccount, TRUE);
 
 		$eOperationBase = new \journal\Operation([
 			'thirdParty' => $eThirdParty,
