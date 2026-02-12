@@ -18,8 +18,8 @@ class SaleUi {
 
 	}
 
-	public static function link(Sale $eSale, bool $newTab = FALSE): string {
-		return '<a href="'.self::url($eSale).'" class="btn btn-sm btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.$eSale['document'].'</a>';
+	public static function link(Sale $eSale, bool $newTab = FALSE, string $size = 'btn-sm'): string {
+		return '<a href="'.self::url($eSale).'" class="btn '.$size.' btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.$eSale['document'].'</a>';
 	}
 
 	public static function urlMarket(Sale $eSale): string {

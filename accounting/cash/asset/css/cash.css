@@ -14,10 +14,19 @@
 	color: var(--muted);
 }
 
-.cash-item-details {
+.cash-item-details,
+.cash-item-children {
 	color: var(--muted);
-	margin-left: 3rem;
+	margin-left: 1.5rem;
 	font-size: .9rem;
+	margin-top: 0.125rem;
+}
+
+.cash-item-children {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.25rem;
 }
 
 .cash-actions {

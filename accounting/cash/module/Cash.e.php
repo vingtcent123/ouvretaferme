@@ -45,6 +45,8 @@ class Cash extends CashElement {
 			'account' => \account\Account::getSelection(),
 			'financialYear' => \account\FinancialYear::getSelection(),
 			'customer' => \selling\CustomerElement::getSelection(),
+			'sale' => \selling\SaleElement::getSelection(),
+			'invoice' => \selling\InvoiceElement::getSelection(),
 		];
 
 	}

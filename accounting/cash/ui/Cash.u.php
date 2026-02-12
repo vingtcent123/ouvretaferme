@@ -199,27 +199,14 @@ class CashUi {
 							$h .= \util\DateUi::numeric($eSuggestion['date']);
 						$h .= '</td>';
 						$h .= '<td>';
-							$h .= self::getOperation($eSuggestion['source'], $eSuggestion['type'], $eSuggestion['customer']).'</div>';
-							$h .= '<div class="cash-auto-description">';
-								$h .= \Asset::icon('arrow-return-right').'  ';
+							$h .= self::getOperation($eSuggestion['source'], $eSuggestion['type'], $eSuggestion).'</div>';
 
-								switch($eSuggestion['source']) {
+							if($eSuggestion['source'] === Cash::BANK_CASHFLOW) {
+								$h .= '<div class="cash-auto-description">';
+									$h .= \Asset::icon('arrow-return-right').'  '.encode($eSuggestion['description']);
+								$h .= '</div>';
+							}
 
-									case Cash::SELL_INVOICE :
-										$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$eSuggestion['invoice']['id'].'">'.encode($eSuggestion['description']).'</a>';
-										break;
-
-									case Cash::SELL_SALE :
-										$h .= '<a href="'.\selling\SaleUi::url($eSuggestion['sale']).'">'.encode($eSuggestion['description']).'</a>';
-										break;
-
-									default :
-										$h .= encode($eSuggestion['description']);
-										break;
-
-								}
-
-							$h .= '</div>';
 						$h .= '</td>';
 
 						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
@@ -270,7 +257,7 @@ class CashUi {
 
 	}
 
-	public static function getOperation(string $source, ?string $type = NULL, \selling\Customer $eCustomer = new \selling\Customer()): string {
+	public static function getOperation(string $source, ?string $type = NULL, \Element $e = new Cash()): string {
 
 		return match($source) {
 
@@ -294,8 +281,8 @@ class CashUi {
 
 			Cash::BUY_MANUAL => \Asset::icon('wallet').'  '.s("Achat à un fournisseur"),
 			Cash::SELL_MANUAL => \Asset::icon('wallet').'  '.s("Vente à un client"),
-			Cash::SELL_INVOICE => \Asset::icon('wallet').'  '.s("Facture {value}", '<u>'.encode($eCustomer->getName()).'</u>'),
-			Cash::SELL_SALE => \Asset::icon('wallet').'  '.s("Vente {value}", '<u>'.encode($eCustomer->getName()).'</u>')
+			Cash::SELL_INVOICE => \Asset::icon('wallet').'  <u class="mr-1">'.encode($e['customer']->getName()).'</u><a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$e['invoice']['id'].'" class="btn btn-outline-primary btn-xs">'.\selling\InvoiceUi::getName($e['invoice']).'</a>',
+			Cash::SELL_SALE => \Asset::icon('wallet').'  <u class="mr-1">'.encode($e['customer']->getName()).'</u><a href="'.\selling\SaleUi::url($e['sale']).'" class="btn btn-outline-primary btn-xs">'.\selling\SaleUi::getName($e['sale']).'</a>'
 
 		};
 
@@ -457,13 +444,27 @@ class CashUi {
 
 							$h .= '<td>';
 
-								$h .= CashUi::getOperation($eCash['source'], $eCash['type'], $eCash['customer']);
+								$h .= CashUi::getOperation($eCash['source'], $eCash['type'], $eCash);
 
 								if($eCash['status'] === Cash::DRAFT) {
 									$h .= '<span class="util-badge bg-muted ml-1">'.s("Non validé").'</span>';
 								}
 
 								$h .= '<div class="cash-item-details">'.$this->getDetails($eCash).'</div>';
+
+								if(
+									$eCash->offsetExists('cSaleMarket') and
+									$eCash['cSaleMarket']->notEmpty()
+								) {
+
+									$h .= '<div class="cash-item-children">';
+										$h .= '<span>'.s("Vente supérieures à {value} € :", CashSetting::AMOUNT_THRESHOLD).'</span>';
+										foreach($eCash['cSaleMarket'] as $eSale) {
+											$h .= \selling\SaleUi::link($eSale, size: 'btn-xs');
+										}
+									$h .= '</div>';
+								}
+
 							$h .= '</td>';
 
 							$h .= '<td class="td-min-content highlight-stick-right text-end">';
@@ -557,18 +558,11 @@ class CashUi {
 			$list[] = encode($eCash['account']['name']);
 		}
 
-		if($eCash['description'] !== NULL) {
-
-			$description = encode($eCash['description']);
-
-			if($eCash['sale']->notEmpty()) {
-				$list[] = '<a href="'.\selling\SaleUi::url($eCash['sale']).'">'.$description.'</a>';
-			} else if($eCash['invoice']->notEmpty()) {
-				$list[] = '<a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$eCash['invoice']['id'].'">'.$description.'</a>';
-			} else {
-				$list[] = $description;
-			}
-
+		if(
+			$eCash['description'] !== NULL and
+			in_array($eCash['source'], [Cash::SELL_SALE, Cash::SELL_INVOICE]) === FALSE
+		) {
+			$list[] = encode($eCash['description']);
 		}
 
 		return implode(' | ', $list);

@@ -83,7 +83,15 @@ class CashLib extends CashCrud {
 		$position = ($page === NULL) ? NULL : $page * $number;
 
 		$ccCash = Cash::model()
-			->select(Cash::getSelection())
+			->select(Cash::getSelection() + [
+				'cSaleMarket' => \selling\Sale::model()
+					->select(\selling\SaleElement::getSelection())
+					->whereFarm(\farm\Farm::getConnected())
+					->whereProfile(\selling\Sale::SALE_MARKET)
+					->wherePriceIncludingVat('>=', CashSetting::AMOUNT_THRESHOLD)
+
+					->delegateCollection('marketParent', propertyParent: 'sale')
+			])
 			->option('count')
 			->whereRegister($eRegister)
 			->whereType($search->get('type'), if: $search->get('type'))
