@@ -266,7 +266,8 @@ class SuggestionLib extends CashCrud {
 							\bank\Cashflow::CREDIT => Cash::DEBIT,
 							\bank\Cashflow::DEBIT => Cash::CREDIT,
 						},
-						'amountIncludingVat' => new \Sql('-1 * amount'),
+						'amount',
+						'amountIncludingVat' => fn($e) => ($e['amount'] > 0) ? $e['amount'] : $e['amount'] * -1,
 						'description' => new \Sql('memo'),
 						'customer' => fn() => new \selling\Customer(),
 					])
@@ -284,8 +285,8 @@ class SuggestionLib extends CashCrud {
 					->select([
 						'reference' => new \Sql('m1.id', 'int'),
 						'payment' => fn($e) => new \selling\Payment(['id' => $e['reference']]),
-						'amountIncludingVat',
-						'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT,
+						'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT, // Vérifier avant la ligne amountIncludingVat
+						'amountIncludingVat' => fn($e) => ($e['amountIncludingVat'] > 0) ? $e['amountIncludingVat'] : $e['amountIncludingVat'] * -1,
 						'date' => new \Sql('m1.paidAt'),
 						'invoice' => [
 							'number',
@@ -316,8 +317,8 @@ class SuggestionLib extends CashCrud {
 						'date' => new \Sql('m1.paidAt'),
 						'sale' => ['document', 'profile', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate', 'compositionEndAt', 'closed'],
 						'source' => fn() => Cash::SELL_SALE,
-						'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT,
-						'amountIncludingVat',
+						'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT, // Vérifier avant la ligne amountIncludingVat
+						'amountIncludingVat' => fn($e) => ($e['amountIncludingVat'] > 0) ? $e['amountIncludingVat'] : $e['amountIncludingVat'] * -1,
 						'description' => fn($e) => \selling\SaleUi::getName($e['sale'])
 					])
 					->where('m1.statusCash', \selling\Payment::WAITING)
