@@ -1339,15 +1339,11 @@ class FarmUi {
 
 			$h .= '</div>';
 
-			if($eFarm['id'] === 7) {
+			$h .= '<div class="farm-tab-wrapper farm-nav-cash">';
 
-				$h .= '<div class="farm-tab-wrapper farm-nav-cash">';
+				$h .= $this->getNav('cash', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse');
 
-					$h .= $this->getNav('cash', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse');
-
-				$h .= '</div>';
-
-			}
+			$h .= '</div>';
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-preaccounting">';
 
