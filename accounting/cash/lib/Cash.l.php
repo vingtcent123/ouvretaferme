@@ -295,6 +295,8 @@ class CashLib extends CashCrud {
 			$e['hasVat'] = FALSE;
 			$e['vat'] = 0.0;
 			$e['vatRate'] = 0.0;
+		} else {
+			$e['hasVat'] = TRUE;
 		}
 
 	}
