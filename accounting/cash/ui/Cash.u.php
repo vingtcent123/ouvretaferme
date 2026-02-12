@@ -358,7 +358,7 @@ class CashUi {
 													$h .= '<div class="mt-1">';
 														$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doClose" post-id="'.$eRegister['id'].'" post-date="'.$closeDate.'" class="btn btn-secondary" data-confirm="'.s("La clôture est définitive, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($closeDate)).'">';
 															$h .= '<div class="btn-icon">'.\Asset::icon('calendar-month').'</div>';
-															$h .= s("Clôturer le journal au {value}", \util\DateUi::numeric($closeDate));
+															$h .= s("Clôturer le journal au {value}", \util\DateUi::textual($closeDate));
 														$h .= '</a>';
 													$h .= '</div>';
 

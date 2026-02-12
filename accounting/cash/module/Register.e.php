@@ -57,16 +57,21 @@ class Register extends RegisterElement {
 
 	public function getCloseDate(): ?string {
 
-		if($this['pending?']('firstDraft') === NULL) {
-			$date = date("Y-m-d", strtotime('last day of last month'));
-		} else {
-			$date = date('Y-m-d', strtotime('last day of last month', strtotime($this['pending?']('firstDraft'))));
+		if($this['closedAt'] === NULL) {
+			return NULL;
 		}
 
-		return (
-			$this['closedAt'] !== NULL and
-			$date > $this['closedAt']
-		) ? $date : NULL;
+		$date = date('Y-m-t', strtotime($this['closedAt']));
+
+		if($date === $this['closedAt']) {
+			$date = date('Y-m-t', strtotime($date) + 86400);
+		}
+
+		if($date > currentDate()) {
+			return NULL;
+		} else {
+			return $date;
+		}
 
 	}
 
