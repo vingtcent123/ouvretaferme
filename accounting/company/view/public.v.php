@@ -30,7 +30,8 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 	} else {
 
 		echo '<div class="util-association">';
-			echo '<h4>'.s("Le module de comptabilité est accessible pour les fermes qui ont choisi de soutenir le projet Ouvretaferme en ayant adhéré à notre association.").'</h4>';
+			echo '<h4>'.s("Le module de comptabilité est accessible pour les fermes qui ont adhéré à notre association.").'</h4>';
+			echo '<p>'.s("Les fonctionnalités de ce module sont pleinement intégrées avec le reste du logiciel pour que la comptabilité devienne presque un plaisir 🏖️").'</p>';
 			echo '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="btn btn-primary btn-xl">';
 				echo \association\AssociationSetting::isDiscount($this->data->eFarm) ?
 					s("Adhérer à l'association pour seulement {value} €", \association\AssociationSetting::getFee($this->data->eFarm)) :
@@ -230,7 +231,7 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 		echo '<div class="home-feature bg-background">';
 
 			echo '<h2 class="color-primary">';
-				echo '<div class="home-feature-icon">'.Asset::icon('database').'</div>';
+				echo '<div class="home-feature-icon">'.Asset::icon('journal-text').'</div>';
 				echo s("Journal de caisse");
 			echo '</h2>';
 			echo '<div class="home-feature-buttons">';
