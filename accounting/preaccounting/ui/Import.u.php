@@ -193,12 +193,12 @@ Class ImportUi {
 
 							$h .= '<td class=" td-vertical-align-top">';
 								if($ePayment['source'] === \selling\Payment::INVOICE) {
-									$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?invoice='.encode($ePayment['invoice']['id']).'&customer='.encode($eElement['customer']['name']).'">';
+									$h .= '<a class="btn btn-outline-primary btn-xs" href="/ferme/'.$eFarm['id'].'/factures?invoice='.encode($ePayment['invoice']['id']).'&customer='.encode($eElement['customer']['name']).'">';
 										$h .= encode($eElement['number']);
 									$h .= '</a>';
 								} else {
-									$h .= '<a href="'.\selling\SaleUi::url($ePayment['sale']).'">';
-										$h .= encode($eElement['document']);
+									$h .= '<a class="btn btn-outline-primary btn-xs" href="'.\selling\SaleUi::url($ePayment['sale']).'">';
+										$h .= s("Vente n°", $eElement['document']);
 									$h .= '</a>';
 								}
 							$h .= '</td>';

@@ -71,14 +71,17 @@ Class SaleUi {
 							if($operation[AccountingLib::EXTRA_FEC_COLUMN_ORIGIN] === 'invoice' and $cInvoice->offsetExists($operation[AccountingLib::FEC_COLUMN_DOCUMENT])) {
 								$eInvoice = $cInvoice[$operation[AccountingLib::FEC_COLUMN_DOCUMENT]];
 								$url = \farm\FarmUi::urlSellingInvoices($eFarm).'?name='.$eInvoice['document'].'&customer='.urlencode($eInvoice['customer']['name']);
+								$document = $operation[AccountingLib::FEC_COLUMN_DOCUMENT];
 							} else if($operation[AccountingLib::EXTRA_FEC_COLUMN_ORIGIN] === 'sale') {
 								$url = \farm\FarmUi::urlSellingSalesAll($eFarm).'?document='.$operation[AccountingLib::FEC_COLUMN_DOCUMENT];
+								$document = s("Vente n°{value}", $operation[AccountingLib::FEC_COLUMN_DOCUMENT]);
 							} else {
 								$url = NULL;
+								$document = $operation[AccountingLib::FEC_COLUMN_DOCUMENT];
 							}
 							if($url) {
-								$h .= '<a href="'.$url.'">';
-									$h .= encode($operation[AccountingLib::FEC_COLUMN_DOCUMENT]);
+								$h .= '<a class="btn btn-outline-primary btn-xs" href="'.$url.'">';
+									$h .= $document;
 								$h .= '</a>';
 							} else {
 								$h .= encode($operation[AccountingLib::FEC_COLUMN_DOCUMENT]);
