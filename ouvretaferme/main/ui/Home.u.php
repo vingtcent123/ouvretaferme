@@ -197,7 +197,7 @@ class HomeUi {
 					$h .= '<div class="home-feature-icon">'.\Asset::icon('journal-plus').'</div>';
 					$h .= s("Livre des recettes");
 				$h .= '</h2>';
-				$h .= '<h4 style="padding-right: 5rem">'.s("Vous pouvez utiliser Ouvretaferme comme pour générer le livre des recettes de votre ferme. Le livre des recettes est une obligation légale pour votre activité si vous êtes au micro-BA.").'</h4>';
+				$h .= '<h4 style="padding-right: 5rem">'.s("Vous pouvez utiliser Ouvretaferme comme pour tenir le livre des recettes de votre ferme. Le livre des recettes est une obligation légale pour votre activité si vous êtes au micro-BA.").'</h4>';
 				$h .= '<h5>'.s("Disponible au printemps 2026").'</h5>';
 			$h .= '</div>';
 		$h .= '</div>';
