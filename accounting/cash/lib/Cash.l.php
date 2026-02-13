@@ -368,25 +368,6 @@ class CashLib extends CashCrud {
 			->select('balance', 'position')
 			->update($e);
 
-		if($e['source'] === Cash::SELL_SALE) {
-			self::validateSale($e['sale']);
-		}
-
-	}
-
-	private static function validateSale(\selling\Sale $e): void {
-
-		\selling\Sale::model()
-			->select(\selling\SaleElement::getSelection())
-			->get($e);
-
-		if($e->isMarket()) {
-
-			$cSaleMarket = \selling\Sale::model();
-
-
-		}
-
 	}
 
 	public static function update(Cash $e, array $properties): void {

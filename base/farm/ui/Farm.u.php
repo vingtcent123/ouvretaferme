@@ -1112,7 +1112,7 @@ class FarmUi {
 				'book' => s("Grand livre"),
 				'balance' => s("Balance"),
 				'assets' => s("Immobilisations"),
-				'analyze' => s("Exercice comptable"),
+				'analyze' => s("États financiers"),
 				'summary' => s("Synthèse"),
 			},
 
