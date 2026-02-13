@@ -726,7 +726,7 @@ class CashUi {
 
 		if($eCash->requireAssociateAccount()) {
 
-			$label = s("Numéro de compte associé");
+			$label = s("Compte associé");
 
 			if($eCash['cAccount']->notEmpty()) {
 

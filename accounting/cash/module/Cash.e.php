@@ -72,7 +72,13 @@ class Cash extends CashElement {
 
 	public function requireAssociateAccount(): bool {
 
+		$this->expects([
+			'source', 'date',
+			'register' => ['hasAccounts']
+		]);
+
 		if(
+			$this['register']['hasAccounts'] === FALSE or
 			$this['source'] !== Cash::PRIVATE or
 			$this['date'] === NULL
 		) {
@@ -93,10 +99,12 @@ class Cash extends CashElement {
 	public function requireAccount(): bool {
 
 		$this->expects([
-			'source'
+			'source', 'date',
+			'register' => ['hasAccounts']
 		]);
 
 		if(
+			$this['register']['hasAccounts'] === FALSE or
 			in_array($this['source'], [Cash::BANK_MANUAL, Cash::BUY_MANUAL, Cash::SELL_MANUAL, Cash::OTHER]) === FALSE or
 			$this['date'] === NULL
 		) {
