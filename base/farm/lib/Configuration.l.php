@@ -24,12 +24,6 @@ class ConfigurationLib extends ConfigurationCrud {
 
 			parent::create($e);
 
-			$eConfigurationHistory = new ConfigurationHistory([
-				'farm' => $e['farm'],
-				'field' => 'hasVatAccounting',
-				'value' => $e->extracts(['hasVatAccounting']),
-			]);
-			ConfigurationHistory::model()->option('add-replace')->insert($eConfigurationHistory);
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm): Configuration {
