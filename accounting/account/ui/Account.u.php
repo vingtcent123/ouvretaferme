@@ -749,7 +749,7 @@ class AccountUi {
 					],
 					[
 						'name' => s("Disponibilités"),
-						'accounts' => [512, 531],
+						'accounts' => [512, 53, 531],
 					],
 					[
 						'name' => s("Charges constatées d'avance"),
@@ -844,6 +844,7 @@ class AccountUi {
 				return s("Placement");
 			case 512:
 				return s("Banque");
+			case 53:
 			case 531:
 				return s("Caisse");
 			case 486:
