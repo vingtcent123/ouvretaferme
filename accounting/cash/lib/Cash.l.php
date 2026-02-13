@@ -10,8 +10,8 @@ class CashLib extends CashCrud {
 			$properties = ['type', 'amountIncludingVat'];
 
 			if(
-				$e->requireAssociateAccount() or
-				$e->requireAccount()
+				$e->acceptAssociateAccount() or
+				$e->acceptAssociateAccount()
 			) {
 				$properties[] = 'account';
 			}
@@ -36,7 +36,22 @@ class CashLib extends CashCrud {
 
 		return function(Cash $e) {
 
-			return array_diff(CashLib::getPropertiesCreate()($e), ['type', 'date']);
+			switch($e['status']) {
+
+				case Cash::DRAFT :
+					return array_diff(CashLib::getPropertiesCreate()($e), ['type', 'date']);
+
+				case Cash::VALID :
+					if(
+						$e->requireAssociateAccount() or
+						$e->requireAccount()
+					) {
+						return ['account'];
+					} else {
+						return [];
+					}
+
+			}
 
 		};
 

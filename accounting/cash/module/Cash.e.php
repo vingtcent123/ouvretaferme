@@ -62,8 +62,15 @@ class Cash extends CashElement {
 
 	public function acceptUpdate(): bool {
 		return (
-			$this['status'] === Cash::DRAFT and
-			in_array($this['source'], [Cash::BANK_CASHFLOW, Cash::SELL_SALE, Cash::SELL_INVOICE]) === FALSE
+			// Pas les opérations importées
+			in_array($this['source'], [Cash::BANK_CASHFLOW, Cash::SELL_SALE, Cash::SELL_INVOICE]) === FALSE and (
+
+				// Brouillon
+				($this['status'] === Cash::DRAFT) or
+
+				// Ou valide et uniquement si on peut modifier les numéros de compte
+				($this['status'] === Cash::VALID and ($this->requireAssociateAccount() or $this->requireAccount()))
+			)
 		);
 	}
 
@@ -74,12 +81,24 @@ class Cash extends CashElement {
 	public function requireAssociateAccount(): bool {
 
 		$this->expects([
-			'source', 'date',
 			'register' => ['hasAccounts']
 		]);
 
+		if($this['register']['hasAccounts'] === FALSE) {
+			return FALSE;
+		}
+
+		return $this->acceptAssociateAccount();
+
+	}
+
+	public function acceptAssociateAccount(): bool {
+
+		$this->expects([
+			'source', 'date'
+		]);
+
 		if(
-			$this['register']['hasAccounts'] === FALSE or
 			$this['source'] !== Cash::PRIVATE or
 			$this['date'] === NULL
 		) {
@@ -100,12 +119,24 @@ class Cash extends CashElement {
 	public function requireAccount(): bool {
 
 		$this->expects([
-			'source', 'date',
 			'register' => ['hasAccounts']
 		]);
 
+		if($this['register']['hasAccounts'] === FALSE) {
+			return FALSE;
+		}
+
+		return $this->acceptAccount();
+
+	}
+
+	public function acceptAccount(): bool {
+
+		$this->expects([
+			'source', 'date',
+		]);
+
 		if(
-			$this['register']['hasAccounts'] === FALSE or
 			in_array($this['source'], [Cash::BANK_MANUAL, Cash::BUY_MANUAL, Cash::SELL_MANUAL, Cash::OTHER]) === FALSE or
 			$this['date'] === NULL
 		) {

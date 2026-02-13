@@ -532,18 +532,26 @@ class CashUi {
 
 							$h .= '<td class="text-end">';
 
-								if($eCash['status'] === Cash::DRAFT) {
+								switch($status) {
 
-									$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
-									$h .= '<div class="dropdown-list">';
-										$h .= '<div class="dropdown-title">'.s("Opération de caisse").'</div>';
+									case Cash::DRAFT :
+										$h .= '<a class="btn btn-outline-secondary dropdown-toggle" data-dropdown="bottom-end">'.\Asset::icon('gear-fill').'</a>';
+										$h .= '<div class="dropdown-list">';
+											$h .= '<div class="dropdown-title">'.s("Opération de caisse").'</div>';
+											if($eCash->acceptUpdate()) {
+												$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:update?id='.$eCash['id'].'" class="dropdown-item">'.s("Modifier l'opération").'</a>';
+											}
+											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCash['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération avant le {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="dropdown-item '.($eCash['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
+											$h .= '<div class="dropdown-divider"></div>';
+											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doDelete" data-confirm="'.s("Vous allez supprimer cette opération. Continuer ?").'" post-id="'.$eCash['id'].'" class="dropdown-item">'.s("Supprimer l'opération").'</a>';
+										$h .= '</div>';
+										break;
+
+									case Cash::VALID :
 										if($eCash->acceptUpdate()) {
-											$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:update?id='.$eCash['id'].'" class="dropdown-item">'.s("Modifier l'opération").'</a>';
+											$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:update?id='.$eCash['id'].'" class="btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 										}
-										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCash['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération avant le {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="dropdown-item '.($eCash['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
-										$h .= '<div class="dropdown-divider"></div>';
-										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doDelete" data-confirm="'.s("Vous allez supprimer cette opération. Continuer ?").'" post-id="'.$eCash['id'].'" class="dropdown-item">'.s("Supprimer l'opération").'</a>';
-									$h .= '</div>';
+										break;
 
 								}
 
@@ -723,6 +731,31 @@ class CashUi {
 		$h = '';
 
 		$h .= $form->dynamicGroup($eCash, 'description');
+		$h .= $this->getAccountsFields($form, $eCash);
+
+		if($eCash->requireVat()) {
+
+			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->group(content: '<h4>'.s("Montants").'</h4>');
+				$h .= $form->dynamicGroups($eCash, ['amountIncludingVat', 'vatRate']);
+				$h .= $form->group(content: '<p class="util-empty mb-0">'.\Asset::icon('info-circle').' '.s("Les montants de TVA et HT sont automatiquement calculés lorsque vous tapez le montant TTC et le taux de TVA.").'</p>');
+				$h .= $form->dynamicGroups($eCash, ['vat', 'amountExcludingVat']);
+			$h .= '</div>';
+
+		} else {
+			$h .= $form->group(
+				s("Montant"),
+				$form->dynamicField($eCash, 'amountIncludingVat')
+			);
+		}
+
+		return $h;
+
+	}
+
+	public function getAccountsFields(\util\FormUi $form, Cash $eCash): string {
+
+		$h = '';
 
 		if($eCash->requireAssociateAccount()) {
 
@@ -765,22 +798,6 @@ class CashUi {
 			$h .= $form->dynamicGroup($eCash, 'account');
 		}
 
-		if($eCash->requireVat()) {
-
-			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->group(content: '<h4>'.s("Montants").'</h4>');
-				$h .= $form->dynamicGroups($eCash, ['amountIncludingVat', 'vatRate']);
-				$h .= $form->group(content: '<p class="util-empty mb-0">'.\Asset::icon('info-circle').' '.s("Les montants de TVA et HT sont automatiquement calculés lorsque vous tapez le montant TTC et le taux de TVA.").'</p>');
-				$h .= $form->dynamicGroups($eCash, ['vat', 'amountExcludingVat']);
-			$h .= '</div>';
-
-		} else {
-			$h .= $form->group(
-				s("Montant"),
-				$form->dynamicField($eCash, 'amountIncludingVat')
-			);
-		}
-
 		return $h;
 
 	}
@@ -793,19 +810,29 @@ class CashUi {
 
 		$h .= $form->openAjax(\farm\FarmUi::urlConnected().'/cash/cash:doUpdate');
 
-			$h .= $form->hidden('id', $eCash['id']);
+				$h .= $form->hidden('id', $eCash['id']);
 
-			$h .= $form->group(
-				s("Opération"),
-				self::getOperation($eCash['source'], $eCash['type'])
-			);
+				$h .= $form->group(
+					s("Opération"),
+					self::getOperation($eCash['source'], $eCash['type'])
+				);
 
-			$h .= $form->group(
-				self::p('date')->label,
-				$form->fake(\util\DateUi::numeric($eCash['date']))
-			);
+				$h .= $form->group(
+					self::p('date')->label,
+					$form->fake(\util\DateUi::numeric($eCash['date']))
+				);
 
-			$h .= $this->getFields($form, $eCash);
+				switch($eCash['status']) {
+
+					case Cash::DRAFT :
+						$h .= $this->getFields($form, $eCash);
+						break;
+
+					case Cash::VALID :
+						$h .= $this->getAccountsFields($form, $eCash);
+						break;
+
+				}
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
