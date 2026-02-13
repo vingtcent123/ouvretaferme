@@ -28,10 +28,6 @@ class FinancialYear extends FinancialYearElement {
 
 	}
 
-	public function hasVat() {
-		return $this['hasVat'];
-	}
-
 	public function isAccounting() {
 		return $this['accountingMode'] === FinancialYear::ACCOUNTING;
 	}
@@ -272,19 +268,6 @@ class FinancialYear extends FinancialYearElement {
 				$intervalInMonths = round(\util\DateLib::interval($endDate, $this['startDate']) / 60 / 60 / 24 / 30);
 				return ($intervalInMonths <= 24);
 
-			})
-			->setCallback('hasVat.check', function(?bool $hasVat) use($p, $input): bool {
-
-				return array_key_exists('hasVat', $input);
-
-			})
-			->setCallback('vatFrequency.check', function(?string $vatFrequency) use($p): bool {
-
-				if($p->isBuilt('hasVat') and $this['hasVat'] === FALSE and $vatFrequency === NULL) {
-					return TRUE;
-				}
-
-				return in_array($vatFrequency, FinancialYear::model()->getPropertyEnum('vatFrequency'));
 			})
 			->setCallback('associates.check', function(?int $associates) use ($p): bool {
 

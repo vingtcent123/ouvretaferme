@@ -460,7 +460,7 @@ class OperationLib extends OperationCrud {
 	}
 
 
-	public static function prepareOperations(array $input, string $for = 'create', \bank\Cashflow $eCashflow = new \bank\Cashflow()): \Collection {
+	public static function prepareOperations(\farm\Farm $eFarm, array $input, string $for = 'create', \bank\Cashflow $eCashflow = new \bank\Cashflow()): \Collection {
 
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
 		$hash = self::generateHash().($eCashflow->empty() ? JournalSetting::HASH_LETTER_WRITE : JournalSetting::HASH_LETTER_CASHFLOW);
@@ -543,20 +543,16 @@ class OperationLib extends OperationCrud {
 		$cOperationCashflow = new \Collection();
 		$properties = [
 			'account', 'accountLabel',
-			'description', 'amount', 'type', 'document', 'vatRate',
+			'description', 'amount', 'type', 'document',
 			'asset',
 			'journalCode', 'thirdParty',
-			'vatCode', 'vatRule',
 		];
-		if($eFinancialYear['hasVat']) {
-			$properties[] = 'vat';
-		}
 		if($isFromCashflow === FALSE) {
 			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);
 		}
 
 		$eOperationDefault['thirdParty'] = NULL;
-			
+
 		$eOperationDefault['hash'] = $hash;
 		$eOperationDefault['financialYear'] = $eFinancialYear;
 
@@ -572,6 +568,10 @@ class OperationLib extends OperationCrud {
 			$eOperation->buildIndex($properties, $input, $index);
 
 			$fw->validate();
+
+			if(\farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $eOperation['date'])) {
+				$eOperation->buildIndex(['vatRate', 'vatRule'], $input, $index);
+			}
 
 			// Date de la pièce justificative : date de l'écriture
 			if($eOperation['document'] !== NULL) {
@@ -592,7 +592,7 @@ class OperationLib extends OperationCrud {
 			$eAccount = $eOperation['account'];
 			$vatValue = var_filter($vatValues[$index] ?? NULL, 'float', 0.0);
 			$hasVatAccount = (
-				$eFinancialYear['hasVat'] and
+				\farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $eOperation['date']) and
 				$eAccount->exists() and
 				$eAccount['vatAccount']->exists() and
 				(

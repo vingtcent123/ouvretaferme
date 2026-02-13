@@ -273,7 +273,6 @@ new Page(function($data) {
 			$data = $eFinancialYear->extracts([
 				'startDate', 'endDate',
 				'status',
-				'hasVat', 'vatFrequency', 'vatChargeability',
 				'taxSystem', 'accountingType', 'accountingMode'
 			]);
 		} else {

@@ -139,6 +139,46 @@ class ConfigurationUi {
 
 	}
 
+	public function updateVat(\farm\Farm $eFarm): string {
+
+		$eConfiguration = $eFarm->conf();
+		\Asset::js('account', 'vat.js');
+
+		if($eFarm['eFinancialYear']->notEmpty()) {
+			$date = $eFarm['eFinancialYear']['startDate'];
+		} else {
+			$date = date('Y-01-01');
+		}
+
+		$form = new \util\FormUi();
+
+		$h = '<div class="mb-2">';
+			$h .= $form->openAjax('/farm/configuration:doUpdateVat', ['id' => 'farm-update', 'autocomplete' => 'off']);
+
+				$h .= $form->hidden('id', $eConfiguration['id']);
+
+				$h .= $form->dynamicGroup($eConfiguration, 'hasVatAccounting', function(\PropertyDescriber $d) use ($eConfiguration) {
+					$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'Vat.changeHasVat(this); Vat.toggleEffectiveAt(this, '.$eConfiguration
+						['hasVatAccounting'].')'];
+				});
+				$eConfigurationHistory = new ConfigurationHistory();
+				$h .= $form->dynamicGroup($eConfigurationHistory, 'effectiveAt', function(\PropertyDescriber $d) use($date) {
+					$d->group['class'] = 'hide';
+					$d->default = $date;
+				});
+				$h .= $form->dynamicGroups($eConfiguration, ['vatChargeability', 'vatFrequency']);
+
+				$h .= $form->group(
+					content: $form->submit(s("Enregistrer"))
+				);
+
+			$h .= $form->close();
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function updateInvoice(\farm\Farm $eFarm, \selling\Sale $eSaleExample, \Collection $cCustomize): string {
 
 		$eConfiguration = $eFarm->conf();
@@ -467,6 +507,9 @@ class ConfigurationUi {
 			'documentInvoices' => s("Prochain numéro de facture ou d'avoir"),
 			'documentTarget' => s("Permettre l'édition de devis et de bons de livraison"),
 			'hasVat' => s("Êtes-vous redevable de la TVA ?"),
+			'hasVatAccounting' => s("Êtes-vous redevable de la TVA ?"),
+			'vatFrequency' => s("Fréquence de déclaration de TVA"),
+			'vatChargeability' => s("Exigibilité de la TVA"),
 			'vatNumber' => s("Numéro de TVA intracommunautaire"),
 			'defaultVat' => s("Taux de TVA par défaut sur vos produits"),
 			'defaultVatShipping' => s("Taux de TVA par défaut sur les frais de livraison"),
@@ -500,6 +543,10 @@ class ConfigurationUi {
 			case 'hasVat' :
 				$d->field = 'yesNo';
 				$d->after = \util\FormUi::info(s("Le changement dans la redevabilité de la TVA n'est pris en compte que pour les ventes créées ultérieurement."));
+				break;
+
+			case 'hasVatAccounting' :
+				$d->field = 'yesNo';
 				break;
 
 			case 'documentInvoices' :
@@ -614,6 +661,38 @@ class ConfigurationUi {
 			case 'invoicePaymentCondition' :
 				$d->placeholder = s("Ex. : Paiement à réception de facture.");
 				$d->labelAfter = \util\FormUi::info(s("Indiquez ici les conditions de paiement données à vos clients pour régler vos factures."));
+				break;
+
+			case 'vatFrequency' :
+				$d->values = [
+					Configuration::MONTHLY => s("Mensuelle"),
+					Configuration::QUARTERLY => s("Trimestrielle"),
+					Configuration::ANNUALLY => s("Annuelle"),
+				];
+				$d->attributes['mandatory'] = TRUE;
+				$d->group = fn(Configuration $e) => ($e['hasVatAccounting'] ?? NULL) ? [] : ['class' => 'hide'];
+				break;
+
+			case 'vatChargeability' :
+				$cash = '<h4>'.s("TVA sur les encaissements").'</h4>';
+				$cash .= '<ul>';
+					$cash .= '<li>'.s("La TVA est due dès l'encaissement.").'</li>';
+					$cash .= '<li>'.s("Exigibilité par défaut pour les Régimes Simplifiés (Micro-BA, RSA...).").'</li>';
+					$cash .= '<li>'.s("Les prestations de service entrent dans cette règle d'office.").'</li>';
+				$cash .= '</ul>';
+				$cash .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour que le paiement de la TVA corresponde aux mouvements de trésorerie.").'</i></p>';
+
+				$debit = '<h4>'.s("TVA sur les débits").'</h4>';
+				$debit .= '<ul>';
+					$debit .= '<li>'.s("La TVA est due dès l'émission d'une facture, sa date faisant foi.").'</li>';
+				$debit .= '</ul>';
+
+				$d->values = [
+					Configuration::CASH => $cash,
+					Configuration::DEBIT => $debit,
+				];
+				$d->attributes['mandatory'] = TRUE;
+				$d->group = fn(Configuration $e) => ($e['hasVatAccounting'] ?? NULL) ? [] : ['class' => 'hide'];
 				break;
 
 		}

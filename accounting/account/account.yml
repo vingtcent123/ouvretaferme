@@ -28,7 +28,7 @@ FinancialYear:
   startDate: date
   endDate: date
   status: enum(OPEN, CLOSE) = OPEN
-  hasVat: bool # Est-ce que cet exercice est soumis à la TVA ?
+  hasVat: ?bool # Est-ce que cet exercice est soumis à la TVA ?
   vatFrequency: ?enum(MONTHLY, QUARTERLY, ANNUALLY)
   vatChargeability: ?enum(CASH, DEBIT) # Exigibilité de la TVA
   taxSystem: enum(MICRO_BA, BA_REEL_SIMPLIFIE, BA_REEL_NORMAL)

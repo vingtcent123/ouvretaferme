@@ -18,7 +18,7 @@ Class VatLib {
 
 		$allPeriods = self::getAllPeriodForFinancialYear($eFarm, $eFinancialYear);
 
-		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+		if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
 			return first($allPeriods);
 		}
 
@@ -65,12 +65,12 @@ Class VatLib {
 
 	public static function getAllPeriodForFinancialYear(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): array {
 
-		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+		if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
 			$period = self::getVatDeclarationParameters($eFarm, $eFinancialYear, $eFinancialYear['startDate']);
 			return [$period['from'].'|'.$period['to'] => $period];
 		}
 
-		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
+		if($eFinancialYear['vatFrequency'] === \farm\Configuration::QUARTERLY) {
 			$monthsPerPeriod = 3;
 			$totalPeriods = 4;
 		} else {
@@ -251,7 +251,7 @@ Class VatLib {
 		$month = (int)mb_substr($referenceDate, 5, 2);
 
 		// On prend comme valeur de référence l'année précédente
-		if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+		if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
 
 			// Date limite de déclaration pour la période de référence : relative à l'exercice courant
 			$limitDate = date('Y-05-02', strtotime($eFinancialYear));
@@ -269,7 +269,7 @@ Class VatLib {
 			$periodFrom = date('Y-01-01', strtotime($referenceDate));
 			$periodTo = date('Y-12-31', strtotime($referenceDate));
 
-		} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
+		} else if($eFinancialYear['vatFrequency'] === \farm\Configuration::QUARTERLY) {
 
 			$currentMonth = $month;
 
@@ -286,7 +286,7 @@ Class VatLib {
 			$periodFrom = date('Y-m-01', mktime(0, 0, 0, ($trimester - 1) * 3 + 1, 1, $year));
 			$periodTo = date('Y-m-d', mktime(0, 0, 0, $trimester * 3 + 1, 0, $year));
 
-		} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::MONTHLY) {
+		} else if($eFinancialYear['vatFrequency'] === \farm\Configuration::MONTHLY) {
 
 			$periodFrom = mb_substr($referenceDate, 0, 8).'01';;
 			$periodTo = date('Y-m-d', mktime(0, 0, 0, $month + 1, 0, $year));
@@ -296,7 +296,7 @@ Class VatLib {
 		switch($eFinancialYear['vatFrequency']) {
 
 			// Règle échéance annuelle : https://www.impots.gouv.fr/professionnel/questions/je-suis-soumis-au-regime-simplifie-dimposition-la-tva-quelle-echeance-dois
-			case \account\FinancialYear::ANNUALLY:
+			case \farm\Configuration::ANNUALLY:
 
 				if(mb_substr($eFinancialYear['endDate'], -5) === '12-31') {
 					$nextYear = (int)mb_substr($periodTo, 0, 4) + 1;
@@ -330,8 +330,8 @@ Class VatLib {
 				}
 				break;
 
-			case \account\FinancialYear::QUARTERLY:
-			case \account\FinancialYear::MONTHLY:
+			case \farm\Configuration::QUARTERLY:
+			case \farm\Configuration::MONTHLY:
 				$isRegionParisienne = in_array(mb_substr($eFarm['legalPostcode'], 0, 2), ['75', '92', '93', '94']);
 
 				$firstLetter = mb_strtolower(mb_substr($eFarm['legalName'], 0, 1));
@@ -508,11 +508,11 @@ Class VatLib {
 			// Pas de taxe ADAR l'année de création de l'exploitation
 			$isNotCreationYear = ($eFarm['startedAt'] === NULL or $eFarm['startedAt'].'-12-31' < $eFinancialYearLast['startDate']);
 
-			if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+			if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
 
 				$isInPeriod = TRUE;
 
-			} else if($eFinancialYear['vatFrequency'] === \account\FinancialYear::QUARTERLY) {
+			} else if($eFinancialYear['vatFrequency'] === \farm\Configuration::QUARTERLY) {
 
 				$firstMonth = (int)mb_substr($search->get('minDate'), 6, 2);
 				$hasMarchInTrimester = in_array($firstMonth, [1, 2, 3]);
@@ -811,7 +811,7 @@ Class VatLib {
 
 		\journal\Operation::model()->beginTransaction();
 
-		\journal\OperationLib::prepareOperations($input);
+		\journal\OperationLib::prepareOperations($eFarm, $input);
 
 		if($fw->ko()) {
 			\journal\Operation::model()->rollBack();

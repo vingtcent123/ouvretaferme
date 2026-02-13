@@ -66,4 +66,20 @@ new AdaptativeView('updateInvoice', function($data, FarmTemplate $t) {
 	echo new \farm\ConfigurationUi()->updateInvoice($data->e, $data->eSaleExample, $data->cCustomize);
 
 });
+
+new AdaptativeView('updateVat', function($data, FarmTemplate $t) {
+
+	$t->title = s("Le paramétrage de TVA de {value}", $data->e['name']);
+	$t->nav = 'settings-accounting';
+
+	$h = '<h1>';
+		$h .= '<a href="'.\farm\FarmUi::urlSettingsAccounting($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= s("Paramétrage de la TVA");
+	$h .= '</h1>';
+
+	$t->mainTitle = $h;
+
+	echo new \farm\ConfigurationUi()->updateVat($data->e);
+
+});
 ?>

@@ -56,6 +56,13 @@ class CompanyLib {
 			$eFinancialYear = new \account\FinancialYear();
 		}
 
+		foreach($cFinancialYear as &$eFinancialYearCurrent) {
+			$eFinancialYearCurrent['hasVatAccounting'] = \account\FinancialYearLib::getHasVatByFinancialYear($data->eFarm, $eFinancialYearCurrent);
+		}
+
+		if($eFinancialYear->notEmpty()) {
+			$eFinancialYear['hasVatAccounting'] = \account\FinancialYearLib::getHasVatByFinancialYear($data->eFarm, $eFinancialYear);
+		}
 		$data->eFarm['cFinancialYear'] = $cFinancialYear;
 		$data->eFarm['eFinancialYear'] = $eFinancialYear;
 

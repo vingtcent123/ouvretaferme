@@ -166,9 +166,7 @@ class Cash extends CashElement {
 			'financialYear'
 		]);
 
-		return (
-			$this['financialYear']->hasVat()
-		);
+		return \farm\ConfigurationLib::getConfigurationForDate(\farm\Farm::getConnected(), 'hasVat', $this['date']);
 
 	}
 

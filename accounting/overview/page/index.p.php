@@ -16,11 +16,6 @@ new Page(function($data) {
 
 		if($data->financialYearCreated) {
 
-			$search = new Search([
-				'from' => $data->eFarm['eFinancialYear']['startDate'],
-				'to' => $data->eFarm['eFinancialYear']['endDate'],
-			]);
-
 			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-financial-year-created');
 			$data->tipNavigation = 'inline';
 
@@ -162,6 +157,9 @@ new Page(function($data) {
 				break;
 
 			case \overview\AnalyzeLib::TAB_VAT:
+				if($data->eFarm['eFinancialYear']['hasVatAccounting'] === FALSE) {
+					throw new NotExistsAction();
+				}
 
 				$tab = GET('tab');
 				if(in_array($tab, ['journal-sell', 'journal-buy', 'check', 'cerfa', 'history']) === FALSE) {

@@ -63,7 +63,7 @@ class FinancialYearModel extends \ModuleModel {
 			'startDate' => ['date', 'cast' => 'string'],
 			'endDate' => ['date', 'cast' => 'string'],
 			'status' => ['enum', [\account\FinancialYear::OPEN, \account\FinancialYear::CLOSE], 'cast' => 'enum'],
-			'hasVat' => ['bool', 'cast' => 'bool'],
+			'hasVat' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'vatFrequency' => ['enum', [\account\FinancialYear::MONTHLY, \account\FinancialYear::QUARTERLY, \account\FinancialYear::ANNUALLY], 'null' => TRUE, 'cast' => 'enum'],
 			'vatChargeability' => ['enum', [\account\FinancialYear::CASH, \account\FinancialYear::DEBIT], 'null' => TRUE, 'cast' => 'enum'],
 			'taxSystem' => ['enum', [\account\FinancialYear::MICRO_BA, \account\FinancialYear::BA_REEL_SIMPLIFIE, \account\FinancialYear::BA_REEL_NORMAL], 'cast' => 'enum'],

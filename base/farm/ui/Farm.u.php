@@ -2193,7 +2193,7 @@ class FarmUi {
 		\Asset::js('account', 'financialYearDocument.js');
 
 		$categories = $this->getAccountingFinancialsCategories($eFarm['eFinancialYear']);
-		if($eFarm['eFinancialYear']['hasVat'] === FALSE) {
+		if($eFarm['eFinancialYear']['hasVatAccounting'] === FALSE) {
 			unset($categories[\overview\AnalyzeLib::TAB_VAT]);
 		}
 

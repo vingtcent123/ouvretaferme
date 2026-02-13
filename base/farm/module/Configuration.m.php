@@ -7,6 +7,13 @@ abstract class ConfigurationElement extends \Element {
 
 	private static ?ConfigurationModel $model = NULL;
 
+	const MONTHLY = 'monthly';
+	const QUARTERLY = 'quarterly';
+	const ANNUALLY = 'annually';
+
+	const CASH = 'cash';
+	const DEBIT = 'debit';
+
 	const ALL = 'all';
 	const PRIVATE = 'private';
 	const PRO = 'pro';
@@ -54,6 +61,9 @@ class ConfigurationModel extends \ModuleModel {
 			'documentInvoices' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'documentCustomers' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'hasVat' => ['bool', 'cast' => 'bool'],
+			'hasVatAccounting' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
+			'vatFrequency' => ['enum', [\farm\Configuration::MONTHLY, \farm\Configuration::QUARTERLY, \farm\Configuration::ANNUALLY], 'null' => TRUE, 'cast' => 'enum'],
+			'vatChargeability' => ['enum', [\farm\Configuration::CASH, \farm\Configuration::DEBIT], 'null' => TRUE, 'cast' => 'enum'],
 			'defaultVat' => ['int16', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'defaultVatShipping' => ['int16', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -83,7 +93,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'hasVatAccounting', 'vatFrequency', 'vatChargeability', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -157,6 +167,12 @@ class ConfigurationModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'vatFrequency' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'vatChargeability' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'documentTarget' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -217,6 +233,18 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereHasVat(...$data): ConfigurationModel {
 		return $this->where('hasVat', ...$data);
+	}
+
+	public function whereHasVatAccounting(...$data): ConfigurationModel {
+		return $this->where('hasVatAccounting', ...$data);
+	}
+
+	public function whereVatFrequency(...$data): ConfigurationModel {
+		return $this->where('vatFrequency', ...$data);
+	}
+
+	public function whereVatChargeability(...$data): ConfigurationModel {
+		return $this->where('vatChargeability', ...$data);
 	}
 
 	public function whereDefaultVat(...$data): ConfigurationModel {

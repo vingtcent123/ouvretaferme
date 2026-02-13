@@ -295,6 +295,9 @@ class DemoLib {
 			->whereFarm(Farm::DEMO)
 			->update([
 				'hasVat' => TRUE,
+				'hasVatAccounting' => TRUE,
+				'vatChargeability' => Configuration::CASH,
+				'vatFrequency' => Configuration::ANNUALLY,
 				'vatNumber' => NULL,
 				'invoiceHeader' => NULL,
 				'invoiceFooter' => NULL

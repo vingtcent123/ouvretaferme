@@ -88,7 +88,24 @@ class Configuration extends ConfigurationElement {
 					$vat === NULL or
 					array_key_exists($vat, \selling\SellingSetting::getVatRates($this['farm']))
 				);
-			});
+			})
+			->setCallback('vatFrequency.check', function(?string $vatFrequency) use($p): bool {
+
+				if($p->isBuilt('hasVatAccounting') === FALSE or $this['hasVatAccounting'] === FALSE) {
+					return TRUE;
+				}
+
+				return in_array($vatFrequency, Configuration::model()->getPropertyEnum('vatFrequency'));
+			})
+			->setCallback('vatChargeability.check', function(?string $vatChargeability) use($p): bool {
+
+				if($p->isBuilt('hasVatAccounting') === FALSE or $this['hasVatAccounting'] === FALSE) {
+					return TRUE;
+				}
+
+				return in_array($vatChargeability, Configuration::model()->getPropertyEnum('vatChargeability'));
+			})
+		;
 	
 		parent::build($properties, $input, $p);
 

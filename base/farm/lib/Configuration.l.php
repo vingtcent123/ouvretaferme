@@ -4,20 +4,32 @@ namespace farm;
 class ConfigurationLib extends ConfigurationCrud {
 
 	public static function getPropertiesUpdate(): array {
-		return ['hasVat', 'vatNumber', 'defaultVat', 'saleClosing', 'defaultVatShipping', 'organicCertifier', 'paymentMode', 'documentCopy', 'pdfNaturalOrder', 'marketSaleDefaultDecimal'];
+		return [
+			'hasVatAccounting', 'hasVat', 'vatNumber', 'defaultVat',
+			'vatFrequency', 'vatChargeability',
+			'saleClosing', 'defaultVatShipping', 'organicCertifier', 'paymentMode', 'documentCopy', 'pdfNaturalOrder', 'marketSaleDefaultDecimal'
+		];
 	}
 
 	public static function createForFarm(\farm\Farm $eFarm): void {
 
 		$eFarm->expects(['legalCountry']);
 
-		$e = new Configuration([
-			'farm' => $eFarm,
-			'defaultVat' => \selling\SellingSetting::getStartVat($eFarm['legalCountry'])
-		]);
+		Configuration::model()->beginTransaction();
 
-		parent::create($e);
+			$e = new Configuration([
+				'farm' => $eFarm,
+				'defaultVat' => \selling\SellingSetting::getStartVat($eFarm['legalCountry'])
+			]);
 
+			parent::create($e);
+
+			$eConfigurationHistory = new ConfigurationHistory([
+				'farm' => $e['farm'],
+				'field' => 'hasVatAccounting',
+				'value' => $e->extracts(['hasVatAccounting']),
+			]);
+			ConfigurationHistory::model()->option('add-replace')->insert($eConfigurationHistory);
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm): Configuration {
@@ -26,6 +38,49 @@ class ConfigurationLib extends ConfigurationCrud {
 			->select(Configuration::getSelection())
 			->whereFarm($eFarm)
 			->get();
+
+	}
+
+	public static function getConfigurationForDate(Farm $eFarm, string $field, string $date): ?bool {
+
+		if($field !== 'hasVatAccounting') { // Seul champ à avoir un historique
+			return $eFarm->getConf($field);
+		}
+
+		$eConfigurationHistory = ConfigurationHistoryLib::getForDate($eFarm, $date);
+
+		if($eConfigurationHistory->empty()) {
+			return $eFarm->getConf($field);
+		}
+
+		return $eConfigurationHistory['value'][$field];
+
+	}
+
+	public static function update(Configuration $e, array $properties): void {
+
+		Configuration::model()->beginTransaction();
+
+			parent::update($e, $properties);
+
+			if(in_array('hasVatAccounting', $properties) and $e['hasVatAccounting'] !== $e['hasVatAccountingOld']) {
+
+				$fw = new \FailWatch();
+
+				$eConfigurationHistory = new ConfigurationHistory([
+					'farm' => $e['farm'],
+					'field' => 'hasVatAccounting',
+					'value' => $e->extracts(['hasVatAccounting']),
+				]);
+
+				$eConfigurationHistory->build(['effectiveAt'], $_POST);
+
+				$fw->validate();
+
+				ConfigurationHistory::model()->option('add-replace')->insert($eConfigurationHistory);
+			}
+
+		Configuration::model()->commit();
 
 	}
 

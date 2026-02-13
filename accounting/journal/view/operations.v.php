@@ -90,7 +90,7 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 		}
 	echo ' data-batch="#batch-journal">';
 
-		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->eFarm['eFinancialYear'], $data->search, $selectedJournalCode, $data->cJournalCode);
+		echo new \journal\JournalUi()->getJournalTabs($data->eFarm, $data->search, $selectedJournalCode, $data->cJournalCode, $data->hasVatAccounting);
 
 		if($data->unbalanced and $nGroup === 0) {
 

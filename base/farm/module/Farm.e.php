@@ -283,6 +283,15 @@ class Farm extends FarmElement {
 
 	}
 
+	public function isVatAccountingConfigured(): bool {
+
+		return (
+			$this->getConf('hasVatAccounting') !== NULL and
+			($this->getConf('hasVatAccounting') === TRUE ? ($this->getConf('vatChargeability') !== NULL and $this->getConf('vatFrequency') !== NULL) : TRUE)
+		);
+
+	}
+
 	public function isLegal(): bool {
 
 		return (

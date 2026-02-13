@@ -81,7 +81,7 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 
 			$h .= $form->dynamicGroups($eFinancialYear, [
-				'startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*'
+				'startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'legalCategory*', 'associates*'
 			]);
 
 			$h .= $form->group(
@@ -177,7 +177,7 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*'], [
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'legalCategory*', 'associates*'], [
 				'startDate*' => function($d) use($form, $eFinancialYear) {
 					if($eFinancialYear['nOperation'] > 0) {
 						$d->attributes['disabled'] = 'disabled';
@@ -706,8 +706,8 @@ class FinancialYearUi {
 				$h .= '<dt>'.s("Exercice").'</dt>';
 				$h .= '<dd>'.self::getYear($eFinancialYear).'</dd>';
 
-				$h .= '<dt>'.self::p('hasVat')->label.'</dt>';
-				$h .= '<dd>'.($eFinancialYear['hasVat'] ? s("Oui") : s("Non")).'</dd>';
+				$h .= '<dt>'.\farm\ConfigurationUi::p('hasVatAccounting')->label.'</dt>';
+				$h .= '<dd>'.($eFarm->getConf('hasVatAccounting') ? s("Oui") : s("Non")).'</dd>';
 
 				$h .= '<dt>'.s("Période").'</dt>';
 				$h .= '<dd>'.s("du {startDate} au {endDate}", [
@@ -715,8 +715,8 @@ class FinancialYearUi {
 					'endDate' => \util\DateUi::numeric($eFinancialYear['endDate'], \util\DateUi::DATE),
 				]).'</dd>';
 
-				$h .= '<dt>'.self::p('vatFrequency')->label.'</dt>';
-				$h .= '<dd>'.($eFinancialYear['vatFrequency'] ? self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']] : '').'</dd>';
+				$h .= '<dt>'.\farm\ConfigurationUi::p('vatFrequency')->label.'</dt>';
+				$h .= '<dd>'.($eFarm['vatFrequency'] ? \farm\ConfigurationUi::p('vatFrequency')->values[$eFarm['vatFrequency']] : '').'</dd>';
 
 				$h .= '<dt>'.self::p('taxSystem')->label.'</dt>';
 				$h .= '<dd>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</dd>';
@@ -902,11 +902,11 @@ class FinancialYearUi {
 
 	}
 
-	private function buttons(\farm\Farm $eFarm, FinancialYear $eFinancialYear): string {
+	private function buttons(\farm\Farm $eFarm): string {
 
 		$h = '<div class="util-buttons">';
 
-			if($eFinancialYear['hasVat']) {
+			if($eFarm['eFinancialYear']['hasVatAccounting']) {
 				$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva" class="util-button">';
 					$h .= '<h5>'.s("Déclarations de TVA").'</h5>';
 					$h .= \Asset::icon('pencil');
@@ -1128,29 +1128,6 @@ class FinancialYearUi {
 
 						}
 
-						$h .= '<li>';
-							if($eFinancialYear['hasVat']) {
-
-								$chargeability = match($eFinancialYear['vatChargeability']) {
-									FinancialYear::CASH => s("exigibilité sur les encaissements"),
-									FinancialYear::DEBIT => s("option sur débits"),
-								};
-
-								$h .= s("Redevable de la TVA avec {value}", '<b>'.$chargeability.'</b>');
-
-							} else {
-
-								$h .= s("Non redevable de la TVA");
-
-							}
-						$h .= '</li>';
-
-						if($eFinancialYear['hasVat']) {
-							$h .= '<li>';
-								$h .= s("Déclaration de TVA {value}", '<b>'.strtolower(self::p('vatFrequency')->values[$eFinancialYear['vatFrequency']]).'</b>');
-							$h .= '</li>';
-						}
-
 						if($readOnly === FALSE and $eFinancialYear['cImport']->notEmpty()) {
 							if($eFinancialYear['cImport']->first()['status'] === Import::DONE) {
 								$h .= '<li>';
@@ -1162,7 +1139,7 @@ class FinancialYearUi {
 					$h .= '</ul>';
 
 					if($readOnly === FALSE) {
-						$h .= $this->buttons($eFarm, $eFinancialYear);
+						$h .= $this->buttons($eFarm);
 					}
 
 				$h .= '</div>';
@@ -1218,9 +1195,6 @@ class FinancialYearUi {
 		$d = FinancialYear::model()->describer($property, [
 			'startDate' => s("Date de début"),
 			'endDate' => s("Date de fin"),
-			'hasVat' => s("Êtes-vous redevable de la TVA ?"),
-			'vatFrequency' => s("Fréquence de déclaration de TVA"),
-			'vatChargeability' => s("Exigibilité de la TVA"),
 			'taxSystem' => s("Régime fiscal"),
 			'accountingType' => s("Type de comptabilité"),
 			'accountingMode' => s("Comment tenez-vous votre comptabilité ?"),
@@ -1276,43 +1250,6 @@ class FinancialYearUi {
 			case 'startDate' :
 			case 'endDate' :
 				$d->prepend = \Asset::icon('calendar-date');
-				break;
-
-			case 'hasVat' :
-				$d->field = 'yesNo';
-				$d->attributes['callbackRadioAttributes'] = fn() => ['onclick' => 'FinancialYear.changeHasVat(this)'];
-				break;
-
-			case 'vatFrequency' :
-				$d->values = [
-					FinancialYear::MONTHLY => s("Mensuelle"),
-					FinancialYear::QUARTERLY => s("Trimestrielle"),
-					FinancialYear::ANNUALLY => s("Annuelle"),
-				];
-				$d->attributes['mandatory'] = TRUE;
-				$d->group = fn(FinancialYear $e) => ($e['hasVat'] ?? NULL) ? [] : ['class' => 'hide'];
-				break;
-
-			case 'vatChargeability' :
-				$cash = '<h4>'.s("TVA sur les encaissements").'</h4>';
-				$cash .= '<ul>';
-					$cash .= '<li>'.s("La TVA est due dès l'encaissement.").'</li>';
-					$cash .= '<li>'.s("Exigibilité par défaut pour les Régimes Simplifiés (Micro-BA, RSA...).").'</li>';
-					$cash .= '<li>'.s("Les prestations de service entrent dans cette règle d'office.").'</li>';
-				$cash .= '</ul>';
-				$cash .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour que le paiement de la TVA corresponde aux mouvements de trésorerie.").'</i></p>';
-
-				$debit = '<h4>'.s("TVA sur les débits").'</h4>';
-				$debit .= '<ul>';
-					$debit .= '<li>'.s("La TVA est due dès l'émission d'une facture, sa date faisant foi.").'</li>';
-				$debit .= '</ul>';
-
-				$d->values = [
-					FinancialYear::CASH => $cash,
-					FinancialYear::DEBIT => $debit,
-				];
-				$d->attributes['mandatory'] = TRUE;
-				$d->group = fn(FinancialYear $e) => ($e['hasVat'] ?? NULL) ? [] : ['class' => 'hide'];
 				break;
 
 			case 'taxSystem':

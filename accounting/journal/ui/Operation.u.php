@@ -194,7 +194,7 @@ class OperationUi {
 		return $cOperationFormatted;
 	}
 
-	public function getUpdate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cPaymentMethod, \bank\Cashflow $eCashflow, Operation $eOperationBase): \Panel {
+	public function getUpdate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cPaymentMethod, \bank\Cashflow $eCashflow, Operation $eOperationBase, bool $hasVatAccounting): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -216,7 +216,7 @@ class OperationUi {
 				'id' => 'journal-operation-update',
 				'third-party-create-index' => 0,
 				'class' => 'panel-dialog',
-				'data-has-vat' => (int)$eFinancialYear['hasVat'],
+				'data-has-vat' => (int)$hasVatAccounting,
 			], $eCashflow->empty() ? [] : ['data-cashflow' => 1]),
 		);
 
@@ -249,6 +249,7 @@ class OperationUi {
 			cOperation: $cOperationFormatted,
 			eCashflow: $eCashflow,
 			eOperationRequested: $eOperationBase,
+			hasVatAccounting: $hasVatAccounting,
 			for: 'update',
 		);
 
@@ -664,7 +665,7 @@ class OperationUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod): \Panel {
+	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod, bool $hasVat): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -679,7 +680,7 @@ class OperationUi {
 				'id' => 'journal-operation-create',
 				'third-party-create-index' => 0,
 				'class' => 'panel-dialog',
-				'data-has-vat' => (int)$eFinancialYear['hasVat'],
+				'data-has-vat' => (int)$hasVat,
 				'data-cashflow' => 0,
 			],
 		);
@@ -694,7 +695,7 @@ class OperationUi {
 			$index = 0;
 			$defaultValues = $eOperation->getArrayCopy();
 
-			$h .= self::getCreateGrid($eFarm, $eOperation, new \bank\Cashflow(), $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
+			$h .= self::getCreateGrid($eFarm, $eOperation, new \bank\Cashflow(), $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod, $hasVat);
 
 		$h .= '</div>';
 
@@ -729,7 +730,7 @@ class OperationUi {
 
 	}
 
-	private static function getCreateHeader(\account\FinancialYear $eFinancialYear, \bank\Cashflow $eCashflow): string {
+	private static function getCreateHeader(bool $hasVat, \bank\Cashflow $eCashflow): string {
 
 		$h = '<div class="operation-create operation-create-headers">';
 
@@ -750,12 +751,12 @@ class OperationUi {
 				$h .= '<div class="operation-create-header">'.self::p('paymentMethod')->label.'</div>';
 
 			}
-			if($eFinancialYear['hasVat']) {
+			if($hasVat) {
 				$h .= '<div class="operation-create-header amount-header"></div>';
 			}
-			$h .= '<div class="operation-create-header">'.($eFinancialYear['hasVat'] ? self::p('amount')->label : s("Montant")).' '.\util\FormUi::asterisk().'</div>';
+			$h .= '<div class="operation-create-header">'.($hasVat ? self::p('amount')->label : s("Montant")).' '.\util\FormUi::asterisk().'</div>';
 
-			if($eFinancialYear['hasVat']) {
+			if($hasVat) {
 				$h .= '<div class="operation-create-header">'.s("TVA").' '.\util\FormUi::asterisk().'</div>';
 
 				$h .= '<div class="operation-create-header">';
@@ -792,6 +793,7 @@ class OperationUi {
 		array $defaultValues,
 		array $disabled,
 		\Collection $cPaymentMethod,
+		bool $hasVatAccounting,
 	): string {
 
 		\Asset::js('journal', 'operation.js');
@@ -941,7 +943,7 @@ class OperationUi {
 				$h .= '</div>';
 
 			}
-			if($eFinancialYear['hasVat']) {
+			if($hasVatAccounting) {
 
 				$h .= '<div data-wrapper="amounts" class="operation-create-title">';
 
@@ -984,7 +986,7 @@ class OperationUi {
 				});
 			$amountField .='</div>';
 
-			if($eFinancialYear['hasVat']) {
+			if($hasVatAccounting) {
 
 				if(($eOperation['vatAmount'] ?? NULL) !== NULL) {
 
@@ -1096,7 +1098,7 @@ class OperationUi {
 
 			}
 
-			if($eFinancialYear['hasVat']) {
+			if($hasVatAccounting) {
 
 				$h .= '<div class="operation-amounts-container">';
 					$h .= '<div>';
@@ -1122,7 +1124,7 @@ class OperationUi {
 
 	}
 
-	private static function getCreateValidate(bool $hasVat, bool $isFromCashflow): string {
+	private static function getCreateValidate(bool $hasVatAccounting, bool $isFromCashflow): string {
 
 		$h = '<div class="operation-create operation-create-validation">';
 
@@ -1137,7 +1139,7 @@ class OperationUi {
 				$h .= '<div></div>';
 				$h .= '<div></div>';
 			}
-			if($hasVat) {
+			if($hasVatAccounting) {
 				$h .= '<div></div>'; // ligne "montants"
 			}
 			if($isFromCashflow) {
@@ -1164,7 +1166,7 @@ class OperationUi {
 				$h .= '</div>';
 			}
 			$h .= '<div class="cashflow-create-operation-validate" data-field="amount"><div><span>=</span><span data-type="value"></span></div></div>'; // Montant HT
-			if($hasVat) {
+			if($hasVatAccounting) {
 				$h .= '<div class="cashflow-create-operation-validate" data-field="vatValue"><div><span>=</span><span data-type="value"></span></div></div>'; // Montant TVA
 				$h .= '<div class="cashflow-create-operation-validate" data-field="amountIncludingVAT"><div><span>=</span><span data-type="value"></span></div></div>'; // Montant TTC
 			}
@@ -1186,16 +1188,17 @@ class OperationUi {
 		\util\FormUi $form,
 		array $defaultValues,
 		\Collection $cPaymentMethod,
+		bool $hasVatAccounting,
 	): string {
 
 		$suffix = '['.$index.']';
 
-		$h = '<div id="operation-create-list" class="operation-create-several-container" data-columns="1" data-cashflow="'.($eCashflow->notEmpty() ? '1' : '0').'" data-vat="'.($eFinancialYear['hasVat'] ? '1' : '0').'">';
+		$h = '<div id="operation-create-list" class="operation-create-several-container" data-columns="1" data-cashflow="'.($eCashflow->notEmpty() ? '1' : '0').'" data-vat="'.($hasVatAccounting ? '1' : '0').'">';
 
-			$h .= self::getCreateHeader($eFinancialYear, $eCashflow);
-			$h .= self::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, $suffix, $defaultValues, [], $cPaymentMethod);
+			$h .= self::getCreateHeader($hasVatAccounting, $eCashflow);
+			$h .= self::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, $suffix, $defaultValues, [], $cPaymentMethod, $hasVatAccounting);
 
-			$h .= self::getCreateValidate($eFinancialYear['hasVat'], $eCashflow->notEmpty());
+			$h .= self::getCreateValidate($hasVatAccounting, $eCashflow->notEmpty());
 
 		$h .= '</div>';
 
@@ -1210,6 +1213,7 @@ class OperationUi {
 		\Collection $cOperation,
 		\bank\Cashflow $eCashflow,
 		Operation $eOperationRequested,
+		bool $hasVatAccounting,
 		string $for,
 	): string {
 
@@ -1231,7 +1235,7 @@ class OperationUi {
 			'class' => 'operation-create-several-container',
 			'data-columns' => $cOperation->count(),
 			'data-cashflow' => $isFromCashflow ? '1' : '0',
-			'data-vat' => $eFinancialYear['hasVat'] ? '1' : '0',
+			'data-vat' => $hasVatAccounting ? '1' : '0',
 		];
 		if($hasAsset) {
 			$attributes['data-asset'] = 1;
@@ -1245,7 +1249,7 @@ class OperationUi {
 			$attributes['id'] = 'operation-create-list';
 		}
 		$h .= '<div '.attrs($attributes).'>';
-			$h .= self::getCreateHeader($eFinancialYear, $eCashflow);
+			$h .= self::getCreateHeader($hasVatAccounting, $eCashflow);
 
 			foreach($cOperation as $eOperation) {
 
@@ -1253,11 +1257,11 @@ class OperationUi {
 				$eOperation['isRequested'] = ($eOperationRequested->notEmpty() and $eOperationRequested['id'] === $eOperation['id']);
 
 				$eOperation['amountIncludingVAT'] = $eOperation['amount'] + ($eOperation['vatAmount'] ?? 0);
-				$h .= self::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, $suffix, $eOperation->getArrayCopy(), [], $cPaymentMethod);
+				$h .= self::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, $suffix, $eOperation->getArrayCopy(), [], $cPaymentMethod, $hasVatAccounting);
 				$index++;
 			}
 
-			$h .= self::getCreateValidate($eFinancialYear['hasVat'], $isFromCashflow);
+			$h .= self::getCreateValidate($hasVatAccounting, $isFromCashflow);
 
 		$h .= '</div>';
 

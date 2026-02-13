@@ -44,6 +44,8 @@ new \journal\OperationPage(function($data) {
 		$data->eCashflow = new \bank\Cashflow();
 	}
 
+	$data->hasVatAccounting = \farm\ConfigurationLib::getConfigurationForDate($data->eFarm, 'hasVatAccounting', $data->cOperation->first()['date']);
+
 	throw new ViewAction($data);
 })
 ->post('/journal/operation/{id}/doUpdate', function($data) {
@@ -54,7 +56,7 @@ new \journal\OperationPage(function($data) {
 
 	\journal\Operation::model()->beginTransaction();
 
-	$cOperation = \journal\OperationLib::prepareOperations($_POST, 'update', $eCashflow);
+	$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, 'update', $eCashflow);
 
 	if($fw->ko()) {
 		\journal\Operation::model()->rollBack();
@@ -166,6 +168,7 @@ new \journal\OperationPage(function($data) {
 			'journalCode' => $eJournalCode,
 		]);
 
+		$data->hasVatAccounting = \farm\ConfigurationLib::getConfigurationForDate($data->eFarm, 'hasVatAccounting', $data->eFarm['eFinancialYear']['endDate']);
 		throw new ViewAction($data);
 
 	})
@@ -203,6 +206,7 @@ new \journal\OperationPage(function($data) {
 			'cJournalCode' => $cJournalCode,
 			'journalCode' => $eJournalCode
 		]);
+		$data->hasVatAccounting = \account\FinancialYearLib::getHasVatByFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
 
 		throw new ViewAction($data);
 
@@ -219,7 +223,7 @@ new \journal\OperationPage(function($data) {
 			\Fail::log('Operation::allocate.accountsCheck');
 		}
 
-		$cOperation = \journal\OperationLib::prepareOperations($_POST);
+		$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST);
 
 		if($cOperation->empty() === TRUE) {
 			\Fail::log('Operation::allocate.noOperation');

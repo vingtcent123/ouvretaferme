@@ -5,10 +5,10 @@ class FinancialYearLib extends FinancialYearCrud {
 	private static ?\Collection $cOpenFinancialYear = NULL;
 
 	public static function getPropertiesCreate(): array {
-		return ['taxSystem', 'accountingType', 'startDate', 'endDate', 'hasVat', 'vatFrequency', 'legalCategory', 'associates', 'vatChargeability', 'accountingMode'];
+		return ['taxSystem', 'accountingType', 'startDate', 'endDate', 'legalCategory', 'associates', 'accountingMode'];
 	}
 	public static function getPropertiesUpdate(): array {
-		return ['taxSystem', 'accountingType', 'hasVat', 'vatFrequency', 'legalCategory', 'associates', 'vatChargeability', 'accountingMode'];
+		return ['taxSystem', 'accountingType', 'legalCategory', 'associates', 'accountingMode'];
 	}
 
 	public static function getPreviousFinancialYear(FinancialYear $eFinancialYear): FinancialYear {
@@ -109,14 +109,10 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	public static function getLastFinancialYear(): FinancialYear {
 
-		$eFinancialYear = new FinancialYear();
-
-		FinancialYear::model()
+		return FinancialYear::model()
 			->select(FinancialYear::getSelection())
 			->sort(['endDate' => SORT_DESC])
-			->get($eFinancialYear);
-
-		return $eFinancialYear;
+			->get();
 
 	}
 
@@ -252,6 +248,28 @@ class FinancialYearLib extends FinancialYearCrud {
 		FinancialYear::model()->update($eFinancialYear, ['status' => FinancialYear::OPEN]);
 
 		LogLib::save('reopen', 'FinancialYear', ['id' => $eFinancialYear['id']]);
+
+	}
+
+	// S'il y a eu changement d'avis => la TVA a été activée au moins un moment pendant cet exercice
+	// S'il y a des écritures de TVA => la TVA a été activée
+	// Sinon : pas de TVA.
+	public static function getHasVatByFinancialYear(\farm\Farm $eFarm, FinancialYear $eFinancialYear): bool {
+
+		$hasVatStartDate = \farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $eFinancialYear['startDate']);
+		$hasVatEndDate = \farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $eFinancialYear['endDate']);
+
+		if(
+			$hasVatStartDate !== $hasVatEndDate or
+			$hasVatStartDate === TRUE
+		) {
+			return TRUE;
+		}
+
+		return \journal\Operation::model()
+			->whereAccountLabel('LIKE', AccountSetting::VAT_CLASS.'%')
+			->whereFinancialYear($eFinancialYear)
+			->found();
 
 	}
 

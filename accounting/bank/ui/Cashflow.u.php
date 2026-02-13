@@ -690,7 +690,7 @@ class CashflowUi {
 		return $h;
 	}
 
-	public function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cPaymentMethod, \Collection $cJournalCode): \Panel {
+	public function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cPaymentMethod, \Collection $cJournalCode, bool $hasVat): \Panel {
 
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('journal', 'amount.js');
@@ -708,7 +708,7 @@ class CashflowUi {
 				'id' => 'bank-cashflow-allocate',
 				'third-party-create-index' => 0,
 				'class' => 'panel-dialog',
-				'data-has-vat' => (int)$eFinancialYear['hasVat'],
+				'data-has-vat' => (int)$hasVat,
 				'data-cashflow' => 1,
 			]
 		);
@@ -799,6 +799,7 @@ class CashflowUi {
 				cOperation: $cOperationFormatted,
 				eCashflow: $eCashflow,
 				eOperationRequested: new \journal\Operation(),
+				hasVatAccounting: $hasVat,
 				for: 'copy',
 			);
 
@@ -806,7 +807,7 @@ class CashflowUi {
 
 		} else {
 
-			$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eCashflow, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod);
+			$h .= \journal\OperationUi::getCreateGrid($eFarm, $eOperation, $eCashflow, $eFinancialYear, $index, $form, $defaultValues, $cPaymentMethod, $hasVat);
 			$thirdParty = '';
 
 		}
@@ -898,7 +899,7 @@ class CashflowUi {
 
 	}
 
-	public static function addAllocate(\farm\Farm $eFarm, \journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index, \Collection $cPaymentMethod): string {
+	public static function addAllocate(\journal\Operation $eOperation, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, int $index, \Collection $cPaymentMethod, bool $hasVatAccounting): string {
 
 		$form = new \util\FormUi();
 		$form->open('bank-cashflow-allocate');
@@ -908,7 +909,7 @@ class CashflowUi {
 			'description' => $eCashflow->getMemo(),
 		];
 
-		return \journal\OperationUi::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, '['.$index.']', $defaultValues, [], $cPaymentMethod);
+		return \journal\OperationUi::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, '['.$index.']', $defaultValues, [], $cPaymentMethod, $hasVatAccounting);
 
 	}
 

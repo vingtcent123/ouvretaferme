@@ -185,7 +185,7 @@ class JournalUi {
 
 	}
 
-	public function getJournalTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Search $search, ?string $selectedJournalCode, \Collection $cJournalCode): string {
+	public function getJournalTabs(\farm\Farm $eFarm, \Search $search, ?string $selectedJournalCode, \Collection $cJournalCode, bool $hasVat): string {
 
 		$args = $search->toQuery(exclude: ['code']);
 
@@ -250,7 +250,7 @@ class JournalUi {
 			}
 
 			// Journaux de TVA
-			if($eFinancialYear['hasVat']) {
+			if($hasVat) {
 
 				$journalCode = 'vat-buy';
 				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$journalCode.'&'.$args.'">';

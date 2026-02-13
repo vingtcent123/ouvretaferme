@@ -28,7 +28,7 @@ Class VatUi {
 					$h .= '</div>';
 			$h .= '</a>';
 			$h .= '<a class="tab-item'.($selectedTab === 'check' ? ' selected' : '').'" data-tab="journal-check" href="'.$baseUrl.'?tab=check">'.s("Contrôle").'</a>';
-			if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+			if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
 				$textCerfa = s("Formulaire CA12");
 			} else {
 				$textCerfa = s("Formulaire CA3");
@@ -53,10 +53,10 @@ Class VatUi {
 					$h .= '<dt>'.\farm\FarmUi::p('siret')->label.'</dt>';
 					$h .= '<dd>'.encode($eFarm['siret']).'</dd>';
 
-					$h .= '<dt>'.\account\FinancialYearUi::p('vatFrequency')->label.'</dt>';
+					$h .= '<dt>'.\farm\ConfigurationUi::p('vatFrequency')->label.'</dt>';
 					$h .= '<dd>';
-					$h .= \account\FinancialYearUi::p('vatFrequency')->values[$eFinancialYear['vatFrequency']];
-					if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+					$h .= \farm\ConfigurationUi::p('vatFrequency')->values[$eFarm->getConf('vatFrequency')];
+					if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 						$h .= ' - '.s("Formulaire CA12");
 					} else {
 						$h .= ' - '.s("Formulaire CA3");
@@ -82,10 +82,10 @@ Class VatUi {
 					$h .= '<dt>'.\farm\FarmUi::p('legalEmail')->label.'</dt>';
 					$h .= '<dd>'.encode($eFarm['legalEmail']).'</dd>';
 
-					$h .= '<dt>'.\account\FinancialYearUi::p('vatChargeability')->label.'</dt>';
-					$h .= '<dd>'.match($eFinancialYear['vatChargeability']) {
-						\account\FinancialYear::CASH => s("TVA sur les encaissements"),
-						\account\FinancialYear::DEBIT => s("TVA sur les débits"),
+					$h .= '<dt>'.\farm\ConfigurationUi::p('vatChargeability')->label.'</dt>';
+					$h .= '<dd>'.match($eFarm->getConf('vatChargeability')) {
+						\farm\Configuration::CASH => s("TVA sur les encaissements"),
+						\farm\Configuration::DEBIT => s("TVA sur les débits"),
 						}.'</dd>';
 
 					$h .= '<dt>'.\account\FinancialYearUi::p('taxSystem')->label.'</dt>';
@@ -95,7 +95,7 @@ Class VatUi {
 
 			$h .= '</div>';
 
-			if($eFinancialYear['vatChargeability'] === \account\FinancialYear::DEBIT) {
+			if($eFinancialYear['vatChargeability'] === \farm\Configuration::DEBIT) {
 
 				$h .= '<div class="util-danger-outline">';
 					$h .= s("Attention, {siteName} n'est pas optimisé pour la comptabilité à l'engagement ni l'exigibilité de la TVA avec option sur les débits. Il est donc à votre charge de vous assurez d'avoir saisi vos factures à leur date d'émission (et non à leur date de paiement) pour être en règle avec vos paramètres fiscaux.");
@@ -121,7 +121,7 @@ Class VatUi {
 
 				switch($eFinancialYear['vatFrequency']) {
 
-					case \account\FinancialYear::ANNUALLY:
+					case \farm\Configuration::ANNUALLY:
 
 						if(mb_substr($eFinancialYear['endDate'], -5) === '12-31') {
 							$h .= '<div>'.s(
@@ -139,14 +139,14 @@ Class VatUi {
 						}
 						break;
 
-					case \account\FinancialYear::QUARTERLY:
+					case \farm\Configuration::QUARTERLY:
 						$h .= '<div>'.s(
 							"Votre déclaration CA3 doit être déposée au plus tard le {day} du mois suivant le trimestre déclaré, soit, pour la déclaration du trimestre se terminant le {endDate}, le <b>{date}</b>.",
 							['day' => date('d', strtotime($vatParameters['limit'])), 'endDate' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to']))), 'date' => \util\DateUi::numeric($vatParameters['limit']).' '.\util\FormUi::asterisk()]
 						).'</div>';
 						break;
 
-					case \account\FinancialYear::MONTHLY:
+					case \farm\Configuration::MONTHLY:
 						$h .= '<div>'.s(
 							"Votre déclaration CA3 doit être déposée au plus tard le {day} du mois suivant le mois déclaré, soit, pour la déclaration se terminant le {endDate}, le <b>{date}</b>.",
 							['day' => date('d', strtotime($vatParameters['limit'])), 'endDate' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to']))), 'date' => \util\DateUi::numeric($vatParameters['limit'])]
@@ -607,7 +607,7 @@ Class VatUi {
 			$h .= '</div>';
 
 
-			if($eFinancialYear['vatFrequency'] === \account\FinancialYear::ANNUALLY) {
+			if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
 
 				$h .= new VatUi()->getCerfaCA12($eFarm, $eFinancialYear, $cerfaData, $precision, $vatParameters);
 

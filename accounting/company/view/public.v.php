@@ -144,8 +144,14 @@ new AdaptativeView('/comptabilite/parametrer', function($data, FarmTemplate $t) 
 		echo '<h3>'.s("Informations requises sur votre ferme").'</h3>';
 		echo new \farm\FarmUi()->getLegalForm($data->eFarm);
 
+	} else if($data->eFarm->isVatAccountingConfigured() === FALSE) {
+
+		echo '<h3>'.s("Informations requises par rapport à la TVA pour votre ferme").'</h3>';
+		echo new \farm\ConfigurationUi()->updateVat($data->eFarm);
+
 	} else { // 2è étape : l'exercice
 
+		echo '<h3>'.s("Création de votre premier exercice comptable sur {siteName}").'</h3>';
 		echo new \company\CompanyUi()->create($data->eFarm);
 
 	}

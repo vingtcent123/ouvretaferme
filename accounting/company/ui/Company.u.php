@@ -64,7 +64,7 @@ class CompanyUi {
 
 		$h .= $form->hidden('farm', $eFarm['id']);
 
-		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'hasVat*', 'vatFrequency', 'vatChargeability', 'legalCategory*', 'associates*']);
+		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'legalCategory*', 'associates*']);
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))
@@ -114,6 +114,11 @@ class CompanyUi {
 			$h .= '</div>';
 
 			$h .= '<div class="util-buttons">';
+
+				$h .= '<a href="/farm/configuration:updateVat?id='.$eFarm['id'].'" class="util-button">';
+					$h .= '<h4>'.s("Le paramétrage de la TVA").'</h4>';
+					$h .= \Asset::icon('gear');
+				$h .= '</a>';
 
 				$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/financialYear/" class="util-button">';
 					$h .= '<h4>'.s("Les exercices comptables").'</h4>';

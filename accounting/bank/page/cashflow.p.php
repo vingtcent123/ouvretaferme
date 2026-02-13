@@ -108,6 +108,8 @@ new \bank\CashflowPage(function($data) {
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
 		$data->cJournalCode = \journal\JournalCodeLib::deferred();
 
+		$data->hasVatAccounting = \farm\ConfigurationLib::getConfigurationForDate($data->eFarm, 'hasVatAccounting', $data->e['date']);
+
 		throw new ViewAction($data);
 
 	})
@@ -123,6 +125,7 @@ new \bank\CashflowPage(function($data) {
 		]);
 
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
+		$data->hasVatAccounting = \farm\ConfigurationLib::getConfigurationForDate($data->eFarm, 'hasVatAccounting', $data->e['date']);
 
 		throw new ViewAction($data);
 
@@ -141,7 +144,7 @@ new \bank\CashflowPage(function($data) {
 
 		\journal\Operation::model()->beginTransaction();
 
-		$cOperation = \journal\OperationLib::prepareOperations($_POST, eCashflow: $data->e);
+		$cOperation = \journal\OperationLib::prepareOperations($data->eFarm, $_POST, eCashflow: $data->e);
 
 		if($cOperation->empty() === TRUE) {
 			\Fail::log('Cashflow::allocate.noOperation');

@@ -9,6 +9,10 @@ new Page(function($data) {
 		throw new RedirectAction('/comptabilite/beta?farm='.$data->eFarm['id']);
 	}
 
+	if($data->eFarm['eFinancialYear']['hasVatAccounting'] === FALSE) {
+		throw new NotExistsAction();
+	}
+
 })
 	->post('/vat/saveCerfa', function($data) {
 

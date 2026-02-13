@@ -125,6 +125,9 @@ new Page(function($data) {
 		$data->nUnbalanced = \journal\OperationLib::countUnbalanced($search->get('financialYear'));
 		$data->nPage = 1;
 
+		// Check if Vat was once activated for this financialYear
+		$hasVatAccounting = \account\FinancialYearLib::getHasVatByFinancialYear($data->eFarm, $search->get('financialYear'));
+
 		if($data->unbalanced === TRUE) {
 
 			[$data->cOperation, $data->nOperationSearch] = \journal\OperationLib::getUnbalanced(search: $search);
@@ -141,7 +144,7 @@ new Page(function($data) {
 		} elseif(mb_substr($code, 0, 3) === 'vat') {
 
 			// Journaux de TVA
-			if($data->eFarm['eFinancialYear']['hasVat']) {
+			if($hasVatAccounting) {
 
 				$data->operationsVat = [
 					'buy' => \journal\OperationLib::getAllForVatJournal('buy', $search, $hasSort),
@@ -152,6 +155,7 @@ new Page(function($data) {
 
 		}
 
+		$data->hasVatAccounting = $hasVatAccounting;
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE, NULL);
 		$data->cAccount = \account\AccountLib::getAll();
 

@@ -532,7 +532,9 @@ class AccountUi {
 
 		$h .= $form->asteriskInfo();
 
-		$h .= $form->dynamicGroups($eAccount, ['class*', 'description*', 'thirdParty*', 'vatAccount', 'vatRate']);
+		$h .= $form->dynamicGroups($eAccount, ['class*', 'description*', 'thirdParty*', 'vatAccount', 'vatRate'], ['class*' => function(\PropertyDescriber $d) {
+			$d->after = NULL;
+		}]);
 
 		$h .= $form->group(
 			content: $form->submit(s("Créer le numéro de compte"))
@@ -913,7 +915,6 @@ class AccountUi {
 				break;
 
 			case 'vatRate':
-				$d->default = NULL;
 				$d->field = 'select';
 				$d->values = fn(Account $e) => array_map(fn($val) => s("{value} %", $val), array_values(\selling\SellingSetting::getVatRates($e['eFarm'])));
 				$d->default = fn(Account $e) => array_find_key((\selling\SellingSetting::getVatRates($e['eFarm'])), function($vat) use($e) {
