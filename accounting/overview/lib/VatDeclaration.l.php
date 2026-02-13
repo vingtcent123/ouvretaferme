@@ -36,9 +36,9 @@ Class VatDeclarationLib extends VatDeclarationCrud {
 			->get();
 
 	}
-	public static function saveCerfa(\account\FinancialYear $eFinancialYear, string $from, string $to, array $data, string $limit): void {
+	public static function saveCerfa(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $from, string $to, array $data, string $limit): void {
 
-		if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
+		if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 			$type = VatDeclaration::CA12;
 		} else {
 			$type = VatDeclaration::CA3;

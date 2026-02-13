@@ -29,7 +29,7 @@ new Page(function($data) {
 		unset($input['to']);
 		unset($input['financialYear']);
 
-		\overview\VatDeclarationLib::saveCerfa($data->eFarm['eFinancialYear'], $from, $to, $input, $data->vatParameters['limit']);
+		\overview\VatDeclarationLib::saveCerfa($data->eFarm, $data->eFarm['eFinancialYear'], $from, $to, $input, $data->vatParameters['limit']);
 
 		throw new ReloadAction('overview', 'VatDeclaration::saved');
 

@@ -18,7 +18,7 @@ Class VatLib {
 
 		$allPeriods = self::getAllPeriodForFinancialYear($eFarm, $eFinancialYear);
 
-		if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
+		if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 			return first($allPeriods);
 		}
 
@@ -65,12 +65,12 @@ Class VatLib {
 
 	public static function getAllPeriodForFinancialYear(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): array {
 
-		if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
+		if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 			$period = self::getVatDeclarationParameters($eFarm, $eFinancialYear, $eFinancialYear['startDate']);
 			return [$period['from'].'|'.$period['to'] => $period];
 		}
 
-		if($eFinancialYear['vatFrequency'] === \farm\Configuration::QUARTERLY) {
+		if($eFarm->getConf('vatFrequency') === \farm\Configuration::QUARTERLY) {
 			$monthsPerPeriod = 3;
 			$totalPeriods = 4;
 		} else {
@@ -251,7 +251,7 @@ Class VatLib {
 		$month = (int)mb_substr($referenceDate, 5, 2);
 
 		// On prend comme valeur de référence l'année précédente
-		if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
+		if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 
 			// Date limite de déclaration pour la période de référence : relative à l'exercice courant
 			$limitDate = date('Y-05-02', strtotime($eFinancialYear));
@@ -286,14 +286,14 @@ Class VatLib {
 			$periodFrom = date('Y-m-01', mktime(0, 0, 0, ($trimester - 1) * 3 + 1, 1, $year));
 			$periodTo = date('Y-m-d', mktime(0, 0, 0, $trimester * 3 + 1, 0, $year));
 
-		} else if($eFinancialYear['vatFrequency'] === \farm\Configuration::MONTHLY) {
+		} else if($eFarm->getConf('vatFrequency') === \farm\Configuration::MONTHLY) {
 
 			$periodFrom = mb_substr($referenceDate, 0, 8).'01';;
 			$periodTo = date('Y-m-d', mktime(0, 0, 0, $month + 1, 0, $year));
 
 		}
 
-		switch($eFinancialYear['vatFrequency']) {
+		switch($eFarm->getConf('vatFrequency')) {
 
 			// Règle échéance annuelle : https://www.impots.gouv.fr/professionnel/questions/je-suis-soumis-au-regime-simplifie-dimposition-la-tva-quelle-echeance-dois
 			case \farm\Configuration::ANNUALLY:
@@ -508,11 +508,11 @@ Class VatLib {
 			// Pas de taxe ADAR l'année de création de l'exploitation
 			$isNotCreationYear = ($eFarm['startedAt'] === NULL or $eFarm['startedAt'].'-12-31' < $eFinancialYearLast['startDate']);
 
-			if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
+			if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 
 				$isInPeriod = TRUE;
 
-			} else if($eFinancialYear['vatFrequency'] === \farm\Configuration::QUARTERLY) {
+			} else if($eFarm->getConf('vatFrequency') === \farm\Configuration::QUARTERLY) {
 
 				$firstMonth = (int)mb_substr($search->get('minDate'), 6, 2);
 				$hasMarchInTrimester = in_array($firstMonth, [1, 2, 3]);

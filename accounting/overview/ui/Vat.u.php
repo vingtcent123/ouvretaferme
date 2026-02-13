@@ -28,7 +28,7 @@ Class VatUi {
 					$h .= '</div>';
 			$h .= '</a>';
 			$h .= '<a class="tab-item'.($selectedTab === 'check' ? ' selected' : '').'" data-tab="journal-check" href="'.$baseUrl.'?tab=check">'.s("Contrôle").'</a>';
-			if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
+			if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 				$textCerfa = s("Formulaire CA12");
 			} else {
 				$textCerfa = s("Formulaire CA3");
@@ -95,7 +95,7 @@ Class VatUi {
 
 			$h .= '</div>';
 
-			if($eFinancialYear['vatChargeability'] === \farm\Configuration::DEBIT) {
+			if($eFarm->getConf('vatChargeability') === \farm\Configuration::DEBIT) {
 
 				$h .= '<div class="util-danger-outline">';
 					$h .= s("Attention, {siteName} n'est pas optimisé pour la comptabilité à l'engagement ni l'exigibilité de la TVA avec option sur les débits. Il est donc à votre charge de vous assurez d'avoir saisi vos factures à leur date d'émission (et non à leur date de paiement) pour être en règle avec vos paramètres fiscaux.");
@@ -119,7 +119,7 @@ Class VatUi {
 
 				$h .= '<h3 class="mt-2">'.s("Quand dois-je la déposer ?").'</h3>';
 
-				switch($eFinancialYear['vatFrequency']) {
+				switch($eFarm->getConf('vatFrequency')) {
 
 					case \farm\Configuration::ANNUALLY:
 
@@ -607,7 +607,7 @@ Class VatUi {
 			$h .= '</div>';
 
 
-			if($eFinancialYear['vatFrequency'] === \farm\Configuration::ANNUALLY) {
+			if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 
 				$h .= new VatUi()->getCerfaCA12($eFarm, $eFinancialYear, $cerfaData, $precision, $vatParameters);
 
