@@ -3,7 +3,7 @@ namespace cash;
 
 class CashSetting extends \Settings {
 
-	const CLASSES = ['531', '511'];
+	const CLASSES = ['53', '511'];
 	const DRAFT_LIMIT = 100;
 	const DELETE_LIMIT = 10;
 
