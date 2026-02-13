@@ -1,6 +1,6 @@
 <?php
 /**
- * Close expired user accounts
+ * Regerates demo
  *
  */
 new Page()

@@ -28,7 +28,7 @@ Class AdminUi {
 
 	}
 
-	public function displayFarms(\Collection $cFarm, \Search $search): string {
+	public function displayFarms(\Collection $cData, \Collection $cFarm, \Search $search): string {
 
 		if($cFarm->empty()) {
 			return '<div class="util-empty">'.s("Il n'y a aucune ferme à afficher...").'</div>';
@@ -42,22 +42,22 @@ Class AdminUi {
 						$h .= '<th class="text-center td-min-content" rowspan="2">#</th>';
 						$h .= '<th class="td-min-content" rowspan="2"></th>';
 						$h .= '<th rowspan="2">'.s("Nom").'</th>';
-						$h .= '<th class="text-center" rowspan="2">'.$search->linkSort('nProduct', s("Produits"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center" rowspan="2">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_PRODUCTS, s("Produits"), SORT_DESC).'</th>';
 						$h .= '<th class="text-center" colspan="3">'.s("Exercices comptables").'</th>';
 						$h .= '<th colspan="3" class="text-center">'.s("Banque").'</th>';
-						$h .= '<th class="text-center"  rowspan="2">'.$search->linkSort('cash', s("Opérations<br/>de caisse"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center"  rowspan="2">'.s("Rapprochements").'<br />'.$search->linkSort('suggestion-validated', \Asset::icon('check'), SORT_DESC).' / '.$search->linkSort('suggestion-rejected', \Asset::icon('x'), SORT_DESC).'</th>';
+						$h .= '<th class="text-center"  rowspan="2">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_CASH_OPERATIONS, s("Opérations<br/>de caisse"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center"  rowspan="2">'.s("Rapprochements").'<br />'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_RECONCILIATION_OK, \Asset::icon('check'), SORT_DESC).' / '.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_RECONCILIATION_KO, \Asset::icon('x'), SORT_DESC).'</th>';
 						$h .= '<th colspan="2" class="text-center">'.s("Écritures").'</th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
-						$h .= '<th class="text-center">'.$search->linkSort('nFinancialYear', s("Exercices"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center">'.$search->linkSort('nAccountImport', s("Imports FEC"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center">'.$search->linkSort('nFinancialDocument', s("Documents"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center">'.$search->linkSort('nBankAccount', s("Comptes"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center">'.$search->linkSort('nBankImport', s("Imports"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center">'.$search->linkSort('nCashflow', s("Opérations"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center">'.$search->linkSort('nOperation', s("Écritures"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center">'.$search->linkSort('nAsset', s("Immos"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_FINANCIAL_YEARS, s("Exercices"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_FINANCIAL_YEAR_FEC, s("Imports FEC"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_FINANCIAL_YEAR_DOCUMENTS, s("Documents"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_BANK_ACCOUNTS, s("Comptes"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_BANK_IMPORTS, s("Imports"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_BANK_OPERATIONS, s("Opérations"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_JOURNAL_OPERATIONS, s("Écritures"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_JOURNAL_ASSETS, s("Immos"), SORT_DESC).'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -80,17 +80,23 @@ Class AdminUi {
 								$h .= encode($eFarm['name']);
 							$h .= '</a>';
 						$h .= '</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nProduct']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nFinancialYear']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nAccountImport']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nFinancialDocument']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nBankAccount']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nBankImport']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nCashflow']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nCash']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['suggestion-'.\preaccounting\Suggestion::VALIDATED] ?? 0).' / '.encode($eFarm['suggestion-'.\preaccounting\Suggestion::REJECTED] ?? 0).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nOperation']).'</td>';
-						$h .= '<td class="text-center">'.encode($eFarm['nAsset']).'</td>';
+						foreach([
+							\data\DataSetting::TYPE_ACCOUNTING_PRODUCTS,
+							\data\DataSetting::TYPE_ACCOUNTING_FINANCIAL_YEARS,
+							\data\DataSetting::TYPE_ACCOUNTING_FINANCIAL_YEAR_FEC,
+							\data\DataSetting::TYPE_ACCOUNTING_FINANCIAL_YEAR_DOCUMENTS,
+							\data\DataSetting::TYPE_ACCOUNTING_BANK_ACCOUNTS,
+							\data\DataSetting::TYPE_ACCOUNTING_BANK_IMPORTS,
+							\data\DataSetting::TYPE_ACCOUNTING_BANK_OPERATIONS,
+							\data\DataSetting::TYPE_ACCOUNTING_CASH_OPERATIONS,
+							] as $type
+						) {
+							$h .= '<td class="text-center">'.encode($eFarm['cFarmData'][$cData[$type]['id']]['value'] ?? '-').'</td>';
+
+						}
+						$h .= '<td class="text-center">'.encode($eFarm['cFarmData'][$cData[\data\DataSetting::TYPE_ACCOUNTING_RECONCILIATION_OK]['id']]['value'] ?? '-').' / '.encode($eFarm['cFarmData'][$cData[\data\DataSetting::TYPE_ACCOUNTING_RECONCILIATION_KO]['id']]['value'] ?? '-').'</td>';
+							$h .= '<td class="text-center">'.encode($eFarm['cFarmData'][$cData[\data\DataSetting::TYPE_ACCOUNTING_JOURNAL_OPERATIONS]['id']]['value'] ?? '-').'</td>';
+							$h .= '<td class="text-center">'.encode($eFarm['cFarmData'][$cData[\data\DataSetting::TYPE_ACCOUNTING_JOURNAL_ASSETS]['id']]['value'] ?? '-').'</td>';
 					$h .= '</tr>';
 				}
 				$h .= '</tbody>';

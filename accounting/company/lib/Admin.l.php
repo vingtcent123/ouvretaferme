@@ -24,122 +24,46 @@ Class AdminLib {
 
 	}
 
-	public static function loadAccountingData(\Collection $cFarm, \Search $search): void {
+	public static function loadAccountingData(\Search $search): \Collection {
 
-		$cProduct = \selling\Product::model()
-			->select([
-				'farm',
-				'count' => new \Sql('COUNT(*)', 'int')
-			])
-			->or(
-				fn() => $this->whereProAccount('!=', NULL),
-				fn() => $this->wherePrivateAccount('!=', NULL),
-			)
-			->whereFarm('IN', $cFarm->getIds())
-			->group(['farm'])
-			->getCollection(NULL, NULL, 'farm');
+		$cFarm = \farm\Farm::model()
+			->select(\farm\Farm::getSelection() + [
+				'cFarmData' => \data\Farm::model()
+					->select(['data' => ['id', 'fqn'], 'value'])
+					->delegateCollection('farm', index: ['data'])
+				])
+			->whereHasAccounting(TRUE)
+			->getCollection();
 
-		foreach($cFarm as $eFarm) {
-
-			\farm\FarmLib::connectDatabase($eFarm);
-
-			if($cProduct->offsetExists($eFarm['id'])) {
-				$eFarm['nProduct'] = $cProduct[$eFarm['id']]['count'];
-			} else {
-				$eFarm['nProduct'] = 0;
-			}
-
-			$eFarm['nBankAccount'] = \bank\BankAccount::model()->count();
-			$eFarm['nCash'] = \cash\Cash::model()->count();
-
-			if($eFarm['nBankAccount'] === 0) {
-
-				$eFarm['nCashflow'] = 0;
-				$eFarm['nBankImport'] = 0;
-
-				$eFarm['suggestion-'.\preaccounting\Suggestion::VALIDATED] = 0;
-				$eFarm['suggestion-'.\preaccounting\Suggestion::REJECTED] = 0;
-
-			} else {
-
-				$eFarm['nCashflow'] = \bank\Cashflow::model()->count();
-				$eFarm['nBankImport'] = \bank\Import::model()->count();
-
-				$cSuggestion = \preaccounting\Suggestion::model()
-					->select([
-						'status', 'count' => new \Sql('COUNT(*)', 'int')
-					])
-					->group(['status'])
-					->getCollection(NULL, NULL, 'status');
-				foreach($cSuggestion as $eSuggestion) {
-					$eFarm['suggestion-'.$eSuggestion['status']] = $eSuggestion['count'];
-				}
-
-			}
-
-			if($eFarm->usesAccounting()) {
-
-				$eFarm['nOperation'] = \journal\Operation::model()->count();
-
-				if($eFarm['nOperation'] > 0) {
-					$eFarm['nAccountImport'] = \account\Import::model()->count();
-				} else {
-					$eFarm['nAccountImport'] = 0;
-				}
-
-				$eFarm['nAsset'] = \asset\Asset::model()->count();
-
-				$eFarm['nFinancialYear'] = \account\FinancialYear::model()->count();
-
-				if($eFarm['nFinancialYear'] > 0) {
-					$eFarm['nFinancialDocument'] = \account\FinancialYearDocument::model()->count();
-				} else {
-					$eFarm['nFinancialDocument'] = 0;
-				}
-
-			} else {
-
-				$eFarm['nOperation'] = 0;
-				$eFarm['nAsset'] = 0;
-				$eFarm['nFinancialYear'] = 0;
-				$eFarm['nFinancialDocument'] = 0;
-				$eFarm['nAccountImport'] = 0;
-
-			}
+		if(empty($search->getSort())) {
+			return $cFarm;
 		}
 
-		switch($search->getSort()) {
-			case 'nBankAccount':
-			case 'nBankImport':
-			case 'nAccountImport':
-			case 'nFinancialDocument':
-			case 'nFinancialYear':
-			case 'nAsset':
-			case 'nCashflow':
-			case 'nOperation':
-			case 'nProduct':
-			case 'suggestion-'.\preaccounting\Suggestion::VALIDATED:
-			case 'suggestion-'.\preaccounting\Suggestion::REJECTED:
-				$cFarm->sort([$search->getSort() => SORT_ASC]);
-				break;
+		$cData = \data\DataLib::deferred();
 
-			case 'nBankImport-':
-			case 'nFinancialYear-':
-			case 'nBankAccount-':
-			case 'nAccountImport-':
-			case 'nFinancialDocument-':
-			case 'nAsset-':
-			case 'nCashflow-':
-			case 'nOperation-':
-			case 'nProduct-':
-			case 'suggestion-'.\preaccounting\Suggestion::VALIDATED.'-':
-			case 'suggestion-'.\preaccounting\Suggestion::REJECTED.'-':
-				$cFarm->sort([mb_substr($search->getSort(), 0, -1) => SORT_DESC]);
-				break;
-
+		$sort = $search->getSort();
+		if(mb_substr($sort, -1) === '-') {
+			$sort = mb_substr($search->getSort(), 0, mb_strlen($search->getSort()) - 1);
+			$direction = 'desc';
+		} else {
+			$direction = 'asc';
 		}
 
+		$cDataSort = $cData->find(fn($e) => $e['fqn'] === $sort);
 
+		if($cDataSort->notEmpty()) {
+
+			$eDataSort = $cDataSort->first();
+
+			$cFarm->sort(function(\farm\Farm $e1, \farm\Farm $e2) use ($eDataSort, $direction)  {
+				if($direction === 'desc') {
+					return ($e2['cFarmData'][$eDataSort['id']]['value'] ?? 0) <=> ($e1['cFarmData'][$eDataSort['id']]['value'] ?? 0);
+				}
+				return ($e1['cFarmData'][$eDataSort['id']]['value'] ?? 0) <=> ($e2['cFarmData'][$eDataSort['id']]['value'] ?? 0);
+			});
+		}
+
+		return $cFarm;
 	}
 
 }

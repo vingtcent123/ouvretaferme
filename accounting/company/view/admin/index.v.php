@@ -8,7 +8,7 @@ new AdaptativeView('index', function($data, MainTemplate $t) {
 	$t->header .= '</div>';
 
 	echo new \company\AdminUi()->displayStats($data->nFarms);
-	echo new \company\AdminUi()->displayFarms($data->cFarm, $data->search);
+	echo new \company\AdminUi()->displayFarms($data->cData, $data->cFarm, $data->search);
 
 
 });

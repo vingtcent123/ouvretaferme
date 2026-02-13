@@ -1,0 +1,13 @@
+Data:
+  id: serial32
+  fqn: text8 @charset(ascii)
+  frequency: enum(HOURLY, DAILY)
+
+Farm:
+  farm: farm\Farm
+  data: data\Data
+  value: int16(0, null)
+  createdAt: datetime = SPECIAL(now)
+  UNIQUE: [
+    ["farm", "data"]
+  ]

@@ -4,10 +4,9 @@ new Page(fn() => \user\ConnectionLib::getOnline()->checkIsAdmin())
 
 		$data->nFarms = \company\AdminLib::countFarms();
 
-		$data->cFarm = \company\AdminLib::getFarms();
-
 		$data->search = new Search([], GET('sort'));
-		\company\AdminLib::loadAccountingData($data->cFarm, $data->search);
+		$data->cFarm = \company\AdminLib::loadAccountingData($data->search);
+		$data->cData = \data\DataLib::deferred();
 
 		throw new ViewAction($data);
 

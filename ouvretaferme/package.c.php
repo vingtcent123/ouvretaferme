@@ -8,6 +8,7 @@ Package::setList([
 	'cash' => 'accounting',
 	'company' => 'accounting',
 	'core' => 'framework',
+	'data' => 'base',
 	'dev' => 'framework',
 	'editor' => 'framework',
 	'example' => 'framework',
@@ -40,6 +41,9 @@ Package::setList([
 
 Package::setObservers([
 	'lib' => [
+		'data' => [
+			'calculateFarmData' => ['company'],
+		],
 		'user' => [
 			'logIn' => ['company', 'farm', 'session'],
 			'formLog' => ['company', 'farm'],

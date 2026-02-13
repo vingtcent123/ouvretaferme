@@ -189,4 +189,14 @@ class CompanyLib {
 
 	}
 
+	public static function getAccountingFarms(): \Collection {
+
+		return \farm\Farm::model()
+			->select('id')
+			->whereHasAccounting(TRUE)
+			->whereId(7)
+			->getCollection();
+
+	}
+
 }
