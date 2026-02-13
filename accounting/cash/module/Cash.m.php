@@ -60,7 +60,6 @@ class CashModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'register' => ['element32', 'cash\Register', 'cast' => 'element'],
-			'parent' => ['element32', 'cash\Cash', 'null' => TRUE, 'cast' => 'element'],
 			'date' => ['date', 'cast' => 'string'],
 			'balance' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => -99999999.99, 'max' => 99999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'amountIncludingVat' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => 0.0, 'max' => 99999999.99, 'cast' => 'float'],
@@ -84,12 +83,11 @@ class CashModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'register', 'parent', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'position', 'type', 'hasVat', 'vat', 'vatRate', 'description', 'source', 'cashflow', 'invoice', 'sale', 'customer', 'payment', 'account', 'financialYear', 'status', 'createdAt'
+			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'position', 'type', 'hasVat', 'vat', 'vatRate', 'description', 'source', 'cashflow', 'invoice', 'sale', 'customer', 'payment', 'account', 'financialYear', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'register' => 'cash\Register',
-			'parent' => 'cash\Cash',
 			'cashflow' => 'bank\Cashflow',
 			'invoice' => 'selling\Invoice',
 			'sale' => 'selling\Sale',
@@ -157,10 +155,6 @@ class CashModel extends \ModuleModel {
 
 	public function whereRegister(...$data): CashModel {
 		return $this->where('register', ...$data);
-	}
-
-	public function whereParent(...$data): CashModel {
-		return $this->where('parent', ...$data);
 	}
 
 	public function whereDate(...$data): CashModel {

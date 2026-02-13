@@ -13,7 +13,6 @@ Register:
 Cash:
   id: serial32
   register: cash\Register
-  parent: ?cash\Cash
   date: date
   balance: ?decimal(10, 2)
   amountIncludingVat: decimal(10, 2, 0.0, null)

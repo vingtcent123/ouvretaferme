@@ -93,7 +93,6 @@ class CashLib extends CashCrud {
 			->whereRegister($eRegister)
 			->whereType($search->get('type'), if: $search->get('type'))
 			->whereStatus('!=', Cash::DELETED)
-			->whereParent(NULL)
 			->sort(self::getOrder())
 			->getCollection($position, $number, index: ['status', NULL]);
 
