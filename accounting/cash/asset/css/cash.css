@@ -35,6 +35,24 @@
 	flex-wrap: wrap;
 }
 
+@media (max-width: 575px) {
+
+	.cash-actions {
+		letter-spacing: -0.2px;
+	}
+
+}
+
+@media (max-width: 399px) {
+
+	.cash-actions {
+		letter-spacing: -0.3px;
+		margin: -0.5rem;
+		gap: 0.25rem;
+	}
+
+}
+
 .cash-auto-description {
 	color: var(--muted);
 	font-size: 0.9rem;

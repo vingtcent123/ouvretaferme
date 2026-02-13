@@ -16,7 +16,7 @@ class RegisterUi {
 			'paymentMethod' => ['name']
 		]);
 
-		return s("Journal de caisse n°{position} pour {method}", [
+		return s("Journal n°{position} pour {method}", [
 			'position' => $eRegister['id'],
 			'method' => self::getBadge($eRegister)
 		]);

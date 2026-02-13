@@ -87,7 +87,7 @@ class CashUi {
 			$h .= '</div>';
 		}
 
-		$h .= '<div class="util-block">';
+		$h .= '<div class="util-block stick-xs">';
 
 			$h .= '<h3>'.s("Saisir une opération de caisse").'</h3>';
 
@@ -115,7 +115,7 @@ class CashUi {
 
 					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/cash:updateBalance?id='.$eRegister['id'].'" class="btn btn-secondary '.($eRegister->acceptUpdateBalance() ? '' : 'disabled').'">';
 						$h .= '<div class="btn-icon">'.\Asset::icon('plus-slash-minus').'</div>';
-						$h .= s("Constater un écart de caisse");
+						$h .= '<span class="hide-xs-down">'.s("Constater un écart de caisse").'</span><span class="hide-sm-up">'.s("Constater un écart").'</span>';
 						if($eRegister->acceptUpdateBalance() === FALSE) {
 							$h .= '<div style="margin-top: 0.25rem" class="font-xs">'.\Asset::icon('exclamation-circle').' '.s("Brouillard de caisse").'</div>';
 						}
@@ -722,6 +722,8 @@ class CashUi {
 
 		$h = '';
 
+		$h .= $form->dynamicGroup($eCash, 'description');
+
 		if($eCash->requireAssociateAccount()) {
 
 			$label = s("Numéro de compte associé");
@@ -778,8 +780,6 @@ class CashUi {
 				$form->dynamicField($eCash, 'amountIncludingVat')
 			);
 		}
-
-		$h .= $form->dynamicGroup($eCash, 'description');
 
 		return $h;
 
