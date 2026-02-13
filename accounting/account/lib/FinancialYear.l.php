@@ -88,20 +88,13 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
+	public static function getByDate(string $date, ?int $excludedId = NULL): FinancialYear {
 
-	public static function getFinancialYearSurroundingDate(string $date, ?int $excludedId): FinancialYear {
-
-		$eFinancialYear = new FinancialYear();
-
-		FinancialYear::model()
+		return FinancialYear::model()
 			->select(FinancialYear::getSelection())
-			->whereStartDate('<=', $date)
-			->whereEndDate('>=', $date)
+			->where(FinancialYear::model()->format($date).' BETWEEN startDate AND endDate')
 			->whereId('!=', $excludedId, if:$excludedId !== NULL)
-			->get($eFinancialYear);
-
-
-		return $eFinancialYear;
+			->get();
 
 	}
 
@@ -124,15 +117,6 @@ class FinancialYearLib extends FinancialYearCrud {
 			->get($eFinancialYear);
 
 		return $eFinancialYear;
-
-	}
-
-	public static function getByDate(string $date): FinancialYear {
-
-		return FinancialYear::model()
-			->select(FinancialYear::getSelection())
-			->where(FinancialYear::model()->format($date).' BETWEEN startDate AND endDate')
-			->get();
 
 	}
 

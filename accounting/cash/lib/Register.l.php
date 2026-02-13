@@ -4,12 +4,12 @@ namespace cash;
 class RegisterLib extends RegisterCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['color', 'account', 'paymentMethod'];
+		return ['color', 'hasAccounts', 'account', 'paymentMethod'];
 	}
 
 	public static function getPropertiesUpdate(): array {
 
-		return ['color', 'account', 'bankAccount'];
+		return ['color', 'hasAccounts', 'account', 'bankAccount'];
 
 	}
 

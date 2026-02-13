@@ -50,13 +50,14 @@ class RegisterModel extends \ModuleModel {
 			'color' => ['color', 'cast' => 'string'],
 			'balance' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => -99999999.99, 'max' => 99999999.99, 'cast' => 'float'],
 			'operations' => ['int32', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
+			'hasAccounts' => ['bool', 'cast' => 'bool'],
 			'status' => ['enum', [\cash\Register::ACTIVE, \cash\Register::INACTIVE], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'closedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'account', 'bankAccount', 'paymentMethod', 'color', 'balance', 'operations', 'status', 'createdAt', 'closedAt'
+			'id', 'account', 'bankAccount', 'paymentMethod', 'color', 'balance', 'operations', 'hasAccounts', 'status', 'createdAt', 'closedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -79,6 +80,9 @@ class RegisterModel extends \ModuleModel {
 
 			case 'operations' :
 				return 0;
+
+			case 'hasAccounts' :
+				return TRUE;
 
 			case 'status' :
 				return Register::ACTIVE;
@@ -141,6 +145,10 @@ class RegisterModel extends \ModuleModel {
 
 	public function whereOperations(...$data): RegisterModel {
 		return $this->where('operations', ...$data);
+	}
+
+	public function whereHasAccounts(...$data): RegisterModel {
+		return $this->where('hasAccounts', ...$data);
 	}
 
 	public function whereStatus(...$data): RegisterModel {

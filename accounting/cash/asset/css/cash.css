@@ -1,3 +1,8 @@
+.cash-register-accounting:has(input[name="hasAccounts"][value="0"]:checked) [data-wrapper="account"],
+.cash-register-accounting:has(input[name="hasAccounts"][value="0"]:checked) [data-wrapper="bankAccount"] {
+	display: none;
+}
+
 .cash-item-vat-rate {
 	font-style: italic;
 	color: var(--muted);

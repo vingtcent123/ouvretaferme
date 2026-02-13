@@ -129,7 +129,9 @@ class RegisterUi {
 
 			$h .= $form->asteriskInfo();
 
-			$h .= $form->dynamicGroups($eRegister, ['color', 'paymentMethod*', 'account']);
+			$h .= $form->dynamicGroups($eRegister, ['color', 'paymentMethod*']);
+
+			$h .= $this->getAccountingFields($form, $eRegister, ['hasAccounts', 'account']);
 
 			$h .= $form->group(
 				content: $form->submit(
@@ -159,7 +161,8 @@ class RegisterUi {
 
 			$h .= $form->hidden('id', $eRegister['id']);
 
-			$h .= $form->dynamicGroups($eRegister, ['color', 'account', 'bankAccount']);
+			$h .= $form->dynamicGroups($eRegister, ['color']);
+			$h .= $this->getAccountingFields($form, $eRegister, ['hasAccounts', 'account', 'bankAccount']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -175,10 +178,22 @@ class RegisterUi {
 
 	}
 
+	protected function getAccountingFields(\util\FormUi $form, Register $eRegister, array $fields): string {
+
+		$h = '<div class="util-block bg-background-light cash-register-accounting">';
+			$h .= $form->group(content: '<h4>'.s("Comptabilité selon le plan comptable agricole").'</h4>');
+			$h .= $form->dynamicGroups($eRegister, $fields);
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = \cash\Register::model()->describer($property, [
 			'paymentMethod' => s("Moyen de paiement"),
+			'hasAccounts' => s("Saisir des numéros de compte pour les opérations de caisse"),
 			'account' => s("Numéro de compte lié à la caisse"),
 			'bankAccount' => s("Numéro de compte par défaut pour les dépôts et retraits bancaires"),
 			'color' => s("Couleur du journal"),
@@ -207,6 +222,11 @@ class RegisterUi {
 
 				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: $query);
 
+				break;
+
+			case 'hasAccounts':
+				$d->field = 'yesNo';
+				$d->labelAfter = \util\FormUi::info(s("En saisissant directement des numéros de compte dans les opérations de caisse, vous pourrez importer votre journal de caisse très facilement dans votre comptabilité."));
 				break;
 
 			case 'bankAccount':

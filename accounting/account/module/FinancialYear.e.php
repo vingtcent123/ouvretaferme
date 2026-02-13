@@ -193,7 +193,7 @@ class FinancialYear extends FinancialYearElement {
 					return mb_strlen($date) > 0 and \util\DateLib::isValid($date);
 				}
 
-				$eFinancialYear = \account\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id'] ?? NULL);
+				$eFinancialYear = \account\FinancialYearLib::getByDate($date, $this['id'] ?? NULL);
 
 				return $eFinancialYear->exists() === FALSE and \util\DateLib::isValid($date);
 
@@ -227,7 +227,7 @@ class FinancialYear extends FinancialYearElement {
 					return mb_strlen($date) > 0 and \util\DateLib::isValid($date);
 				}
 
-				$eFinancialYear = \account\FinancialYearLib::getFinancialYearSurroundingDate($date, $this['id'] ?? NULL);
+				$eFinancialYear = \account\FinancialYearLib::getByDate($date, $this['id'] ?? NULL);
 
 				return $eFinancialYear->exists() === FALSE and \util\DateLib::isValid($date);
 

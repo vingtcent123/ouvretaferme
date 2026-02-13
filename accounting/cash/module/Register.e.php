@@ -108,7 +108,16 @@ class Register extends RegisterElement {
 				);
 
 			})
-			->setCallback('account.check', function(\account\Account $eAccount) {
+			->setCallback('account.check', function(\account\Account &$eAccount) use ($p) {
+
+				if($p->isBuilt('hasAccounts') === FALSE) {
+					throw new \UnsupportedException();
+				}
+
+				if($this['hasAccounts'] === FALSE) {
+					$eAccount = new \account\Account();
+					return TRUE;
+				}
 
 				if($eAccount->empty()) {
 					return TRUE;
@@ -122,7 +131,16 @@ class Register extends RegisterElement {
 				);
 
 			})
-			->setCallback('bankAccount.check', function(\account\Account $eAccount) {
+			->setCallback('bankAccount.check', function(\account\Account &$eAccount) use ($p) {
+
+				if($p->isBuilt('hasAccounts') === FALSE) {
+					throw new \UnsupportedException();
+				}
+
+				if($this['hasAccounts'] === FALSE) {
+					$eAccount = new \account\Account();
+					return TRUE;
+				}
 
 				if($eAccount->empty()) {
 					return TRUE;

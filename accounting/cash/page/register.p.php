@@ -2,8 +2,11 @@
 new \cash\RegisterPage()
 	->getCreateElement(function($data) {
 
+		$eFinancialYear = \account\FinancialYearLib::getByDate(currentDate());
+
 		return new \cash\Register([
-			'cPaymentMethod' => \payment\MethodLib::getForCash($data->eFarm)
+			'cPaymentMethod' => \payment\MethodLib::getForCash($data->eFarm),
+			'hasAccounts' => $eFinancialYear->empty() ? FALSE : ($eFinancialYear['accountingMode'] === \account\FinancialYear::ACCOUNTING)
 		]);
 
 	})
@@ -12,14 +15,14 @@ new \cash\RegisterPage()
 
 new \cash\RegisterPage()
 	->update()
-	->doUpdate(fn($data) => throw new RedirectAction(\farm\FarmUi::urlCash($data->e).'&success=cash\\Register::updated'))
+	->doUpdate(fn($data) => throw new ReloadAction('cash', 'Register::updated'))
 	->write('doClose', function($data) {
 
 		$date = \cash\Register::POST('date', 'closedAt', fn() => throw new NotExpectedAction());
 
 		\cash\RegisterLib::close($data->e, $date);
 
-		throw new RedirectAction(\farm\FarmUi::urlCash($data->e).'&success=cash\\Register::updatedClosed');
+		throw new ReloadAction('cash', 'Register::updatedClosed');
 
 	}, validate: ['canUpdate', 'acceptClose'])
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ReloadAction())

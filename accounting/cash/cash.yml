@@ -6,6 +6,7 @@ Register:
   color: color = PHP('#AAAAAA')
   balance: decimal(10, 2) = 0.0
   operations: int(0, null) = 0
+  hasAccounts: bool = TRUE
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   createdAt: datetime = SPECIAL(now)
   closedAt: ?date
