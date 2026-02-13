@@ -99,7 +99,6 @@ class CashModel extends \ModuleModel {
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
 			['register'],
-			['parent'],
 			['sale'],
 			['invoice'],
 			['payment']

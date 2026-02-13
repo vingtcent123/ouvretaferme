@@ -35,7 +35,6 @@ Cash:
   createdAt: datetime = SPECIAL(now)
   INDEX: [
     ["register"],
-    ["parent"],
     ["sale"],
     ["invoice"],
     ["payment"]
