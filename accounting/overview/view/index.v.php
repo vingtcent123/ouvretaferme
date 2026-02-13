@@ -252,9 +252,9 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_VAT, function($data, FarmTemplate $
 
 			case 'journal-buy':
 			case 'journal-sell':
-				if($data->eFinancialYearLast->empty()) {
+				if($data->eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY and $data->eFinancialYearLast->empty()) {
 					echo '<div class="util-empty">';
-						echo s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.");
+						echo s("Il n'y a eu aucune écriture comptable enregistrée pour la période du {from} au {to}.", ['from' => \util\DateUi::numeric($data->vatParameters['from']), 'to' => \util\DateUi::numeric($data->vatParameters['to'])]);
 					echo '</div>';
 				} else {
 					echo new \overview\VatUi()->getOperationsTab($data->eFarm, mb_substr($data->tab, mb_strlen('journal') + 1), $data->cOperation, $data->vatParameters);
@@ -262,13 +262,13 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_VAT, function($data, FarmTemplate $
 				break;
 
 			case 'check':
-				if($data->eFinancialYearLast->empty()) {
+				if($data->eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY and $data->eFinancialYearLast->empty()) {
 					echo '<div class="util-empty">';
-						echo s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.");
+						echo s("Il n'y a eu aucune écriture comptable enregistrée pour la période du {from} au {to}.", ['from' => \util\DateUi::numeric($data->vatParameters['from']), 'to' => \util\DateUi::numeric($data->vatParameters['to'])]);
 					echo '</div>';
 				} else if(empty($data->check['sales']) and empty($data->check['taxes'])) {
 					echo '<div class="util-empty">';
-						echo s("Il semblerait que cette période ne contienne aucune donnée pertinente à afficher pour le contrôle de TVA.");
+						echo s("Il semblerait que la période du {from} au {to} ne contienne aucune donnée pertinente à afficher pour le contrôle de TVA.", ['from' => \util\DateUi::numeric($data->vatParameters['from']), 'to' => \util\DateUi::numeric($data->vatParameters['to'])]);
 					echo '</div>';
 				} else {
 					echo new \overview\VatUi()->getCheck($data->eFarm, $data->check, $data->vatParameters);
@@ -276,13 +276,13 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_VAT, function($data, FarmTemplate $
 				break;
 
 			case 'cerfa':
-				if($data->eFinancialYearLast->empty()) {
+				if($data->eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY and $data->eFinancialYearLast->empty()) {
 					echo '<div class="util-empty">';
-						echo s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.");
+						echo s("Il n'y a eu aucune écriture comptable enregistrée pour la période du {from} au {to}.", ['from' => \util\DateUi::numeric($data->vatParameters['from']), 'to' => \util\DateUi::numeric($data->vatParameters['to'])]);
 					echo '</div>';
 				} else if(empty($data->check['sales']) and empty($data->check['taxes'])) {
 					echo '<div class="util-empty">';
-						echo s("Il semblerait que cette période ne contienne aucune donnée pertinente à afficher pour le contrôle de TVA.");
+						echo s("Il semblerait que la période du {from} au {to} ne contienne aucune donnée pertinente à afficher pour le contrôle de TVA.", ['from' => \util\DateUi::numeric($data->vatParameters['from']), 'to' => \util\DateUi::numeric($data->vatParameters['to'])]);
 					echo '</div>';
 				}  else {
 					echo new \overview\VatUi()->getCerfa($data->eFarm, $data->eFarm['eFinancialYear'], $data->cerfa, $data->precision, $data->vatParameters, $data->eFinancialYearLast);
@@ -290,13 +290,13 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_VAT, function($data, FarmTemplate $
 				break;
 
 			case 'history':
-				if($data->eFinancialYearLast->empty()) {
+				if($data->eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY and $data->eFinancialYearLast->empty()) {
 					echo '<div class="util-empty">';
-						echo s("Il n'y a eu aucune écriture comptable enregistrée pour cette période.");
+						echo s("Il n'y a eu aucune écriture comptable enregistrée pour la période du {from} au {to}.", ['from' => \util\DateUi::numeric($data->vatParameters['from']), 'to' => \util\DateUi::numeric($data->vatParameters['to'])]);
 					echo '</div>';
 				} else if($data->cVatDeclaration->empty()) {
 					echo '<div class="util-empty">';
-						echo s("Il n'y a aucune déclaration de TVA à afficher pour cette période.");
+						echo s("Il n'y a aucune déclaration de TVA à afficher pour la période du {from} au {to}.", ['from' => \util\DateUi::numeric($data->vatParameters['from']), 'to' => \util\DateUi::numeric($data->vatParameters['to'])]);
 					echo '</div>';
 				} else {
 					echo new \overview\VatDeclarationUi()->getHistory($data->eFarm, $data->eFarm['eFinancialYear'], $data->cVatDeclaration, $data->allPeriods);
