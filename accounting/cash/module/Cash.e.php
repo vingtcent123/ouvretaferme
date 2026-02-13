@@ -42,6 +42,7 @@ class Cash extends CashElement {
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
+			'register' => RegisterElement::getSelection(),
 			'account' => \account\Account::getSelection(),
 			'financialYear' => \account\FinancialYear::getSelection(),
 			'customer' => \selling\CustomerElement::getSelection(),
