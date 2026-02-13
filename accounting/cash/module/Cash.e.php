@@ -99,7 +99,7 @@ class Cash extends CashElement {
 		]);
 
 		if(
-			$this['source'] !== Cash::PRIVATE or
+			in_array($this['source'], CashSetting::SOURCE_PRIVATE_ACCOUNTS) === FALSE or
 			$this['date'] === NULL
 		) {
 			return FALSE;
@@ -137,7 +137,7 @@ class Cash extends CashElement {
 		]);
 
 		if(
-			in_array($this['source'], [Cash::BANK_MANUAL, Cash::BUY_MANUAL, Cash::SELL_MANUAL, Cash::OTHER]) === FALSE or
+			in_array($this['source'], CashSetting::SOURCE_ACCOUNTS) === FALSE or
 			$this['date'] === NULL
 		) {
 			return FALSE;

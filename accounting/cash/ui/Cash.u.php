@@ -22,8 +22,28 @@ class CashUi {
 			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Mouvement").'</legend>';
-					$h .= $form->select('type', [Cash::DEBIT => s("Débit"), Cash::CREDIT => s("Crédit")], $search->get('type'));
+					$h .= $form->select('type', self::p('type')->values, $search->get('type'));
 				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Opération").'</legend>';
+					$h .= $form->select('source', [
+						'balance' => s("Écart de caisse"),
+						'private' => s("Apport au prélèvement de l'exploitant dans la caisse"),
+						'bank' => s("Retrait ou dépôt à la banque"),
+						'buy' => s("Achat à un fournisseur"),
+						'sell' => s("Vente à un client"),
+						'other' => s("Autre opération"),
+					], $search->get('source'));
+				$h .= '</fieldset>';
+				if($eRegister['hasAccounts']) {
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Numéros de compte").'</legend>';
+						$h .= $form->select('account', [
+							'without' => s("Non renseignés"),
+							'with' => s("Renseignés"),
+						], $search->get('account'));
+					$h .= '</fieldset>';
+				}
 				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"));
 					$h .= '<a href="'.$url.'" class="btn">'.\Asset::icon('x-lg').'</a>';
@@ -911,6 +931,13 @@ class CashUi {
 		]);
 
 		switch($property) {
+
+			case 'type' :
+				$d->values = [
+					Cash::DEBIT => s("Débit"),
+					Cash::CREDIT => s("Crédit")
+				];
+				break;
 
 			case 'description' :
 				$d->placeholder = fn(Cash $eCash) => $eCash->requireDescription() ? s("Saisissez le motif de l'opération") : '';

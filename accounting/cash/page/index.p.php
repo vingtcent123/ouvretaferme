@@ -41,6 +41,8 @@ new Page()
 
 				$data->search = new Search([
 					'type' => GET('type'),
+					'source' => GET('source'),
+					'account' => GET('account'),
 				]);
 
 				$data->ccCash = \cash\CashLib::getByRegister($data->eRegisterCurrent, $data->page, $data->search);

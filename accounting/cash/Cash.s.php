@@ -9,5 +9,8 @@ class CashSetting extends \Settings {
 
 	const AMOUNT_THRESHOLD = 76;
 
+	const SOURCE_ACCOUNTS = [Cash::BANK_MANUAL, Cash::BUY_MANUAL, Cash::SELL_MANUAL, Cash::OTHER];
+	const SOURCE_PRIVATE_ACCOUNTS = [Cash::PRIVATE];
+
 }
 ?>

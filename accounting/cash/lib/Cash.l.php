@@ -94,6 +94,41 @@ class CashLib extends CashCrud {
 		$number = ($page === NULL) ? NULL : 200;
 		$position = ($page === NULL) ? NULL : $page * $number;
 
+		if($search->get('source')) {
+
+			$sources = match($search->get('source')) {
+
+				'balance' => [Cash::BALANCE],
+				'private' => [Cash::PRIVATE],
+				'bank' => [Cash::BANK_MANUAL, Cash::BANK_CASHFLOW],
+				'other' => [Cash::OTHER],
+				'buy' => [Cash::BUY_MANUAL],
+				'sell' => [Cash::SELL_MANUAL, Cash::SELL_SALE, Cash::SELL_INVOICE],
+
+			};
+
+			Cash::model()->whereSource('IN', $sources);
+
+		}
+
+		if($search->get('account')) {
+
+			Cash::model()->whereSource('IN', array_merge(CashSetting::SOURCE_ACCOUNTS, CashSetting::SOURCE_PRIVATE_ACCOUNTS));
+
+			switch($search->get('account')) {
+
+				case 'with' :
+					Cash::model()->whereAccount('!=', NULL);
+					break;
+
+				case 'without' :
+					Cash::model()->whereAccount(NULL);
+					break;
+
+			}
+
+		}
+
 		$ccCash = Cash::model()
 			->select(Cash::getSelection() + [
 				'cSaleMarket' => \selling\Sale::model()
