@@ -269,7 +269,7 @@ Class VatLib {
 			$periodFrom = date('Y-01-01', strtotime($referenceDate));
 			$periodTo = date('Y-12-31', strtotime($referenceDate));
 
-		} else if($eFinancialYear['vatFrequency'] === \farm\Configuration::QUARTERLY) {
+		} else if($eFarm->getConf('vatFrequency') === \farm\Configuration::QUARTERLY) {
 
 			$currentMonth = $month;
 
