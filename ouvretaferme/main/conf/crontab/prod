@@ -7,7 +7,7 @@
 */5 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme session/cron/sessionClean
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme account/cron/import
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme account/cron/pdf
-0 5 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme account/cron/pdf:clean
+0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme data/cron/calculate
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme mail/cron/send
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme preaccounting/cron/reconciliate
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme selling/cron/invoice
@@ -24,6 +24,7 @@
 0 3 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme hr/cron/calculate
 0 4 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme cron/backup
 0 4 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme farm/cron/demo
+0 5 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme account/cron/pdf:clean
 0 6 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme cron/sitemap
 0 6 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme user/cron/close
 0 6 * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme user/cron/log
