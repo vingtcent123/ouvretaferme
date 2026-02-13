@@ -323,6 +323,7 @@ class SuggestionLib extends CashCrud {
 					])
 					->where('m1.statusCash', \selling\Payment::WAITING)
 					->where('m1.farm', $eFarm)
+					->where('m2.preparationStatus', \selling\Sale::DELIVERED)
 					->where('m2.profile', 'IN', [\selling\Sale::SALE, \selling\Sale::MARKET])
 					->where('m2.invoice', NULL);
 
