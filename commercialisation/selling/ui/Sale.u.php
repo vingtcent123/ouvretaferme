@@ -107,7 +107,7 @@ class SaleUi {
 
 	public function getSearch(\Search $search, \Collection $cPaymentMethod): string {
 
-		$h = '<div id="sale-search" class="util-block-search '.($search->empty(['ids']) ? 'hide' : '').'">';
+		$h = '<div id="sale-search" class="util-block-search '.($search->empty(['ids', 'type', 'profile']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
@@ -189,7 +189,7 @@ class SaleUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?int $nSale = NULL, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, ?bool $hasSubtitles = NULL, ?string $segment = NULL, ?\Collection $cPaymentMethod = NULL): string {
+	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, ?bool $hasSubtitles = NULL, ?string $segment = NULL, ?\Collection $cPaymentMethod = NULL): string {
 
 		if($cSale->empty()) {
 			return '';
@@ -610,8 +610,8 @@ class SaleUi {
 
 		$h .= '</div>';
 
-		if($nSale !== NULL and $page !== NULL) {
-			$h .= \util\TextUi::pagination($page, $nSale / 100);
+		if($cSale->getFound() !== NULL and $page !== NULL) {
+			$h .= \util\TextUi::pagination($page, $cSale->getFound() / 100);
 		}
 
 		$h .= $this->getBatch($eFarm, $cPaymentMethod);
@@ -1930,7 +1930,10 @@ class SaleUi {
 
 		return new \Panel(
 			id: 'panel-sale-create',
-			title: s("Ajouter une vente"),
+			title: match($eSale['profile']) {
+				Sale::MARKET => s("Créer une vente pour le logiciel de caisse"),
+				default => s("Créer une vente")
+			},
 			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog']),
 			dialogClose: $form->close(),
 			body: $h,
@@ -2049,7 +2052,7 @@ class SaleUi {
 
 		return new \Panel(
 			id: 'panel-sale-create-collection',
-			title: s("Ajouter une vente"),
+			title: s("Créer une vente"),
 			dialogOpen: $form->openAjax('/selling/sale:doCreateCollection', ['id' => $formId, 'class' => 'panel-dialog']),
 			dialogClose: $form->close(),
 			body: $h,
@@ -2427,6 +2430,12 @@ class SaleUi {
 					if($e['type'] !== NULL) {
 						$body['type'] = $e['type'];
 					}
+
+					$body['destination'] = match($e['profile']) {
+						Sale::MARKET => Customer::COLLECTIVE,
+						Sale::SALE_MARKET => Customer::INDIVIDUAL,
+						default => NULL
+					};
 
 					return $body;
 				};

@@ -17,6 +17,7 @@ new \selling\SalePage()
 			'profile' => $profile,
 			'shop' => new \shop\Shop(),
 			'shopDate' => new \shop\Date(),
+			'market' => ($profile === \selling\Sale::MARKET)
 		]);
 
 		if($eSale->isComposition()) {
@@ -578,7 +579,7 @@ new Page(function($data) {
 
 		\selling\SaleLib::updatePreparationStatusCollection($data->c, \selling\Sale::SELLING);
 
-		throw new ReloadAction();
+		throw new RedirectAction(\selling\SaleUi::urlMarket($data->c->first()));
 
 	})
 	->post('doUpdateDraftCollection', function($data) {

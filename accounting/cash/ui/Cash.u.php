@@ -137,7 +137,7 @@ class CashUi {
 						$h .= '<div class="btn-icon">'.\Asset::icon('plus-slash-minus').'</div>';
 						$h .= '<span class="hide-xs-down">'.s("Constater un écart de caisse").'</span><span class="hide-sm-up">'.s("Constater un écart").'</span>';
 						if($eRegister->acceptUpdateBalance() === FALSE) {
-							$h .= '<div style="margin-top: 0.25rem" class="font-xs">'.\Asset::icon('exclamation-circle').' '.s("Brouillard de caisse").'</div>';
+							$h .= '<div style="margin-top: 0.25rem" class="font-xs">'.\Asset::icon('exclamation-circle').' '.s("Le brouillard doit être vide").'</div>';
 						}
 					$h .= '</a>';
 

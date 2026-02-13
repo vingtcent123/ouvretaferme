@@ -238,6 +238,7 @@ class FarmUi {
 			Farmer::ALL => self::urlSellingSalesAll($eFarm),
 			Farmer::PRIVATE => self::urlSellingSalesPrivate($eFarm),
 			Farmer::PRO => self::urlSellingSalesPro($eFarm),
+			Farmer::MARKET => self::urlSellingSalesMarket($eFarm),
 			Farmer::LABEL => self::urlSellingSalesLabel($eFarm),
 			'accounting' => self::urlSellingSalesAccounting($eFarm)
 		};
@@ -254,6 +255,10 @@ class FarmUi {
 
 	public static function urlSellingSalesPro(Farm $eFarm): string {
 		return self::url($eFarm).'/ventes/professionnels';
+	}
+
+	public static function urlSellingSalesMarket(Farm $eFarm): string {
+		return self::url($eFarm).'/ventes/caisse';
 	}
 
 	public static function urlSellingSalesInvoice(Farm $eFarm): string {
@@ -1972,7 +1977,12 @@ class FarmUi {
 					case Farmer::PRIVATE :
 					case Farmer::PRO :
 							$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-							$h .= '<a href="/selling/sale:createCollection?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
+							$h .= '<a href="/selling/sale:createCollection?farm='.$eFarm['id'].'&view='.$selectedView.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
+						break;
+
+					case Farmer::MARKET :
+							$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+							$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&type='.\selling\Sale::PRIVATE.'&market=1" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
 						break;
 
 				}
@@ -1990,6 +2000,7 @@ class FarmUi {
 			Farmer::ALL => s("Toutes les ventes"),
 			Farmer::PRO => s("Ventes aux professionnels"),
 			Farmer::PRIVATE => s("Ventes aux particuliers"),
+			Farmer::MARKET => s("Logiciel de caisse"),
 			NULL,
 			Farmer::LABEL => s("Étiquettes de colisage"),
 		];

@@ -358,6 +358,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'ventes'],
 		],
+		'/ferme/{id}/ventes/caisse' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'ventes', 'caisse'],
+		],
 		'/ferme/{id}/ventes/particuliers' => [
 			'request' => 'farm/index',
 			'priority' => 5,

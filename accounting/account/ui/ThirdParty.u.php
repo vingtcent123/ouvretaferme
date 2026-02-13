@@ -284,7 +284,7 @@ class ThirdPartyUi {
 				$d->autocompleteBody = function(\util\FormUi $form, ThirdParty $e) {
 					return [
 						'farm' => $e['farm']['id'] ?? POST('farm'),
-						'withCollective' => 0,
+						'destination' => \selling\Customer::INDIVIDUAL,
 						'withAdministrative' => 1,
 					];
 				};

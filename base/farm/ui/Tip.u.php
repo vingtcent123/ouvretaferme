@@ -168,13 +168,13 @@ class TipUi {
 
 			case 'selling-market' :
 
-				$link = FarmUi::urlSellingSalesAll($eFarm);
+				$link = FarmUi::urlSellingSalesMarket($eFarm);
 
-				$h = '<p>'.s("Au marché avec votre téléphone ou une tablette, saisissez vos ventes avec le logiciel de caisse intégré. Plus besoin d'une balance sophistiquée. À la fin du marché, vous savez exactement ce que vous avez vendu. Vous pouvez même saisir les commandes de vos clients à honorer ultérieurement directement en ligne.").'</p>';
+				$h = '<p>'.s("Au marché avec votre téléphone ou une tablette, saisissez vos ventes avec le logiciel de caisse intégré sur {siteName}. Plus besoin d'une balance sophistiquée. À la fin du marché, vous savez exactement ce que vous avez vendu.").'</p>';
 
 				return [
 					'icon' => \Asset::icon('cart2'),
-					'title' => s("Un logiciel de caisse"),
+					'title' => s("Le logiciel de caisse"),
 					'content' => $h,
 					'image' => TRUE,
 					'button' => [$link, s("Aller aux ventes")],
@@ -192,6 +192,27 @@ class TipUi {
 					'content' => $h,
 					'image' => TRUE,
 					'button' => [$link, s("Voir les photos")],
+				];
+
+			case 'selling-market-start' :
+
+				$h = '<p>'.s("Le logiciel de caisse proposé par Ouvretaferme vous permet d'enregistrer les ventes que vous réalisez pendant vos marchés avec une tablette ou un téléphone. C'est une solution simple et efficace qui permet de gérer un grand nombre de clients par heure.").'</p>';
+
+				$h .= '<ul>';
+					$h .= '<li>'.s("Il est conforme aux contraintes réglementaires d’inaltérabilité, de sécurisation, de conservation et d’archivage des données").'</li>';
+					$h .= '<li>'.s("Il est peut être utilisé par plusieurs vendeurs simultanément").'</li>';
+					$h .= '<li>'.s("Il est simple d'utilisation").'</li>';
+					$h .= '<li>'.s("Il est directement connecté à votre comptabilité si vous la tenez sur {siteName}").'</li>';
+				$h .= '</ul>';
+
+				$h .= '<p>'.s("Nous vous conseillons de <link>lire la documentation</link> pour tirer pleinement partie de cette fonctionnalité !", ['link' => '<a href="/doc/selling:market">']).'</p>';
+
+				return [
+					'icon' => \Asset::icon('cart2'),
+					'title' => s("Le logiciel de caisse"),
+					'content' => $h,
+					'image' => TRUE,
+					'button' => ['/doc/selling:market', s("Lire la documentation")],
 				];
 
 			case 'selling-pdf' :

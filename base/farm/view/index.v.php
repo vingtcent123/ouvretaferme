@@ -368,7 +368,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 	$t->subNavTarget = $t->canonical;
 
 	if(
-		$data->nSale === 0 and
+		$data->cSale->getFound() === 0 and
 		$data->type === NULL and
 		$data->search->empty()
 	) {
@@ -403,9 +403,11 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		echo new \selling\SaleUi()->getSearch($data->search, $data->cPaymentMethod);
 
-		if($data->search->empty()) {
+		if($data->search->empty(['ids', 'type', 'profile'])) {
 
-			echo new \selling\SaleUi()->getNextSales($data->eFarm, $data->type, $data->nextSales);
+			if($data->profile === NULL) {
+				echo new \selling\SaleUi()->getNextSales($data->eFarm, $data->type, $data->nextSales);
+			}
 
 			if($data->cSale->count() < 5) {
 				echo new \selling\SaleUi()->getWarning(TRUE);
@@ -413,7 +415,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		}
 
-		echo new \selling\SaleUi()->getList($data->eFarm, $data->cSale, $data->nSale, $data->search, hide: ['items'], page: $data->page, cPaymentMethod: $data->cPaymentMethod);
+		echo new \selling\SaleUi()->getList($data->eFarm, $data->cSale, $data->search, hide: ['items'], page: $data->page, cPaymentMethod: $data->cPaymentMethod);
 
 	}
 

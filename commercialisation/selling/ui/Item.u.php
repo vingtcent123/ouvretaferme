@@ -1000,7 +1000,6 @@ class ItemUi {
 	public static function getCreateByCategory(\util\FormUi $form, Sale $eSale, \Collection $cProduct): string {
 
 		$hasPackaging = ($eSale['type'] === Sale::PRO);
-		$hasQuantity = ($eSale->isMarket() === FALSE or $eSale['preparationStatus'] !== Sale::SELLING);
 		$hasPrice = ($eSale->isMarket() === FALSE);
 		$hasStock = $cProduct->match(fn($eProduct) => $eProduct['stock'] !== NULL);
 
@@ -1020,9 +1019,7 @@ class ItemUi {
 						$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
 					}
 				$h .= '</div>';
-				if($hasQuantity) {
-					$h .= '<div class="items-products-number">'.s("Quantité vendue").'</div>';
-				}
+				$h .= '<div class="items-products-number">'.s("Quantité vendue").'</div>';
 				if($hasPrice) {
 					$h .= '<div class="items-products-price">';
 						$h .= s("Montant total");
@@ -1093,12 +1090,10 @@ class ItemUi {
 
 					$h .= '</div>';
 
-					if($hasQuantity) {
-						$h .= '<div class="items-products-number" data-wrapper="number['.$eProduct['id'].']">';
-							$h .= '<h4>'.s("Quantité vendue").'</h4>';
-							$h .= $form->dynamicField($eItem, $eSale->isMarket() ? 'number['.$eProduct['id'].']' : 'number['.$eProduct['id'].']*');
-						$h .= '</div>';
-					}
+					$h .= '<div class="items-products-number" data-wrapper="number['.$eProduct['id'].']">';
+						$h .= '<h4>'.s("Quantité vendue").'</h4>';
+						$h .= $form->dynamicField($eItem, $eSale->isMarket() ? 'number['.$eProduct['id'].']' : 'number['.$eProduct['id'].']*');
+					$h .= '</div>';
 
 					if($hasPrice) {
 						$h .= '<div class="items-products-price" data-wrapper="price['.$eProduct['id'].']">';

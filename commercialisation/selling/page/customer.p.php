@@ -137,7 +137,7 @@ new Page()
 			POST('query'),
 			$data->eFarm,
 			POST('type', default: fn() => NULL),
-			withCollective: POST('withCollective', 'bool', TRUE)
+			POST('destination', default: fn() => NULL),
 		);
 
 		$data->hasNew = post_exists('new');

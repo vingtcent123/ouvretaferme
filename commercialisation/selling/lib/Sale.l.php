@@ -302,7 +302,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL, ?int $position = NULL, ?int $number = NULL, \Search $search = new \Search()): array {
+	public static function getByFarm(\farm\Farm $eFarm, ?int $position = NULL, ?int $number = NULL, \Search $search = new \Search()): \Collection {
 
 		if($search->get('customerName')) {
 			$cCustomer = CustomerLib::getFromQuery($search->get('customerName'), $eFarm);
@@ -342,7 +342,7 @@ class SaleLib extends SaleCrud {
 			}
 		}
 
-		$cSale = Sale::model()
+		return Sale::model()
 			->select(Sale::getSelection())
 			->select([
 				'ccPdf' => Pdf::model()
@@ -355,7 +355,8 @@ class SaleLib extends SaleCrud {
 			->whereDocument($search->get('document'), if: $search->get('document'))
 			->where('m1.id', 'IN', fn() => explode(',', $search->get('ids')), if: $search->get('ids'))
 			->where('m1.farm', $eFarm)
-			->where('m1.type', $type, if: $type !== NULL)
+			->where('m1.type', $search->get('type'), if: $search->get('type') !== NULL)
+			->where('m1.profile', $search->get('profile'), if: $search->get('profile') !== NULL)
 			->where('m1.customer', $search->get('customer'), if: $search->get('customer'))
 			->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%', if: $search->get('deliveredAt'))
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))
@@ -392,8 +393,6 @@ class SaleLib extends SaleCrud {
 				}
 			]))
 			->getCollection($position, $number);
-
-		return [$cSale, Sale::model()->found()];
 
 	}
 
@@ -842,7 +841,8 @@ class SaleLib extends SaleCrud {
 
 			$ePayment = new Payment([
 				'method' => \payment\MethodLib::getById($eMethod),
-				'status' => Payment::NOT_PAID
+				'status' => Payment::NOT_PAID,
+				'amountIncludingVat' => 0.0
 			]);
 
 			PaymentTransactionLib::createForTransaction($e, $ePayment);

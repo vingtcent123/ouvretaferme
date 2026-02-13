@@ -88,6 +88,12 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Astuces").'</h2>';
 
+		echo '<h3>'.s("Voir toutes les ventes avec le logiciel de caisse").'</h3>';
+		echo '<div class="util-info">';
+			echo '<p>'.s("Sur la page de vos ventes, vous pouvez sélectionner <u>Logiciel de caisse </u> dans le menu principal afin de n'afficher que les ventes pour lesquelles vous avez activé le logiciel de caisse.").'</p>';
+		echo '</div>';
+		echo Asset::image('main', 'doc/market-list.png');
+
 		echo '<h3>'.s("Configurer les marchés suivants en un clic").'</h3>';
 		echo '<div class="util-info">';
 			echo '<p>'.s("Créer votre premier marché avec le logiciel de caisse va prendre un peu de temps, car vous devrez ajouter manuellement les produits que vous souhaitez vendre dans le logiciel. Pour les marchés suivants, nous vous recommandons d'utiliser la fonctionnalité <u>Dupliquer une vente</u>.").'</p>';
@@ -112,6 +118,12 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 			echo s("Par défaut, c'est le champ de <u>Prix</u> qui est sélectionné pour les produits vendus au poids. Si cela nous vous convient pas, vous pouvez sélectionner le champ <u>Quantité</u> par défaut dans les réglages de base du module <u>Vendre</u>.");
 		echo '</p>';
 		echo Asset::image('main', 'doc/market-settings.png');
+
+		echo '<h3>'.s("Compléter automatiquement votre journal de caisse").'</h3>';
+		echo '<p class="util-info">';
+			echo s("Si vous utilisez {siteName} pour réaliser le journal de caisse de votre ferme, vous pouvez automatiquement y reporter le montant des ventes réalisées lors de vos marchés.");
+		echo '</p>';
+		echo Asset::image('main', 'doc/market-register.png');
 
 	echo '</div>';
 

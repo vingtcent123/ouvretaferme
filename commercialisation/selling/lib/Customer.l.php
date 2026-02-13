@@ -45,7 +45,7 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type = NULL, bool $withCollective = TRUE, ?array $properties = []): \Collection {
+	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type = NULL, ?string $destination = NULL, ?array $properties = []): \Collection {
 
 		if(str_starts_with($query, '#') and ctype_digit(substr($query, 1))) {
 
@@ -73,12 +73,20 @@ class CustomerLib extends CustomerCrud {
 			Customer::model()->sort('name');
 		}
 
-		if($withCollective === FALSE) {
-			Customer::model()
-				->or(
-					fn() => $this->whereDestination(NULL),
-					fn() => $this->whereDestination(Customer::INDIVIDUAL)
-				);
+		switch($destination) {
+
+			case Customer::INDIVIDUAL :
+				Customer::model()
+					->or(
+						fn() => $this->whereDestination(NULL),
+						fn() => $this->whereDestination(Customer::INDIVIDUAL)
+					);
+				break;
+
+			case Customer::COLLECTIVE :
+				Customer::model()->whereDestination(Customer::COLLECTIVE);
+				break;
+
 		}
 
 		return Customer::model()

@@ -929,6 +929,10 @@ class Sale extends SaleElement {
 						->get($eCustomer)
 				) {
 
+					if($this['profile'] === Sale::SALE_MARKET and $eCustomer->isCollective()) {
+						return FALSE;
+					}
+
 					$this['type'] = $eCustomer['type'];
 					$this['taxes'] = $this->getTaxesFromType();
 					$this['hasVat'] = $this['farm']->getConf('hasVat');

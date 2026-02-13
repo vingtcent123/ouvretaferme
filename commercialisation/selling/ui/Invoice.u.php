@@ -961,7 +961,7 @@ class InvoiceUi {
 					$e->expects(['farm']);
 					return [
 						'farm' => $e['farm']['id'],
-						'withCollective' => 0
+						'destination' => \selling\Customer::INDIVIDUAL
 					];
 				};
 				new CustomerUi()->query($d);
