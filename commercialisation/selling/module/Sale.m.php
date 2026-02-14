@@ -156,6 +156,7 @@ class SaleModel extends \ModuleModel {
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['farm', 'deliveredAt'],
 			['customer'],
 			['shopDate'],
 			['shop']

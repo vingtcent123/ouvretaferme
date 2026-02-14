@@ -359,6 +359,7 @@ Sale:
   statusAt: datetime = SPECIAL(now)
   statusBy: ?user\User = SPECIAL(user)
   INDEX: [
+    ["farm", "deliveredAt"],
     ["customer"],
     ["shopDate"],
     ["shop"]
