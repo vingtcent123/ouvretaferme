@@ -88,6 +88,7 @@ Product:
   status: enum(ACTIVE, INACTIVE) = ACTIVE
   createdAt: datetime = SPECIAL(now)
   INDEX: [
+    ["farm"],
     ["product"],
     ["catalog"],
     ["date"]
