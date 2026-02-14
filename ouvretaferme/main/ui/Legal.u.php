@@ -273,7 +273,7 @@ class LegalUi {
 				$h .= '</tr>';
 				$h .= '<tr>';
 					$h .= '<td rowspan="3">';
-						$h .= '<span class="util-circle util-circle-lg bg-production mr-1">'.\Asset::icon('bank').'</span>';
+						$h .= '<span class="util-circle util-circle-lg bg-production mr-1">'.\Asset::icon('piggy-bank').'</span>';
 						$h .= s("Comptabilité");
 					$h .= '</td>';
 					$h .= '<td>Isagri</td>';
@@ -353,6 +353,126 @@ class LegalUi {
 				$h .= $this->friends(FALSE);
 			$h .= '</div>';
 
+		$h .= '</div>';
+
+		return $h;
+	}
+
+	public function afocg() : string {
+
+		$h = '<div class="home-features home-features-2 mt-2">';
+			$h .= '<div class="home-feature"><h3>'.s("Pourquoi plus de 2500 producteurs utilisent Ouvretaferme ?").'</h3><p>'.s("Nous avons bâti Ouvretaferme avec la promesse faite aux producteurs et productrices de leur proposer pour un prix minimal une solution qui permette de piloter dans un seul logiciel leur production, leur commercialisation et leur comptabilité.").'</p></div>';
+			$h .= '<div class="home-feature"><h3>'.s("Pourquoi travailler avec Ouvretaferme ?").'</h3><p>'.s("Nous constatons une forte demande de formation sur Ouvretaferme, que ce soit sur la production, la commercialisation ou la comptabilité et c'est pourquoi nous cherchons à travailler avec des partenaires qui partagent nos valeurs pour couvrir ces besoins.").'</p></div>';
+		$h .= '</div>';
+
+		$h .= '<h2>'.s("Que propose {siteName} à votre AFOCG ?").'</h2>';
+		$h .= '<p class="util-info">'.s("Les fonctionnalités suivantes pourraient intéresser votre AFOCG pour des actions de formation. La plupart de ces fonctionnalités sont accessibles gratuitement et celles relatives à la comptabilité sont disponibles pour 100 € / an.").'</p>';
+
+		$h .= '<div class="util-block util-overflow-sm">';
+		$h .= '<table style="font-size: 1.2rem" class="tr-bordered">';
+			$h .= '<tbody>';
+				$h .= '<tr>';
+					$h .= '<td rowspan="4">';
+						$h .= '<span class="util-circle util-circle-lg bg-commercialisation mr-1">'.\Asset::icon('basket3').'</span>';
+						$h .= s("Commercialisation");
+					$h .= '</td>';
+					$h .= '<td>'.s("Facturation électronique").'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>'.s("Logiciel de caisse").'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>'.s("Vente en ligne").'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>'.s("Création de site internet et e-mailing").'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td rowspan="4">';
+						$h .= '<span class="util-circle util-circle-lg bg-accounting mr-1">'.\Asset::icon('piggy-bank').'</span>';
+						$h .= s("Comptabilité");
+					$h .= '</td>';
+					$h .= '<td>'.s("Logiciel comptable aux normes du PCA pour le micro-BA").'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>'.s("Livre des recettes pour le micro-BA").'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>'.s("Journal de caisse").'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>'.s("Obligation de e-reporting à partir du 1<sup>er</sup> septembre 2027").'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td rowspan="4">';
+						$h .= '<span class="util-circle util-circle-lg bg-production mr-1">'.\Asset::icon('people').'</span>';
+						$h .= s("Gestion");
+					$h .= '</td>';
+					$h .= '<td>'.s("Organisation du travail").'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>'.s("Gestion du temps de travail").'</td>';
+				$h .= '</tr>';
+				$h .= '<tr>';
+					$h .= '<td>'.s("Rentabilité des systèmes").'</td>';
+				$h .= '</tr>';
+			$h .= '</thead>';
+		$h .= '</table>';
+		$h .= '</div>';
+
+		$h .= '<br/>';
+		$h .= '<br/>';
+
+		$h .= '<h2>'.s("Quels avantages pour votre AFOCG ?").'</h2>';
+
+		$h .= '<div class="home-why">';
+			$h .= '<div class="home-why-item">';
+				$h .= \Asset::icon('1-circle');
+				$h .= '<h4>'.s("Tous les adhérents de votre AFOCG bénéficient du tarif privilégié de 100 € / an pour utiliser {siteName}.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-why-item">';
+				$h .= \Asset::icon('2-circle');
+				$h .= '<h4>'.s("Votre AFOCG est visible sur Ouvretaferme auprès des producteurs qui utilisent notre logiciel sur votre territoire.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-why-item">';
+				$h .= \Asset::icon('3-circle');
+				$h .= '<h4>'.s("Vous pouvez étendre vos propositions de formation.").'</h4>';
+			$h .= '</div>';
+		$h .= '</div>';
+
+		$h .= '<br/>';
+		$h .= '<br/>';
+
+		$h .= '<h2>'.s("Notre feuille de route").'</h2>';
+		$h .= '<p class="util-info">'.s("{siteName} ne propose pas encore toutes les fonctionnalités dont vous pourriez avoir besoin mais nous y travaillons.").'</p>';
+
+		$h .= '<div class="home-points">';
+			$h .= '<div class="home-point">';
+				$h .= '<h3>Mi-2026</h3>';
+				$h .= '<h4>'.s("Ouvretaferme sera pleinement compatible avec la réforme de la facturation électronique.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-point">';
+				$h .= '<h3>Fin 2026</h3>';
+				$h .= '<h4>'.s("Ouvretaferme proposera aux producteurs de se rassembler en collectifs pour échanger sur leurs pratiques.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-point">';
+				$h .= '<h3>2027</h3>';
+				$h .= '<h4>'.s("La comptabilité au réel sera disponible sur {siteName}.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-point">';
+				$h .= '<h3>À partir de 2028</h3>';
+				$h .= '<h4>'.s("Étendre le module de production aux productions animales et aux grandes cultures.").'</h4>';
+			$h .= '</div>';
+		$h .= '</div>';
+
+		$h .= '<br/>';
+		$h .= '<br/>';
+
+		$h .= '<div class="util-block">';
+		$h .= '<h2>'.s("Vous voulez en savoir plus ?").'</h2>';
+
+			$h .= '<h4>'.s("Contactez-nous pour une courte présentation.").'</h4>';
+			$h .= '<a href="https://asso.ouvretaferme.org/nous-contacter" class="btn btn-primary">'.s("Nous contacter").'</a>';
 		$h .= '</div>';
 
 		return $h;

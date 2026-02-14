@@ -377,7 +377,7 @@ class CashUi {
 
 										if($eRegister['operations'] > 1) {
 
-											$h .= '<div class="util-block-gradient">';
+											$h .= '<div class="util-block bg-primary color-white">';
 												$h .= \Asset::icon('lock-fill').'  '.s("Votre journal de caisse est actuellement clôturé au {closed}, la saisie de nouvelles opérations est possible à partir du {open}.", [
 													'closed' => \util\DateUi::numeric($eRegister['closedAt']),
 													'open' => \util\DateUi::numeric(date('Y-m-d', strtotime($eRegister['closedAt'].' + 1 DAY'))),
@@ -394,7 +394,7 @@ class CashUi {
 													if($closeDate !== NULL) {
 
 														$h .= '<div class="mt-1">';
-															$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doClose" post-id="'.$eRegister['id'].'" post-date="'.$closeDate.'" class="btn btn-primary" data-confirm="'.s("ATTENTION !\nLa clôture est définitive, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($closeDate)).'">';
+															$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/register:doClose" post-id="'.$eRegister['id'].'" post-date="'.$closeDate.'" class="btn btn-transparent" data-confirm="'.s("ATTENTION !\nLa clôture est définitive, et vous ne pourrez ajouter, modifier ou supprimer d'opération jusqu'au {value}. Voulez-vous continuer ?", \util\DateUi::numeric($closeDate)).'">';
 																$h .= \Asset::icon('calendar-month').'  ';
 																$h .= s("Clôturer le journal au {value}", \util\DateUi::textual($closeDate));
 															$h .= '</a>';

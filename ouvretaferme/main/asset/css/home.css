@@ -153,7 +153,7 @@ body[data-template^="home-"] header h4 {
 	display: grid;
 	grid-gap: 1.5rem;
 	grid-template-columns: repeat(4, 1fr);
-	margin-bottom: 1rem;
+	margin-bottom: 2rem;
 }
 
 @media (max-width: 767px) {
@@ -196,6 +196,41 @@ body[data-template^="home-"] header h4 {
 	}
 
 
+}
+
+.home-why {
+	display: grid;
+	grid-gap: 1.5rem;
+	grid-template-columns: repeat(3, 1fr);
+	margin-bottom: 2rem;
+}
+
+@media (max-width: 767px) {
+
+	.home-why {
+		display: grid;
+		grid-gap: 1rem;
+		grid-template-columns: 1fr;
+	}
+
+
+}
+
+.home-why-item {
+	background-color: var(--secondary);
+	border-radius: var(--radius);
+	padding: 1rem;
+	text-align: center;
+	color: white;
+}
+
+.home-why-item svg {
+	font-size: 3rem;
+	margin: 1rem 0;
+}
+
+.home-why-item h4 {
+	margin-bottom: 0rem;
 }
 
 div.home-user-types {
@@ -474,4 +509,17 @@ div.home-profile.home-profile-dark {
 		grid-template-columns: 1fr;
 	}
 
+}
+
+div.home-highlight {
+	padding: 1.5rem 2rem;
+	background: var(--gradient);
+	border: 2px solid var(--radius);
+	box-shadow: 0 0 2rem white;
+	border-radius: 2rem;
+	margin-bottom: 2rem;
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	align-items: center;
 }

@@ -473,6 +473,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['presentation', 'adhesion'],
 		],
+		'/presentation/afocg' => [
+			'request' => 'main/index',
+			'priority' => 5,
+			'route' => ['presentation', 'afocg'],
+		],
 		'/presentation/faq' => [
 			'request' => 'main/index',
 			'priority' => 5,

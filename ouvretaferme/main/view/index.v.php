@@ -54,7 +54,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 			echo '<ul>';
 				echo '<li>'.s("Rapprochement bancaire avec vos factures").'</li>';
 				echo '<li>'.s("Logiciel de comptabilité inclus pour le micro-BA").'</li>';
-				echo '<li>'.s("Export de vos ventes au format FEC").'</li>';
+				echo '<li>'.s("Journal de caisse").'</li>';
 			echo '</ul>';
 			echo '<div class="home-feature-for">';
 				echo s("Nouveauté 2026 !");
@@ -113,98 +113,15 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 		echo new \game\HelpUi()->getHome($data->ePlayer);
 	}
 
-	echo '<h2>'.s("Témoignages de fermes").'</h2>';
-
-	echo '<div class="home-profiles">';
-
-		echo '<div class="home-profile home-profile-extended">';
-			echo '<div class="home-profile-header">';
-				echo '<div>'.Asset::image('main', 'profile/tomatesetpotirons.jpg', ['class' => 'home-profile-image']).'</div>';
-				echo '<div>';
-					echo '<h4>'.s("Tomates & Potirons (86)").'</h4>';
-					echo '<h3>'.s("Maraichage").'</h3>';
-				echo '</div>';
-			echo '</div>';
-			echo '<p>'.s("Avant Ouvretaferme, les maraichers de Tomates & Potirons ont testé plusieurs outils de planification, en commençant par Excel : très flexible, mais vite complexe et difficilement transmissible à une équipe. D’autres logiciels étaient intéressants, mais souvent limités à la production, avec peu de souplesse. Ouvretaferme a été une révélation : enfin un outil qui combine toutes les informations nécessaires à notre ferme, de la production à la commercialisation.").'</p>';
-			echo '<p class="hide-sm-down">&laquo; '.s("Aujourd’hui, grâce à la centralisation des données (plan de culture, ventes, temps de travail), nous avons une analyse économique précise de chaque série. C’est un outil stratégique pour toute ferme diversifiée.").' &raquo;</p>';
-		echo '</div>';
-
-		echo '<div class="home-profile">';
-			echo '<div class="home-profile-header">';
-				echo '<div>'.Asset::image('main', 'profile/pain.jpg', ['class' => 'home-profile-image']).'</div>';
-				echo '<div>';
-					echo '<h3>'.s("Boulangerie paysanne").'</h3>';
-				echo '</div>';
-			echo '</div>';
-			echo '<p>'.s("Adeline est une paysanne-boulangère qui vend sa production sur les marchés avec le logiciel de caisse de Ouvretaferme accessible sur son téléphone ou sa tablette. Elle vend aussi son pain sur une boutique en ligne qu'elle partage avec un collègue maraicher.").'</p>';
-		echo '</div>';
-		echo '<div class="home-profile">';
-			echo '<div class="home-profile-header">';
-				echo '<div>'.Asset::image('main', 'profile/oeuf.jpg', ['class' => 'home-profile-image']).'</div>';
-				echo '<div>';
-					echo '<h3>'.s("Élevage").'</h3>';
-				echo '</div>';
-			echo '</div>';
-			echo '<p>'.s("Axel est un éleveur qui vend sa production en ligne avec Ouvretaferme et a bidouillé les fonctionnalités de planification destinées aux fruits, légumes et aux fleurs pour les adapter à sa production de volailles de chair et de poules pondeuses. Il bénéficiera peut-être bientôt de fonctionnalités spécifiques sur Ouvretaferme !").'</p>';
-		echo '</div>';
-		echo '<div class="home-profile home-profile-dark bg-secondary">';
-			echo '<div class="home-profile-header home-profile-header-text">';
-				echo '<h3>'.s("Vos clients").'</h3>';
-			echo '</div>';
-			echo '<p>'.s("Ils commandent en vente directe à leur producteurs préférés les produits qu'ils proposent cette semaine et récupèrent leur commande au lieu et à la date convenus. Ils paient en ligne ou sur place selon le choix du producteur !").'</p>';
-		echo '</div>';
-
-		echo '<div class="home-profile">';
-			echo '<div class="home-profile-header">';
-				echo '<div>'.Asset::image('main', 'profile/jardindesmurmures.jpg', ['class' => 'home-profile-image']).'</div>';
-				echo '<div>';
-					echo '<h4>'.s("Le Jardin des Murmures (74)").'</h4>';
-					echo '<h3>'.s("Maraichage").'</h3>';
-				echo '</div>';
-			echo '</div>';
-			echo '<p>'.s("Lionel utilise Ouvretaferme depuis 2023 et notamment la boutique en ligne pour ses ventes directes et le système de facturation qui lui ont fait gagner des heures. Le planning de production lui permet également de travailler en équipe et notamment de connaître les planches à préparer, la fertilisation et le paillage à utiliser !").'</p>';
-		echo '</div>';
-
-		echo '<div class="home-profile">';
-			echo '<div class="home-profile-header">';
-				echo '<div>'.Asset::image('main', 'profile/fleur.jpg', ['class' => 'home-profile-image']).'</div>';
-				echo '<div>';
-					echo '<h3>'.s("Floriculture").'</h3>';
-				echo '</div>';
-			echo '</div>';
-			echo '<p>'.s("Marie et Luc sont des floriculteurs qui gèrent avec Ouvretaferme la diversité de leur production sur petite surface. Ils vendent aussi sur une boutique en ligne destinée aux fleuristes leur gamme de fleurs coupées. Ils envoient leurs bons de livraison par e-mail et génèrent chaque mois en un clic les factures de leurs ventes.").'</p>';
-		echo '</div>';
-
-		echo '<div class="home-profile">';
-			echo '<div class="home-profile-header">';
-				echo '<div>'.Asset::image('main', 'profile/cfppacourcelles.png', ['class' => 'home-profile-image']).'</div>';
-				echo '<div>';
-					echo '<h4><a href="https://campus-courcelles.fr/">'.s("CFPPA de Courcelles-Chaussy (57)").'</a></h4>';
-					echo '<h3>'.s("Centre de formation").'</h3>';
-				echo '</div>';
-			echo '</div>';
-			echo '<p>'.s("Le <link>CFPPA de Courcelles-Chaussy</link> utilise Ouvretaferme non seulement pour gérer son atelier pédagogique mais aussi pour permettre aux stagiaires de mieux appréhender le travail à réaliser sur une ferme, les itinéraires techniques et tout ce qui concerne le plan de culture.", ['link' => '<a href="https://campus-courcelles.fr/">']).'</p>';
-		echo '</div>';
-
-		echo '<div class="home-profile">';
-			echo '<div class="home-profile-header">';
-				echo '<div>'.Asset::image('main', 'profile/carotte.jpg', ['class' => 'home-profile-image']).'</div>';
-				echo '<div>';
-					echo '<h4>'.s("Les Jardins de Tallende (63)").'</h4>';
-					echo '<h3>'.s("Maraichage").'</h3>';
-				echo '</div>';
-			echo '</div>';
-			echo '<p>'.s("Vincent est un maraicher diversifié qui conçoit son plan de culture avec Ouvretaferme pour la saison en respectant ses rotations. En saison, il utilise le planning pour se libérer de sa charge mentale et enregistre son temps de travail pour comprendre là où il peut améliorer son système. La nuit, il est aussi le développeur principal de Ouvretaferme !").'</p>';
-		echo '</div>';
-	echo '</div>';
-
+	echo new \main\HomeUi()->getMission();
+	echo new \main\HomeUi()->getEvidences();
 	echo new \main\HomeUi()->getTraining();
 
 	echo '<h2 class="mb-2">'.s("En savoir plus sur Ouvretaferme").'</h2>';
 
 	echo '<div class="home-story-wrapper">';
 		echo '<div class="home-story">';
-			echo '<p>'.s("Le logiciel {siteName} est un projet associatif lancé en 2021 pour combler l'absence d'un logiciel ouvert, gratuit et intuitif destiné aux producteurs en circuits courts. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits. Notre mission : fournir aux producteurs les outils nécessaires pour contribuer à réaliser les finalités des fermes.").'</p>';
+			echo '<p>'.s("Le logiciel {siteName} est un projet associatif lancé en 2021 pour combler l'absence d'un logiciel ouvert, gratuit et intuitif destiné aux producteurs en circuits courts. Conçu pour simplifier l'organisation du travail à la ferme, ce logiciel complet accompagne les producteurs agricoles, du plan de culture à la vente de leurs produits.").'</p>';
 			echo '<a href="'.\association\AssociationSetting::URL.'" target="_blank" class="btn btn-secondary">'.S("Découvrir l'association").'</a> ';
 			echo '<a href="'.\association\AssociationSetting::URL.'/nous-soutenir" target="_blank" class="btn btn-outline-secondary">'.S("Nous soutenir").'</a>';
 		echo '</div>';
@@ -524,6 +441,23 @@ new AdaptativeView('/presentation/adhesion', function($data, MainTemplate $t) {
 	$t->header .= '</div>';
 
 	echo new \main\LegalUi()->membership();
+
+});
+
+new AdaptativeView('/presentation/afocg', function($data, MainTemplate $t) {
+
+	$t->title = s("Vous êtes une AFOCG ?");
+	$t->metaNoindex = TRUE;
+	$t->template = 'home-legal';
+
+	Asset::css('main', 'home.css');
+
+	$t->header = '<div>';
+		$t->header .= '<h1>'.s("Vous êtes une AFOCG ?").'</h1>';
+		$t->header .= '<h4>'.s("Voyons si vous pourriez utiliser Ouvretaferme comme solution logicielle").'</h4>';
+	$t->header .= '</div>';
+
+	echo new \main\LegalUi()->afocg();
 
 });
 
