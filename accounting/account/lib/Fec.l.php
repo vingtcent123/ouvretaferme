@@ -64,6 +64,12 @@ namespace account;
  */
 class FecLib  {
 
+	const HEADER_MODEL_DEBIT_CREDIT = 'debit-credit';
+	const HEADER_MODEL_MONTANT_SENS = 'montant-sens';
+
+	const HEADER_COL_MONTANT = 'montant';
+	const HEADER_COL_SENS = 'sens';
+
 	public static function checkDataForFec(\farm\Farm $eFarm, FinancialYear $eFinancialYear): array {
 
 		$eOperation = \journal\Operation::model()
@@ -134,6 +140,39 @@ class FecLib  {
 			'EcritureLib', // Alphanumérique
 			'Debit', // Numérique
 			'Credit', // Numérique
+			'EcritureLet',// peut être vide Alphanumérique
+			'DateLet', // peut être vide Date
+			'ValidDate', // Date
+			'MontantDevise', // peut être vide Alphanumérique
+			'IDevise', // peut être vide Alphanumérique
+		];
+
+		if($isCashAccounting) {
+			$headers[] = 'DateRglt'; // Utilisé en BA en compta de trésorerie uniquement Date
+			$headers[] = 'ModeRglt'; // Utilisé en BA en compta de trésorerie uniquement Alphanumérique
+			$headers[] = 'NatOp'; // peut être vide, Utilisé en BA en compta de trésorerie uniquement Alphanumérique
+		}
+
+		return $headers;
+
+	}
+
+	public static function getOtherHeader(bool $isCashAccounting = TRUE): array {
+
+		$headers = [
+			'JournalCode', // peut être vide Alphanumérique
+			'JournalLib', // peut être vide Alphanumérique
+			'EcritureNum', // Alphanumérique
+			'EcritureDate', // Date
+			'CompteNum', // peut être vide Alphanumérique
+			'CompteLib', // Alphanumérique
+			'CompAuxNum', // peut être vide Alphanumérique
+			'CompAuxLib', // peut être vide Alphanumérique
+			'PieceRef', // Alphanumérique
+			'PieceDate', // Date sur la pièce ou date d'enregistrement Date
+			'EcritureLib', // Alphanumérique
+			'Montant', // Numérique
+			'Sens', // C/D
 			'EcritureLet',// peut être vide Alphanumérique
 			'DateLet', // peut être vide Date
 			'ValidDate', // Date

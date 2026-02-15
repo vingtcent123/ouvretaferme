@@ -140,16 +140,33 @@ Class ImportLib extends ImportCrud {
 		$cols = explode(self::extractDelimiter($e['content']), $header);
 
 		$headerModel = array_map(fn($head) => mb_strtolower($head), FecLib::getHeader(TRUE));
+		$headerModel2 = array_map(fn($head) => mb_strtolower($head), FecLib::getOtherHeader(TRUE));
 		$cols = array_map(fn($head) => mb_strtolower(rtrim(trim($head))), $cols);
 		if(count($cols) === 18) { // On force à ne vérifier que les 18 premières colonnes dans ce cas
 			$headerModel = array_slice($headerModel, 0, 18);
+			$headerModel2 = array_slice($headerModel2, 0, 18);
 		}
+		$incorrectCol = 0;
 		foreach($headerModel as $headerCol) {
 			foreach($cols as $col) {
 				if(str_contains($col, $headerCol)) {
 					continue 2;
 				}
 			}
+			$incorrectCol++;
+			break;
+		}
+		foreach($headerModel2 as $headerCol) {
+			foreach($cols as $col) {
+				if(str_contains($col, $headerCol)) {
+					continue 2;
+				}
+			}
+			$incorrectCol++;
+			break;
+		}
+
+		if($incorrectCol === 2) { // On n'a trouvé ni le modèle 1, ni le modèle 2
 			\Fail::log('Import::header.incorrectCol', wrapper: 'fec');
 			return;
 		}
@@ -164,6 +181,17 @@ Class ImportLib extends ImportCrud {
 
 	}
 
+	public static function extractModel(array $header): string {
+
+		$header = array_map(fn($col) => mb_strtolower($col), $header);
+
+		if(in_array('sens', $header)  and in_array('montant', $header)) {
+			return FecLib::HEADER_MODEL_MONTANT_SENS;
+		}
+
+		return FecLib::HEADER_MODEL_DEBIT_CREDIT;
+	}
+
 	public static function extractDelimiter(string $content): ?string {
 
 		preg_match('/JournalCode(.*)JournalLib/', $content, $matches);
@@ -175,9 +203,14 @@ Class ImportLib extends ImportCrud {
 		return $matches[1];
 	}
 
-	public static function findCol(int $headerIndex, array $cols): ?int {
+	public static function findCol(int $headerIndex, array $cols, string $headerModel): ?int {
 
-		$headerModel = array_map(fn($head) => mb_strtolower($head), FecLib::getHeader(TRUE));
+		if($headerModel === FecLib::HEADER_MODEL_DEBIT_CREDIT) {
+			$header = FecLib::getHeader(TRUE);
+		} else {
+			$header = FecLib::getOtherHeader(TRUE);
+		}
+		$headerModel = array_map(fn($head) => mb_strtolower($head), $header);
 		$cols = array_map(fn($head) => mb_strtolower(rtrim(trim($head))), $cols);
 		$index = 0;
 		$headerCol = $headerModel[$headerIndex];
@@ -282,16 +315,38 @@ Class ImportLib extends ImportCrud {
 
 	}
 
-	protected static function extractLineElements(Import $eImport, string $line, array $headerCols): array {
+	protected static function extractLineElements(Import $eImport, string $line, array $headerCols, string $headerModel): array {
 
 		$delimiter = self::extractDelimiter($eImport['content']);
 
 		$allElements = explode($delimiter, $line);
 
+		if($headerModel === FecLib::HEADER_MODEL_DEBIT_CREDIT) {
+			$header = FecLib::getHeader(FALSE);
+		} else {
+			$header = FecLib::getOtherHeader(FALSE);
+		}
+
 		$lineElements = [];
 
-		for($headerIndex = 0; $headerIndex < count(FecLib::getHeader(FALSE)); $headerIndex++) {
-			$lineElements[] = $allElements[self::findCol($headerIndex, $headerCols)];
+		$amount = NULL;
+		for($headerIndex = 0; $headerIndex < count($header); $headerIndex++) {
+
+			if(mb_strtolower($header[$headerIndex]) === FecLib::HEADER_COL_MONTANT) {
+				$amount = $allElements[self::findCol($headerIndex, $headerCols, $headerModel)];
+			} else if(mb_strtolower($header[$headerIndex]) === FecLib::HEADER_COL_SENS) {
+				if(mb_strtolower($allElements[self::findCol($headerIndex, $headerCols, $headerModel)]) === 'c') {
+					$debit = '0,00';
+					$credit = $amount;
+				} else {
+					$debit = $amount;
+					$credit = '0,00';
+				}
+				$lineElements[$headerIndex - 1] = $debit;
+				$lineElements[$headerIndex] = $credit;
+			} else {
+				$lineElements[] = $allElements[self::findCol($headerIndex, $headerCols, $headerModel)];
+			}
 		}
 
 		// S'il manque des colonnes on les rajoute à NULL
@@ -301,7 +356,7 @@ Class ImportLib extends ImportCrud {
 
 		}
 
-			return $lineElements;
+		return $lineElements;
 	}
 
 	public static function extractRules(\farm\Farm $eFarm, Import $eImport): array {
@@ -317,6 +372,7 @@ Class ImportLib extends ImportCrud {
 		// On récupère les colonnes
 		$header = array_shift($contentArray);
 		$headerCols = explode(self::extractDelimiter($eImport['content']), $header);
+		$headerModel = self::extractModel($headerCols);
 
 		$lines = array_slice(explode("\n", trim($eImport['content'])), 1);
 		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
@@ -340,7 +396,7 @@ Class ImportLib extends ImportCrud {
 				$ecritureLet, $dateLet, $validDate,
 				$montantDevise, $IDDevise,
 				$dateRglt, $modeRglt, $natOp
-			] = self::extractLineElements($eImport, $line, $headerCols);
+			] = self::extractLineElements($eImport, $line, $headerCols, $headerModel);
 
 			if($journalCode and $journalLib) {
 				$journaux[$journalCode] = ['journalCode' => self::findJournal($cJournalCode, $journalCode, $journalLib, $cImport), 'label' => $journalLib];
@@ -440,6 +496,7 @@ Class ImportLib extends ImportCrud {
 		// On récupère les colonnes
 		$header = array_shift($contentArray);
 		$headerCols = explode(self::extractDelimiter($eImport['content']), $header);
+		$headerModel = self::extractModel($headerCols);
 		$lines = array_slice($contentArray, 1);
 
 		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
@@ -460,7 +517,7 @@ Class ImportLib extends ImportCrud {
 				$ecritureLet, $dateLet, $validDate,
 				$montantDevise, $IDDevise,
 				$dateRglt, $modeRglt, $natOp
-			] = self::extractLineElements($eImport, $line, $headerCols);
+			] = self::extractLineElements($eImport, $line, $headerCols, $headerModel);
 
 			$ecritureDate = new \preaccounting\SaleUi()->toDate($ecritureDate);
 
