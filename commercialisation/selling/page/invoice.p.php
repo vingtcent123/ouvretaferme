@@ -40,7 +40,7 @@ new \selling\InvoicePage()
 				'notId' => $data->cSale
 			]);
 
-			[$data->cSaleMore] = \selling\SaleLib::getByFarm($data->e['farm'], search: $data->search);
+			$data->cSaleMore = \selling\SaleLib::getByFarm($data->e['farm'], search: $data->search);
 
 		} else {
 			$data->search = new Search();
