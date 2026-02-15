@@ -420,7 +420,7 @@ class LegalUi {
 		$h .= '</table>';
 		$h .= '</div>';
 
-		$h .= '<p class="home-emphasis">'.s("Une ferme qui utilise {siteName} pour sa commercialistion et sa comptabilité divise par deux le temps de saisie de sa comptabilité par rapport à ISTEA et réduit les erreurs de saisie.").'</p>';
+		$h .= '<p class="home-emphasis">'.s("Une ferme qui utilise {siteName} pour sa commercialisation et sa comptabilité divise par deux le temps de saisie de sa comptabilité par rapport à ISTEA et réduit les erreurs de saisie.").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<br/>';
