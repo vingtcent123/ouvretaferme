@@ -69,7 +69,7 @@ class MethodLib extends MethodCrud {
 
 	public static function getForCash(\farm\Farm $eFarm): \Collection {
 
-		return self::askCallback(fn(Method $e) => in_array($e['fqn'], [MethodLib::CHECK, MethodLib::CASH]), $eFarm);
+		return self::askCallback(fn(Method $e) => in_array($e['fqn'], [MethodLib::CHECK, MethodLib::CASH]) or $e['fqn'] === NULL, $eFarm);
 
 	}
 
