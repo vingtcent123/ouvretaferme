@@ -269,7 +269,7 @@ class FinancialYearLib extends FinancialYearCrud {
 		return \journal\Operation::model()
 			->whereAccountLabel('LIKE', AccountSetting::VAT_CLASS.'%')
 			->whereFinancialYear($eFinancialYear)
-			->found();
+			->count() > 0;
 
 	}
 
