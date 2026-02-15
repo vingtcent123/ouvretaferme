@@ -20,7 +20,7 @@ StripeFarm:
 Method:
   id: serial32
   name: text8(1, null) @collate(general)
-  fqn: ?fqn
+  fqn: ?text8
   farm: ?farm\Farm
   online: bool = FALSE
   status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE

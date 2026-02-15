@@ -49,7 +49,7 @@ class MethodModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
-			'fqn' => ['fqn', 'null' => TRUE, 'cast' => 'string'],
+			'fqn' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'online' => ['bool', 'cast' => 'bool'],
 			'status' => ['enum', [\payment\Method::ACTIVE, \payment\Method::INACTIVE, \payment\Method::DELETED], 'cast' => 'enum'],
@@ -190,48 +190,6 @@ abstract class MethodCrud extends \ModuleCrud {
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
-
-	}
-
-	public static function getByFqn(string $fqn, array $properties = []): Method {
-
-		$e = new Method();
-
-		if(empty($fqn)) {
-			Method::model()->reset();
-			return $e;
-		}
-
-		if($properties === []) {
-			$properties = Method::getSelection();
-		}
-
-		if(Method::model()
-			->select($properties)
-			->whereFqn($fqn)
-			->get($e) === FALSE) {
-				$e->setGhost($fqn);
-		}
-
-		return $e;
-
-	}
-
-	public static function getByFqns(array $fqns, array $properties = []): \Collection {
-
-		if(empty($fqns)) {
-			Method::model()->reset();
-			return new \Collection();
-		}
-
-		if($properties === []) {
-			$properties = Method::getSelection();
-		}
-
-		return Method::model()
-			->select($properties)
-			->whereFqn('IN', $fqns)
-			->getCollection(NULL, NULL, 'fqn');
 
 	}
 

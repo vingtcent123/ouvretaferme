@@ -270,7 +270,9 @@ new \journal\OperationPage(function($data) {
 	})
 	->writeCollection('doUpdatePaymentCollection', function($data) {
 
-		$ePaymentMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse');
+		$ePaymentMethod = \payment\MethodLib::getById(POST('paymentMethod'))
+			->validateProperty('farm', $data->eFarm)
+			->validate('canUse');
 
 		$fw = new FailWatch();
 

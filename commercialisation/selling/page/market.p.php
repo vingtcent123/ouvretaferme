@@ -67,7 +67,9 @@ new \selling\SalePage()
 	})
 	->write('doFillPaymentMethod', function($data) {
 
-		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse');
+		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))
+			->validateProperty('farm', $data->e['farm'])
+			->validate('canUse');
 
 		\selling\PaymentMarketLib::fillMethod($data->e, $eMethod);
 
@@ -76,7 +78,9 @@ new \selling\SalePage()
 	->write('doUpdatePaymentMethod', function($data) {
 
 		$action = POST('action', 'string', 'update');
-		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))->validate('canUse', 'acceptManualUpdate');
+		$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))
+			->validateProperty('farm', $data->e['farm'])
+			->validate('canUse', 'acceptManualUpdate');
 
 		switch($action) {
 

@@ -217,12 +217,13 @@ class MembershipLib {
 		$fw = new \FailWatch();
 
 		$eHistory = new History(['farm' => $eFarm]);
+		$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
 
 		if($fromAdmin) {
 
 			$properties = ['type', 'amount', 'membership', 'paidAt'];
 
-			$eMethod = \payment\MethodLib::getById(post('method'));
+			$eMethod = \payment\MethodLib::getById(post('method'))->validateProperty('farm', $eFarmOtf);
 
 			if($eMethod->notEmpty() and $eMethod->validate('canUse') === FALSE) {
 				\Fail::log('History::invalidMethod');
@@ -234,7 +235,7 @@ class MembershipLib {
 		} else {
 
 			$properties = ['type', 'amount', 'terms'];
-			$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
+			$eMethod = \payment\MethodLib::getByFqn($eFarmOtf, \payment\MethodLib::ONLINE_CARD);
 
 			if($type === History::MEMBERSHIP) {
 
@@ -404,7 +405,9 @@ class MembershipLib {
 			return;
 		}
 
-		self::activateMembership($eHistory, \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD));
+		$eFarmOtf = \farm\FarmLib::getById(AssociationSetting::FARM);
+
+		self::activateMembership($eHistory, \payment\MethodLib::getByFqn($eFarmOtf, \payment\MethodLib::ONLINE_CARD));
 	}
 
 	private static function activateMembership(History $eHistory, \payment\Method $eMethod): void {

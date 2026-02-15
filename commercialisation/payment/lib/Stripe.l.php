@@ -140,7 +140,7 @@ class StripeLib {
 		$error = FALSE;
 		$stripePaymentMethods = $object['payment_method_types'];
 
-		$eMethod = \payment\MethodLib::getByFqn(MethodLib::ONLINE_CARD);
+		$eMethod = \payment\MethodLib::getByFqn($eSale['farm'], MethodLib::ONLINE_CARD);
 		$ePayment = \selling\PaymentTransactionLib::getByMethod($eSale, $eMethod);
 
 		if($ePayment->notEmpty()) {

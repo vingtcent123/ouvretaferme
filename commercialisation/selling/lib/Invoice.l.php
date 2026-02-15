@@ -115,7 +115,7 @@ class InvoiceLib extends InvoiceCrud {
 
 	public static function getPendingTransfer(\farm\Farm $eFarm, string $month): int {
 
-		$ePaymentMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER);
+		$ePaymentMethod = \payment\MethodLib::getByFqn($eFarm, \payment\MethodLib::TRANSFER);
 
 		return Sale::model()
 			->join(Payment::model(), 'm1.id = m2.sale')

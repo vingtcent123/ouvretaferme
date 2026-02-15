@@ -180,6 +180,7 @@ class FarmLib extends FarmCrud {
 
 		\farm\ActionLib::duplicateForFarm($e);
 		\plant\PlantLib::duplicateForFarm($e);
+		\payment\MethodLib::duplicateForFarm($e);
 
 		Farm::model()->commit();
 

@@ -155,7 +155,7 @@ Class SuggestionLib extends SuggestionCrud {
 
 		$methodFqn = self::determinePaymentMethod($eCashflow->getMemo());
 		if($methodFqn !== NULL) {
-			$eMethod = \payment\MethodLib::getByFqn($methodFqn);
+			$eMethod = \payment\MethodLib::getByFqn($eFarm, $methodFqn);
 		} else {
 			$eMethod = new \payment\Method();
 		}

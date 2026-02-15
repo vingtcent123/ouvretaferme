@@ -488,7 +488,7 @@ class OperationLib extends OperationCrud {
 			$eOperationDefault = new Operation([
 				'date' => $eCashflow['date'],
 				'paymentDate' => $eCashflow['date'],
-				'paymentMethod' => \payment\MethodLib::getById(POST('paymentMethod')),
+				'paymentMethod' => \payment\MethodLib::getById(POST('paymentMethod'))->validateProperty('farm', $eFarm),
 			]);
 
 			if($eOperationDefault['paymentMethod']->empty()) {
@@ -826,7 +826,7 @@ class OperationLib extends OperationCrud {
 		$eOperationVat['operation'] = $eOperationLinked;
 		if($eCashflow->notEmpty()) {
 			$eOperationVat['paymentDate'] = $eCashflow['date'];
-			$eOperationVat['paymentMethod'] = \payment\MethodLib::getById(POST('paymentMethod'));
+			$eOperationVat['paymentMethod'] = \payment\MethodLib::getById(POST('paymentMethod'))->validateProperty('farm', \farm\Farm::getConnected());
 		}
 
 		$fw->validate();

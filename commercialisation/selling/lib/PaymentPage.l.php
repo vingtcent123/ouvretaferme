@@ -64,7 +64,8 @@ class PaymentPageLib {
 
 			$data->c->validate('canWrite', 'acceptUpdatePayment');
 
-			$eMethod = \payment\MethodLib::getById(POST('paymentMethod'));
+			$eMethod = \payment\MethodLib::getById(POST('paymentMethod'))
+				->validateProperty('farm', $data->eFarm);
 
 			if($eMethod->notEmpty()) {
 				$eMethod->validate('canUse', 'acceptManualUpdate');

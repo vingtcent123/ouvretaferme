@@ -6,7 +6,7 @@ new \association\HistoryPage(
 
 		$data->eFarm = \farm\FarmLib::getById(GET('id'));
 		$data->cHistory = \association\HistoryLib::getByFarm($data->eFarm);
-		$data->cMethod = \payment\MethodLib::getByFqns([\payment\MethodLib::CARD, \payment\MethodLib::CASH, \payment\MethodLib::CHECK, \payment\MethodLib::TRANSFER, \payment\MethodLib::DIRECT_DEBIT]);
+		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm);
 
 		throw new ViewAction($data);
 

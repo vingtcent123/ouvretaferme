@@ -58,7 +58,7 @@ class SaleLib extends SaleCrud {
 			Customer::PRIVATE => SellingSetting::EXAMPLE_SALE_PRIVATE,
 		};
 
-		$eMethod = \payment\MethodLib::getByFqn(get('paymentMethod', 'string', \payment\MethodLib::CARD));
+		$eMethod = \payment\MethodLib::getByFqn($eFarm, get('paymentMethod', 'string', \payment\MethodLib::CARD));
 		if($eMethod->empty()) {
 			$cPayment = new \Collection();
 		} else {
@@ -575,7 +575,7 @@ class SaleLib extends SaleCrud {
 			->group(['m1.customer', 'taxes', 'hasVat']);
 
 		if($type === \payment\MethodLib::TRANSFER) {
-			$eMethodTransfer = \payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER);
+			$eMethodTransfer = \payment\MethodLib::getByFqn($eFarm, \payment\MethodLib::TRANSFER);
 			$mSale
 				->join(Payment::model(), 'm1.id = m2.sale', 'LEFT')
 				->where('m2.method = '.$eMethodTransfer['id']);

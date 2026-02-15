@@ -465,7 +465,7 @@ class SaleLib {
 				return self::createCardPayment($eSaleReference);
 
 			case \payment\MethodLib::TRANSFER :
-				self::createDirectPayment(\payment\MethodLib::getByFqn(\payment\MethodLib::TRANSFER), $eSaleReference);
+				self::createDirectPayment(\payment\MethodLib::getByFqn($eSaleReference['farm'], \payment\MethodLib::TRANSFER), $eSaleReference);
 				return ShopUi::confirmationUrl($eSaleReference['shop'], $eSaleReference['shopDate'], $cSale);
 
 			default :
@@ -527,7 +527,7 @@ class SaleLib {
 
 		}
 
-		$eMethod = \payment\MethodLib::getByFqn(\payment\MethodLib::ONLINE_CARD);
+		$eMethod = \payment\MethodLib::getByFqn($eSale['farm'], \payment\MethodLib::ONLINE_CARD);
 
 
 		$ePayment = new \selling\Payment([

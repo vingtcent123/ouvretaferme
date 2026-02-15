@@ -20,14 +20,27 @@ class MethodLib extends MethodCrud {
 		return self::getPropertiesCreate();
 	}
 
+	public static function duplicateForFarm(\farm\Farm $eFarm): void {
+
+		$cMethod = Method::model()
+			->select(Method::getSelection())
+			->whereFarm(NULL)
+			->getCollection();
+
+		$cMethod->map(function(Method $eMethod) use($eFarm) {
+			$eMethod['id'] = NULL;
+			$eMethod['farm'] = $eFarm;
+		});
+
+		Method::model()->insert($cMethod);
+
+	}
+
 	public static function isSelectable(\farm\Farm $eFarm, Method $eMethod): bool|Method {
 
 		return Method::model()
 			->select(Method::getSelection())
-			->or(
-				fn() => $this->whereFarm(NULL),
-				fn() => $this->whereFarm($eFarm)
-			)
+			->whereFarm($eFarm)
 			->whereOnline(FALSE)
 			->get($eMethod);
 	}
@@ -36,10 +49,7 @@ class MethodLib extends MethodCrud {
 
 		$callback = fn() => Method::model()
 			->select(Method::getSelection())
-			->or(
-				fn() => $this->whereFarm($eFarm),
-				fn() => $this->whereFarm(NULL)
-			)
+			->whereFarm($eFarm)
 			->sort(['name' => SORT_ASC])
 			->getCollection(index: 'id');
 
@@ -60,6 +70,18 @@ class MethodLib extends MethodCrud {
 	public static function getForCash(\farm\Farm $eFarm): \Collection {
 
 		return self::askCallback(fn(Method $e) => in_array($e['fqn'], [MethodLib::CHECK, MethodLib::CASH]), $eFarm);
+
+	}
+
+	public static function getByFqn(\farm\Farm $eFarm, string $fqn): Method {
+
+		$cMethod = self::askCallback(fn(Method $e) => $e['fqn'] === $fqn, $eFarm);
+
+		if($cMethod->notEmpty()) {
+			return $cMethod->first();
+		} else {
+			return new Method();
+		}
 
 	}
 
