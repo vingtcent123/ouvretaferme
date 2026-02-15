@@ -4,9 +4,11 @@ new \association\HistoryPage(
 )
 	->create(function($data) {
 
+		$data->eFarmOtf = \farm\FarmLib::getById(\association\AssociationSetting::FARM);
 		$data->eFarm = \farm\FarmLib::getById(GET('id'));
+
 		$data->cHistory = \association\HistoryLib::getByFarm($data->eFarm);
-		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm);
+		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarmOtf, NULL);
 
 		throw new ViewAction($data);
 
