@@ -420,7 +420,7 @@ class LegalUi {
 		$h .= '</table>';
 		$h .= '</div>';
 
-		$h .= '<p class="text-center mt-2 font-xl" style="font-weight: bold">'.s("Une ferme qui utilise {siteName} pour sa commercialistion et sa comptabilité divise par deux le temps de saisie de sa comptabilité par rapport à ISTEA.").'</p>';
+		$h .= '<p class="home-emphasis">'.s("Une ferme qui utilise {siteName} pour sa commercialistion et sa comptabilité divise par deux le temps de saisie de sa comptabilité par rapport à ISTEA et réduit les erreurs de saisie.").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<br/>';
@@ -438,9 +438,11 @@ class LegalUi {
 			$h .= '</div>';
 			$h .= '<div class="home-why-item">';
 				$h .= \Asset::icon('3-circle');
-				$h .= '<h4>'.s("Vous pouvez étendre vos propositions de formation.").'</h4>';
+				$h .= '<h4>'.s("Vous pouvez étendre vos actions de formation.").'</h4>';
 			$h .= '</div>';
 		$h .= '</div>';
+
+		$h .= '<p class="home-emphasis">'.s("75 % des fermes qui utilisent {siteName} ne sont pas adhérentes à l'AFOCG et une partie d'entre elles pourrait être intéressée par un accompagnement à la comptabilité et à la gestion.").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<br/>';

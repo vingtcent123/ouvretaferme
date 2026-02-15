@@ -523,3 +523,11 @@ div.home-highlight {
 	gap: 1rem;
 	align-items: center;
 }
+
+.home-emphasis {
+	margin: 2rem auto 0;
+	font-size: 1.25rem;
+	font-weight: bold;
+	text-align: center;
+	max-width: 75rem;
+}
