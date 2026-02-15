@@ -272,7 +272,7 @@ class HomeUi {
 					$h .= '<div class="home-feature-icon">'.\Asset::icon('database').'</div>';
 					$h .= s("Journal de caisse");
 				$h .= '</h2>';
-				$h .= '<h4>'.s("Ouvretaferme vous permet de tenir votre journal de caisse en ligne pour gérer les espèces liées votre activité et être en règle vis-à-vis de l'administration fiscale.").'</h4>';
+				$h .= '<h4>'.s("Ouvretaferme vous permet de tenir votre journal de caisse en ligne pour gérer les espèces liées à votre activité et être en règle vis-à-vis de l'administration fiscale.").'</h4>';
 				$h .= '<h5 style="padding-right: 5rem">'.s("Le journal de caisse peut être importé en un clic dans votre comptabilité !").'</h5>';
 			$h .= '</div>';
 			$h .= '<div class="home-feature">';
