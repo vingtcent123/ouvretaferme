@@ -325,7 +325,7 @@ class HomeUi {
 			$h .= '</div>';
 			$h .= '<div class="home-why-item">';
 				$h .= \Asset::icon('arrow-repeat');
-				$h .= '<h4>'.s("Favoriser la diffusion des savoirs et des techniques entre les fermes en pleine intégration avec les acteurs qui partagent nos objectifs").'</h4>';
+				$h .= '<h4>'.s("Favoriser la diffusion des savoirs et des techniques entre les fermes en pleine intégration avec les acteurs qui partagent nos objectifs.").'</h4>';
 			$h .= '</div>';
 		$h .= '</div>';
 

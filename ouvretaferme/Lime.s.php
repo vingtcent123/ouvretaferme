@@ -17,6 +17,8 @@ define('FEATURE_ACCOUNTING_ACCRUAL', FALSE);
 define('FEATURE_PA', LIME_ENV === 'dev');
 define('FEATURE_GAME', FALSE);
 
+define('FEATURE_PLANNING', LIME_ENV === 'dev');
+
 require_once Lime::getPath().'/secret.c.php';
 
 switch(LIME_ENV) {

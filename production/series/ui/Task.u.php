@@ -223,7 +223,120 @@ class TaskUi {
 
 	}
 
-	public function getWeekPlanning(\farm\Farm $eFarm, string $week, \Collection $cccTask, \Collection $cUserFarm, \user\User $eUserTime, array $seasonsWithSeries, \Collection $cActionMain, \Collection $cCategory): string {
+	public function getWeekPlanningColumns(\farm\Farm $eFarm, string $week, \Collection $cccTask, \Collection $cUserFarm, \user\User $eUserTime, array $seasonsWithSeries, \Collection $cActionMain, \Collection $cCategory): string {
+
+		$this->period = 'week';
+		$this->cUserFarm = $cUserFarm;
+
+		\Asset::css('series', 'planning.css');
+
+		if($cccTask['done']->offsetExists($harvestId)) {
+			$cTaskHarvested = $ccTaskDone[$harvestId];
+			$ccTaskDone->offsetUnset($harvestId);
+		} else {
+			$cTaskHarvested = new \Collection();
+		}
+
+		$h = '<div id="planning-week-tabs" class="tabs-h" data-farm="'.$eFarm['id'].'" data-week="'.$week.'" onrender="'.encode('Lime.Tab.restore(this, "todo")').'" data-batch="#batch-task">';
+
+			$h .= '<div class="tabs-item util-print-hide">';
+				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="todo">'.s("À faire").'</a>';
+				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="done">'.s("Fait").'</a>';
+				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="harvested">'.s("Récolté").'</a>';
+				if($eFarm->hasFeatureTime()) {
+					$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="time">';
+						$h .= '<span class="hide-sm-up">'.\Asset::icon('clock').'&nbsp;&nbsp;'.s("Travaillé").'</span>';
+						$h .= '<span class="hide-xs-down">'.\Asset::icon('clock').'&nbsp;&nbsp;'.s("Temps de travail").'</span>';
+					$h .= '</a>';
+				}
+			$h .= '</div>';
+
+			$form = new \util\FormUi();
+
+			$canCreate = (new Task(['farm' => $eFarm]))->canCreate();
+
+			$h .= '<div id="planning-wrapper-weekly">';
+
+				$h .= '<div id="tasks-time" class="tab-panel util-print-hide" data-tab="time">';
+					$h .= $this->getWeekTime($eFarm, $week, $cccTask, $eUserTime, $cUserFarm);
+				$h .= '</div>';
+
+				$h .= '<div id="tasks-todo" class="tab-panel planning-week util-print-block" data-tab="todo">';
+
+					$h .= '<div class="planning-week-header">';
+
+						$h .= '<h2 class="planning-week-title util-print-block">'.s("À faire").'</h2>';
+						$h .= '<div class="tasks-action">';
+							if($canCreate) {
+								$h .= $this->getNewTask('weekly', 'todo', $eFarm, $seasonsWithSeries, $cCategory, week: $week);
+							}
+						$h .= '</div>';
+
+					$h .= '</div>';
+
+					$h .= $this->getTodoPlanning($form, $eFarm, $week, $cccTask);
+
+				$h .= '</div>';
+
+				$h .= '<div id="tasks-done" class="tab-panel planning-week util-print-block" data-tab="done">';
+
+					$h .= '<div class="planning-week-header">';
+
+						$h .= '<h2 class="planning-week-title util-print-block">'.s("Fait").'</h2>';
+						$h .= '<div class="tasks-action">';
+							if($canCreate) {
+								$h .= $this->getNewTask('weekly', 'done', $eFarm, $seasonsWithSeries, $cCategory, week: $week);
+							}
+						$h .= '</div>';
+
+					$h .= '</div>';
+
+
+					if($cccTask['done']->empty() === FALSE) {
+
+						$cTaskFirst = $cccTask['done']->first();
+						$cTaskLast = $cccTask['done']->last();
+						foreach($cccTask['done'] as $cTask) {
+							$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, NULL, $week);
+						}
+
+					}
+
+				$h .= '</div>';
+
+				$h .= '<div id="tasks-harvested" class="tab-panel planning-week util-print-block" data-tab="harvested">';
+
+					$h .= '<div class="planning-week-header">';
+
+						$h .= '<h2 class="planning-week-title util-print-block">'.s("Récolté").'</h2>';
+						$h .= '<div class="tasks-action">';
+							if($canCreate) {
+								$h .= $this->getNewHarvest($eFarm, $week, $seasonsWithSeries, $cActionMain[ACTION_RECOLTE]);
+							}
+						$h .= '</div>';
+
+					$h .= '</div>';
+
+
+					if($cccTask['harvested']->empty() === FALSE) {
+						$h .= '<div class="tasks-planning-items tasks-planning-items-first tasks-planning-items-last" data-filter-action="'.$cActionMain[ACTION_RECOLTE]['id'].'">';
+							$h .= $this->getPlantPlanningTask($form, $eFarm, $cccTask['harvested'], NULL, $week);
+						$h .= '</div>';
+					}
+
+				$h .= '</div>';
+
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		$h .= $this->getBatch($eFarm, $week, $cUserFarm);
+
+		return $h;
+
+	}
+
+	public function getWeekPlanningLines(\farm\Farm $eFarm, string $week, \Collection $cccTask, \Collection $cUserFarm, \user\User $eUserTime, array $seasonsWithSeries, \Collection $cActionMain, \Collection $cCategory): string {
 
 		$this->period = 'week';
 		$this->cUserFarm = $cUserFarm;
@@ -923,6 +1036,26 @@ class TaskUi {
 				}
 
 			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getCustomization(\farm\Farm $eFarm): string {
+
+		$eFarmer = $eFarm->getFarmer();
+
+		$h = '<a class="btn btn-primary dropdown-toggle" data-dropdown="bottom-end">';
+			$h .= \Asset::icon('palette-fill');
+		$h .= '</a> ';
+		$h .= '<div class="dropdown-list">';
+
+			$h .= match($eFarmer['viewPlanningWeekly']) {
+				\farm\Farmer::COLUMN => '<a data-ajax="/farm/farmer:doUpdatePlanningWeekly" post-id="'.$eFarmer['id'].'" post-view-planning-weekly="'.\farm\Farmer::LINE.'" class="dropdown-item">'.s("Afficher le planning par intervention").'</a>',
+				\farm\Farmer::LINE => '<a data-ajax="/farm/farmer:doUpdatePlanningWeekly" post-id="'.$eFarmer['id'].'" post-view-planning-weekly="'.\farm\Farmer::COLUMN.'" class="dropdown-item">'.s("Afficher le planning en séparant ce qui est fait et à faire").'</a>',
+			};
 
 		$h .= '</div>';
 

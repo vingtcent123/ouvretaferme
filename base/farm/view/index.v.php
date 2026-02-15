@@ -41,14 +41,17 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 				$data->eFarm,
 				$data->week,
 				fn($week) => \farm\FarmUi::urlPlanningWeekly($data->eFarm, $week),
-				fn() => $uiTask->getCalendarFilter()
+				fn() => (FEATURE_PLANNING ? $uiTask->getCustomization($data->eFarm).' ' : '').$uiTask->getCalendarFilter()
 			);
 
 			echo new \main\HomeUi()->getTraining(TRUE);
 
 			echo $uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone, $data->cUserFarm);
 
-			echo $uiTask->getWeekPlanning($data->eFarm, $data->week, $data->cccTask, $data->cUserFarm, $data->eUserTime, $data->seasonsWithSeries, $data->cActionMain, $data->cCategory);
+			echo match($data->eFarm->getView('viewPlanningWeekly')) {
+				\farm\Farmer::COLUMN => $uiTask->getWeekPlanningColumns($data->eFarm, $data->week, $data->cccTask, $data->cUserFarm, $data->eUserTime, $data->seasonsWithSeries, $data->cActionMain, $data->cCategory),
+				\farm\Farmer::LINE => $uiTask->getWeekPlanningLines($data->eFarm, $data->week, $data->cccTask, $data->cUserFarm, $data->eUserTime, $data->seasonsWithSeries, $data->cActionMain, $data->cCategory)
+			};
 
 			break;
 
