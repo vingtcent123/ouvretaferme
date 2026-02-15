@@ -259,7 +259,7 @@ class ItemLib extends ItemCrud {
 					if($eItem['packaging'] !== NULL) {
 						$value = (int)round($eItem['packaging'] * 100);
 						$eItemSummary['distribution']['packaging'][$value] ??= 0;
-						$eItemSummary['distribution']['packaging'][$value] += $eItemSummary['packaging'];
+						$eItemSummary['distribution']['packaging'][$value] += $eItem['packaging'];
 					} else {
 						$value = (int)round($eItem['number'] * 100);
 						$eItemSummary['distribution']['direct'][$value] ??= 0;
