@@ -267,16 +267,37 @@ class PaymentTransactionLib {
 			throw new \UnsupportedException();
 		}
 
-		$cPayment = new \Collection([
-			new Payment([
-				'method' => $eMethod,
-				'status' => Payment::NOT_PAID,
-				'paidAt' => NULL,
-				'amountIncludingVat' => NULL,
-			])
-		]);
+		if(
+			$e['paymentStatus'] === Sale::PAID or
+			$e['paymentStatus'] === Sale::PARTIAL_PAID
+		) {
+			return;
+		}
 
-		self::replace($e, $cPayment);
+		if($e['paymentStatus'] === Sale::NEVER_PAID) {
+
+			self::reset($e, NULL);
+
+		} else {
+
+			if($eMethod->empty()) {
+				self::deleteAll($e);
+			} else {
+
+				$cPayment = new \Collection([
+					new Payment([
+						'method' => $eMethod,
+						'status' => Payment::NOT_PAID,
+						'paidAt' => NULL,
+						'amountIncludingVat' => NULL,
+					])
+				]);
+
+				self::replace($e, $cPayment);
+
+			}
+
+		}
 
 	}
 
