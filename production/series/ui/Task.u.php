@@ -230,11 +230,13 @@ class TaskUi {
 
 		\Asset::css('series', 'planning.css');
 
-		if($cccTask['done']->offsetExists($harvestId)) {
-			$cTaskHarvested = $ccTaskDone[$harvestId];
-			$ccTaskDone->offsetUnset($harvestId);
+		$eActionHarvest = $cActionMain[ACTION_RECOLTE];
+
+		if($cccTask['done']->offsetExists($eActionHarvest['id'])) {
+			$cccTask['harvested'] = $cccTask['done'][$eActionHarvest['id']];
+			$cccTask['done']->offsetUnset($eActionHarvest['id']);
 		} else {
-			$cTaskHarvested = new \Collection();
+			$cccTask['harvested'] = new \Collection();
 		}
 
 		$h = '<div id="planning-week-tabs" class="tabs-h" data-farm="'.$eFarm['id'].'" data-week="'.$week.'" onrender="'.encode('Lime.Tab.restore(this, "todo")').'" data-batch="#batch-task">';
@@ -406,28 +408,6 @@ class TaskUi {
 							$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, NULL, $week);
 						}
 
-					}
-
-				$h .= '</div>';
-
-				$h .= '<div id="tasks-harvested" class="tab-panel planning-week util-print-block" data-tab="harvested">';
-
-					$h .= '<div class="planning-week-header">';
-
-						$h .= '<h2 class="planning-week-title util-print-block">'.s("Récolté").'</h2>';
-						$h .= '<div class="tasks-action">';
-							if($canCreate) {
-								$h .= $this->getNewHarvest($eFarm, $week, $seasonsWithSeries, $cActionMain[ACTION_RECOLTE]);
-							}
-						$h .= '</div>';
-
-					$h .= '</div>';
-
-
-					if($cccTask['harvested']->empty() === FALSE) {
-						$h .= '<div class="tasks-planning-items tasks-planning-items-first tasks-planning-items-last" data-filter-action="'.$cActionMain[ACTION_RECOLTE]['id'].'">';
-							$h .= $this->getPlantPlanningTask($form, $eFarm, $cccTask['harvested'], NULL, $week);
-						$h .= '</div>';
 					}
 
 				$h .= '</div>';

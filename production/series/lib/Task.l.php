@@ -410,35 +410,21 @@ class TaskLib extends TaskCrud {
 
 		$harvestId = \farm\ActionLib::getByFarm($eFarm, fqn: ACTION_RECOLTE)['id'];
 
-		if($ccTaskDone->offsetExists($harvestId)) {
-			$cTaskHarvested = $ccTaskDone[$harvestId];
-			$ccTaskDone->offsetUnset($harvestId);
-		} else {
-			$cTaskHarvested = new \Collection();
-		}
-
 		$cccTask = new \Collection([
 			'todo' => self::getForWeekTodo($eFarm, $week, $search),
 			'delayed' => self::getForWeekDelayed($eFarm, $week, $search),
 			'unplanned' => self::getByUnplanned($eFarm, $week, $search),
 			'done' => $ccTaskDone,
-			'harvested' => $cTaskHarvested,
 		]);
 
 		$cccTask->setDepth(3);
 
-		foreach($cccTask as $type => $ccTask) {
+		foreach($cccTask as $ccTask) {
 
-			if($type !== 'harvested') {
-
-				if($ccTask->offsetExists($eActionHarvest['id'])) {
-					$cTask = $ccTask[$eActionHarvest['id']];
-				} else {
-					continue;
-				}
-
+			if($ccTask->offsetExists($eActionHarvest['id'])) {
+				$cTask = $ccTask[$eActionHarvest['id']];
 			} else {
-				$cTask = $ccTask;
+				continue;
 			}
 
 			// Mise à jour de la quantité récoltée par la quantité récoltée ce jour
