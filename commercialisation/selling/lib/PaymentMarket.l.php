@@ -274,7 +274,7 @@ class PaymentMarketLib {
 
 			if(
 				$eSale['priceIncludingVat'] !== NULL and
-				$eSale['priceIncludingVat'] !== round($aggregate['priceIncludingVat'], 2)
+				round($eSale['priceIncludingVat'], 2) !== round($aggregate['priceIncludingVat'], 2)
 			) {
 				trigger_error('Price inconsistency ('.$eSale['priceIncludingVat'].' expected, '.$aggregate['priceIncludingVat'].' calculated)');
 			}
