@@ -980,7 +980,10 @@ class SaleLib extends SaleCrud {
 
 		if(in_array('paymentStatus', $properties)) {
 
-			if($e['paymentStatus'] === Sale::PAID) {
+			if(
+				$e['paymentStatus'] === Sale::PAID or
+				$e['paymentStatus'] === Sale::PARTIAL_PAID
+			) {
 
 				if($e->acceptSecuring()) {
 					self::fillSecured($e, $properties);

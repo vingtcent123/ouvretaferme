@@ -252,26 +252,8 @@ class CashUi {
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
 
-							$confirm = '';
-
-							switch($eSuggestion['source']) {
-
-								case Cash::SELL_INVOICE :
-									if($eSuggestion['invoice']['closed'] === FALSE) {
-										$confirm = 'data-confirm="'.s("En l'important dans ce journal de caisse, la facture sera clôturée et ne sera plus modifiable. Voulez-vous continuer ?").'"';
-									}
-									break;
-
-								case Cash::SELL_SALE :
-									if($eSuggestion['sale']['closed'] === FALSE) {
-										$confirm = 'data-confirm="'.s("En l'important dans ce journal de caisse, la vente sera clôturée et ne sera plus modifiable. Voulez-vous continuer ?").'"';
-									}
-									break;
-
-							}
-
 							$h .= '<div class="flex-buttons" style="justify-content: end">';
-								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doImport" post-id="'.$eRegister['id'].'" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['reference'].'" '.$confirm.' class="btn btn-secondary">'.s("Importer dans le journal").'</a> ';
+								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doImport" post-id="'.$eRegister['id'].'" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['reference'].'" class="btn btn-secondary">'.s("Importer dans le journal").'</a> ';
 								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doIgnore" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['reference'].'" class="btn btn-outline-secondary" data-confirm="'.s("Cette ligne ne vous sera plus jamais proposée à l'importation dans vos journaux de caisse. Continuer ?").'">'.s("Ignorer").'</a>';
 							$h .= '</div>';
 

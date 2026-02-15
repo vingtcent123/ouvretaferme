@@ -106,7 +106,7 @@ class CustomerUi {
 
 		\Asset::css('media', 'media.css');
 
-		$item = '<div>'.encode($eCustomer->getName()).'<br/><small class="color-muted">'.self::getCategory($eCustomer).'</small></div>';
+		$item = '<div data-destination="'.$eCustomer['destination'].'" data-type="'.$eCustomer['type'].'">'.encode($eCustomer->getName()).'<br/><small class="color-muted">'.self::getCategory($eCustomer).'</small></div>';
 
 		return [
 			'value' => $eCustomer['id'],

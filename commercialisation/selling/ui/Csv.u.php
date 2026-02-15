@@ -55,7 +55,7 @@ class CsvUi {
 
 					$h .= '<tr class="'.($product['errors'] ? 'csv-error' : ($product['warnings'] ? 'csv-warning' : '')).'">';
 
-						$h .= '<td class="td-min-content">';
+						$h .= '<td>';
 
 							if($product['name'] === NULL) {
 								$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.s("Nom manquant").'</span>';
@@ -70,6 +70,12 @@ class CsvUi {
 									} else {
 										$h .= $product['profile'];
 									}
+								$h .= '</div>';
+							}
+
+							if($product['description'] !== NULL) {
+								$h .= '<div class="font-xs" style="max-width: 15rem; margin-top: 0.25rem">';
+									$h .= new \editor\EditorUi()->value($product['description']);
 								$h .= '</div>';
 							}
 

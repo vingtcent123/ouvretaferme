@@ -1,5 +1,5 @@
-type,name,reference,unit,price_private,price_pro,vat_rate,additional,origin,quality,species,variety,frozen,packaging,composition,allergen
-plant,Tomate,TO-RO,kg,"4,5","3,5","5,5",,,organic,Tomate,Coeur de bœuf,,,,
+type,name,reference,unit,price_private,price_pro,vat_rate,additional,origin,quality,species,variety,frozen,packaging,composition,allergen,description
+plant,Tomate,TO-RO,kg,"4,5","3,5","5,5",,,organic,Tomate,Coeur de bœuf,,,,,"Ce plant de tomate est parfait pour votre jardin."
 plant,Courgette,cou,kg,"2.8","3,5","5,5",,,,Courgette,,,,,
 animal,Boite de 6 œufs,OEUF6,pièce,"2,7",,"5,5",Extra-frais,,organic,,,,,,
 food,Ratatouille,RATA01,pièce,"4,5",,"5,5",,L’Atelier d’à côté,conversion,,,yes,700 mL,"Tomate, Courgette, Aubergine, Oignon, Sel.",

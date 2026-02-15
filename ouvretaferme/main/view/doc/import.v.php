@@ -408,6 +408,12 @@ new AdaptativeView('products', function($data, DocTemplate $t) {
 				s("Les allergènes du produits").$apply('processedAllergen'),
 				s("Traces de fruits à coques")
 			],
+			[
+				s("Description"),
+				'description',
+				s("La description du produit en texte simple"),
+				s("Facile à cuisiner, cette pomme de terre ravira vos papilles.")
+			],
 		];
 
 		echo \main\CsvUi::getDataList($list);
@@ -426,7 +432,7 @@ new AdaptativeView('customers', function($data, DocTemplate $t) {
 	$t->title = s("Importer des clients");
 	$t->subTitle = s("Vous pouvez importer des clients au format CSV sur votre ferme. Cette fonctionnalité peut vous être utile si vous utilisiez d'autres logiciels ou un tableur pour gérer votre commercialisation avant {siteName} !");
 
-	$t->menuSelected = 'importProducts';
+	$t->menuSelected = 'importCustomers';
 
 	echo '<div class="util-block">';
 

@@ -963,7 +963,7 @@ class Sale extends SaleElement {
 				}
 
 			})
-			->setCallback('preparationStatus.check', function(?string $preparationStatus) use ($p, $fw): bool {
+			->setCallback('preparationStatus.check', function(?string &$preparationStatus) use ($p, $fw): bool {
 
 				if($p->isInvalid('customer')) {
 					return TRUE;
@@ -973,7 +973,8 @@ class Sale extends SaleElement {
 
 					case 'create' :
 						if($this['customer']['destination'] === Customer::COLLECTIVE) {
-							return ($preparationStatus === NULL);
+							$preparationStatus = Sale::DRAFT;
+							return TRUE;
 						} else {
 							return in_array($preparationStatus, [Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED]);
 						}

@@ -382,3 +382,7 @@ a.sale-preaccounting-title:hover {
 	padding-bottom: 0.25rem;
 	text-align: left;
 }
+
+#sale-create:has([data-wrapper="customer"] [data-destination="collective"]) [data-wrapper="preparationStatus"] {
+	display: none;
+}

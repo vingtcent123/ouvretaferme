@@ -118,11 +118,15 @@ class SuggestionLib extends CashCrud {
 				'register' => $eRegister,
 			]);
 
-			$eCash->merge(
-				self::getWaiting($source)
-					->where('m1.id', $reference)
-					->get()
-			);
+			$eCashImport = self::getWaiting($source)
+				->where('m1.id', $reference)
+				->get();
+
+			if($eCashImport->empty()) {
+				return;
+			}
+
+			$eCash->merge($eCashImport);
 
 			$eCash['financialYear'] = \account\FinancialYearLib::getByDate($eCash['date']);
 
@@ -145,7 +149,7 @@ class SuggestionLib extends CashCrud {
 
 					self::importCreateFromRatios($eCash, $eInvoice, $ePayment);
 
-					\selling\InvoiceLib::close($eInvoice);
+					\selling\PaymentLib::close($ePayment);
 
 					break;
 				case Cash::SELL_SALE :
@@ -157,7 +161,7 @@ class SuggestionLib extends CashCrud {
 
 					self::importCreateFromRatios($eCash, $eSale, $ePayment);
 
-					\selling\SaleLib::close($eSale);
+					\selling\PaymentLib::close($ePayment);
 
 					break;
 
@@ -323,7 +327,7 @@ class SuggestionLib extends CashCrud {
 					])
 					->where('m1.statusCash', \selling\Payment::WAITING)
 					->where('m1.farm', $eFarm)
-					->where('m2.preparationStatus', \selling\Sale::DELIVERED)
+					->where('m2.preparationStatus', 'IN', [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED])
 					->where('m2.profile', 'IN', [\selling\Sale::SALE, \selling\Sale::MARKET])
 					->where('m2.invoice', NULL);
 

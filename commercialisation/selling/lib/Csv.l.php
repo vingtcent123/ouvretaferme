@@ -57,7 +57,21 @@ class CsvLib {
 				'packaging' => '',
 				'composition' => '',
 				'allergen' => '',
+				'description' => '',
 			];
+
+			$description = $line['description'];
+
+			if($description) {
+
+				$description = encode($description);
+
+				$formattedDescription = new \editor\XmlLib()->fromHtml('<p>'.implode('</p><p>', preg_split("/(\r?\n)+/s", $description)).'</p>');
+			} else {
+
+				$formattedDescription = NULL;
+
+			}
 
 			$import[] = [
 				'type' => $line['type'] ?: NULL,
@@ -75,7 +89,8 @@ class CsvLib {
 				'frozen' => (($line['frozen'] ?? 'no') === 'yes'),
 				'packaging' => $line['packaging'] ?: NULL,
 				'composition' => $line['composition'] ?: NULL,
-				'allergen' => $line['allergen'] ?: NULL
+				'allergen' => $line['allergen'] ?: NULL,
+				'description' => $formattedDescription
 			];
 
 		}
@@ -116,6 +131,7 @@ class CsvLib {
 				'processedPackaging' => $product['packaging'],
 				'processedComposition' => $product['composition'],
 				'processedAllergen' => $product['allergen'],
+				'description' => $product['description'],
 			]));
 
 			$cProduct[] = $eProduct;
