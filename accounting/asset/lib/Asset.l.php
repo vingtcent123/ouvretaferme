@@ -358,9 +358,22 @@ class AssetLib extends \asset\AssetCrud {
 
 	public static function attach(Asset $eAsset, \Collection $cOperation): void{
 
-		\journal\OperationLib::applyAssetCondition()
-			->whereId('IN', $cOperation->getIds())
-			->update(['asset' => $eAsset]);
+		\journal\Operation::model()->beginTransaction();
+
+			\journal\OperationLib::applyAssetCondition()
+				->whereId('IN', $cOperation->getIds())
+				->update(['asset' => $eAsset]);
+
+			$cOperationWithAsset = \journal\Operation::model()
+				->select('amount', 'type')
+				->whereAsset($eAsset)
+				->getCollection();
+
+			$sum = $cOperationWithAsset->sum(fn($e) => $e['type'] === \journal\Operation::DEBIT ? $e['amount'] : -1 * $e['amount']);
+
+			Asset::model()->update($eAsset, ['value' => round($sum, 2)]);
+
+		\journal\Operation::model()->commit();
 
 	}
 
@@ -533,13 +546,5 @@ class AssetLib extends \asset\AssetCrud {
 		}
 	}
 
-	public static function getNotAssigned(): \Collection {
-
-		return Asset::model()
-			->select(Asset::getSelection())
-			->join(\journal\Operation::model(), 'm1.id = m2.asset', 'LEFT')
-			->where('m2.id IS NULL')
-			->getCollection();
-	}
 }
 ?>

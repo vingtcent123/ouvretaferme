@@ -139,7 +139,11 @@ new Page()
 
 		$data->cOperation = \journal\OperationLib::getByIdsForAsset(GET('ids', 'array'));
 
-		$data->cAssetWaiting = \asset\AssetLib::getNotAssigned();
+		\journal\Operation::validateBatchAttachAsset($data->cOperation);
+
+		$cAsset = \asset\AssetLib::getAll(new Search(['status' => \asset\Asset::ONGOING]));
+
+		$data->cAsset = $cAsset->filter(fn($e) => $e->acceptAttach());
 
 		throw new ViewAction($data);
 

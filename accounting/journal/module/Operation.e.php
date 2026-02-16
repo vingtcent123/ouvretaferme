@@ -85,6 +85,21 @@ class Operation extends OperationElement {
 
 	}
 
+	public function acceptAttachAsset(): bool {
+
+		return $this['asset']->empty();
+
+	}
+	public static function validateBatchAttachAsset(\Collection $cOperation): void {
+
+		foreach($cOperation as $eOperation) {
+
+			$eOperation->validate('acceptAttachAsset');
+
+		}
+
+	}
+
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p

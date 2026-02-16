@@ -24,27 +24,27 @@ Class AssetUi {
 
 	}
 
-	public function attach(\farm\Farm $eFarm, \Collection $cOperation, \Collection $cAssetWaiting): \Panel {
+	public function attach(\farm\Farm $eFarm, \Collection $cOperation, \Collection $cAssetAll): \Panel {
 
 		$h = '';
 
 		$h .= '<h3>'.p("Écriture comptable sélectionnée", "Écritures comptables sélectionnées", $cOperation->count()).'</h3>';
 		$h .= new \journal\JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE, displayTotal: TRUE);
 
-		if($cAssetWaiting->empty()) {
+		if($cAssetAll->empty()) {
 
-			$h .= '<div class="util-info">'.s("Aucune immobilisation ni subvention n'est disponible pour être rattachée. Souhaitez-vous plutôt créer l'immobilisation ?").'</div>';
+			$h .= '<div class="util-info">'.s("Aucune immobilisation ni subvention n'a été trouvée. Souhaitez-vous plutôt créer l'immobilisation ?").'</div>';
 
 			$h .= '<a class="btn btn-primary" href="'.\farm\FarmUi::urlConnected($eFarm).'/asset/:create?ids[]='.join('&ids[]=', $cOperation->getIds()).'">'.s("Créer l'immobilisation").'</a>';
 
 		} else {
 
-			$cAsset = $cAssetWaiting->find(fn($e) => AssetLib::isAsset($e['accountLabel']));
-			$cGrant = $cAssetWaiting->find(fn($e) => AssetLib::isGrant($e['accountLabel']));
+			$cAsset = $cAssetAll->find(fn($e) => AssetLib::isAsset($e['accountLabel']));
+			$cGrant = $cAssetAll->find(fn($e) => AssetLib::isGrant($e['accountLabel']));
 
 			if($cAsset->count() > 0) {
 
-				$h .= '<h3>'.p("Immobilisation sans écriture comptable", "Immobilisations sans écriture comptable", $cAsset->count()).'</h3>';
+				$h .= '<h3>'.p("Immobilisation disponible pour un rattachement", "Immobilisations disponibles pour un rattachement", $cAsset->count()).'</h3>';
 				$h .= $this->showAssetToAttach($eFarm, $cAsset, $cOperation);
 
 			}
