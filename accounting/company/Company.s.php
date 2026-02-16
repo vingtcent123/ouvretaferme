@@ -3,7 +3,7 @@ namespace company;
 
 class CompanySetting extends \Settings {
 
-	const BETA = TRUE;
+	const BETA = (LIME_ENV === 'prod');
 	const ACCOUNTING_FARM_BETA = [
 		1, // Pour la démo
 		7, 1608,
@@ -34,6 +34,7 @@ class CompanySetting extends \Settings {
 		3312, 2988, 1754, // 12 février
 		3427, 2305, // 14 février
 		3485, 2583, // 15 février
+		2035, // 16 février
 	];
 
 	const CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL = 1000;
