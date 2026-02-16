@@ -79,26 +79,12 @@ class BankAccountLib extends BankAccountCrud {
 
 		BankAccount::model()->beginTransaction();
 
-		// Check if there is already an account. Set current account to default if there is none.
+		// Check if there is already a default account. Set current account to default if there is none.
 		$cBankAccountDefault = BankAccount::model()->whereIsDefault(TRUE)->count();
 
-		$eLastAccount = \account\Account::model()
-			->select(['accountLabel' => new \Sql('MAX(TRIM(TRAILING "0" FROM class))', 'int')])
-			->whereClass('LIKE', \account\AccountSetting::BANK_ACCOUNT_CLASS.'%')
-			->whereClass('!=', \account\AccountSetting::BANK_ACCOUNT_CLASS)
-			->get();
+		$eAccount = self::createBankAccountAccount();
 
-		$accountLabel = ($eLastAccount->notEmpty() and empty($eLastAccount['accountLabel']) === FALSE) ?
-			($eLastAccount['accountLabel'] + 1):
-			\account\AccountSetting::BANK_ACCOUNT_CLASS.'1';
-
-		$description = new BankAccountUi()->getUnknownName().' '.$accountLabel;
-
-		$eAccount = new \account\Account([
-			'class' => $accountLabel,
-			'description' => $description,
-		]);
-		\account\AccountLib::create($eAccount);
+		$description = new BankAccountUi()->getUnknownName().' '.$eAccount['class'];
 
 		$eBankAccount = new BankAccount();
 		$eBankAccount->build(['bankId', 'accountId'], [
@@ -114,6 +100,37 @@ class BankAccountLib extends BankAccountCrud {
 		BankAccount::model()->commit();
 
 		return $eBankAccount;
+
+	}
+
+	/**
+	 * Crée le \account\Account à utiliser dans le \bank\Account
+	 */
+	public static function createBankAccountAccount(): \account\Account {
+
+		\account\Account::model()->beginTransaction();
+
+			$eLastAccount = \account\Account::model()
+				->select(['accountLabel' => new \Sql('MAX(TRIM(TRAILING "0" FROM class))', 'int')])
+				->whereClass('LIKE', \account\AccountSetting::BANK_ACCOUNT_CLASS.'%')
+				->whereClass('!=', \account\AccountSetting::BANK_ACCOUNT_CLASS)
+				->get();
+
+			$accountLabel = ($eLastAccount->notEmpty() and empty($eLastAccount['accountLabel']) === FALSE) ?
+				($eLastAccount['accountLabel'] + 1):
+				\account\AccountSetting::BANK_ACCOUNT_CLASS.'1';
+
+			$description = new BankAccountUi()->getUnknownName().' '.$accountLabel;
+
+			$eAccount = new \account\Account([
+				'class' => $accountLabel,
+				'description' => $description,
+			]);
+			\account\AccountLib::create($eAccount);
+
+		\account\Account::model()->commit();
+
+		return $eAccount;
 
 	}
 

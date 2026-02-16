@@ -273,6 +273,13 @@ class ImportLib extends ImportCrud {
 
 				$e['account'] = BankAccountLib::createNew($bankId, $accountId);
 
+			} else if($e['newAccount']['account']->empty()) {
+				// Compte bancaire déjà créé mais non rattaché à un numéro de compte
+
+				$eAccount = BankAccountLib::createBankAccountAccount();
+				BankAccount::model()->update($e['newAccount'], ['account' => $eAccount]);
+				$e['account'] = $eAccount;
+
 			} else {
 
 				$e['account'] = $e['newAccount'];
