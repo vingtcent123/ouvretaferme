@@ -350,25 +350,88 @@ class TipUi {
 					'button' => NULL,
 				];
 
-			case 'accounting-pre-accounting' :
+			case 'accounting-pre-accounting-fec' :
 
 				$h = '<p>'.s("La précomptabilité est l'opération préparatoire de vos ventes avant l'intégration dans votre comptabilité.").'</p>';
-				$h .= '<p>'.s("Cette opération se fait en plusieurs étapes, si elles ne sont pas déjà réalisées au fur et à mesure :").'</p>';
+				$h .= '<p>'.s("Cette opération se fait en plusieurs étapes qui peuvent être réalisées au fur et à mesure dans l'année :").'</p>';
 				$h .= '<ul style="list-style-type: none;">';
 					$h .= '<li>'.\Asset::icon('1-circle-fill').' '.s("Associer un numéro de compte à <link>chaque produit</link> et aux articles sans référence produit", [
 						'link' => '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'">',
 						'linkType' => '<a href="/farm/configuration:update?id='.$eFarm['id'].'">',
 					]).'</li>';
 					$h .= '<li>'.\Asset::icon('2-circle-fill').' '.s("Renseigner le moyen de paiement des factures").'</li>';
-					$h .= '<li>'.\Asset::icon('3-circle-fill').' '.s("Intégrer en comptabilité :").'</li>';
+					$h .= '<li>'.\Asset::icon('3-circle-fill').' '.s("Exporter un <span>FEC</span> (<i>fichier des écritures comptables</i>) de vos ventes pour l'intégrer dans votre outil comptable", ['span' => '<span class="util-badge bg-primary">']);
+					$h .= '</li>';
 				$h .= '</ul>';
-				$h .= \Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 4rem; margin-right: 0.5rem;']).' '.s("en exportant un <span>FEC</span> (<i>fichier des écritures comptables</i>) de vos ventes et factures pour l'intégrer dans votre outil comptable", ['span' => '<span class="util-badge bg-primary">']);
-				$h .= '<br />';
-				$h .= \Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 4rem; margin-right: 0.5rem;']).' '.s("en important vos factures dans le logiciel comptable de Ouvretaferme");
+				$h .= '<p>'.s("Toutes vos ventes, vos factures et opérations de caisse ainsi que leurs paiements associés seront préparés dans ce fichier.").'</p>';
 
 				return [
 					'icon' => \Asset::icon('file-spreadsheet'),
 					'title' => s("Qu'est-ce que la précomptabilité ?"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("En savoir plus avec l'Aide")],
+				];
+
+			case 'accounting-pre-accounting-import' :
+
+				$h = '<p>'.s("L'enregistrement des écritures des factures avec rapprochement bancaire et des opérations de caisse dans le livre journal se fait en 3 étapes :").'</p>';
+				$h .= '<ul style="list-style-type: none;">';
+					$h .= '<li>'.\Asset::icon('1-circle-fill').' '.s("<b>associer un numéro de compte</b> à <link>chaque produit</link> et aux articles sans référence produit", [
+						'link' => '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'">',
+						'linkType' => '<a href="/farm/configuration:update?id='.$eFarm['id'].'">',
+					]).'</li>';
+					$h .= '<li>'.\Asset::icon('2-circle-fill').' '.s("renseigner le <b>numéro de compte</b> des <link>journaux de caisse</link>", ['link' => '<a href="'.FarmUi::urlConnected($eFarm).'/journal-de-caisse">']).'</li>';
+					$h .= '<li>'.\Asset::icon('3-circle-fill').' '.s("cliquer sur <btn>Générer les écritures</btn> pour enregistrer toutes les écritures", ['btn' => '<a class="btn btn-primary" style="text-decoration: none;">', 'span' => '<span class="util-badge bg-primary">']);
+					$h .= '</li>';
+				$h .= '</ul>';
+
+				return [
+					'icon' => \Asset::icon('file-spreadsheet'),
+					'title' => s("Comment importer des opérations dans le livre journal ?"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("En savoir plus avec l'Aide")],
+				];
+
+			case 'accounting-pre-accounting-summary' :
+
+				$h = '<p>'.s("{siteName} peut créer automatiquement les écritures de vos factures et de vos opérations de caisse dans votre livre journal. Vous n'avez pas à le faire vous-même.").'</p>';
+				$h .= '<p>'.s("Tous les mois, vous pouvez importer en un clic :").'</p>';
+				$h .= '<ul>';
+					$h .= '<li>';
+						$h .= s("les factures avec rapprochement bancaire");
+					$h .= '</li>';
+					$h .= '<li>';
+						$h .= s("les opérations de caisse");
+					$h .= '</li>';
+				$h .= '</ul>';
+				$h .= '<p>'.s("Il vous suffit seulement de paramétrer les numéros de compte.").'</p>';
+
+				return [
+					'icon' => \Asset::icon('magic'),
+					'title' => s("Qu'est-ce que l'import magique en comptabilité ?"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("En savoir plus avec l'Aide")],
+				];
+
+			case 'accounting-pre-accounting-export' :
+
+				$h = '<p>'.s("Vous pouvez exporter vos données de vente au format FEC. Vous trouverez dans cet export les écritures issues :");
+					$h .= '<ul>';
+						$h .= '<li>'.s("des <b>factures</b> dont la <b>date d'émission</b> est incluse dans la période recherchée").'</li>';
+						$h .= '<li>'.s("des <b>opérations</b> provenant des journaux de caisse dont la <b>date d'enregistrement</b> est incluse dans la période recherchée").'</li>';
+						$h .= '<li>'.s("<b>ventes</b> non incluses dans des factures ni dans un journal de caisse dont la <b>date de livraison</b> est incluse dans la période recherchée").'</li>';
+					$h .= '</ul>';
+				$h .= '</p>';
+				$h .= '<p>';
+					$h .= \Asset::icon('exclamation-triangle').' '.s("Ces données ne sont donc pas les mêmes que pour l'import qui est basé sur les <b>dates de paiement</b>.");
+				$h .= '</p>';
+
+				return [
+					'icon' => \Asset::icon('file-spreadsheet'),
+					'title' => s("Exporter les données"),
 					'content' => $h,
 					'image' => FALSE,
 					'button' => ['/doc/accounting', \Asset::icon('person-raised-hand').' '.s("En savoir plus avec l'Aide")],
@@ -469,7 +532,7 @@ class TipUi {
 
 				$h .= '<ul>';
 
-					$h .= '<li><a href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite:importer">'.s("Importez vos factures rapprochées").'</a></li>';
+					$h .= '<li><a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite:importer">'.s("Importez vos factures avec rapprochement bancaire").'</a></li>';
 					$h .= '<li><a href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal">'.s("Enregistrez des écritures comptables").'</a></li>';
 
 				$h .= '</ul>';

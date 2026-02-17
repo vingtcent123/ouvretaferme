@@ -123,11 +123,11 @@ Class SuggestionLib extends SuggestionCrud {
 
 		foreach($cImport as $eImport) {
 
-			$updated = \bank\Import::model()->update($eImport, ['reconciliation' => \bank\Import::PROCESSING]);
+			/*$updated = \bank\Import::model()->update($eImport, ['reconciliation' => \bank\Import::PROCESSING]);
 
 			if($updated === 0) {
 				continue;
-			}
+			}*/
 
 			$cCashflow = \bank\Cashflow::model()
 				->select(\bank\Cashflow::getSelection() + [

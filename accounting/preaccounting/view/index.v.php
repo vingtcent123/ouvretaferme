@@ -1,35 +1,95 @@
 <?php
 new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
+	$t->title = s("Précomptabilité de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlFinancialYear(NULL, $data->eFarm).'/precomptabilite';
+
+	$t->nav = 'accounting';
+	$t->subNav = 'preaccounting';
+
+	$t->mainTitle = '<h1>'.Asset::icon('magic').' '.s("Importer des opérations dans le livre journal").'</h1>';
+
+	if($data->eFarm['hasSales'] === FALSE and $data->cCash->empty()) {
+
+		echo '<div class="util-block-help">'.
+			'<h3>'.s("Vous êtes sur la page pour importer automatiquement en comptabilité").'</h3>'.
+			'<p>'.s("Les paiements de vos factures ainsi que les opérations de vos journaux de caisse peuvent être importés en un clic dans votre comptabilité après avoir préparé les données de vos ventes. À ce jour, vous n'avez pas encore utilisé le module de vente, la précomptabilité n'est donc pas disponible.").'</p>'.
+			'<a href="'.\farm\FarmUi::urlSellingSales($data->eFarm).'" class="btn btn-secondary">'.s("Créer ma première vente").'</a>';
+
+			if($data->cRegister->empty()) {
+				echo ' <a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/journal-de-caisse" class="btn btn-secondary">'.s("Créer un journal de caisse").'</a>';
+			} else if($data->cRegister->count() === 1) {
+				echo ' <a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/journal-de-caisse" class="btn btn-secondary">'.s("Voir mon journal de caisse").'</a>';
+			} else {
+				echo ' <a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/journal-de-caisse" class="btn btn-secondary">'.s("Voir mes journaux de caisse").'</a>';
+			}
+
+		echo '</div>';
+
+		return;
+	}
+
+	if($data->cInvoice->empty() and $data->cCash->empty() and $data->cInvoiceImported->empty() and $data->cCashImported()->empty()) {
+
+		echo '<div class="util-block-help">'.
+			'<h3>'.s("Vous êtes sur la page pour importer automatiquement en comptabilité").'</h3>'.
+			'<p>'.s("Les paiements de vos factures ainsi que les opérations de vos journaux de caisse peuvent être importés en un clic dans votre comptabilité après avoir préparé les données de vos ventes.").'</p>'.
+			'<p>'.s("Il n'y a aucune facture ni opération de journal de caisse éligible à l'import en comptabilité pour l'<b>exercice {year}</b>.", ['year' => \account\FinancialYearUi::getYear($data->eFarm['eFinancialYear'])]).'</p>'.
+			'<a href="'.\farm\FarmUi::urlSellingInvoices($data->eFarm).'" class="btn btn-secondary">'.s("Voir mes factures").'</a>'.
+		'</div>';
+
+		return;
+
+	}
+
+	echo new \preaccounting\PreaccountingUi()->check($data->eFarm, $data->dates, $data->cInvoice, $data->cInvoiceImported, $data->cRegister, $data->cCash, $data->cCashImported);
+
+});
+
+new AdaptativeView('/precomptabilite/verifier', function($data, FarmTemplate $t) {
+
 	Asset::js('preaccounting', 'preaccounting.js');
 
-	$t->title = s("Précomptabilité des factures de {value}", $data->eFarm['name']);
-	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite';
+	$t->title = s("Précomptabilité de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlFinancialYear(NULL, $data->eFarm).'/precomptabilite/verifier:'.($data->checkType);
 
-	$t->nav = 'preaccounting';
+	if($data->checkType === 'import') {
 
-	$mainTitle = '<div class="util-action">';
-		$mainTitle .= '<h1>';
-			$mainTitle .= s("Précomptabilité");
-		$mainTitle .= '</h1>';
-
-		$mainTitle .= '<div>';
-			$mainTitle .= '<a href="/doc/accounting" class="btn btn-xs btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
-		$mainTitle .= '</div>';
-
-	$mainTitle .= '</div>';
-	$t->mainTitle = $mainTitle;
-
-	if($data->eFarm['hasSales']) {
-
-		echo new \preaccounting\PreaccountingUi()->getSearchPeriod($data->search);
+		$t->nav = 'accounting';
+		$t->subNav = 'preaccounting';
 
 	} else {
 
+		$t->nav = 'preaccounting';
+
+	}
+
+	if($data->checkType === 'fec') {
+
+		$mainTitle = ("Précomptabilité");
+
+	} else {
+
+		$month = \util\DateUi::getMonthName(mb_substr($data->search->get('from'), 5, 2));
+		$year = mb_substr($data->search->get('from'), 0, 4);
+
+		$mainTitle = '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		if($data->search->get('from') < date('Y-m-01')) {
+			$mainTitle .= s("Importer les opérations de {month} {year}", ['month' => $month, 'year' => $year]);
+		} else {
+			$mainTitle .= s("Consulter les opérations de {month} {year}", ['month' => $month, 'year' => $year]);
+		}
+
+	}
+
+	$t->mainTitle = '<h1>'.$mainTitle.'</h1>';
+
+	if($data->eFarm['hasSales'] === FALSE and $data->cCash->empty()) {
+
 		echo '<div class="util-block-help">';
-			echo '<h3>'.s("La précomptabilité").'</h3>';
-			echo '<p>'.s("La précomptabilité est l'opération préparatoire de vos ventes avant l'intégration dans votre comptabilité. Après avoir associé des numéros de compte à vos produits, vous pourrez exporter un {fec} ou importer vos factures en un clic dans le logiciel comptable de {siteName}.", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</p>';
-			echo '<p>'.s("La précomptabilité fonctionne avec les ventes et les factures que vous avez enregistrées sur {siteName}.<br/>À ce jour, vous n'avez pas encore utilisé le module de vente, la précomptabilité n'est donc pas disponible.").'</p>';
+			echo '<h3>'.s("Vous êtes sur la page de précomptabilité").'</h3>';
+			echo '<p>'.s("La précomptabilité est l'opération préparatoire de vos ventes avant l'intégration dans votre comptabilité. Après avoir associé des numéros de compte à vos produits, vous pourrez exporter un {fec}.", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</p>';
+			echo '<p>'.s("À ce jour, vous n'avez pas encore utilisé le module de vente, la précomptabilité n'est donc pas disponible.").'</p>';
 			echo '<a href="'.\farm\FarmUi::urlSellingSales($data->eFarm).'" class="btn btn-secondary">'.s("Créer une première vente").'</a>';
 		echo '</div>';
 
@@ -37,76 +97,25 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 	}
 
-	Asset::css('preaccounting', 'step.css');
+	if($data->checkType === 'fec') {
 
-	$steps = [
-		[
-			'position' => 1,
-			'number' => $data->nProductToCheck + $data->nItemToCheck,
-			'type' => 'product',
-			'title' => s("Produits"),
-			'description' => s("Associez un numéro de compte à vos produits et articles"),
-		],
-		[
-			'position' => 2,
-			'number' => $data->nInvoiceForPaymentToCheck,
-			'type' => 'payment',
-			'title' => s("Moyens de paiement"),
-			'description' => s("Renseignez le moyen de paiement des factures"),
-		],
-	];
+		echo new \preaccounting\PreaccountingUi()->getSearchPeriod($data->search);
 
-	echo '<div class="step-process">';
+	} else if($data->search->get('from') >= date('Y-m-01')) {
 
-		foreach($steps as $step) {
+		echo '<div class="util-block-info">';
+			echo s("Les opérations sont consultables en lecture seulement car le mois de {month} {year} n'est pas encore terminé.<br />Vous pouvez d'ores et déjà préparer les données !", ['month' => $month, 'year' => $year]);
+		echo '</div>';
 
-	    echo '<a class="step '.($step['number'] > 0 ? '' : 'step-success').' '.($data->type === $step['type'] ? 'selected' : '').'"  href="'.$t->canonical.'?type='.$step['type'].'&from='.$data->search->get('from').'&to='.$data->search->get('to').'">';
+	} else if($data->eFarm['eFinancialYear']['status'] === \account\FinancialYear::CLOSE) {
 
-			echo '<div class="step-header">';
+		echo '<div class="util-block-info">';
+		echo '<h4>'.s("Attention").'</h4>';
+			echo s("Les opérations sont consultables en lecture seulement car l'exercice {year} est clos.", ['year' => \account\FinancialYearUi::getYear($data->eFarm['eFinancialYear'])]);
+		echo '</div>';
+	}
 
-				echo '<span class="step-number">'.($step['position']).'</span>';
-
-				echo '<div class="step-main">';
-
-				echo '<div class="step-title">';
-					echo $step['title'];
-
-					if($step['number'] > 0) {
-						echo '<span class="bg-warning tab-item-count ml-1" title="'.s("À contrôler").'">'.Asset::icon('exclamation-circle').'  '.$step['number'].'</span>';
-					}
-
-				echo '</div>';
-
-				echo '<div class="step-value">';
-
-				echo '</div>';
-
-			echo '</div>';
-
-	      echo '</div>';
-
-		    echo '<p class="step-desc hide-sm-down">';
-		      echo $step['description'];
-		    echo '</p>';
-
-		  echo '</a>';
-
-		}
-
-		echo '<a class="step '.($data->type === 'export' ? 'selected' : '').'" href="'.$t->canonical.'?type=export&from='.$data->search->get('from').'&to='.$data->search->get('to').'">';
-			echo '<div class="step-header">';
-				echo '<span class="step-number">'.(count($steps) + 1).'</span>';
-				echo '<div class="step-main">';
-					echo '<div class="step-title">'.s("Intégration en comptabilité").'</div>';
-					echo '<div class="step-value"></div>';
-				echo '</div>';
-			echo '</div>';
-			echo '<p class="step-desc">';
-				echo s("Exportez un fichier {value} ou créez les écritures comptables de vos ventes et factures sur le logiciel comptable de {siteName}", '<span class="util-badge bg-primary">FEC</span>');
-			echo '</p>';
-		echo '</a>';
-
-	echo '</div>';
+	echo new \preaccounting\PreaccountingUi()->getCheckSteps($data->nProductToCheck,  $data->nItemToCheck, $data->nInvoiceForPaymentToCheck,  $data->cRegisterMissing, $data->type, $data->checkType, $t->canonical, $data->search);
 
 	switch($data->type) {
 
@@ -126,156 +135,40 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		case 'payment':
 			echo '<div data-step="'.$data->type.'" class="stick-md util-overflow-md">';
-				echo new \preaccounting\PreaccountingUi()->invoices($data->eFarm, $data->cInvoiceForPayment, $data->cPaymentMethod, $data->search);
+				if($data->checkType === 'fec') {
+					echo new \preaccounting\PreaccountingUi()->invoices($data->eFarm, $data->cInvoiceForPayment, $data->cPaymentMethod, $data->search);
+				} else {
+					echo new \preaccounting\PreaccountingUi()->registers($data->eFarm, $data->cRegister, $data->search);
+				}
 			echo '</div>';
 			break;
 
 		case 'export':
-			echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $data->nProductToCheck + $data->nItemToCheck,  $data->nInvoiceForPaymentToCheck, $data->isSearchValid, $data->search);
+			if($data->checkType === 'fec') {
+
+				echo new \preaccounting\PreaccountingUi()->export($data->eFarm, $data->operations, $data->nSale, $data->nInvoice, $data->nCash, $data->cInvoice, $data->search);
+
+			} else {
+
+				if(empty($data->lastValidationDate) === FALSE) {
+
+					echo '<div class="util-block bg-primary color-white">';
+						echo \Asset::icon('lock-fill').'  '.s("Votre livre-journal est actuellement validé jusqu'au {closed}, la saisie de nouvelles écritures est possible à partir du {open}.", [
+							'closed' => \util\DateUi::numeric($data->lastValidationDate),
+							'open' => \util\DateUi::numeric(date('Y-m-d', strtotime($data->lastValidationDate.' + 1 DAY'))),
+						]);
+					echo '</div>';
+				}
+
+				echo new \preaccounting\ImportUi()->list(
+					$data->eFarm,
+					$data->cOperation,
+					$data->lastValidationDate,
+					$data->search
+				);
+			}
 			break;
 	}
-
-});
-new AdaptativeView('/precomptabilite/ventes', function($data, FarmTemplate $t) {
-
-	Asset::js('preaccounting', 'preaccounting.js');
-
-	$t->title = s("Précomptabilité des ventes de {value}", $data->eFarm['name']);
-	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite/ventes';
-
-	$t->nav = 'preaccounting';
-
-	$mainTitle = '<div class="util-action">';
-		$mainTitle .= '<h1>';
-		$mainTitle .= '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			$mainTitle .= s("Exporter les données des ventes");
-		$mainTitle .= '</h1>';
-
-		$mainTitle .= '<div>';
-			$mainTitle .= '<a href="/doc/accounting" class="btn btn-xs btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
-		$mainTitle .= '</div>';
-
-	$mainTitle .= '</div>';
-	$t->mainTitle = $mainTitle;
-
-	echo new \preaccounting\PreaccountingUi()->getSearchSales($data->eFarm, $data->search);
-
-	if(count($data->operations) > 0) {
-
-		// Attention, le calcul est credit - debit car on va compter les contreparties pour les avoir toutes (et non pas la banque ni la caisse).
-		$filteredOperations = array_filter(
-			$data->operations,
-			fn($operation) => $operation[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_IS_SUMMED] === 1
-		);
-
-		$totalDebit = array_sum(array_column($filteredOperations, \preaccounting\AccountingLib::FEC_COLUMN_DEBIT));
-		$totalCredit = array_sum(array_column($filteredOperations, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT));
-
-		echo '<ul class="util-summarize">';
-
-			echo '<li>';
-				echo '<div>';
-					echo '<h5>'.p("Écriture", "Écritures", count($data->operations)).'</h5>';
-					echo '<div>'.count($data->operations).'</div>';
-				echo '</div>';
-			echo '</li>';
-
-			echo '<li>';
-				echo '<div>';
-					echo '<h5>';
-
-						echo match($data->search->get('filter')) {
-							NULL => s("Ventes et factures"),
-							'hasInvoice' => p("Facture", "Factures", $data->nInvoice),
-							'noInvoice' => p("Vente", "Ventes", $data->nSale),
-							default => p("Opération de caisse", "Opérations de caisse", $data->nCash)
-						};
-
-					echo '</h5>';
-						echo '<div>';
-
-						$salesAndInvoicesOperations = array_filter(
-							$data->operations,
-							fn($operation) => in_array($operation[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_ORIGIN], ['invoice', 'sale'])
-						);
-						$cashOperations = array_filter(
-							$data->operations,
-							fn($operation) => $operation[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_ORIGIN] === 'register'
-						);
-
-						$nSalesAndInvoices = count(array_unique(array_column($salesAndInvoicesOperations, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT)));
-						$nCash = count(array_unique(array_column($cashOperations, \preaccounting\AccountingLib::FEC_COLUMN_DESCRIPTION)));
-
-						echo match($data->search->get('filter')) {
-							NULL => $nSalesAndInvoices + $nCash,
-							'hasInvoice' => $nSalesAndInvoices,
-							'noInvoice' => $nSalesAndInvoices,
-							default => $nCash,
-						};
-
-					echo '</div>';
-				echo '</div>';
-			echo '</li>';
-
-			echo '<li>';
-				echo '<div>';
-					echo '<h5>'.s("Montant").'</h5>';
-					echo '<div>'.\util\TextUi::money(round($totalCredit - $totalDebit, 2)).'</div>';
-				echo '</div>';
-			echo '</li>';
-
-		echo '</ul>';
-
-		parse_str(mb_substr(LIME_REQUEST_ARGS, 1), $args);
-		$url = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite/ventes:telecharger?'.http_build_query($args);
-
-		echo '<div class="mt-2 mb-2 text-center">';
-			echo '<a class="dropdown-toggle btn btn-lg btn-secondary" data-dropdown="bottom-down" >'.\Asset::icon('download').' '.s("Télécharger le fichier {fec}", ['fec' => '<span class="util-badge bg-primary">FEC</span>']).'</a>';
-			echo '<div class="dropdown-list">';
-				echo '<a href="'.$url.'&format=csv" class="dropdown-item" data-ajax-navigation="never">';
-					echo s("Au format CSV");
-				echo '</a>';
-				echo '<a href="'.$url.'&format=txt" class="dropdown-item" data-ajax-navigation="never">';
-					echo s("Au format TXT");
-				echo '</a>';
-			echo '</div>';
-		echo '</div>';
-
-		echo new \preaccounting\SaleUi()->list($data->eFarm, $data->operations, $data->search->get('hasInvoice'), $data->cInvoice);
-
-	} else {
-
-		if($data->search->empty(['id'])) {
-
-			echo '<div class="util-info">';
-				echo s("Il n'y a aucune donnée comptable à afficher.");
-			echo '</div>';
-
-		} else {
-
-			echo '<div class="util-empty">';
-				echo s("Aucune vente ne correspond à vos critères de recherche.");
-			echo '</div>';
-
-		}
-
-	}
-
-});
-
-new AdaptativeView('/precomptabilite:importer', function($data, FarmTemplate $t) {
-
-	$t->nav = 'accounting';
-	$t->subNav = 'operations';
-
-	$t->title = s("Importer les factures de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite:importer';
-
-	$navigation = '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-
-	$t->mainTitle = '<h1>'.$navigation.s("Importer les paiements dans le logiciel comptable").($data->nPayment > 0 ? '<span class="util-counter ml-1">'.$data->nPayment.'</span>' : '').'</h1>';
-
-	echo new \preaccounting\ImportUi()->list($data->eFarm, $data->eFarm['eFinancialYear'], $data->cPayment, $data->nPayment, $data->lastValidationDate, $data->search);
 
 });
 
@@ -284,7 +177,7 @@ new AdaptativeView('/precomptabilite:rapprocher', function($data, FarmTemplate $
 	$t->nav = 'bank';
 
 	$t->title = s("Rapprocher les opérations bancaires de {farm}", ['farm' => encode($data->eFarm['name'])]);
-	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite:rapprocher';
+	$t->canonical = \farm\FarmUi::urlFinancialYear(NULL, $data->eFarm).'/precomptabilite:rapprocher';
 	$navigation = '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations" class="h-back">'.\Asset::icon('arrow-left').'</a>';
 	$t->mainTitle = '<h1>'.$navigation.s("Rapprocher les opérations bancaires").($data->nSuggestionWaiting > 0 ? '<span class="util-counter ml-1">'.$data->nSuggestionWaiting.'</span>' : '').'</h1>';
 

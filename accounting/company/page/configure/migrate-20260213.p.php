@@ -26,42 +26,7 @@ new Page()
 
 			\farm\FarmLib::connectDatabase($eFarm);
 
-			\account\FinancialYear::model()->pdo()->exec('ALTER TABLE '.\farm\FarmSetting::getDatabaseName($eFarm).'.accountFinancialYear CHANGE `hasVat` `hasVat` tinyint(1) NULL;');
-
-			$eFinancialYearFirst = \account\FinancialYear::model()
-				->select('hasVat', 'startDate')
-				->sort(['endDate' => SORT_ASC])
-				->get();
-
-			if($eFinancialYearFirst->notEmpty()) {
-
-				$eConfigurationHistory = new \farm\ConfigurationHistory([
-					'farm' => $eFarm,
-					'field' => 'hasVatAccounting',
-					'value' => ['hasVatAccounting' => $eFinancialYearFirst['hasVat']],
-					'effectiveAt' => $eFinancialYearFirst['startDate'],
-				]);
-
-				\farm\ConfigurationHistory::model()->insert($eConfigurationHistory);
-
-			}
-
-			$eFinancialYear = \account\FinancialYear::model()
-				->select('hasVat', 'vatChargeability', 'vatFrequency')
-				->sort(['endDate' => SORT_DESC])
-				->get();
-
-			if($eFinancialYear->notEmpty()) {
-
-				\farm\Configuration::model()
-					->whereFarm($eFarm)
-					->update([
-						'vatChargeability' => $eFinancialYear['vatChargeability'],
-						'vatFrequency' => $eFinancialYear['vatFrequency'],
-						'hasVatAccounting' => $eFinancialYear['hasVat'],
-					]);
-
-			}
+			\preaccounting\SuggestionLib::calculateSuggestionsByFarm($eFarm, 1);
 
 		}
 

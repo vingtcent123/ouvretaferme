@@ -448,20 +448,20 @@ Route::register([
 			'priority' => 5,
 			'route' => ['precomptabilite'],
 		],
-		'/precomptabilite/ventes' => [
+		'/precomptabilite/fec:telecharger' => [
 			'request' => 'preaccounting/index',
 			'priority' => 5,
-			'route' => ['precomptabilite', 'ventes'],
+			'route' => ['precomptabilite', 'fec:telecharger'],
 		],
-		'/precomptabilite/ventes:telecharger' => [
+		'/precomptabilite/verifier:fec' => [
 			'request' => 'preaccounting/index',
 			'priority' => 5,
-			'route' => ['precomptabilite', 'ventes:telecharger'],
+			'route' => ['precomptabilite', 'verifier:fec'],
 		],
-		'/precomptabilite:importer' => [
+		'/precomptabilite/verifier:import' => [
 			'request' => 'preaccounting/index',
 			'priority' => 5,
-			'route' => ['precomptabilite:importer'],
+			'route' => ['precomptabilite', 'verifier:import'],
 		],
 		'/precomptabilite:rapprocher' => [
 			'request' => 'preaccounting/index',

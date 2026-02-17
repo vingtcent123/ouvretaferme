@@ -240,7 +240,6 @@ class FarmUi {
 			Farmer::PRO => self::urlSellingSalesPro($eFarm),
 			Farmer::MARKET => self::urlSellingSalesMarket($eFarm),
 			Farmer::LABEL => self::urlSellingSalesLabel($eFarm),
-			'accounting' => self::urlSellingSalesAccounting($eFarm)
 		};
 
 	}
@@ -267,10 +266,6 @@ class FarmUi {
 
 	public static function urlSellingSalesLabel(Farm $eFarm): string {
 		return self::url($eFarm).'/etiquettes';
-	}
-
-	public static function urlSellingSalesAccounting(Farm $eFarm): string {
-		return self::url($eFarm).'/precomptabilite';
 	}
 
 	public static function urlShop(Farm $eFarm, string $view): string {
@@ -944,7 +939,7 @@ class FarmUi {
 			foreach($this->getCategories($eFarm, $menu) as $name) {
 
 				$h .= '<a href="'.$this->getCategoryUrl($eFarm, $menu, $name).'" class="farm-subnav-item '.($name === $subNav ? 'selected' : '').'" data-sub-nav="'.$name.'">';
-					$h .= '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
+					$h .= '<span class="farm-subnav-prefix">'.$this->getCategoryIcon($eFarm, $menu, $name).'</span> ';
 					$h .= '<span>'.$this->getCategoryName($eFarm, $menu, $name).'</span>';
 				$h .= '</a>';
 
@@ -1050,9 +1045,10 @@ class FarmUi {
 			'analyze-commercialisation' => FarmUi::urlAnalyzeCommercialisation($eFarm, $name),
 
 			'bank' => \farm\FarmUi::urlConnected($eFarm).'/banque/operations',
-			'preaccounting' => \farm\FarmUi::urlConnected($eFarm).'/precomptabilite',
+			'preaccounting' => \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite:verifier',
 			'cash' => \farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse',
 			'accounting' => match($name) {
+				'preaccounting' => \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite',
 				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal',
 				'book' => \company\CompanyUi::urlJournal($eFarm).'/grand-livre',
 				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
@@ -1064,6 +1060,17 @@ class FarmUi {
 
 	}
 
+	protected function getCategoryIcon(Farm $eFarm, string $section, string $name): string {
+
+		return match($section) {
+			'accounting' => match($name) {
+				'preaccounting' => \Asset::icon('magic'),
+				default => \Asset::icon('chevron-right'),
+			},
+			default => \Asset::icon('chevron-right'),
+		};
+
+	}
 	protected function getCategoryName(Farm $eFarm, string $section, string $name): string {
 
 		return match($section) {
@@ -1114,6 +1121,7 @@ class FarmUi {
 
 			'accounting' => match($name) {
 				'operations' => s("Livre journal"),
+				'preaccounting' => s("Importer des opérations"),
 				'book' => s("Grand livre"),
 				'balance' => s("Balance"),
 				'assets' => s("Immobilisations"),
@@ -1352,7 +1360,7 @@ class FarmUi {
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-preaccounting">';
 
-				$h .= $this->getNav('preaccounting', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/precomptabilite');
+				$h .= $this->getNav('preaccounting', $nav, link: \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite/verifier:fec');
 
 			$h .= '</div>';
 /*
@@ -2059,12 +2067,21 @@ class FarmUi {
 		];
 	}
 
-	public function getPreAccountingTitle(Farm $eFarm, string $selectedView, array $numbers, \Search $search): string {
+	public function getPreAccountingTitle(Farm $eFarm, string $selectedView, \Search $search): string {
 
 		$categories = $this->getPreAccountingCategories();
 
 		$title = $categories[$selectedView]['label'];
-		$urlMore = 'from='.encode($search->get('from')).'&to='.encode($search->get('to'));
+		if(
+			date('Y-m-01', strtotime('last month')) >= $eFarm['eFinancialYear']['startDate'] and
+			date('Y-m-01', strtotime('last month')) <= $eFarm['eFinancialYear']['endDate']
+		){
+			$dateFallback = date('Y-m-01', strtotime('last month'));
+		} else {
+			$dateFallback = $eFarm['eFinancialYear']['startDate'];
+		}
+		$from = $search->get('from') ?: $dateFallback;
+		$urlMore = 'from='.$from;
 
 		$h = '<div class="util-action">';
 			$h .= '<h1>';
@@ -2076,7 +2093,7 @@ class FarmUi {
 				$h .= '</a>';
 				$h .= '<div class="dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
-						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).$value['url'].'?'.$urlMore.'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">';
+						$h .= '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).$value['url'].'?'.$urlMore.'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">';
 							$h .= $value['label'];
 						$h .= '</a>';
 					}
@@ -2095,8 +2112,9 @@ class FarmUi {
 
 	protected static function getPreAccountingCategories(): array {
 		return [
-			'invoices' => ['url' => '/precomptabilite', 'label' => s("Préparer les données des factures")],
-			'sales' => ['url' => '/precomptabilite/ventes', 'label' => s("Exporter les données comptables des ventes non facturées")],
+			'preaccounting' => ['url' => '/precomptabilite', 'label' => s("Précomptabilité")],
+			'import' => ['url' => '/precomptabilite:importer', 'label' => s("Importer dans le logiciel comptable")],
+			'export' => ['url' => '/precomptabilite/fec', 'label' => s("Exporter les données de vente au format comptable")],
 		];
 	}
 
@@ -2109,10 +2127,10 @@ class FarmUi {
 
 				$h .= '<div>';
 					if(array_sum($numbers['import']) > 0 and $eFarm->usesAccounting()) {
-						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite:importer" class="btn btn-outline-primary">'.s("Factures à importer ({value})", array_sum($numbers['import'])).'</a> ';
+						$h .= '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite:importer" class="btn btn-outline-primary">'.s("Factures à importer ({value})", array_sum($numbers['import'])).'</a> ';
 					}
 					if($numbers['reconciliate'] > 0) {
-						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite:rapprocher" class="btn btn-outline-primary">'.s("Rapprochements ({value})", $numbers['reconciliate']).'</a> ';
+						$h .= '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite:rapprocher" class="btn btn-outline-primary">'.s("Rapprochements ({value})", $numbers['reconciliate']).'</a> ';
 					}
 				$h .= '</div>';
 		$h .= '</div>';
@@ -2573,7 +2591,7 @@ class FarmUi {
 				return $categories;
 
 			case 'accounting':
-				return ['operations', 'book', 'balance', 'assets', 'analyze'];
+				return ['operations', 'preaccounting', 'book', 'balance', 'assets', 'analyze'];
 
 		};
 

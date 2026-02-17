@@ -26,66 +26,47 @@ new \selling\PaymentPage()
 
 		throw new ReloadAction();
 
-	});
+	})
+	->write('doIgnorePayment', function($data) {
+
+		\preaccounting\ImportLib::ignorePayment($data->e);
+
+		\account\LogLib::save('ignore', 'Payment', ['id' => $data->e['id']]);
+
+		throw new ReloadAction('preaccounting', 'Payment::ignored');
+
+	}, validate: ['acceptAccountingIgnore'])
+;
 
 new Page()
-->post('doImportPayment', function($data) {
+	->post('doImport', function($data) {
 
-	$ePayment = \preaccounting\ImportLib::getPaymentById(POST('id', 'int'));
+		$from = POST('from');
+		$months = \preaccounting\PreaccountingLib::extractMonths($data->eFarm['eFinancialYear']);
 
-	$ePayment->validate('acceptAccountingImport');
+		if(
+			mb_strlen($from) !== 10 or
+			\util\DateLib::isValid($from) === FALSE or
+			in_array(mb_substr($from, 0, 7), $months) === FALSE or
+			$from >= date('Y-m-01')
+		) {
+			throw new NotExistsAction();
+		}
 
-	$fw = new FailWatch();
+		$search = new Search([
+			'from' => $from,
+			'to' => date('Y-m-t', strtotime(mb_substr($from, 0, 7).'-01')),
+			'cRegister' => \cash\RegisterLib::getAll(),
+			'cMethod' => \payment\MethodLib::getByFarm($data->eFarm, online: FALSE, onlyActive: FALSE),
+		]);
 
-	\preaccounting\ImportLib::importPayment($data->eFarm, $ePayment);
+		\preaccounting\ImportLib::importCollection($data->eFarm, $search);
 
-	$fw->validate();
+		\account\LogLib::save('import', 'FinancialYear', ['date' => $from]);
 
-	\account\LogLib::save('import', 'Payment', ['id' => $ePayment['id']]);
+		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite?success=preaccounting\\Preaccounting::imported');
 
-	throw new ReloadAction('preaccounting', 'Payment::imported');
-
-})
-->post('doIgnorePayment', function($data) {
-
-	$ePayment = \selling\PaymentLib::getById(POST('id'))->validate('acceptAccountingIgnore');
-
-	\preaccounting\ImportLib::ignorePayment($ePayment);
-
-	\account\LogLib::save('ignore', 'Payment', ['id' => $ePayment['id']]);
-
-	throw new ReloadAction('preaccounting', 'Payment::ignored');
-})
-->get('importPaymentCollection', function($data) {
-
-	throw new ViewAction($data);
-
-})
-->post('doImportPaymentCollection', function($data) {
-
-	$cPayment = \preaccounting\ImportLib::getPaymentsByIds(POST('ids', 'array'));
-
-	\selling\Payment::validateBatch($cPayment);
-
-	\preaccounting\ImportLib::importPayments($data->eFarm, $cPayment);
-
-	\account\LogLib::save('importSeveral', 'Payment', ['ids' => $cPayment->getIds()]);
-
-	throw new ReloadAction('preaccounting', $cPayment->count() > 1 ? 'Payment::importedSeveral' : 'Payment::imported');
-
-})
-->post('doIgnoreCollection', function($data) {
-
-	$cPayment = \selling\PaymentLib::getByIds(POST('ids', 'array'))->validate('acceptAccountingIgnore');
-
-	\selling\Payment::validateBatchIgnore($cPayment);
-	\preaccounting\ImportLib::ignorePayments($cPayment);
-
-	\account\LogLib::save('ignoreSeveral', 'Payment', ['ids' => $cPayment->getIds()]);
-
-	throw new ReloadAction('preaccounting', 'Payment::ignoredSeveral');
-
-})
+	})
 ;
 
 ?>

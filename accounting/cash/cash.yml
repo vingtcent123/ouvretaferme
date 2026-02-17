@@ -32,6 +32,8 @@ Cash:
   payment: ?selling\Payment
   account: ?account\Account
   financialYear: ?account\FinancialYear
+  accountingHash: ?textFixed(20, 20) @charset(ascii)
+  accountingReady: ?bool = FALSE
   status: enum(DRAFT, VALID, DELETED)
   createdAt: datetime = SPECIAL(now)
   INDEX: [

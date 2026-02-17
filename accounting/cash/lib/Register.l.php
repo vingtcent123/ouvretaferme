@@ -25,6 +25,18 @@ class RegisterLib extends RegisterCrud {
 
 	}
 
+	public static function getActive(): \Collection {
+
+		return Register::model()
+			->select(Register::getSelection())
+			->whereStatus(Register::ACTIVE)
+			->sort([
+				'id' => SORT_ASC
+			])
+			->getCollection(index: 'id');
+
+	}
+
 	public static function countPending(Register $e): Cash {
 
 		static $count = Cash::model()

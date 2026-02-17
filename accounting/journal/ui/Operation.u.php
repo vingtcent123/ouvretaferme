@@ -414,6 +414,9 @@ class OperationUi {
 					\selling\Payment::SALE => \selling\SaleUi::url($eOperation['payment']['sale']),
 				};
 				$h .= '<a href="'.$url.'" target="_blank">'.$document.'</a>';
+			} else if($eOperation['cash']->notEmpty()) {
+				$elements = explode('-', $eOperation['document']);
+				$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse?register='.$elements[0].'&position='.$elements[1].'" target="_blank">'.$document.'</a>';
 			} else {
 				$h .= $document;
 			}

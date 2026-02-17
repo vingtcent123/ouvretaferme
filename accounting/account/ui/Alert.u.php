@@ -29,6 +29,7 @@ class AlertUi {
 
 			'ThirdParty::name.duplicate' => s("Ce tiers existe déjà, utilisez-le directement ?"),
 
+			'Import::filename.notFound' => s("Veuillez choisir un fichier"),
 			'Import::filename.incorrect' => s("Le nom de votre fichier FEC est incorrect. Il doit être de la forme : <i><b>siren</b>FEC<b>date</b>.txt</i> avec <b>siren</b> le numéro de siren de votre ferme et <b>date</b> la date de clôture ou de l'export."),
 			'Import::financialYearStatus.check' => s("Que fait-on après l'import du fichier ?"),
 			'Import::dates.incorrect' => s("Les dates du fichier ne correspondent pas à l'exercice dans lequel importer les écritures."),

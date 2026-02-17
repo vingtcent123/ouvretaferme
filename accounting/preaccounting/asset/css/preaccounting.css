@@ -4,3 +4,54 @@
 .dropdown-list-minimalist:has([data-ajax-form="/@module/selling/Product/doQuick"]) div.util-quick-form > div {
 	margin: 1rem 0 2rem;
 }
+
+.preaccounting-import-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-gap: 1rem;
+}
+
+
+@media (min-width: 576px) and (max-width: 899px) {
+
+	.preaccounting-import-container {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+@media (max-width: 575px) {
+
+	.preaccounting-import-container {
+		grid-template-columns: 1fr;
+	}
+}
+
+.preaccounting-import-month {
+	padding: 1rem;
+  border-radius: var(--radius);
+  transition: color 0.25s, background-color 0.25s, border-color 0.25s, box-shadow 0.25s;
+  text-decoration: none;
+  background-color: white;
+}
+.preaccounting-import-month-future {
+	opacity: 0.33;
+}
+
+.preaccounting-import-title {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 1rem;
+}
+.preaccounting-import-title h3 {
+	margin-bottom: 0;
+}
+
+.preaccounting-import-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.25rem 0.5rem;
+}
+.preaccounting-import-month:not(.preaccounting-import-month-future) .preaccounting-import-item:hover {
+	background-color: #0001;
+}

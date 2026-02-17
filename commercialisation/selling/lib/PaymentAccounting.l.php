@@ -15,6 +15,19 @@ class PaymentAccountingLib extends PaymentCrud {
 
 	}
 
+	public static function setImportedByExternal(Sale|Invoice $eElement, string $hash): void {
+
+		if($eElement->exists() === FALSE) {
+			throw new \NotExpectedAction();
+		}
+
+		Payment::model()
+     ->whereInvoice($eElement, if: $eElement instanceof Invoice)
+     ->whereSale($eElement, if: $eElement instanceof Sale)
+     ->update(['accountingHash' => $hash]);
+
+	}
+
 	/**
 	 * Supprime le lien entre le paiement et la comptabilité
 	 */

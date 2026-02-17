@@ -5,6 +5,33 @@ Class SaleLib {
 
 	const MARKET_PAYMENT_METHOD_FAKE_ID = 0;
 
+	// Renvoie toutes les ventes payées incluses dans un paiement ou dans une facture elle-même incluse dans un paiement
+	public static function getPaidSaleIdsForPeriod(\farm\Farm $eFarm, string $from, string $to): array {
+
+		// Ventes issues de ventes payées
+		$saleIdsFromInvoice = \selling\Payment::model()
+			->join(\selling\Sale::model(), 'm1.invoice = m2.invoice')
+			->where('m1.invoice IS NOT NULL')
+			->where('m1.farm = '.$eFarm['id'])
+			->where('m1.paidAt BETWEEN '.\selling\Item::model()->format($from).' AND '.\selling\Item::model()->format($to))
+			->where('m1.status = "'.\selling\Payment::PAID.'"')
+			->where('m2.id IS NOT NULL')
+			->getColumn(new \Sql('m2.id', 'int'));
+
+		// Ventes issues de factures payées
+		$saleIdsFromSale = \selling\Payment::model()
+			->join(\selling\Sale::model(), 'm1.sale = m2.id')
+			->where('m1.sale IS NOT NULL')
+			->where('m1.status = "'.\selling\Payment::PAID.'"')
+			->where('m1.farm = '.$eFarm['id'])
+			->where('m1.paidAt BETWEEN '.\selling\Item::model()->format($from).' AND '.\selling\Item::model()->format($to))
+			->where('m2.id IS NOT NULL')
+			->getColumn(new \Sql('m2.id', 'int'));
+
+		return array_merge($saleIdsFromInvoice, $saleIdsFromSale);
+
+	}
+
 	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\SaleModel {
 
 		\selling\Sale::model()
@@ -58,4 +85,19 @@ Class SaleLib {
 			->getCollection(NULL, NULL, 'id');
 
 	}
+
+	public static function getByInvoiceForFec(\selling\Invoice $eInvoice): \Collection {
+
+		return \selling\Sale::model()
+			->select([
+				'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',
+				'cItem' => \selling\Item::model()
+					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+					->delegateCollection('sale'),
+			])
+			->whereInvoice($eInvoice)
+			->getCollection();
+
+	}
+
 }

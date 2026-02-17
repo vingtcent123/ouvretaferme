@@ -269,6 +269,12 @@ class CashUi {
 
 	}
 
+	public static function getName(Cash $eCash): string {
+
+		return s("Caisse n°{register}, opération n°{cash}", ['register' => $eCash['register']['id'], 'cash' => $eCash['position']]);
+
+	}
+
 	public static function getOperation(string $source, ?string $type = NULL, \Element $e = new Cash()): string {
 
 		return match($source) {
@@ -452,7 +458,7 @@ class CashUi {
 
 						}
 
-						$h .= '<tr>';
+						$h .= '<tr'.(GET('position', 'int') === $eCash['position'] ? ' class="row-highlight"' : '').'>';
 
 							$h .= '<td class="td-min-content text-end td-vertical-align-top">';
 								if($eCash['position'] !== NULL) {

@@ -11,16 +11,16 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 
 	echo '<h5 style="text-transform: uppercase">'.s("Introduction à la comptabilité sur Ouvretaferme").'</h5>';
 	echo '<h2>'.s("Utiliser Ouvretaferme pour préparer (puis tenir) sa comptabilité").'</h2>';
-	echo '<p>'.s("Sur Ouvretaferme, vous pouvez préparer les données de vos factures sans être obligé·e·s d'utiliser le logiciel de comptabilité. Cela signifie que : ").'</p>';
+	echo '<p>'.s("Sur Ouvretaferme, vous pouvez préparer les données de vos ventes sans être obligé·e·s d'utiliser le logiciel de comptabilité. Cela signifie que : ").'</p>';
 	echo '<ul>';
-		echo '<li>'.s("Vous paramétrez le minimum nécessaire de votre comptabilité (journaux, comptes de clients, numéros de comptes des produits de vos ventes)").'</li>';
+		echo '<li>'.s("Vous paramétrez le minimum nécessaire de votre comptabilité (journaux, numéros de comptes)").'</li>';
 		echo '<li>'.s("Vous indiquez pour chaque produit à quel compte le rattacher").'</li>';
 		echo '<li>'.s("Vous indiquez le moyen de paiement").'</li>';
 	echo '</ul>';
 	echo '<p>'.s("Au final, ").'</p>';
 	echo Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous téléchargez un fichier au format {fec} puis l'importez dans votre logiciel de comptabilité habituel", ['fec' => '<span class="util-badge bg-primary">FEC</span>']);
 	echo '<br />';
-	echo Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous importez vos factures dans le logiciel comptable de Ouvretaferme");
+	echo Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Soit vous générez automatiquement les écritures dans le livre journal");
 	echo '<p class="mt-1">'.s("... C'est <b>vous qui choisissez</b> le niveau d'utilisation de la comptabilité proposé par Ouvretaferme !").'</p>';
 
 	echo '</div>';
@@ -31,7 +31,8 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	echo '<div class="util-block">';
 	echo '<h2>'.s("Tutoriels en vidéo").'</h2>';
 	echo '<p>'.s("Des tutoriels vidéos sont également disponibles sur Youtube. Cliquez sur le petit menu en haut à droite de la vidéo pour voir le sommaire des vidéos disponibles.").'</p>';
-	echo '<iframe width="100%" style="min-height: 550px;" src="https://www.youtube.com/embed/videoseries?si=M_vGvQ9gfoS6PwdI&amp;list=PL9PdPD-HgdQO9OLw_Ky5hTdtmGagCLfcE" title="'.s("Tutoriels du module de comptabilité de {siteName}").'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+	echo '<p>'.s("Les liens vers les tutoriels vidéos sont identifiés dans la documentation avec le symbole {icon}.", ['icon' => Asset::icon('youtube')]).'</p>';
+	echo '<iframe width="100%" style="min-height: 550px;" src="https://www.youtube.com/embed/videoseries?si=AygzF4yxK0N0U92J&amp;list=PL9PdPD-HgdQO9OLw_Ky5hTdtmGagCLfcE" title="'.s("Tutoriels du module de comptabilité de {siteName}").'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
 	echo '</div>';
 
 
@@ -61,7 +62,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 		echo '<h3>'.s("Les données sont-elles obligatoires ?").'</h3>';
 
 		echo '<p>';
-			echo s("Si vous n'utilisez pas le logiciel comptable de Ouvretaferme, il faut avoir avoir uniquement configuré tous vos numéros de compte pour pouvoir télécharger un export des ventes. ");
+			echo s("Si vous n'utilisez pas le logiciel comptable de Ouvretaferme, il faut avoir avoir uniquement configuré tous vos numéros de compte pour pouvoir télécharger un export de vos ventes et de vos opérations de caisse. ");
 		echo '</p>';
 		echo '<p>';
 			echo s("Si des données venaient à manquer, la valeur sera vide.");
@@ -69,32 +70,35 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 
 		echo '<h3>'.s("Et pour un import dans la comptabilité ?").'</h3>';
 		echo '<p>';
-			echo s("{siteName} propose d'importer uniquement des <b>factures générées</b> dont les articles vendus sont rattachés à des <b>numéros de compte</b> et dont le <b>moyen de paiement</b> est défini.");
+			echo s("{siteName} propose d'importer :");
+			echo '<ul>';
+				echo '<li>'.s("les <b>factures avec rapprochement bancaire</b> dont les articles vendus sont rattachés à des <b>numéros de compte</b> ").'</li>';
+				echo '<li>'.s("les <b>opérations des journaux de caisse</b> qui ne sont plus dans le brouillard de caisse, pour lesquelles la caisse est clôturée à la date d'import, et dont tous les numéros de compte sont renseignés.").'</li>';
+			echo '</ul>';
 		echo '</p>';
-		echo '<h3>'.s("Et si des factures n'ont pas pour objectif d'entrer en comptabilité par un import ?").'</h3>';
-		echo '<p>';
-			echo s("Dans ce cas, il est possible, dans la page d'import, d'ignorer simplement ces factures. Elles ne seront plus proposées, ni pour la préparation, ni pour l'export, ni pour l'import dans la comptablité.");
-		echo '</p>';
-
 	echo '</div>';
 
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Export précomptable").'</h2>';
+
+		echo '<a href="https://youtu.be/cqjRvb8723U">'.Asset::icon('youtube').' '.s("Lien vers le tutoriel vidéo").'</a>';
+		echo '<br /><br />';
+
 		echo '<h3>'.s("Où le trouver ?").'</h3>';
 		echo '<p>';
-			echo s("Vous accéderez à la page de synthèse de l'export précomptable depuis un lien dans la page du menu <b>Précomptabilité</b>, dans la 3<sup>ème</sup> étape de précomptabilité.");
+			echo s("Vous accèderez à la page de synthèse de l'export précomptable depuis un lien dans la page du menu <b>Précomptabilité</b>, dans la 3<sup>ème</sup> étape de précomptabilité.");
 		echo '</p>';
 
 		echo '<h3>'.s("Quelles informations contient-il ?").'</h3>';
 		echo '<p>';
-			echo s("Vous retrouverez dans cet export toutes vos ventes avec leur numéro, organisé avec 1 ligne par compte et moyen de paiement pour chaque vente. C'est un export qui respecte le format FEC pour pouvoir être intégré dans votre logiciel comptable.");
+			echo s("Vous retrouverez dans cet export toutes vos factures, ventes non facturées et opérations de journal de caisse avec leur numéro, organisé avec une ligne par compte et par moyen de paiement pour chaque vente. Si des paiements sont enregistrés, leur contrepartie est ajoutée. Sinon, aucune contrepartie ne sera automatiquement ajoutée. C'est un export qui respecte le format FEC pour pouvoir être intégré dans votre logiciel comptable.");
 		echo '</p>';
 		echo '<p>';
-			echo s("La page d'export des ventes vous permet également de visualiser une synthèse selon vos critères de recherche.");
+			echo s("La page d'export des données comptables vous permet également de visualiser une synthèse selon vos critères de recherche.");
 		echo '</p>';
 		echo '<p>';
-			echo s("Si vous avez filtré les résultat des ventes à afficher, l'export sera basé dessus.");
+			echo s("L'export sera calculé sur les filtres que vous aurez sélectionnés. Pour avoir toutes les ventes, réinitialisez le filtre.");
 		echo '</p>';
 		echo '<div class="util-info">';
 			echo Asset::icon('exclamation-triangle').' '.s("La complétude de l'export est soumise à la complétude de la phase préparatoire. Plus vos données seront remplies, plus votre import sera complet et facile à utiliser par la suite.");
@@ -273,22 +277,21 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 	$t->menuSelected = 'accounting:import';
 
-	$t->title = s("Importer les paiements dans le logiciel de comptabilité de {siteName}");
+	$t->title = s("Importer des opérations dans le livre journal");
 	$t->subTitle = s("... et créer les écritures comptables en un clic");
 
 	echo '<h4>'.Asset::icon('arrow-right-short').' '.s("Pré-requis : <link>Avoir préparé les données de vos factures</link>", ['link' => '<a href="/doc/accounting">']).'</h4>';
 
 	echo '<div class="util-block">';
 
-		echo '<h2>'.s("Importer les factures").'</h2>';
-		echo '<p>'.s("Pour accéder au récapitulatif de vos factures à importer dans la comptabilité, rendez vous dans la page <b>Précomptabilité</b>, sur le 3<sup>ème</sup> onglet, et cliquez sur le bouton <b>Importer les factures</b>.").'</p>';
-		echo '<p>'.s("Seules les factures dont les données sont préparées et <link>qui sont rapprochées avec une opération bancaire</link> sont éligibles à l'import dans la comptabilité.", ['link' => '<a href="/doc/accounting:bank#reconciliate">']).'</p>';
-		echo '<p>'.s("Vous pouvez :").'</p>';
-		echo '<ul class="doc-list-icons">';
-		echo '<li>'.Asset::icon('hand-thumbs-up').' '.s("Les importer").'</li>';
-		echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("Les ignorer <span>Note : ces factures ne vous seront alors plus proposées à l'import</span>", ['span' => '<span class="doc-annotation">']).'</li>';
-		echo '</ul>';
-		echo '<p>'.s("En les important dans la comptabilité, les écritures suivantes sont automatiquement créées :").'</p>';
+		echo '<h2>'.s("Générer automatiquement les écritures comptables").'</h2>';
+
+		echo '<a href="https://youtu.be/urbswJx-YUQ">'.Asset::icon('youtube').' '.s("Lien vers le tutoriel vidéo").'</a>';
+		echo '<br /><br />';
+
+		echo '<p>'.s("Pour accéder au récapitulatif des factures avec rapprochement bancaire et des opérations de caisse à importer dans le livre journal, cliquez dans le menu <b>{icon} Importer des opérations</b> : un récapitulatif de toutes les données à importer, mois par mois, de l'exercice comptable, sera présenté.", ['icon' => Asset::icon('magic')]).'</p>';
+		echo '<p>'.s("Seules les opérations de caisse dont les données sont préparées et les factures <link>avec un rapprochement bancaire</link> dont les données sont préparées sont éligibles à l'import dans le livre journal.", ['link' => '<a href="/doc/accounting:bank#reconciliate">']).'</p>';
+		echo '<p>'.s("En important les <b>factures avec rapprochement bancaire</b>, les écritures suivantes sont automatiquement créées :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Classe {productAccount} pour tous vos numéros de comptes de produits ou pour la livraison, avec autant d'écritures que de comptes différents", ['productAccount' => '<b>'.\account\AccountSetting::PRODUCT_ACCOUNT_CLASS.'</b>']).'</li>';
 			echo '<li>'.s("Numéro de compte de TVA {vatAccount}, avec autant d'écritures que de numéros de comptes et taux de TVA différents. <br /><span>Note : il n'y a pas de ligne d'écriture de TVA si vous avez indiqué ne pas être redevable de la TVA dans les paramètres de votre exercice comptable. Les écritures citées juste au-dessus seront intégrées TTC.</span>", ['vatAccount' => '<b>'.\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT.'</b>', 'span' => '<span class="doc-annotation">']).'</li>';
@@ -299,6 +302,7 @@ new AdaptativeView('import', function($data, DocTemplate $t) {
 			echo '<li>'.Asset::icon('magic').' '.s("Bonus ! Classe {bankAccount} pour le montant total TTC", ['bankAccount' => '<b>'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'</b>', 'link' => '<a href="/doc/accounting:bank#reconciliate">']).'</li>';
 		echo '</ul>';
 		echo '<p>'.s("Le document comptable enregistré sera le numéro de facture.").'</p>';
+		echo '<p>'.s("En important les <b>opérations de caisse</b> dans la comptabilité, les écritures dépendront de la configuration du journal de caisse ainsi que de chaque opération.").'</p>';
 
 	echo '</div>';
 
@@ -317,6 +321,10 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 	echo '<div id="bank-import" class="util-block">';
 
 		echo '<h2>'.s("Importer les opérations bancaires").'</h2>';
+
+		echo '<a href="https://youtu.be/imte9VT8tZ0">'.Asset::icon('youtube').' '.s("Lien vers le tutoriel vidéo").'</a>';
+		echo '<br /><br />';
+
 		echo '<p>'.s("Vous pouvez importer les opérations de votre compte en banque en exportant un fichier <i>OFX</i>. Si vous ne savez pas ce c'est, contactez votre banque pour qu'elle vous aide à télécharger ce document.<br />Rendez-vous sur la page des opérations bancaires et cliquez sur le bouton {button} puis sélectionnez votre fichier sur votre ordinateur.", ['button' => '<a class="btn btn-primary btn-readonly btn-xs">'.\Asset::icon('file-earmark-plus').' '.s("Importer un relevé bancaire").'</a>']).'</p>';
 		echo '<p>'.s("Et c'est tout !").'</p>';
 		echo '<p>'.s("Sur la page des imports, vous pouvez voir le résumé de l'import, et vous verrez tout ce qui a été importé sur la page des opérations bancaires.").'</p>';
@@ -349,6 +357,9 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 
 		echo '<h2 id="reconciliate">'.s("Rapprocher les factures avec les opérations bancaires").'</h2>';
 
+		echo '<a href="https://youtu.be/kr4eKrZVILw">'.Asset::icon('youtube').' '.s("Lien vers le tutoriel vidéo").'</a>';
+		echo '<br /><br />';
+
 		echo '<p>'.s("Il est uniquement possible d'<b>importer en comptabilité des factures</b>. Les ventes non rattachées à des factures et les points de vente ne sont pas rapprochables.").'</p>';
 		echo '<p>'.s("Une fois que vous avez importé vos opérations bancaires, {siteName} vous propose une association entre les opérations bancaires et vos factures qui semblent correspondre. Vous verrez une petite alerte {icon} dès qu'un rapprochement sera possible.", ['icon' => Asset::icon('fire')]).'</p>';
 		echo '<p>'.s("Les critères de décision sont : ").'</p>';
@@ -367,8 +378,8 @@ new AdaptativeView('bank', function($data, DocTemplate $t) {
 			echo '<li>'.Asset::icon('hand-thumbs-down').' '.s("de le refuser.<br /><span>Note : dans ce dernier cas, cette association ne vous sera plus proposée et si une autre association est trouvée, elle vous sera présentée à son tour.</span>", ['span' => '<span class="doc-annotation">']).'</li>';
 		echo '</ul>';
 
-		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, la facture ou la vente sera marquée <span>payée</span> avec le moyen de paiement et la date de paiement renseignés et <span2>{icon} rapprochée</span2>, dans le module de commercialisation.", ['span' => '<span class="util-badge payment-status payment-status-success">', 'span2' => '<span class="util-badge bg-accounting">', 'icon' => Asset::icon('bank')]).'</p>';
-		echo '<p>'.s("Vous pouvez ensuite passer à l'étape suivante : <link>Importer vos factures dans la comptabilité de {siteName}</link> en quelques clics !", ['link' => '<a href="/doc/accounting:import">']).'</p>';
+		echo '<p>'.s("Après avoir accepté une suggestion de rapprochement, le paiement de la facture ou de la vente sera indiqué avec une petite icône <span2>{icon}</span2> dans le module de commercialisation.", ['span' => '<span class="util-badge payment-status payment-status-success">', 'span2' => '<span class="util-badge bg-accounting">', 'icon' => Asset::icon('bank')]).'</p>';
+		echo '<p>'.s("Vous pouvez ensuite passer à l'étape suivante : <link>Importer vos factures avec rapprochement bancaire dans la comptabilité de {siteName}</link> en quelques clics !", ['link' => '<a href="/doc/accounting:import">']).'</p>';
 
 	echo '</div>';
 	echo '<br />';
@@ -452,15 +463,19 @@ new AdaptativeView('start', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Créer le premier exercice comptable").'</h2>';
 
+		echo '<a href="https://youtu.be/q7YgDDGeZJg">'.Asset::icon('youtube').' '.s("Lien vers le tutoriel vidéo").'</a>';
+		echo '<br /><br />';
+
 		echo '<p>'.s("L'exercice comptable est la base de la tenue d'une comptabilité.").'</p>';
 
 		echo '<p>'.s("Il s'agit de paraméter au mieux les choix effectués pour la ferme afin que le logiciel s'adapte à vos besoins.").'</p>';
-		echo '<p>'.s("Pour le moment, seules les fermes remplissant les critères suivants peuvent utiliser le logiciel comptable de {siteName} :").'</p>';
+		echo '<p>'.s("Pour le moment, le logiciel de comptabilité de {siteName} est optimisé pour les les fermes remplissant les critères suivants :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("fermes au micro-BA,").'</li>';
 			echo '<li>'.s("à la comptabilité de trésorerie,").'</li>';
 			echo '<li>'.s("redevables ou non de la TVA.").'</li>';
 		echo '</ul>';
+		echo '<p>'.s("Toutes les autres fermes peuvent bien sûr utiliser le logiciel de comptabilité de {siteName}, moyennant quelques adaptations dans l'enregistrement des écritures comptables.").'</p>';
 	echo '</div>';
 
 	echo '<br />';
@@ -475,7 +490,7 @@ new AdaptativeView('start', function($data, DocTemplate $t) {
 			echo '<li>'.s("vos anciens numéros de compte non retrouvés et ceux qui sont présents sur {siteName}").'</li>';
 		echo '</ul>';
 		echo '<p><b>'.s("Pourquoi configurer des numéros de compte ?").'</b></p>';
-		echo '<p>'.s("Les Plan Comptable Général et Plan Compable Agricole ont changé en 2025. {siteName} est basé sur cette version, c'est pourquoi certains comptes n'existent pas sur {siteName} alors que vous vous en serviez avant. Vous pouvez les recréer selon vos besoins, mais attention de ne pas vous en servir sur vos futurs exercices !").'</p>';
+		echo '<p>'.s("Les Plan Comptable Général et Plan Compable Agricole ont changé en 2025. {siteName} est basé sur cette version, c'est pourquoi certains comptes n'existent pas sur {siteName} alors que vous vous en serviez avant. Vous pouvez les recréer selon vos besoins, et pour éviter de vous en servir ultérieurement, vous pourrez les désactiver par la suite.").'</p>';
 		echo '<p><b>'.s("Clôturé ou Ouvert ?").'</b></p>';
 		echo '<p>'.s("Lorsque vous importez un fichier FEC, vous pouvez choisir de l'importer comme \"clôturé\" ou \"ouvert\". Voici les impacts de ce choix :").'</p>';
 		echo '<ul>';
@@ -491,7 +506,7 @@ new AdaptativeView('start', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Et ensuite ?").'</h2>';
 
-		echo '<p>'.s("Vous pouvez <link>Importer vos factures rapprochées</link>, <linkCreate>créer vos écritures comptables à partir de vos opérations bancaires</linkCreate>, ou encore créer directement vos écritures comptables !", ['link' => '<a href="/doc/accounting:import">', 'linkCreate' => '<a href="/doc/accounting:bank#cashflow-manage">']).'</p>';
+		echo '<p>'.s("Vous pouvez <link>Importer vos factures avec rapprochement bancaire</link>, <linkCreate>créer vos écritures comptables à partir de vos opérations bancaires</linkCreate>, ou encore créer directement vos écritures comptables !", ['link' => '<a href="/doc/accounting:import">', 'linkCreate' => '<a href="/doc/accounting:bank#cashflow-manage">']).'</p>';
 
 	echo '</div>';
 
@@ -675,7 +690,7 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 
 		echo '<p>'.s("Vous pouvez modifier le formulaire de la déclaration {daysBefore} jours avant la date de déclaration limite et jusqu'à {daysAfter} jours après cette date.", ['daysBefore' => \overview\VatDeclarationLib::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS, 'daysAfter' => \overview\VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS]).'</p>';
 
-		echo '<p>'.s("Une fois que vous aurez terminé votre déclaration, enregistrez-la sur {siteName} puis vous pourrez ensuite l'enregistrer comme déclarée. <b>N'oubliez pas de la télédéclarer sur <link>le site des impôts</link></b> ! Vous pourrez ensuite visualiser les écritures proposées par {siteName} à enregistrer dans votre livre-journal, compte-tenu de la déclaration que vous avez validée.", ['link' => '<a href="https://impots.gouv.fr">']).'</p>';
+		echo '<p>'.s("Une fois que vous aurez terminé votre déclaration, enregistrez-la sur {siteName} puis vous pourrez ensuite l'enregistrer comme déclarée. <b>N'oubliez pas de la télédéclarer sur <link>le site des impôts</link></b> ! Vous pourrez ensuite visualiser les écritures proposées par {siteName} à enregistrer dans votre livre-journal, compte-tenu de la déclaration que vous avez enregistrée sur {siteName}.", ['link' => '<a href="https://impots.gouv.fr">']).'</p>';
 
 	echo '</div>';
 	echo '<br /><br />';

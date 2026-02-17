@@ -15,7 +15,7 @@ new AdaptativeView('onboarding', function($data, FarmTemplate $t) {
 		echo '<ul class="journal-onboarding-list">';
 			echo '<li>'.s("Depuis vos <link>opérations bancaires</link>, après avoir importé un relevé bancaire", ['link' => '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations">']).'</li>';
 			echo '<li>';
-				echo s("En important les <link>paiements que vous avez rapprochés</link>.", ['link' => '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/precomptabilite:importer">']);
+				echo s("En important les <link>paiements que vous avez rapprochés</link>.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $data->eFarm).'/precomptabilite:importer">']);
 				if($data->nPaymentToImport > 0) {
 					echo ' '.p("Vous avez d'ailleurs <b>{value}</b> paiement à importer.", "Vous avez d'ailleurs <b>{value}</b> paiements à importer.", $data->nPaymentToImport);
 				}

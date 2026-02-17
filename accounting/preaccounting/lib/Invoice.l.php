@@ -3,7 +3,7 @@ namespace preaccounting;
 
 Class InvoiceLib {
 
-	public static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\InvoiceModel {
+	private static function filterForAccountingCheck(\farm\Farm $eFarm, \Search $search): \selling\InvoiceModel {
 
 		return \selling\Invoice::model()
 			->whereStatus('NOT IN', [\selling\Invoice::DRAFT, \selling\Invoice::CANCELED])
@@ -69,6 +69,78 @@ Class InvoiceLib {
 			->where(fn() => 'm2.id = '.$search->get('customer')['id'], if: $search->has('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
 			->getCollection();
+
+	}
+
+	public static function getForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport = FALSE) {
+
+		return self::filterForAccounting($eFarm, $search, $forImport)
+			->select(\selling\Payment::getSelection() + [
+				'sale' => [
+					'id', 'document',
+					'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'shippingExcludingVat', 'shippingVatRate',
+					'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
+					'cItem' => \selling\Item::model()
+						->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+						->delegateCollection('sale'),
+					'totalPaid' => new \selling\PaymentModel()
+						->select('amountIncludingVat')
+						->whereStatus(\selling\Payment::PAID)
+						->delegateCollection('sale', callback: fn(\Collection $cPayment) => $cPayment->sum('amountIncludingVat'))
+				],
+				'invoice' => [
+					'id', 'number', 'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'document',
+					'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
+					'cSale' => \selling\Sale::model()
+						->select([
+							'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate',
+							'cItem' => \selling\Item::model()
+								->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+								->delegateCollection('sale')
+						])
+						->delegateCollection('invoice'),
+					'totalPaid' => new \selling\PaymentModel()
+						->select('amountIncludingVat')
+						->whereStatus(\selling\Payment::PAID)
+						->delegateCollection('invoice', callback: fn(\Collection $cPayment) => $cPayment->sum('amountIncludingVat'))
+				],
+				'cashflow' => \bank\Cashflow::getSelection()
+			])
+			->getCollection();
+
+	}
+
+	public static function countForAccounting(\farm\Farm $eFarm, \Search $search) {
+
+		return self::filterForAccounting($eFarm, $search, TRUE)->count();
+
+	}
+
+	private static function filterForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport): \selling\PaymentModel {
+
+		if($forImport) {
+
+			\selling\Payment::model()
+				->whereCashflow('!=', NULL)
+				->whereAccountingHash(NULL)
+				->whereAccountingReady(TRUE)
+			;
+
+		}
+		return \selling\Payment::model()
+			->join(\bank\Cashflow::model(), 'm1.cashflow = m2.id', 'LEFT')
+			->join(\selling\Customer::model(), 'm1.customer = m3.id', 'LEFT')
+			->where('m1.farm = '.$eFarm['id'])
+			->where(
+				'm1.paidAt BETWEEN '.\selling\Payment::model()->format($search->get('from')).' AND '.\selling\Payment::model()->format($search->get('to')),
+				if: $search->get('from') and $search->get('to'))
+			->where('m1.status = '.\selling\Payment::model()->format(\selling\Payment::PAID))
+			->where('m1.source = "'.\selling\Payment::INVOICE.'"')
+			->where('m3.type = '.\selling\Customer::model()->format($search->get('customerType')), if: $search->get('customerType'))
+			->where(fn() => 'm3.id = '.$search->get('customer')['id'], if: $search->has('customer') and $search->get('customer')->notEmpty())
+			->whereAccountingDifference('!=', NULL, if: $search->get('accountingDifference') === TRUE)
+			->whereAccountingDifference('=', NULL, if: $search->get('accountingDifference') === FALSE)
+		;
 
 	}
 

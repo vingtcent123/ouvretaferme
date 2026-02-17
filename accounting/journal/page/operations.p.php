@@ -22,7 +22,7 @@ new Page(function($data) {
 
 			$data->cImport = \bank\Import::model()->count();
 			$search = new Search(['financialYear' => $data->eFarm['eFinancialYear']]);
-			$data->nPaymentToImport = \preaccounting\PaymentLib::countForAccounting($data->eFarm, $search);
+			$data->nPaymentToImport = \preaccounting\InvoiceLib::countForAccounting($data->eFarm, $search);
 
 			throw new ViewAction($data, ':onboarding');
 		}

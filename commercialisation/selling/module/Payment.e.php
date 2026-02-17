@@ -31,57 +31,13 @@ class Payment extends PaymentElement {
 	}
 
 	public function acceptAccountingIgnore(): bool {
-		return $this['accountingHash'] === NULL;
-	}
-
-	public static function validateBatch(\Collection $cInvoice): void {
-
-		if($cInvoice->empty()) {
-
-			throw new \FailAction('selling\Payment::payments.check');
-
-		} else {
-
-			$eFarm = $cInvoice->first()['farm'];
-
-			foreach($cInvoice as $eInvoice) {
-
-				if($eInvoice['farm']['id'] !== $eFarm['id']) {
-					throw new \NotExpectedAction('Different farms');
-				}
-
-			}
-		}
-
-	}
-
-	public static function validateBatchIgnore(\Collection $cPayment): void {
-
-		if($cPayment->empty()) {
-
-			throw new \FailAction('selling\Payment::payments.check');
-
-		} else {
-
-			$eFarm = $cPayment->first()['farm'];
-
-			foreach($cPayment as $ePayment) {
-
-				if($ePayment['farm']['id'] !== $eFarm['id']) {
-					throw new \NotExpectedAction('Different farms');
-				}
-
-				$ePayment->validate('acceptAccountingIgnore');
-
-			}
-		}
-
+		return $this['accountingHash'] === NULL and $this['accountingReady'] === TRUE;
 	}
 
 	public static function getSelection(): array {
 
 		return parent::getSelection() + [
-			'method' => fn($e) => \payment\MethodLib::ask($e['method'], $e['farm']),
+			'method' => fn($e) => $e->notEmpty() ? \payment\MethodLib::ask($e['method'], $e['farm']) : new \payment\Method(),
 		];
 
 	}

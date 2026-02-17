@@ -122,6 +122,11 @@ a.farm-subnav-item {
 	color: white;
 }
 
+a.farm-subnav-item[data-sub-nav="preaccounting"] > span.farm-subnav-prefix {
+	margin-left: 1rem;
+	margin-right: 0.25rem;
+}
+
 @media (max-height: 599px) {
 
 	a.farm-subnav-item {

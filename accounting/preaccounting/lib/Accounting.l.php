@@ -21,26 +21,25 @@ Class AccountingLib {
 	const EXTRA_FEC_COLUMN_IS_SUMMED = 21; /* Colonne pour savoir si on compte la valeur dans le total (affiché en précompta) */
 	const EXTRA_FEC_COLUMN_ORIGIN = 22; /* Colonne pour savoir d'où vient l'écriture */
 
-	public static function generateCashFec(\Collection $cCash, \Collection $cFinancialYear, \Collection $cAccount, \Search $search): array {
+	public static function generateCashFec(\Collection $cCash, \Collection $cAccount, \Search $search): array {
 
-		$eAccountFilter = $search->get('account');
 		$cRegister = $search->get('cRegister');
 		$cMethod = $search->get('cMethod');
 
 		$fecData = [];
 		$nCash = 0;
 
-		foreach($cCash as $eCash) {
+		foreach($cCash as &$eCash) {
 
 			$items = [];
 			$eRegister = $cRegister->offsetGet($eCash['register']['id']);
 			$eRegister['paymentMethod'] = $cMethod->offsetGet($eRegister['paymentMethod']['id']);
 
-			//source: enum(OTHER, SELL_INVOICE, SELL_SALE)
 			$fecLines = [];
 
 			switch($eCash['source']) {
 
+				case \cash\Cash::BANK_CASHFLOW:
 				case \cash\Cash::BANK_MANUAL:
 					$fecLines = self::generateCashBankLines($eCash, $eRegister, $cAccount);
 					break;
@@ -69,7 +68,30 @@ Class AccountingLib {
 					break;
 
 				case \cash\Cash::SELL_INVOICE:
+					$eCash['invoice']['cSale'] = SaleLib::getByInvoiceForFec($eCash['invoice']);
+					$eCash['invoice']['cPayment'] = PaymentLib::getByInvoiceForFec($eCash['invoice']);
+
+					// Simulation de la contrepartie en caisse
+					if($eCash['payment']['cashflow']->empty()) {
+						self::simulateCashflowForCash($cAccount, $eCash);
+					}
+					$eCash['sale']['customer'] = $eCash['customer'];
+
+					[$fecLines,] = self::generateInvoicesFec(new \Collection([$eCash['invoice']]), $cAccount, eAccountFilter: new \account\Account(), ePaymentFilter: $eCash['payment']);
+					break;
+
 				case \cash\Cash::SELL_SALE:
+					$eCash['sale']['cItem'] = \selling\ItemLib::getBySales($eCash['sale']['farm'], new \Collection([$eCash['sale']]))->linearize();
+					$eCash['sale']['cPayment'] = PaymentLib::getBySaleForFec($eCash['sale']);
+
+					// Simulation de la contrepartie en caisse
+					if($eCash['payment']['cashflow']->empty()) {
+						self::simulateCashflowForCash($cAccount, $eCash);
+					}
+					$eCash['sale']['customer'] = $eCash['customer'];
+
+					[$fecLines, ] = self::generateSalesFec(new \Collection([$eCash['sale']]), $cAccount, eAccountFilter: new \account\Account(), ePaymentFilter: $eCash['payment'], eCash: $eCash);
+					break;
 			}
 
 			if(count($fecLines) > 0) {
@@ -86,6 +108,23 @@ Class AccountingLib {
 		}
 
 		return [$fecData, $nCash];
+
+	}
+
+	private static function simulateCashflowForCash(\Collection $cAccount, \cash\Cash $eCash): void {
+
+		$cAccountRegister = $cAccount->find(fn($e) => $e['id'] === ($eCash['register']['account']['id'] ?? NULL));
+		if($cAccountRegister->notEmpty()) {
+			$eAccountRegister = $cAccountRegister->first();
+		} else {
+			$eAccountRegister = new \account\Account();
+		}
+		$eCash['payment']['cashflow'] = new \bank\Cashflow([
+			'account' => new \bank\BankAccount([
+				'account' => $eAccountRegister,
+			]),
+			'amount' => $eCash['amountIncludingVat'],
+		]);
 
 	}
 
@@ -141,7 +180,7 @@ Class AccountingLib {
 
 		} else {
 
-			$eAccount = $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
+			$eAccount = new \account\Account();
 
 		}
 
@@ -165,18 +204,22 @@ Class AccountingLib {
 
 		}
 
-		$document = '';
+		$document = $eCash['register']['id'].'-'.$eCash['position'];
 		$compAuxNum = '';
 		$compAuxLib = '';
-
+		if($eCash['description'] !== NULL) {
+			$description = $eCash['description'];
+		} else {
+			$description = \cash\CashUi::getName($eCash);
+		}
 		$lines[] = self::getFecLine(
 			eAccount    : $eAccount,
 			date        : $eCash['date'],
 			eCode       : new \journal\JournalCode(),
-			ecritureLib : $eCash['description'],
+			ecritureLib : $description,
 			document    : $document,
 			documentDate: $eCash['date'],
-			amount      : $eCash['amountExcludingVat'],
+			amount      : $eCash['amountIncludingVat'],
 			type        : $counterpartType,
 			payment     : $eRegister['paymentMethod']['name'],
 			compAuxNum  : $compAuxNum,
@@ -205,11 +248,16 @@ Class AccountingLib {
 
 		}
 
+		if($eCash['description'] !== NULL) {
+			$description = $eCash['description'];
+		} else {
+			$description = \cash\CashUi::getName($eCash);
+		}
 		$lines[] = self::getFecLine(
 			eAccount    : $eRegister['account'],
 			date        : $eCash['date'],
 			eCode       : new \journal\JournalCode(),
-			ecritureLib : $eCash['description'],
+			ecritureLib : $description,
 			document    : $document,
 			documentDate: $eCash['date'],
 			amount      : $eCash['amountIncludingVat'],
@@ -225,27 +273,45 @@ Class AccountingLib {
 
 	}
 
-	public static function generateSalesFec(\Collection $cSale, \Collection $cAccount, \account\Account $eAccountFilter): array {
+	public static function generateSalesFec(\Collection $cSale, \Collection $cAccount, \account\Account $eAccountFilter, \selling\Payment $ePaymentFilter = new \selling\Payment(), \cash\Cash $eCash = new \cash\Cash()): array {
 
 		$fecData = [];
 		$nSale = 0;
 
-		// On ne connaît pas forcément le numéro de compte de banque
-		$eAccountBank = $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
-
 		foreach($cSale as $eSale) {
 
-			$document = $eSale['document'] ?? '';
+			if($eCash->notEmpty()) {
+				if($eCash['description'] !== NULL) {
+					$description = $eCash['description'];
+				} else {
+					$description = \cash\CashUi::getName($eCash);
+				}
+				$document = $eCash['register']['id'].'-'.$eCash['position'];
+			} else {
+				$document = $eSale['document'] ?? '';
+				$description = $document;
+			}
 			$documentDate = $eSale['deliveredAt'];
 			$compAuxLib = ($eSale['customer']['name'] ?? '');
 			$compAuxNum = '';
 
 			$items = [];
 
-			$ratios = self::computeRatios($eSale, $cAccount);
+			$ratios = self::computeRatios($eSale, $cAccount, $ePaymentFilter);
 			$allEntries = array_merge(...array_values($ratios));
 
+			// Exclure les ventes réglées dans les journaux de caisse
+			if($eCash->empty()) {
+				$paymentIdsToExclude = $eSale['cPayment']->find(fn($e) => ($e['statusCash'] ?? NULL) === \selling\Payment::VALID)->getIds();
+			} else {
+				$paymentIdsToExclude = [];
+			}
+
 			foreach($allEntries as $item) {
+
+				if(in_array((int)$item['payment'], $paymentIdsToExclude)) {
+					continue;
+				}
 
 				if($cAccount->offsetExists($item['account'])) {
 					$eAccount = $cAccount->offsetGet($item['account']);
@@ -272,7 +338,7 @@ Class AccountingLib {
 						eAccount    : $eAccount,
 						date        : $date,
 						eCode       : $eAccount['journalCode'] ?? new \journal\JournalCode(),
-						ecritureLib : $document,
+						ecritureLib : $description,
 						document    : $document,
 						documentDate: $documentDate,
 						amount      : $item['amount'],
@@ -280,8 +346,8 @@ Class AccountingLib {
 						payment     : $payment,
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
-						isSummed    : $eAccountBank['id'] !== ($eAccount['id'] ?? ''),
-						origin      : 'sale',
+						isSummed    : \account\AccountLabelLib::isFromClass($eAccount['class'] ?? '', \account\AccountSetting::FINANCIAL_GENERAL_CLASS) === FALSE,
+						origin      : $eCash->notEmpty() ? 'register' : 'sale',
 					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataItemPayment);
@@ -302,13 +368,12 @@ Class AccountingLib {
 
 	}
 
-	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cAccount, bool $forImport, \account\Account $eAccountFilter = new \account\Account()): array {
+	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cAccount, \account\Account $eAccountFilter = new \account\Account(), \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
 
 		$eAccountBank = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 
 		$fecData = [];
 		$nInvoices = 0;
-		$number = 0;
 
 		foreach($cInvoice as $eInvoice) {
 
@@ -325,7 +390,7 @@ Class AccountingLib {
 			}
 			$eInvoice['cItem'] = $cItems;
 
-			$ratios = self::computeRatios($eInvoice, $cAccount);
+			$ratios = self::computeRatios($eInvoice, $cAccount, $ePaymentFilter);
 			$allEntries = array_merge(...array_values($ratios));
 
 			foreach($allEntries as $item) {
@@ -359,17 +424,11 @@ Class AccountingLib {
 						payment     : $payment,
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
-						number      : $forImport ? ++$number : NULL,
+						number      : NULL,
 						isSummed    : $eAccountBank['id'] !== ($eAccount['id'] ?? NULL),
 						origin      : 'invoice',
 					);
-
-					if($item['isVat'] === FALSE) {
-						$numberWithoutVat = $number;
-					} else if($forImport) {
-						$fecDataItemPayment[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
-					}
-
+//dd($fecDataItemPayment);
 					self::mergeFecLineIntoItemData($items, $fecDataItemPayment);
 
 				}
@@ -412,7 +471,7 @@ Class AccountingLib {
 
 			} else {
 
-				$document = $ePayment['sale']['document'];
+				$document = $ePayment['sale']['document'] ?? '';
 
 				$eElement = $ePayment['sale'];
 
@@ -742,7 +801,7 @@ Class AccountingLib {
 		return $items;
 	}
 
-	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount, \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
+	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount, \selling\Payment $ePaymentFilter): array {
 
 		$eElement->expects(['hasVat', 'cItem', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat']);
 
@@ -775,7 +834,7 @@ Class AccountingLib {
 
 			$totalPaid = $cPayment->sum('amountIncludingVat');
 
-			if($totalPaid < $eElement['priceIncludingVat']) { // On simule le restant à payer (pour avoir 100% de la evnte)
+			if($totalPaid < $eElement['priceIncludingVat']) { // On simule le restant à payer (pour avoir 100% de la vente)
 				$cPayment->append(new \selling\Payment([
 					'id' => NULL,
 					'status' => \selling\Payment::NOT_PAID,
@@ -797,16 +856,7 @@ Class AccountingLib {
 
 		foreach($cPayment as $ePayment) {
 
-			if($ePayment['status'] === \selling\Payment::PAID) {
-
-				$paymentRatio = $ePayment['amountIncludingVat'] / $eElement['priceIncludingVat'];
-
-			} else { // On simule une vente payée
-
-				$ePayment['amountIncludingVat'] = $eElement['priceIncludingVat'];
-				$paymentRatio = 1;
-
-			}
+			$paymentRatio = $ePayment['amountIncludingVat'] / $eElement['priceIncludingVat'];
 
 			// Niveau 2 : Éclater par taux de TVA
 			if($hasVat === FALSE) {
@@ -963,9 +1013,8 @@ Class AccountingLib {
 
 			// Ajout de l'écriture de banque
 			if($ePayment['status'] === \selling\Payment::PAID and $ePayment['cashflow']->notEmpty()) {
-
 				$items[] = [
-					'account' => $ePayment['cashflow']['account']['account']['id'],
+					'account' => $ePayment['cashflow']['account']['account']['id'] ?? '',
 					'accountReference' => NULL,
 					'vatRate' => NULL,
 					'isBank' => TRUE,

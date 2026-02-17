@@ -3,13 +3,44 @@ namespace preaccounting;
 
 Class ImportLib {
 
+	public static function getCash(\farm\Farm $eFarm, \Search $search): \Collection {
+
+		$eFarm->expects(['cFinancialYear']);
+
+		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
+
+		$cCash = CashLib::getForAccounting($eFarm, $search, TRUE);
+
+		if($cCash->empty()) {
+			return new \Collection();
+		}
+
+		[$fec, ] = AccountingLib::generateCashFec($cCash, $cAccount, $search);
+
+		// Rattacher les opérations aux invoices
+		foreach($cCash as &$eCash) {
+
+			$document = match($eCash['source']) {
+				\cash\Cash::SELL_INVOICE => $eCash['invoice']['number'] ?? '',
+				\cash\Cash::SELL_SALE => $eCash['register']['id'].'-'.$eCash['position'],
+				default => $eCash['register']['id'].'-'.$eCash['position'],
+			};
+
+			$eCash['operations'] = self::filterOperations($fec, $document);
+
+		}
+
+		return $cCash;
+
+	}
+
 	public static function getPayments(\farm\Farm $eFarm, \Search $search): \Collection {
 
 		$eFarm->expects(['cFinancialYear']);
 
 		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 
-		$cPayment = PaymentLib::getForAccounting($eFarm, $search, TRUE);
+		$cPayment = InvoiceLib::getForAccounting($eFarm, $search, TRUE);
 
 		if($cPayment->empty()) {
 			return new \Collection();
@@ -33,95 +64,174 @@ Class ImportLib {
 
 	}
 
-
 	public static function ignorePayment(\selling\Payment $ePayment): void {
 
 		\selling\Payment::model()->update($ePayment, ['accountingReady' => NULL]);
 
 	}
-	public static function ignorePayments(\Collection $cPayment): void {
 
-		\selling\Payment::model()
-			->whereId('IN', $cPayment->getIds())
-			->update(['accountingReady' => NULL]);
+	public static function importCollection(\farm\Farm $eFarm, \Search $search): void {
 
-	}
+		$eFinancialYear = \account\FinancialYearLib::getOpenFinancialYearByDate($search->get('from'));
 
-	public static function getPaymentById(int $id): \selling\Payment {
-
-		return \selling\PaymentLib::getById($id, PaymentLib::getPaymentSelection());
-
-	}
-
-	public static function getPaymentsByIds(array $ids): \Collection {
-
-		return \selling\PaymentLib::getByIds($ids, PaymentLib::getPaymentSelection());
-
-	}
-
-	public static function importPayments(\farm\Farm $eFarm, \Collection $cPayment): void {
-
-		foreach($cPayment as $ePayment) {
-
-			self::importPayment($eFarm, $ePayment);
-
-		}
-
-	}
-
-	public static function importPayment(\farm\Farm $eFarm, \selling\Payment $ePayment): void {
-
-		$eFarm->expects(['eFinancialYear']);
-
-
-		if($ePayment->acceptAccountingImport() === FALSE or $ePayment['accountingReady'] === FALSE) {
+		if($eFinancialYear['status'] !== \account\FinancialYear::OPEN) {
+			\Fail::log('preaccounting\Import::importCannotWriteInFinancialYear');
 			return;
 		}
+
+		if($eFinancialYear->empty()) {
+			\Fail::log('preaccounting\Import::importNoFinancialYear');
+			return;
+		}
+
+		\selling\Payment::model()->beginTransaction();
+
+			$lastValidationDate = \journal\OperationLib::getLastValidationDate($eFinancialYear);
+			$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
+			$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
+
+			$cPayment = InvoiceLib::getForAccounting($eFarm, $search, TRUE);
+
+			if($cPayment->notEmpty()) {
+				foreach($cPayment as $ePayment) {
+					if(
+						(empty($lastValidationDate) === FALSE and $lastValidationDate < $ePayment['paidAt']) or
+						$ePayment->acceptAccountingImport() === FALSE
+					) {
+						continue;
+					}
+					[$fec, ] = AccountingLib::generatePaymentsFec(new \Collection([$ePayment]), $cAccount, TRUE);
+					if(self::isFecDataImportable($fec)) {
+						self::importPayment($eFinancialYear, $ePayment, $fec, $cAccount, $cPaymentMethod);
+					}
+				}
+			}
+
+			$cCash = \preaccounting\ImportLib::getCash($eFarm, $search);
+
+			if($cCash->notEmpty()) {
+				foreach($cCash as $eCash) {
+					if(
+						empty($lastValidationDate) === FALSE and $lastValidationDate < $ePayment['paidAt']
+					) {
+						continue;
+					}
+					[$fec, ] = AccountingLib::generateCashFec(new \Collection([$eCash]), $cAccount, $search);
+
+					if(self::isFecDataImportable($fec)) {
+						self::importCash($eFinancialYear, $eCash, $fec, $cAccount, $cPaymentMethod);
+					}
+				}
+
+			}
+
+		\selling\Payment::model()->commit();
+
+	}
+
+	private static function isFecDataImportable(array $fecData): bool {
+
+		foreach($fecData as $line) {
+			if(empty($line[AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
+				return FALSE;
+			}
+		}
+
+		return TRUE;
+	}
+
+	private static function importPayment(\account\FinancialYear $eFinancialYear, \selling\Payment $ePayment, array $fecData, \Collection $cAccount, \Collection $cPaymentMethod): void {
 
 		$fw = new \FailWatch();
 
-		$eFinancialYear = \account\FinancialYearLib::getOpenFinancialYearByDate($ePayment['cashflow']['date']);
+		$date = $ePayment['paidAt'];
 
-		if($eFinancialYear->empty()) {
-			\Fail::log('Payment::importNoFinancialYear');
-			return;
-		}
-
-		if(\account\FinancialYearLib::isDateInFinancialYear($ePayment['cashflow']['date'], $eFinancialYear) === FALSE) {
-			\Fail::log('Payment::importNotBelongsToFinancialYear');
+		if(\account\FinancialYearLib::isDateInFinancialYear($date, $eFinancialYear) === FALSE) {
+			\Fail::log('preaccounting\Import::importNotBelongsToFinancialYear');
 			return;
 		}
 
 		$fw->validate();
 
-		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_INVOICE;
-		$cPaymentMethod = \payment\MethodLib::getByFarm($eFarm, NULL, FALSE);
 
-		\selling\Invoice::model()->beginTransaction();
+		\selling\Payment::model()->beginTransaction();
 
-		$eCustomer = match($ePayment['source']) {
-			\selling\Payment::INVOICE => $ePayment['invoice']['customer'],
-			\selling\Payment::SALE => $ePayment['sale']['customer'],
-		};
+			$eCustomer = match($ePayment['source']) {
+				\selling\Payment::INVOICE => $ePayment['invoice']['customer'],
+				\selling\Payment::SALE => $ePayment['sale']['customer'],
+			};
 
-		$eThirdParty = self::getOrCreateThirdParty($eCustomer);
+			$eThirdParty = self::getOrCreateThirdParty($eCustomer);
 
-		[$fecData, ] = \preaccounting\AccountingLib::generatePaymentsFec(new \Collection([$ePayment]), $cAccount, TRUE);
+			$eOperationBase = new \journal\Operation([
+				'thirdParty' => $eThirdParty,
+				'hash' => $hash,
+			]);
 
-		$eOperationBase = new \journal\Operation([
-			'thirdParty' => $eThirdParty,
-			'hash' => $hash,
-		]);
+			self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperationBase, $ePayment['cashflow']);
 
-		self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperationBase, $ePayment);
+			\selling\PaymentAccountingLib::setImported($ePayment, $hash);
+			\bank\Cashflow::model()->update($ePayment['cashflow'], ['status' => \bank\Cashflow::ALLOCATED, 'hash' => $hash]);
 
-		\selling\PaymentAccountingLib::setImported($ePayment, $hash);
-		\bank\Cashflow::model()->update($ePayment['cashflow'], ['status' => \bank\Cashflow::ALLOCATED, 'hash' => $hash]);
-
-		\selling\Invoice::model()->commit();
+		\selling\Payment::model()->commit();
 
 	}
+
+	private static function importCash(\account\FinancialYear $eFinancialYear, \cash\Cash $eCash, array $fecData, \Collection $cAccount, \Collection $cPaymentMethod): void {
+
+		$fw = new \FailWatch();
+
+		$date = $eCash['date'];
+
+		if(\account\FinancialYearLib::isDateInFinancialYear($date, $eFinancialYear) === FALSE) {
+			\Fail::log('preaccounting\Import::importNotBelongsToFinancialYear');
+			return;
+		}
+
+		$fw->validate();
+
+		$hash = \journal\OperationLib::generateHash().\journal\JournalSetting::HASH_LETTER_IMPORT_INVOICE;
+
+		\selling\Payment::model()->beginTransaction();
+
+			$eCustomer = $eCash['customer'];
+
+			if($eCustomer->notEmpty()) {
+				$eThirdParty = self::getOrCreateThirdParty($eCustomer);
+			} else {
+				$eThirdParty = new \account\ThirdParty();
+			}
+
+			$eOperationBase = new \journal\Operation([
+				'thirdParty' => $eThirdParty,
+				'hash' => $hash,
+			]);
+
+			if($eCash['cashflow']->notEmpty()) {
+				$eCashflow = $eCash['cashflow'];
+				\bank\Cashflow::model()->update($eCashflow, ['status' => \bank\Cashflow::ALLOCATED, 'hash' => $hash]);
+			} else {
+				$eCashflow = new \bank\Cashflow();
+			}
+
+			self::createOperations($eFinancialYear, $fecData, $cAccount, $cPaymentMethod, $eOperationBase, $eCashflow);
+
+			if($eCash['payment']->exists()) {
+				\selling\PaymentAccountingLib::setImported($eCash['payment'], $hash);
+			}
+			if($eCash['invoice']->exists()) {
+				\selling\PaymentAccountingLib::setImportedByExternal($eCash['invoice'], $hash);
+			}
+			if($eCash['sale']->exists()) {
+				\selling\PaymentAccountingLib::setImportedByExternal($eCash['sale'], $hash);
+			}
+			\cash\Cash::model()->update($eCash, ['accountingHash' => $hash]);
+
+		\selling\Payment::model()->commit();
+
+	}
+
 
 	protected static function getOrCreateThirdParty(\selling\Customer $eCustomer): \account\ThirdParty {
 
@@ -168,7 +278,7 @@ Class ImportLib {
 		\Collection $cAccount,
 		\Collection $cPaymentMethod,
 		\journal\Operation $eOperationBase,
-		\selling\Payment $ePayment,
+		\bank\Cashflow $eCashflow,
 	): void {
 
 		$cOperation = new \Collection();
@@ -233,7 +343,10 @@ Class ImportLib {
 			$fw->validate();
 
 			// On essaie de rattacher les opérations liées (type TVA) à leurs copines
-			if(strpos($data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER], '-') !== FALSE) {
+			if(
+				$data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER] !== NULL and
+				strpos($data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER], '-') !== FALSE
+			) {
 
 				[$currentNumber, $number] = array_map('intval', explode('-', $data[\preaccounting\AccountingLib::FEC_COLUMN_NUMBER]));
 
@@ -256,12 +369,12 @@ Class ImportLib {
 
 			\journal\Operation::model()->insert($eOperation);
 
-			if($ePayment->notEmpty() and $ePayment['cashflow']->notEmpty()) {
+			if($eCashflow->notEmpty()) {
 
 				$eOperationCashflow = new \journal\OperationCashflow([
 					'operation' => $eOperation,
-					'cashflow' => $ePayment['cashflow'],
-					'amount' => min($eOperation['amount'], abs($ePayment['cashflow']['amount'])),
+					'cashflow' => $eCashflow,
+					'amount' => min($eOperation['amount'], abs($eCashflow['amount'])),
 				]);
 
 				\journal\OperationCashflow::model()->insert($eOperationCashflow);

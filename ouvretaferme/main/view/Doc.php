@@ -42,7 +42,7 @@ class DocTemplate extends MainTemplate {
 				$h .= '<a href="/doc/accounting" '.$this->menuSelected('accounting').'>'.s("Prendre en main le logiciel").'</a>';
 				$h .= '<a href="/doc/accounting:bank" '.$this->menuSelected('accounting:bank').'>'.s("Les opérations bancaires").'</a>';
 				$h .= '<a href="/doc/accounting:start" '.$this->menuSelected('accounting:start').'>'.s("Démarrer la comptabilité").'</a>';
-				$h .= '<a href="/doc/accounting:import" '.$this->menuSelected('accounting:import').'>'.s("Importer les factures").'</a>';
+				$h .= '<a href="/doc/accounting:import" '.$this->menuSelected('accounting:import').'>'.s("Importer en comptabilité").'</a>';
 				$h .= '<a href="/doc/accounting:asset" '.$this->menuSelected('accounting:asset').'>'.s("Importer les immobilisations").'</a>';
 				$h .= '<a href="/doc/accounting:vat" '.$this->menuSelected('accounting:vat').'>'.s("La TVA").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Divers").'</div>';

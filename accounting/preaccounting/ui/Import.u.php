@@ -9,24 +9,41 @@ Class ImportUi {
 		\Asset::js('preaccounting', 'import.js');
 	}
 
-	public function list(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cPayment, int $nPayment, ?string $lastValidationDate, \Search $search): string {
+	public function list(\farm\Farm $eFarm, \Collection $cOperation, ?string $lastValidationDate, \Search $search): string {
 
-		if($cPayment->empty() and $search->empty(['id'])) {
-			return '<div class="util-empty">'.s("Il n'y a aucune facture à importer. Êtes-vous sur le bon exercice comptable ?").'</div>';
+		if($cOperation->empty() and $search->empty(['from', 'to', 'cRegister', 'cMethod'])) {
+			return '<div class="util-empty">'.s("Il n'y a aucune opération à importer. Avez-vous terminé de <link>préparer vos données</link> ?", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite/verifier:import?from='.$search->get('from').'">']).'</div>';
 		}
+
+		$nPayment = $cOperation->find(fn($e) => $e instanceof \selling\Payment)->count();
+		$nCash = $cOperation->find(fn($e) => $e instanceof \cash\Cash)->count();
+		$dateOk = date('Y-m-t', strtotime($search->get('from'))) < date('Y-m-d');
+		$financialYearOk = ($eFarm['eFinancialYear']['status'] === \account\FinancialYear::OPEN);
+		$hasBeforeLastValidationDate = FALSE;
+		$canImport = ($dateOk and $financialYearOk);
 
 		$h = '<div id="payment-search" class="util-block-search">';
 
 			$form = new \util\FormUi();
 
-			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'class' => 'util-search']);
-
+			$h .= $form->openAjax(LIME_REQUEST_PATH.'?type=export&from='.GET('from'), ['method' => 'get', 'class' => 'util-search']);
+				$values = [
+					'invoice' => s("Factures avec rapprochement bancaire"),
+				];
+				$values += $search->get('cRegister')->makeArray(function($e, &$key) {
+					$key = $e['id'];
+					return strip_tags(\cash\RegisterUi::getName($e));
+				});
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Origine des opérations").'</legend>';
+					$h .= $form->select('importType', $values, $search->get('importType'), ['placeholder' => s("Toutes les origines")]);
+				$h .= '</fieldset>';
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Type de client").'</legend>';
-					$h .= $form->select('type', [
+					$h .= $form->select('customerType', [
 						\selling\Customer::PRO => s("Professionnels"),
 						\selling\Customer::PRIVATE => s("Particuliers"),
-					], $search->get('type'), ['placeholder' => s("Tous types de clients")]);
+					], $search->get('customerType'), ['placeholder' => s("Tous types de clients")]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Écart de paiement").'</legend>';
@@ -43,7 +60,7 @@ Class ImportUi {
 			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"));
 				if($search->notEmpty(['from', 'to'])) {
-					$h .= '<a href="'.LIME_REQUEST_PATH.'" class="btn btn-outline-secondary">'.s("Réinitialiser").'</a>';
+					$h .= '<a href="'.LIME_REQUEST_PATH.'?from='.$search->get('from').'&type=export" class="btn btn-outline-primary">'.\Asset::icon('x-lg').'</a>';
 				}
 			$h .= '</div>';
 
@@ -51,15 +68,15 @@ Class ImportUi {
 
 		$h .= '</div>';
 
-		if($nPayment === 0) {
+		if($nPayment === 0 and $nCash === 0) {
 
-			if($search->empty(['from', 'to'])) {
+			if($search->empty(['from', 'to', 'cRegister', 'cMethod'])) {
 
-				$h .= '<div class="util-empty">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer les données des factures</link> ?", ['link' => '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/precomptabilite">']).'</div>';
+				$h .= '<div class="util-empty">'.s("Vous êtes à jour de vos imports ! ... ou alors vous n'avez pas terminé de <link>préparer vos données</link> ?", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite/verifier:import?from='.$search->get('from').'">']).'</div>';
 
 			} else {
 
-				$h .= '<div class="util-empty">'.s("Aucune facture ne correspond à vos critères de recherche.").'</div>';
+				$h .= '<div class="util-empty">'.s("Aucune opération ne correspond à vos critères de recherche.").'</div>';
 
 			}
 
@@ -67,14 +84,10 @@ Class ImportUi {
 
 		}
 
-		$h .= '<div class="util-info">';
-			$h .= s("Vous ne pouvez importer automatiquement dans le logiciel comptable de {siteName} que les paiements de factures dont les numéros de compte sont renseignés pour chaque article, et qui sont rapprochés avec une opération bancaire.");
-		$h .= '</div>';
-
-		if(empty($lastValidationDate) === FALSE) {
-			$h .= '<div class="util-info">';
-				$h .= s("Attention, vous avez déjà validé des écritures jusqu'au {value}. Vous ne pouvez pas importer d'écritures antérieures à cette date pour respecter la numérotation chronologique des dates de vos écritures.", '<b>'.\util\DateUi::numeric($lastValidationDate).'</b>');
-			$h .= '</div>';
+		$showIgnoreColumn = $cOperation->find(fn($e) => $e instanceof \selling\Payment)->count() > 0;
+		$columns = 8;
+		if($showIgnoreColumn) {
+			$columns++;
 		}
 
 		$h .= '<div class="stick-sm util-overflow-lg">';
@@ -82,17 +95,32 @@ Class ImportUi {
 			$h .= '<table class="preaccounting-import-table" data-batch="#batch-payment">';
 
 				$h .= '<thead class="thead-sticky">';
-					$h .= '<tr>';
-						$h .= '<th rowspan="2" class="td-checkbox">';
-							$h .= '<label>';
-								$h .= '<input type="checkbox" class="batch-all batch-all-group" onclick="Import.toggleGroupSelection(this)"/>';
-							$h .= '</label>';
+					$h .= '<tr class="tr-bold">';
+						$h .= '<th colspan="'.$columns.'" class="text-center">';
+							if(empty($search->get('type'))) {
+								if($nPayment > 0 and $nCash > 0) {
+									$h .= s("{payment} paiements et {cash} opérations de caisse", ['payment' => $nPayment, 'cash' => $nCash]);
+								} else if($nPayment > 0) {
+									$h .= p("{value} paiement, aucune opération de caisse", "{value} paiements, aucune opération de caisse", $nPayment);
+								} else if($nCash > 0) {
+									$h.= p("{value} opération de caisse", "{value} opérations de caisse", $nCash);
+								}
+							} else if($search->get('type') === 'invoice') {
+								$h .= p("{value} paiement, aucun paiement de facture", "{value} paiements, aucun paiement de facture", $nPayment);
+							} else {
+								$h.= p("{value} opération de caisse", "{value} opérations de caisse", $nCash);
+							}
 						$h .= '</th>';
+					$h .= '</tr>';
+					$h .= '<tr>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Date").'</th>';
 						$h .= '<th rowspan="2">'.s("Client").'</th>';
 						$h .= '<th rowspan="2">'.s("Référence").'</th>';
 						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Montant").'</th>';
 						$h .= '<th colspan="4" class="text-center">'.s("Écritures").'</th>';
+						if($showIgnoreColumn) {
+							$h .= '<th rowspan="2" class="text-center"></th>';
+						}
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.s("Numéro de compte").'</th>';
@@ -102,145 +130,156 @@ Class ImportUi {
 					$h .= '</tr>';
 				$h .= '</thead>';
 
-				foreach($cPayment as $ePayment) {
+				foreach($cOperation as $eOperation) {
 
-					$batch = [];
+					$operations = $eOperation['operations'];
 
-					if($ePayment->acceptAccountingImport() === FALSE) {
-						$batch[] = 'not-import';
+					if($eOperation instanceof \selling\Payment) {
+
+						$eElement = $eOperation['invoice'];
+
+						$date = $eOperation['paidAt'];
+						$customer = encode($eElement['customer']->getName());
+
+						if($eElement['customer']->notEmpty()) {
+							$customer .= '<div class="util-annotation">';
+								$customer .= \selling\CustomerUi::getCategory($eElement['customer']);
+							$customer .= '</div>';
+						}
+
+						if(
+							$eElement['totalPaid'] !== $eElement['priceIncludingVat'] or
+							$eOperation['cashflow']['amount'] !== $eOperation['amountIncludingVat']
+						) {
+							$customer .= '<div class="mb-1">';
+
+								if($eOperation['cashflow']['amount'] !== $eOperation['amountIncludingVat']) {
+									$difference = abs($eOperation['cashflow']['amount'] - $eOperation['amountIncludingVat']);
+								} else if($eElement['totalPaid'] !== $eElement['priceIncludingVat']) {
+									$difference = abs($eElement['priceIncludingVat'] - $eElement['totalPaid']);
+								}
+
+								$form = new \util\FormUi();
+								$customer .= $form->openAjax(\farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:updateInvoiceAccountingDifference', ['id' => 'difference-'.$eOperation['id'], 'name' => 'difference-'.$eOperation['id']]);
+									$customer .= $form->hidden('id', $eOperation['id']);
+									$customer .= '<fieldset>';
+										$customer .= '<legend>';
+											if($eOperation['accountingDifference'] === NULL) {
+												$customer .= $this->emptyData(NULL).' ';
+											}
+											$customer .= s("Traitement comptable de l'écart de {value}", \util\TextUi::money(round($difference, 2)));
+										$customer .= '</legend>';
+										$customer .= $form->select('accountingDifference', \selling\PaymentUi::p('accountingDifference')->values, $eOperation['accountingDifference'], attributes: ['onchange' => 'Import.submit(this);'] + ($eOperation['accountingDifference'] !== NULL ? ['mandatory' => TRUE] : []));
+									$customer .= '</fieldset>';
+								$customer .= $form->close();
+							$customer .= '</div>';
+
+							if($eOperation['accountingDifference'] === NULL) {
+								$canImport = FALSE;
+							}
+
+						}
+
+						if($eOperation['source'] === \selling\Payment::INVOICE) {
+							$reference = '<a class="btn btn-outline-primary btn-xs" href="/ferme/'.$eFarm['id'].'/factures?name='.encode($eOperation['invoice']['number']).'">';
+								$reference .= encode($eElement['number']);
+							$reference .= '</a>';
+						} else {
+							$reference = '<a class="btn btn-outline-primary btn-xs" href="'.\selling\SaleUi::url($eOperation['sale']).'">';
+								$reference .= s("Vente n°", $eElement['document']);
+							$reference .= '</a>';
+						}
+
+						$amount = '<div>';
+							$amount .= \selling\SaleUi::getIncludingTaxesTotal($eElement);
+						$amount .= '</div>';
+
+						$amount .= '<div>';
+							if($eOperation['amountIncludingVat'] !== $eElement['priceIncludingVat']) {
+
+								$class = 'color-danger';
+								if($eOperation['amountIncludingVat'] < $eElement['priceIncludingVat']) {
+									$amount .= '<span class="util-badge bg-warning">'.s("Partiel").'</span> ';
+								}
+
+								if($eOperation['source'] === \selling\Payment::INVOICE and $eOperation['invoice']['taxes'] === \selling\Invoice::EXCLUDING) {
+
+									$eOperation['invoice']['taxes'] = \selling\Invoice::INCLUDING;
+									$amount .= \selling\SaleUi::getTotal($eOperation['invoice']);
+									$amount .= '<br />';
+
+								}
+							} else {
+								$class = '';
+							}
+
+							$amount .= '<span class="'.$class.'">'.\util\TextUi::money($eOperation['cashflow']['amount']).'</span>';
+							$amount .= '<a title="'.s("Rapprochée").'" href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?id='.$eOperation['cashflow']['id'].'&bankAccount='.$eOperation['cashflow']['account']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('bank').'</a>';
+
+						$amount .= '</div>';
+
+					} else {
+
+						$date = $eOperation['date'];
+
+						$reference = '<a class="btn btn-outline-primary btn-xs" href="'.\farm\FarmUi::urlCash($eOperation['register']).'&position='.$eOperation['position'].'">';
+							$reference .= \cash\CashUi::getName($eOperation);
+						$reference .= '</a>';
+
+						if(in_array($eOperation['source'], [\cash\Cash::SELL_INVOICE, \cash\Cash::SELL_SALE])) {
+
+							$customer = encode($eOperation['customer']->getName());
+
+							if($eOperation['customer']->notEmpty()) {
+								$customer .= '<div class="util-annotation">';
+									$customer .= \selling\CustomerUi::getCategory($eOperation['customer']);
+								$customer .= '</div>';
+							}
+
+						} else {
+
+							$customer = '-';
+						}
+
+						$amount = '<div>';
+							$amount .= \util\TextUi::money($eOperation['amountIncludingVat']);
+						$amount .= '</div>';
+
 					}
 
-					$operations = $ePayment['operations'];
-					$eElement = match($ePayment['source']) {
-						\selling\Payment::INVOICE => $ePayment['invoice'],
-						\selling\Payment::SALE => $ePayment['sale'],
-					};
+					if(empty($lastValidationDate) === FALSE and $lastValidationDate > $date) {
+						$canImport = FALSE;
+						$hasBeforeLastValidationDate = TRUE;
+					}
 
 					$h .= '<tbody>';
 						$h .= '<tr>';
-							$h .= '<td class="td-checkbox td-vertical-align-top">';
-								$h .= '<input type="checkbox" name="batch[]" value="'.$ePayment['id'].'" batch-type="import" oninput="Import.changeSelection(this)" data-batch-amount-including="'.($ePayment['amountIncludingVat'] ?? 0.0).'" data-batch="'.implode(' ', $batch).'"/>';
-							$h .= '</td>';
-							$h .= '<td class="text-center td-vertical-align-top">'.\util\DateUi::numeric($ePayment['paidAt']).'</td>';
+							$h .= '<td class="text-center td-vertical-align-top">'.\util\DateUi::numeric($date).'</td>';
 							$h .= '<td class="td-vertical-align-top">';
-
-								$h .= encode($eElement['customer']->getName());
-
-								if($eElement['customer']->notEmpty()) {
-									$h .= '<div class="util-annotation">';
-									$h .= \selling\CustomerUi::getCategory($eElement['customer']);
-									$h .= '</div>';
-								}
-
-								if($ePayment['cashflow']->empty()) {
-									$h .= '<span class="font-sm color-warning">';
-										$h .= s("Non rapprochée");
-									$h .= '</span>';
-								}
-								if(
-									$eElement['totalPaid'] !== $eElement['priceIncludingVat'] or
-									$ePayment['cashflow']['amount'] !== $ePayment['amountIncludingVat']
-								) {
-									$h .= '<div class="mb-1">';
-
-									if($ePayment['cashflow']['amount'] !== $ePayment['amountIncludingVat']) {
-											$difference = abs($ePayment['cashflow']['amount'] - $ePayment['amountIncludingVat']);
-										} else if($eElement['totalPaid'] !== $eElement['priceIncludingVat']) {
-											$difference = abs($eElement['priceIncludingVat'] - $eElement['totalPaid']);
-										}
-
-										$form = new \util\FormUi();
-										$h .= $form->openAjax(\farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:updateInvoiceAccountingDifference', ['id' => 'difference-'.$ePayment['id'], 'name' => 'difference-'.$ePayment['id']]);
-											$h .= $form->hidden('id', $ePayment['id']);
-											$h .= '<fieldset>';
-												$h .= '<legend>';
-													$h .= s("Traitement comptable de l'écart de {value}", \util\TextUi::money(round($difference, 2)));
-												$h .= '</legend>';
-												$h .= $form->select('accountingDifference', \selling\PaymentUi::p('accountingDifference')->values, $ePayment['accountingDifference'], attributes: ['onchange' => 'Import.submit(this);'] + ($ePayment['accountingDifference'] !== NULL ? ['mandatory' => TRUE] : []));
-											$h .= '</fieldset>';
-										$h .= $form->close();
-									$h .= '</div>';
-								}
-								$h .= '<div class="preaccounting-import-td-action">';
-									$attributes = [
-										'data-confirm' => s("Confirmez-vous importer ce paiement dans votre comptabilité ?"),
-										'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:doImportPayment',
-										'post-id' => $ePayment['id'],
-										'post-financial-year' => $eFinancialYear['id'],
-									];
-									$class = 'btn btn-sm btn-secondary';
-									if($ePayment->acceptAccountingImport() === FALSE) {
-										$attributes = ['disabled' => 'disabled'];
-										$class .= ' disabled';
-									}
-									$h .= '<button '.attrs($attributes).' class="'.$class.'">';
-										$h .= \Asset::icon('hand-thumbs-up').' '.s("Importer");
-									$h .= '</button>';
-									if($ePayment->acceptAccountingIgnore()) {
-										$attributes = [
-											'data-confirm' => s("Confirmez-vous ignorer ce paiement ? Il ne vous sera plus jamais proposé à l'import."),
-											'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:doIgnorePayment',
-											'post-id' => $ePayment['id'],
-											'post-financial-year' => $eFinancialYear['id'],
-										];
-										$h .= '<a '.attrs($attributes).' class="btn btn-sm btn-outline-secondary">';
-											$h .= \Asset::icon('hand-thumbs-down').' '.s("Ignorer");
-										$h .= '</a>';
-									}
-								$h .= '</div>';
-
+								$h .= $customer;
 							$h .= '</td>';
 
 							$h .= '<td class=" td-vertical-align-top">';
-								if($ePayment['source'] === \selling\Payment::INVOICE) {
-									$h .= '<a class="btn btn-outline-primary btn-xs" href="/ferme/'.$eFarm['id'].'/factures?invoice='.encode($ePayment['invoice']['id']).'&customer='.encode($eElement['customer']['name']).'">';
-										$h .= encode($eElement['number']);
-									$h .= '</a>';
-								} else {
-									$h .= '<a class="btn btn-outline-primary btn-xs" href="'.\selling\SaleUi::url($ePayment['sale']).'">';
-										$h .= s("Vente n°", $eElement['document']);
-									$h .= '</a>';
-								}
+								$h .= $reference;
 							$h .= '</td>';
 
 							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top preaccounting-import-td-amount">';
-
-								$h .= '<div>';
-									$h .= \selling\SaleUi::getTotal($eElement);
-								$h .= '</div>';
-
-								$h .= '<div>';
-									if($ePayment['amountIncludingVat'] !== $eElement['priceIncludingVat']) {
-
-										$class = 'color-danger';
-										if($ePayment['amountIncludingVat'] < $eElement['priceIncludingVat']) {
-											$h .= '<span class="util-badge bg-warning">'.s("Partiel").'</span> ';
-										}
-
-										if($ePayment['source'] === \selling\Payment::INVOICE and $ePayment['invoice']['taxes'] === \selling\Invoice::EXCLUDING) {
-
-											$ePayment['invoice']['taxes'] = \selling\Invoice::INCLUDING;
-											$h .= \selling\SaleUi::getTotal($ePayment['invoice']);
-											$h .= '<br />';
-
-										}
-									} else {
-										$class = '';
-									}
-
-									$h .= '<span class="'.$class.'">'.\util\TextUi::money($ePayment['cashflow']['amount']).'</span>';
-									$h .= '<a title="'.s("Rapprochée").'" href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?id='.$ePayment['cashflow']['id'].'&bankAccount='.$ePayment['cashflow']['account']['id'].'" class="util-badge bg-accounting">'.\Asset::icon('bank').'</a>';
-
-								$h .= '</div>';
-
+								$h .= $amount;
 							$h .= '</td>';
-
 
 							$h .= '<td class="text-center preaccounting-import-td-operation font-sm td-vertical-align-top">';
 								$accountLabels = [];
 								foreach($operations as $operation) {
 									if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
-										$accountLabel = $this->emptyData();
+										if($eOperation['invoice']->notEmpty() or $eOperation['sale']->notEmpty()) {
+											$link = LIME_REQUEST_PATH.'?from='.$search->get('from');
+										} else if($eOperation instanceof \cash\Cash) {
+											$link = \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/journal-de-caisse?id='.$eOperation['register']['id'].'&position='.$eOperation['position'];
+										} else {
+											$link = NULL;
+										}
+										$accountLabel = $this->emptyData($link);
+										$canImport = FALSE;
 									} else {
 										$eAccount = new \account\Account(['class' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
 										$accountLabel = '<div data-dropdown="bottom" data-dropdown-hover="true">';
@@ -279,13 +318,36 @@ Class ImportUi {
 								$paymentMethods = [];
 								foreach($operations as $operation) {
 									if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
-										$paymentMethods[] = $this->emptyData();
+										if($eOperation['invoice']->notEmpty() or $eOperation['sale']->notEmpty()) {
+											$link = LIME_REQUEST_PATH.'?from='.$search->get('from');
+										} else {
+											$link = NULL;
+										}
+										$paymentMethods[] = $this->emptyData($link);
+										$canImport = FALSE;
 									} else {
 										$paymentMethods[] = encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
 									}
 								}
 								$h .= join ('<br />', $paymentMethods);
 							$h .= '</td>';
+
+							if($showIgnoreColumn) {
+
+								$h .= '<td class="preaccounting-import-td-operation">';
+
+									if($eOperation instanceof \selling\Payment and $eOperation->acceptAccountingIgnore()) {
+										$attributes = [
+											'data-confirm' => s("Confirmez-vous ignorer ce paiement ? Il ne vous sera plus jamais proposé à l'import."),
+											'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:doIgnorePayment',
+											'post-id' => $eOperation['id'],
+										];
+										$h .= '<a '.attrs($attributes).' class="btn btn-sm btn-outline-secondary">';
+											$h .= \Asset::icon('hand-thumbs-down').' '.s("Ignorer");
+										$h .= '</a>';
+									}
+								$h .= '</td>';
+							}
 
 						$h .= '</tr>';
 
@@ -295,53 +357,40 @@ Class ImportUi {
 			$h .= '</table>';
 		$h .= '</div>';
 
-		$h .= $this->getBatch($eFarm, $eFinancialYear);
-		return $h;
+		$displayButton = ($dateOk === TRUE and $financialYearOk === TRUE);
 
-	}
+		if($displayButton === FALSE) {
+			return $h;
+		}
 
-	public function operations(array $operations, bool $withTr): string {
+		if($canImport === FALSE) {
+			$h .= '<div class="util-info">';
+				if($hasBeforeLastValidationDate) {
+					$h .= s("Seules les opérations <b>datées du {value} ou après</b> seront importées.", \util\DateUi::numeric($lastValidationDate));
+				} else {
+					$h .= s("Réalisez <b>certaines corrections nécessaires</b> signalées avec le symbole {value} pour pouvoir effectuer l'import.", $this->emptyData(NULL));
+				}
+			$h .= '</div>';
+		}
 
-		$h = '';
+		$attributes = ['class' => 'btn-xl btn btn-primary'];
+		if($search->empty(['type', 'from', 'to', 'cRegister', 'cMethod']) === FALSE) {
+			$canImport = FALSE;
+		}
+		if($canImport === FALSE) {
+			$attributes['class'] .= ' disabled';
+		} else {
+			$attributes['data-ajax'] = \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/preaccounting/import:doImport';
+			$attributes['post-from'] = $search->get('from');
+			$attributes['data-waiter'] = s("Import en cours...");
+			$attributes['data-confirm'] = s("L'import est définitif ! Confirmez-vous cette action ?");
+		}
 
-		foreach($operations as $operation) {
-
-			if($withTr) {
-				$h .= '<tr>';
-			}
-
-				$h .= '<td class="text-center preaccounting-import-td-operation font-sm">';
-					if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL])) {
-						$h .= $this->emptyData();
-					} else {
-						$eAccount = new \account\Account(['class' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL], 'description' => $operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]]);
-						$h .= '<div data-dropdown="bottom" data-dropdown-hover="true">';
-							$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
-						$h .= '</div>';
-						$h .= new \account\AccountUi()->getDropdownTitle($eAccount);
-					}
-				$h .= '</td>';
-				$h .= '<td class="text-end highlight-stick-right preaccounting-import-td-operation font-sm">';
-					$h .= \util\TextUi::money($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]);
-				$h .= '</td>';
-				$h .= '<td class="text-center preaccounting-import-td-operation">';
-					if($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEBIT] !== 0.0) {
-						$h .= s("D");
-					} else {
-						$h .= s("C");
-					}
-				$h .= '</td>';
-				$h .= '<td class="preaccounting-import-td-operation font-sm">';
-					if(empty($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])) {
-						$h .= $this->emptyData();
-					} else {
-						$h .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD]);
-					}
-				$h .= '</td>';
-
-			if($withTr) {
-				$h .= '</tr>';
-			}
+		$h .= '<a '.attrs($attributes).'>'.s("Générer les écritures").'</a>';
+		if($search->empty(['type', 'from', 'to', 'cRegister', 'cMethod']) === FALSE) {
+			$h .= '<span class="util-annotation ml-1">';
+				$h .= s("<link>Réinitialisez la recherche</link> pour pouvoir tout importer", ['link' => '<a href="'.LIME_REQUEST_PATH.'?from='.$search->get('from').'">']);
+			$h .= '</span>';
 
 		}
 
@@ -349,36 +398,19 @@ Class ImportUi {
 
 	}
 
-	public function emptyData(): string {
+	public function emptyData(?string $link): string {
 
-		return '<div class="color-danger" title="'.s("Information manquante").'">'.\Asset::icon('three-dots').'</span>';
+		$icon = \Asset::icon('three-dots');
+		if($link !== NULL) {
+			$icon = '<a href="'.$link.'">'.$icon.'</a>';
+		}
 
-	}
+		$h = '<span class="color-danger" title="'.s("Information manquante").'">';
+			$h .= $icon;
+		$h .= '</span>';
 
-	public function getBatch(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
-
-		$menu = '<a href="javascript: void(0);" class="batch-amount batch-item">';
-			$menu .= '<span>';
-				$menu .= '<span class="batch-item-number"></span>';
-				$menu .= ' <span class="batch-item-taxes" data-excluding="'.s("HT").'" data-including="'.s("TTC").'"></span>';
-			$menu .= '</span>';
-			$menu .= '<span>'.s("Synthèse").'</span>';
-		$menu .= '</a>';
-
-		$attributesImport = [
-			'data-ajax-submit' => \farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:importPaymentCollection',
-			'data-ajax-method' => 'get'
-		];
-		$menu .= '<a '.attrs($attributesImport).' class="batch-import batch-item">'.\Asset::icon('hand-thumbs-up').'<span>'.s("Importer").'</span></a>';
-
-		$attributesIgnore = [
-			'data-ajax-submit' => \farm\FarmUi::urlConnected($eFarm).'/preaccounting/import:doIgnoreCollection',
-			'data-confirm' => s("Confirmez-vous ignorer ces paiements ? Ils ne vous seront plus jamais proposés à l'import."),
-			'post-financial-year' => $eFinancialYear['id'],
-		];
-		$menu .= '<a '.attrs($attributesIgnore).' class="batch-ignore batch-item">'.\Asset::icon('hand-thumbs-down').'<span>'.s("Ignorer").'</span></a>';
-
-		return \util\BatchUi::group('batch-payment', $menu, title: s("Pour les paiements sélectionnés"));
+		return $h;
 
 	}
+
 }

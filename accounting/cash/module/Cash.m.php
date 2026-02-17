@@ -78,12 +78,14 @@ class CashModel extends \ModuleModel {
 			'payment' => ['element32', 'selling\Payment', 'null' => TRUE, 'cast' => 'element'],
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
+			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'accountingReady' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'status' => ['enum', [\cash\Cash::DRAFT, \cash\Cash::VALID, \cash\Cash::DELETED], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'position', 'type', 'hasVat', 'vat', 'vatRate', 'description', 'source', 'cashflow', 'invoice', 'sale', 'customer', 'payment', 'account', 'financialYear', 'status', 'createdAt'
+			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'position', 'type', 'hasVat', 'vat', 'vatRate', 'description', 'source', 'cashflow', 'invoice', 'sale', 'customer', 'payment', 'account', 'financialYear', 'accountingHash', 'accountingReady', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -109,6 +111,9 @@ class CashModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'accountingReady' :
+				return FALSE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -226,6 +231,14 @@ class CashModel extends \ModuleModel {
 
 	public function whereFinancialYear(...$data): CashModel {
 		return $this->where('financialYear', ...$data);
+	}
+
+	public function whereAccountingHash(...$data): CashModel {
+		return $this->where('accountingHash', ...$data);
+	}
+
+	public function whereAccountingReady(...$data): CashModel {
+		return $this->where('accountingReady', ...$data);
 	}
 
 	public function whereStatus(...$data): CashModel {

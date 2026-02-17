@@ -49,14 +49,11 @@ class AlertUi {
 			'Invoice::fileAlreadyReminder' => s("Une relance a déjà été envoyée au client"),
 			'Invoice::fileEmpty' => s("Le fichier PDF de cette facture n'existe pas."),
 
-			'Payment::importNotBelongsToFinancialYear' => s("Les dates des paiements ne correspondent pas à l'exercice comptable."),
-			'Payment::importNoFinancialYear' => s("Il n'y a pas d'exercice comptable dans lequel importer les paiements."),
 			'Payment::unexpected' => s("Le format des règlements n'est pas reconnu"),
 			'Payment::method.empty' => s("Veuillez choisir un moyen de paiement"),
 			'Payment::paidAt.empty' => s("Veuillez indiquer une date de paiement"),
 			'Payment::paidAt.future' => s("Vous ne pouvez pas indiquer une date de paiement dans le futur"),
 			'Payment::amountIncludingVat.empty' => s("Veuillez saisir un montant"),
-			'Payment::payments.check' => s("Merci de sélectionner au moins un paiement."),
 
 			'Product::proOrPrivate.check' => s("Veuillez déterminer si votre produit composé est vendu aux clients particuliers ou aux clients professionnels. Il ne peut pas à la fois être vendu aux professionnels et aux particuliers"),
 			'Product::proOrPrivatePrice.empty' => s("Veuillez indiquer au moins un prix pour ce produit"),

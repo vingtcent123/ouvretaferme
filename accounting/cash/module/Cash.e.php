@@ -78,6 +78,30 @@ class Cash extends CashElement {
 		return ($this['status'] === Cash::DRAFT);
 	}
 
+	public function acceptAccountingImport(): bool {
+
+		$this->expects([
+			'register' => 'account',
+		]);
+
+		if($this['source'] === Cash::SELL_INVOICE) {
+			$hasAccount = $this['invoice']->hasAllAccounts();
+		} else if($this['source'] === Cash::SELL_SALE) {
+			$hasAccount = $this['sale']->hasAllAccounts();
+		} else if($this['source'] === Cash::BANK_CASHFLOW) {
+			if($this['cashflow']->empty()) {
+				$hasAccount = TRUE;
+			} else {
+				$hasAccount = ($this['cashflow']['account']['account'] ?? new \account\Account())->notEmpty();
+			}
+		} else {
+			$hasAccount = $this['account']->notEmpty();
+		}
+
+		return ($this['register']['account']->notEmpty() and $hasAccount and $this['accountingHash'] === NULL);
+
+	}
+
 	public function requireAssociateAccount(): bool {
 
 		$this->expects([
