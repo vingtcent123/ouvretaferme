@@ -323,7 +323,7 @@ new AdaptativeView('products', function($data, DocTemplate $t) {
 			],
 			[
 				s("Taux de TVA").' '.\util\FormUi::asterisk(),
-				'vat',
+				'vat_rate',
 				s("Le taux de TVA du produit (peut être laissé à 0 si vous avez indiqué que votre ferme n'est pas redevable de la TVA)"),
 				'5,5'
 			],
