@@ -716,7 +716,7 @@ class FinancialYearUi {
 				]).'</dd>';
 
 				$h .= '<dt>'.\farm\ConfigurationUi::p('vatFrequency')->label.'</dt>';
-				$h .= '<dd>'.($eFarm['vatFrequency'] ? \farm\ConfigurationUi::p('vatFrequency')->values[$eFarm['vatFrequency']] : '').'</dd>';
+				$h .= '<dd>'.($eFarm->getConf('vatFrequency') ? \farm\ConfigurationUi::p('vatFrequency')->values[$eFarm->getConf('vatFrequency')] : '').'</dd>';
 
 				$h .= '<dt>'.self::p('taxSystem')->label.'</dt>';
 				$h .= '<dd>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</dd>';
