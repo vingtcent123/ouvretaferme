@@ -342,6 +342,23 @@ class AccountLib extends AccountCrud {
 				->whereAccount($e)
 				->update(['account' => NULL]);
 
+			$profiles = $eFarm->getConf('profileAccount');
+			foreach($profiles as $key => &$profile) {
+				if((int)($profile['privateAccount'] ?? NULL) === $e['id']) {
+					unset($profile['privateAccount']);
+				}
+				if((int)($profile['proAccount'] ?? NULL) === $e['id']) {
+					unset($profile['proAccount']);
+				}
+				if(empty($profile)) {
+					unset($profiles[$key]);
+				}
+			}
+
+			\farm\Configuration::model()
+				->whereFarm($eFarm)
+				->update(['profileAccount' => $profiles]);
+
 		Account::model()->commit();
 
 		LogLib::save('delete', 'Account', ['id' => $e['id'], 'class' => $e['class']]);

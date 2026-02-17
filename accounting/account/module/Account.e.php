@@ -14,6 +14,7 @@ class Account extends AccountElement {
 
 		return (
 			$this['custom'] === TRUE and
+			Account::model()->whereVatAccount($this)->exists() === FALSE and
 			\journal\Operation::model()->whereAccount($this)->exists() === FALSE and
 			\bank\BankAccount::model()->whereAccount($this)->exists() === FALSE
 		);
