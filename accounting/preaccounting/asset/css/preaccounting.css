@@ -12,14 +12,14 @@
 }
 
 
-@media (min-width: 576px) and (max-width: 899px) {
+@media (min-width: 768px) and (max-width: 1600px) {
 
 	.preaccounting-import-container {
 		grid-template-columns: 1fr 1fr;
 	}
 }
 
-@media (max-width: 575px) {
+@media (max-width: 767px) {
 
 	.preaccounting-import-container {
 		grid-template-columns: 1fr;
