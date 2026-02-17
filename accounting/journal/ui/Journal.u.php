@@ -60,7 +60,7 @@ class JournalUi {
 	}
 
 	public function getBaseUrl(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): string {
-		return \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal';
+		return \company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal?';
 	}
 	public function getSearch(\farm\Farm $eFarm, \Search $search, \account\FinancialYear $eFinancialYearSelected, \bank\Cashflow $eCashflow, ?\account\ThirdParty $eThirdParty, \Collection $cPaymentMethod, int $nUnbalanced): string {
 
