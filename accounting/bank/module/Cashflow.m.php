@@ -331,7 +331,13 @@ abstract class CashflowCrud extends \ModuleCrud {
 
 		$e->expects(['id']);
 
-		Cashflow::model()->delete($e);
+		Cashflow::model()->beginTransaction();
+
+			Cashflow::model()->delete($e);
+
+			\preaccounting\Suggestion::model()->whereCashflow($e)->delete();
+
+		Cashflow::model()->commit();
 
 	}
 
