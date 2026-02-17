@@ -29,7 +29,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 		return;
 	}
 
-	if($data->cInvoice->empty() and $data->cCash->empty() and $data->cInvoiceImported->empty() and $data->cCashImported()->empty()) {
+	if($data->cInvoice->empty() and $data->cCash->empty() and $data->cInvoiceImported->empty() and $data->cCashImported->empty()) {
 
 		echo '<div class="util-block-help">'.
 			'<h3>'.s("Vous êtes sur la page pour importer automatiquement en comptabilité").'</h3>'.
