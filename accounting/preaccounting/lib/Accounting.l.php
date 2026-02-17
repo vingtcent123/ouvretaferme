@@ -428,7 +428,7 @@ Class AccountingLib {
 						isSummed    : $eAccountBank['id'] !== ($eAccount['id'] ?? NULL),
 						origin      : 'invoice',
 					);
-//dd($fecDataItemPayment);
+
 					self::mergeFecLineIntoItemData($items, $fecDataItemPayment);
 
 				}
