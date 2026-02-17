@@ -105,8 +105,9 @@ Class ImportLib extends ImportCrud {
 
 	public static function create(Import $e): void {
 
-		if(isset($_FILES['fec']['tmp_name']) === FALSE) {
-			throw new \NotExpectedAction('File content not found for FEC import.');
+		if(isset($_FILES['fec']['tmp_name']) === FALSE or $_FILES['fec']['tmp_name'] === '') {
+			\Fail::log('Import::filename.notFound', wrapper: 'fec');
+			return;
 		}
 
 		$e['content'] = trim(file_get_contents($_FILES['fec']['tmp_name']));
@@ -538,10 +539,14 @@ Class ImportLib extends ImportCrud {
 			} else {
 
 				$eAccount = new Account();
-
+dd($line);
 			}
 
-			$eJournalCode = \journal\JournalCodeLib::ask($eImport['rules']['journaux'][$journalCode]['journalCode']['id']);
+			if(isset($eImport['rules']['journaux'][$journalCode]['journalCode']['id'])) {
+				$eJournalCode = \journal\JournalCodeLib::ask($eImport['rules']['journaux'][$journalCode]['journalCode']['id']);
+			} else {
+				$eJournalCode = new \journal\JournalCode();
+			}
 
 			if(
 				isset($eImport['rules']['paiements'][$modeRglt]['payment']['id']) and
@@ -564,9 +569,11 @@ Class ImportLib extends ImportCrud {
 			}
 			$hash = $numberHash[$ecritureNum];
 
+			$number = preg_replace('/[a-zA-Z]/', '', $ecritureNum);
+
 			$eOperation = new \journal\Operation([
 				'hash' => $hash,
-				'number' => preg_replace('/[a-zA-Z]/', '', $ecritureNum),
+				'number' => $number !== '' ? $number :  NULL,
 				'financialYear' => $eImport['financialYear'],
 				'journalCode' => $eJournalCode,
 				'account' => $eAccount,
