@@ -10,7 +10,7 @@ class CashLib extends CashCrud {
 			$properties = ['type', 'amountIncludingVat'];
 
 			if(
-				$e->acceptAssociateAccount() or
+				$e->acceptAccount() or
 				$e->acceptAssociateAccount()
 			) {
 				$properties[] = 'account';
