@@ -76,6 +76,20 @@ class RegisterLib extends RegisterCrud {
 
 	}
 
+	public static function delete(Register $e): void {
+
+		Register::model()->beginTransaction();
+
+			parent::delete($e);
+
+			Cash::model()
+				->whereRegister($e)
+				->delete($e);
+
+		Register::model()->commit();
+
+	}
+
 	public static function close(Register $e, string $date): void {
 
 		Register::model()->beginTransaction();
