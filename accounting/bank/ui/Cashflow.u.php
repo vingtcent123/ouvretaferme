@@ -757,7 +757,7 @@ class CashflowUi {
 
 					$eOperationBank = $eCashflowSimilar['cOperation']->find(fn($e) => \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS))->first() ?? new \journal\Operation();
 
-					if($eOperationBank->notEmpty()) {
+					if($eOperationBank->notEmpty() and $eOperationBank['thirdParty']->notEmpty()) {
 						$label = s("{thirdParty} à {amount}", ['thirdParty' => encode($eOperationBank['thirdParty']['name']), 'amount' => \util\TextUi::money(abs($eCashflowSimilar['amount']))]);
 						$values[] = ['id' => $eCashflowSimilar['id'], 'label' => $label];
 					}
