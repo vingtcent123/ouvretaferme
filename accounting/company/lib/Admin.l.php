@@ -15,15 +15,6 @@ Class AdminLib {
 
 	}
 
-	public static function getFarms(): \Collection {
-
-		return \farm\Farm::model()
-			->select(\farm\Farm::getSelection())
-			->whereHasAccounting(TRUE)
-			->getCollection();
-
-	}
-
 	public static function loadAccountingData(\Search $search): \Collection {
 
 		$cFarm = \farm\Farm::model()

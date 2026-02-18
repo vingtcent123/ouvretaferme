@@ -17,5 +17,6 @@ class DataSetting extends \Settings {
 	const TYPE_ACCOUNTING_RECONCILIATION_KO = 'type-accounting-reconciliation-ko';
 	const TYPE_ACCOUNTING_JOURNAL_OPERATIONS = 'type-accounting-journal-operations';
 	const TYPE_ACCOUNTING_JOURNAL_ASSETS = 'type-accounting-journal-assets';
+	const TYPE_ACCOUNTING_VAT_DECLARATION = 'type-accounting-vat-declaration';
 
 }

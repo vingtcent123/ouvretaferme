@@ -48,6 +48,7 @@ Class AdminUi {
 						$h .= '<th class="text-center"  rowspan="2">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_CASH_OPERATIONS, s("Opérations<br/>de caisse"), SORT_DESC).'</th>';
 						$h .= '<th class="text-center"  rowspan="2">'.s("Rapprochements").'<br />'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_RECONCILIATION_OK, \Asset::icon('check'), SORT_DESC).' / '.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_RECONCILIATION_KO, \Asset::icon('x'), SORT_DESC).'</th>';
 						$h .= '<th colspan="2" class="text-center">'.s("Écritures").'</th>';
+						$h .= '<th class="text-center" rowspan="2">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_VAT_DECLARATION, s("CA3 <br /> CA12"), SORT_DESC).'</th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.$search->linkSort(\data\DataSetting::TYPE_ACCOUNTING_FINANCIAL_YEARS, s("Exercices"), SORT_DESC).'</th>';
@@ -97,6 +98,7 @@ Class AdminUi {
 						$h .= '<td class="text-center">'.encode($eFarm['cFarmData'][$cData[\data\DataSetting::TYPE_ACCOUNTING_RECONCILIATION_OK]['id']]['value'] ?? '-').' / '.encode($eFarm['cFarmData'][$cData[\data\DataSetting::TYPE_ACCOUNTING_RECONCILIATION_KO]['id']]['value'] ?? '-').'</td>';
 							$h .= '<td class="text-center">'.encode($eFarm['cFarmData'][$cData[\data\DataSetting::TYPE_ACCOUNTING_JOURNAL_OPERATIONS]['id']]['value'] ?? '-').'</td>';
 							$h .= '<td class="text-center">'.encode($eFarm['cFarmData'][$cData[\data\DataSetting::TYPE_ACCOUNTING_JOURNAL_ASSETS]['id']]['value'] ?? '-').'</td>';
+						$h .= '<td class="text-center">'.encode($eFarm['cFarmData'][$cData[\data\DataSetting::TYPE_ACCOUNTING_VAT_DECLARATION]['id']]['value'] ?? '-').'</td>';
 					$h .= '</tr>';
 				}
 				$h .= '</tbody>';

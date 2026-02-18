@@ -56,6 +56,28 @@ Class DataObserverLib {
 			case \data\DataSetting::TYPE_ACCOUNTING_JOURNAL_ASSETS:
 				self::extractsJournalAssets($eData, $cFarm);
 				break;
+
+			case \data\DataSetting::TYPE_ACCOUNTING_VAT_DECLARATION:
+				self::extractsVatDeclaration($eData, $cFarm);
+				break;
+		}
+
+	}
+
+	private static function extractsVatDeclaration(\data\Data $eData, \Collection $cFarm): void {
+
+		foreach($cFarm as $eFarm) {
+
+			\farm\FarmLib::connectDatabase($eFarm);
+
+			$eFarmData = new \data\Farm([
+				'data' => $eData,
+				'farm' => $eFarm,
+				'value' => \overview\VatDeclaration::model()->count(),
+ 			]);
+
+			\data\FarmLib::create($eFarmData);
+
 		}
 
 	}
