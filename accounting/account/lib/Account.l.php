@@ -343,15 +343,17 @@ class AccountLib extends AccountCrud {
 				->update(['account' => NULL]);
 
 			$profiles = $eFarm->getConf('profileAccount');
-			foreach($profiles as $key => &$profile) {
-				if((int)($profile['privateAccount'] ?? NULL) === $e['id']) {
-					unset($profile['privateAccount']);
-				}
-				if((int)($profile['proAccount'] ?? NULL) === $e['id']) {
-					unset($profile['proAccount']);
-				}
-				if(empty($profile)) {
-					unset($profiles[$key]);
+			if($profiles !== NULL) {
+				foreach($profiles as $key => &$profile) {
+					if((int)($profile['privateAccount'] ?? NULL) === $e['id']) {
+						unset($profile['privateAccount']);
+					}
+					if((int)($profile['proAccount'] ?? NULL) === $e['id']) {
+						unset($profile['proAccount']);
+					}
+					if(empty($profile)) {
+						unset($profiles[$key]);
+					}
 				}
 			}
 

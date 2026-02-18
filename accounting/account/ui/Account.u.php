@@ -124,7 +124,12 @@ class AccountUi {
 						$h .= '</th>';
 
 						if($displayOperationsCount) {
-							$h .= '<th colspan="2" class="text-center highlight-stick-alone">';
+							if($eFarm['cFinancialYear']->count() >= 2) {
+								$colspan = 2;
+							} else {
+								$colspan = 1;
+							}
+							$h .= '<th colspan="'.$colspan.'" class="text-center highlight-stick-alone">';
 								$h .= s("Opérations");
 							$h .= '</th>';
 						}
@@ -152,15 +157,25 @@ class AccountUi {
 							$h .= s("Taux");
 						$h .= '</th>';
 						$financialYears = [];
+						$nFinancialYear = 0;
 						if($displayOperationsCount) {
-							$count = 0;
+							$nFinancialYear = 0;
 							foreach($eFarm['cFinancialYear'] as $eFinancialYear) {
-								if($count >= 2) {
+								if($nFinancialYear >= 2) {
 									break;
 								}
-								$count++;
+								if($eFarm['cFinancialYear']->count() >= 2) {
+									if($nFinancialYear === 0) {
+										$class = 'text-end highlight-stick-right';
+									} else {
+										$class = 'text-end highlight-stick-left';
+									}
+								} else {
+									$class = 'text-center highlight-stick-alone';
+								}
+								$nFinancialYear++;
 								$financialYears[] = $eFinancialYear['id'];
-								$h .= '<th class="text-end '.($count === 1 ? 'highlight-stick-right' : 'highlight-stick-left').'">'.$eFinancialYear->getLabel().'</th>';
+								$h .= '<th class="'.$class.'">'.$eFinancialYear->getLabel().'</th>';
 							}
 						}
 						if($displayProductsCount) {
@@ -267,11 +282,19 @@ class AccountUi {
 
 						if($displayOperationsCount) {
 
+							$nFinancialYearCurrent = 0;
 							foreach($financialYears as $financialYear) {
 
 								$eFinancialYear = $eFarm['cFinancialYear']->offsetGet($financialYear);
 
-								$h .= '<td class="text-end '.($financialYear === first($financialYears) ? 'highlight-stick-right ' : 'highlight-stick-left').'">';
+								if($nFinancialYear === 1) {
+									$class = 'highlight-stick-alone';
+								} else if($nFinancialYearCurrent === 0) {
+									$class = 'highlight-stick-right';
+								} else {
+									$class = 'highlight-stick-left';
+								}
+								$h .= '<td class="text-end '.$class.'">';
 
 									if(($eAccount['operationByFinancialYear'][$financialYear] ?? 0) > 0) {
 										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal?accountLabel='.$eAccount['class'].'"  title="'.s("Filtrer les opérations sur ce numéro de compte").'">'.($eAccount['operationByFinancialYear'][$financialYear] ?? 0).'</a>';

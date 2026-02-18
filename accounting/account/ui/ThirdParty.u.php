@@ -175,7 +175,7 @@ class ThirdPartyUi {
 							}
 
 							$h .= '<td class="td-min-content">';
-								if($eThirdParty['operations']['all'] === 0) {
+								if($eThirdParty->acceptDelete()) {
 									$attributes = [
 										'data-ajax' => \company\CompanyUi::urlAccount($eFarm).'/thirdParty:doDelete',
 										'post-id' => $eThirdParty['id'],
