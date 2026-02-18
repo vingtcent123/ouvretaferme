@@ -45,6 +45,11 @@ class BaseTemplate extends SmartTemplate {
 	public ?string $base = NULL;
 
 	/**
+	 * Admin page
+	 */
+	public ?string $admin = NULL;
+
+	/**
 	 * Favicon
 	 */
 	public string $favicon;
@@ -104,7 +109,7 @@ class BaseTemplate extends SmartTemplate {
 			$h .= Asset::importHtml();
 		$h .= '</head>';
 
-		$h .= '<body data-template="'.$this->getTemplate().'" '.(OTF_DEMO ? 'data-demo' : '').' '.(($this->admin !== NULL) ? 'data-admin' : '').'>';
+		$h .= '<body data-template="'.$this->getTemplate().'" '.(OTF_DEMO ? 'data-demo' : '').' '.($this->admin !== NULL ? 'data-admin' : '').'>';
 
 			$h .= '<nav id="main-nav">'.$nav.'</nav>';
 			$h .= '<header>'.$header.'</header>';
