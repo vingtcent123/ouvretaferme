@@ -1,6 +1,8 @@
 <?php
 new AdaptativeView('index', function($data, MainTemplate $t) {
 
+	$t->admin = TRUE;
+
 	$t->title = s("Suivi de la comptabilité");
 
 	$t->header = '<div class="admin-navigation stick-xs">';
