@@ -236,7 +236,7 @@ class CashflowUi {
 										dd($eCashflow);
 									}
 									$h .= match($eCashflow['payment']['source']) {
-										\selling\Payment::INVOICE => '<a href="/ferme/'.$eFarm['id'].'/factures?invoice='.$eCashflow['payment']['invoice']['id'].'&customer='.encode($eCashflow['payment']['invoice']['customer']['name']).'">'.encode($eCashflow['payment']['invoice']['number']).'</a>',
+										\selling\Payment::INVOICE => '<a href="/ferme/'.$eFarm['id'].'/factures?name='.$eCashflow['payment']['invoice']['number'].'">'.encode($eCashflow['payment']['invoice']['number']).'</a>',
 										\selling\Payment::SALE => '<a href="'.\selling\SaleUi::url($eCashflow['payment']['sale']).'">'.encode($eCashflow['payment']['sale']['document']).'</a>',
 										NULL => '',
 									};
