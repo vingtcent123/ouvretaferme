@@ -534,6 +534,10 @@ thead.thead-sticky {
 	z-index: 99; /* Doit passer sous la nav */
 }
 
+[data-admin] thead.thead-sticky {
+	top: var(--mainNav)
+}
+
 @media (max-width: 449px) {
 
 	.util-overflow-xs thead.thead-sticky {
