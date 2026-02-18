@@ -178,6 +178,8 @@ new Page(function($data) {
 
 		\selling\Invoice::validateBatch($data->c);
 
+		$data->eFarm = $data->c->first()['farm'];
+
 	})
 	->post('doUpdateConfirmedCollection', function($data) {
 
