@@ -785,7 +785,9 @@ class BalanceSheetUi {
 			$h .= '</td>';
 			$h .= '<td class="text-end balance-td-net">'.\util\TextUi::money($categoryCumulation['currentNet'], precision: 0).'</td>';
 					$h .= '<td class="text-end balance-td-net">';
-						$h .= $this->getPercent($categoryCumulation['currentNet'] / $total);
+						if($total !== 0) {
+							$h .= $this->getPercent($categoryCumulation['currentNet'] / $total);
+						}
 					$h .= '</td>';
 			$h .= '<td class="text-end balance-td-net">'.($categoryCumulation['comparisonNet'] === 0 ? '' : \util\TextUi::money($categoryCumulation['comparisonNet'], precision: 0)).'</td>';
 
