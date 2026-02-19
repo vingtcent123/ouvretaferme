@@ -985,44 +985,52 @@ class FinancialYearUi {
 				$h .= '<h3>'.$icon.' '.$label.'</h3>';
 				$h .= '<div class="financial-year-buttons">';
 
-					if($eFinancialYear->acceptUpdate()) {
+					$h .= '<a class="btn btn-primary dropdown-toggle"  data-dropdown="bottom">';
+						$h .= \Asset::icon('gear-fill');
+					$h .= '</a>';
+					$h .= '<div class="dropdown-list">';
 
-						if($eFinancialYear->acceptDelete()) {
+					$fecMenu = '<a class="dropdown-item" data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:fec?id='.$eFinancialYear['id'].'">';
+						$fecMenu .= s("Télécharger un fichier FEC");
+					$fecMenu .= '</a>';
 
-							$h .= '<a class="btn btn-primary dropdown-toggle"  data-dropdown="bottom">';
-								$h .= \Asset::icon('gear-fill');
-							$h .= '</a>';
-							$h .= '<div class="dropdown-list">';
+						if($eFinancialYear->acceptUpdate()) {
+
+							if($eFinancialYear->acceptDelete()) {
+
 								$h .= '<a class="dropdown-item" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
 									$h .= s("Modifier l'exercice");
 								$h .= '</a>';
+								$h .= $fecMenu;
 								$h .= '<div class="dropdown-divider"></div>';
 								$h .= '<a class="dropdown-item bg-danger" data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doDelete" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Cette opération est définitive, toutes les informations liées seront supprimées. Confirmez-vous cette suppression ?").'">';
 									$h .= \Asset::icon('trash').' ';
 									$h .= s("Supprimer l'exercice");
 								$h .= '</a>';
-							$h .= '</div>';
 
-						} else {
+							} else {
 
-							$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
-								$h .= \Asset::icon('gear-fill');
-							$h .= '</a>';
+								$h .= '<a class="dropdown-item" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
+									$h .= s("Modifier");
+								$h .= '</a>';
+								$h .= '<div class="dropdown-divider"></div>';
+								$h .= $fecMenu;
 
-						}
+							}
 
-					} else if($eFinancialYear->acceptReOpen()) {
+						} else if($eFinancialYear->acceptReOpen()) {
 
-						$h .= '<a class="btn btn-primary dropdown-toggle"  data-dropdown="bottom">';
-							$h .= \Asset::icon('gear-fill');
-						$h .= '</a>';
-						$h .= '<div class="dropdown-list bg-danger">';
+							$h .= $fecMenu;
+							$h .= '<div class="dropdown-divider"></div>';
 							$h .= '<a class="bg-danger dropdown-item" data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReopen" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et pour une durée très limitée. Notez qu'aucune écriture ne sera enregistrée automatiquement à la refermeture.").'">';
 								$h .= \Asset::icon('exclamation-triangle').' '.s("Rouvrir");
 							$h .= '</a>';
-						$h .= '</div>';
-					}
 
+						} else {
+							$h .= $fecMenu;
+						}
+
+					$h .= '</div>';
 				$h .= '</div>';
 			$h .= '</div>';
 

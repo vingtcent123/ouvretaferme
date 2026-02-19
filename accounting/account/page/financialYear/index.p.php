@@ -99,7 +99,19 @@ new \account\FinancialYearPage(function($data) {
 
 		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/?success=account\\FinancialYear::open');
 
-	});
+	})
+	->read('fec', function($data) {
+
+		$operations = \journal\FecLib::extractOperations($data->e);
+
+		$fecData = array_merge([\account\FecLib::getHeader()], $operations);
+		$fecDataString = join("\n", array_map(fn($operation) => join('|', $operation), $fecData));
+
+		$filename = \account\FecLib::getFilename($data->eFarm, new \account\FinancialYear());
+
+		throw new DataAction($fecDataString, 'text/txt', $filename.'.txt');
+	})
+;
 
 new \account\FinancialYearPage(function($data) {
 
