@@ -56,44 +56,7 @@ class PdfUi {
 			$differencePrevious = $totalIncomesPrevious - $totalExpensesPrevious;
 		}
 
-		$h = '<table class="pdf-table-bordered">';
-
-			$h .= '<thead>';
-				$h .= new \overview\IncomeStatementUi()->getPdfTHead('expenses', $header, $eFinancialYear, $eFinancialYearComparison);
-			$h .= '</thead>';
-
-			$h .= '<tbody>';
-
-				$h .= new \overview\IncomeStatementUi()->getPdfTBody('expenses', $eFarm, $cAccount, $resultData['expenses'], $eFinancialYearComparison);
-
-				// Bénéfice ou perte
-				if($differenceCurrent > 0 or ($hasComparison and $differencePrevious > 0)) {
-
-					$h .= '<tr>';
-
-						$h .= '<td></td>';
-						$h .= '<th>'.s("Résultat d'exploitation (bénéfice)").'</th>';
-						$h .= '<td class="text-end">'.($differenceCurrent > 0 ? \util\TextUi::money($differenceCurrent, precision: 0) : '').'</td>';
-						if($hasComparison) {
-							$h .= '<td class="text-end">'.($differencePrevious > 0 ? \util\TextUi::money($differencePrevious) : '').'</td>';
-						}
-
-					$h .= '</tr>';
-				}
-
-				// Total des charges
-				$h .= '<tr class="overview_group-total tr-bold">';
-					$h .= '<th colspan="2">'.s("Total général").'</th>';
-					$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesCurrent + ($differenceCurrent > 0 ? $differenceCurrent : 0), precision: 0).'</td>';
-					if($hasComparison) {
-						$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesPrevious + ($differencePrevious > 0 ? $differencePrevious : 0), precision: 0).'</td>';
-					}
-				$h .= '</tr>';
-
-			$h .= '</tbody>';
-		$h .= '</table>';
-
-		$h .= '<table class="pdf-table-bordered" style="margin: auto;">';
+		$h = '<table class="pdf-table-bordered" style="margin: auto;">';
 
 			$h .= '<thead>';
 				$h .= new \overview\IncomeStatementUi()->getPdfTHead('incomes', $header, $eFinancialYear, $eFinancialYearComparison);
@@ -128,6 +91,43 @@ class PdfUi {
 
 			$h .= '</tbody>';
 
+		$h .= '</table>';
+
+		$h .= '<table class="pdf-table-bordered">';
+
+			$h .= '<thead>';
+				$h .= new \overview\IncomeStatementUi()->getPdfTHead('expenses', $header, $eFinancialYear, $eFinancialYearComparison);
+			$h .= '</thead>';
+
+			$h .= '<tbody>';
+
+				$h .= new \overview\IncomeStatementUi()->getPdfTBody('expenses', $eFarm, $cAccount, $resultData['expenses'], $eFinancialYearComparison);
+
+				// Bénéfice ou perte
+				if($differenceCurrent > 0 or ($hasComparison and $differencePrevious > 0)) {
+
+					$h .= '<tr>';
+
+						$h .= '<td></td>';
+						$h .= '<th>'.s("Résultat d'exploitation (bénéfice)").'</th>';
+						$h .= '<td class="text-end">'.($differenceCurrent > 0 ? \util\TextUi::money($differenceCurrent, precision: 0) : '').'</td>';
+						if($hasComparison) {
+							$h .= '<td class="text-end">'.($differencePrevious > 0 ? \util\TextUi::money($differencePrevious) : '').'</td>';
+						}
+
+					$h .= '</tr>';
+				}
+
+				// Total des charges
+				$h .= '<tr class="overview_group-total tr-bold">';
+					$h .= '<th colspan="2">'.s("Total général").'</th>';
+					$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesCurrent + ($differenceCurrent > 0 ? $differenceCurrent : 0), precision: 0).'</td>';
+					if($hasComparison) {
+						$h .= '<td class="text-end">'.\util\TextUi::money($totalExpensesPrevious + ($differencePrevious > 0 ? $differencePrevious : 0), precision: 0).'</td>';
+					}
+				$h .= '</tr>';
+
+			$h .= '</tbody>';
 		$h .= '</table>';
 
 		return $h;
