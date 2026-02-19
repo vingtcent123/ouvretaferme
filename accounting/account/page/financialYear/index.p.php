@@ -102,7 +102,7 @@ new \account\FinancialYearPage(function($data) {
 	})
 	->read('fec', function($data) {
 
-		$operations = \journal\FecLib::extractOperations($data->e);
+		$operations = \account\FecLib::generateByFinancialYear($data->e);
 
 		$fecData = array_merge([\account\FecLib::getHeader()], $operations);
 		$fecDataString = join("\n", array_map(fn($operation) => join('|', $operation), $fecData));
@@ -110,6 +110,14 @@ new \account\FinancialYearPage(function($data) {
 		$filename = \account\FecLib::getFilename($data->eFarm, new \account\FinancialYear());
 
 		throw new DataAction($fecDataString, 'text/txt', $filename.'.txt');
+	})
+	->read('attestation', function($data) {
+
+		$content = \account\FecPdfLib::generateAttestation($data->eFarm);
+
+		$filename = new \account\PdfUi()->getFilename($data->e, 'fec-attestation');
+
+		throw new \PdfAction($content, $filename);
 	})
 ;
 

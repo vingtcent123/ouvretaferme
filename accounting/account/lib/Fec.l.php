@@ -201,7 +201,6 @@ class FecLib  {
 	}
 
 	/**
-	 * TODO : faire une notice justificative (?)
 	 * @param FinancialYear $eFinancialYear
 	 * @return string
 	 */
@@ -216,6 +215,7 @@ class FecLib  {
 		list($cOperation, , ) = \journal\OperationLib::getAllForJournal(page: NULL, search: $search);
 
 		$number = 1;
+		$journals = [];
 
 		foreach($cOperation as $eOperation) {
 
@@ -223,24 +223,26 @@ class FecLib  {
 				continue;
 			}
 
+			$eJournal = self::extractJournal($cOperation, $eOperation, $journals);
+
 			$operationData = [
-				$eOperation['journalCode']['code'] ?? '',
-				$eOperation['journalCode']['name'] ?? '',
+				$eJournal['code'] ?? 'ODJ',
+				$eJournal['name'] ?? 'Opérations Diverses Journal',
 				str_pad($number++, 6, '0', STR_PAD_LEFT),
 				date('Ymd', strtotime($eOperation['date'])),
 				$eOperation['accountLabel'],
 				$eOperation['account']['description'],
 				'',
 				'',
-				$eOperation['document'],
+				empty($eOperation['document']) ? $eOperation['id'] : $eOperation['document'],
 				$eOperation['documentDate'] !== NULL ? date('Ymd', strtotime($eOperation['documentDate'])) : date('Ymd', strtotime($eOperation['date'])),
 				$eOperation['description'],
-				$eOperation['type'] === \journal\OperationElement::DEBIT ? $eOperation['amount'] : 0,
-				$eOperation['type'] === \journal\OperationElement::CREDIT ? $eOperation['amount'] : 0,
+				$eOperation['type'] === \journal\OperationElement::DEBIT ? number_format($eOperation['amount'], 2, ',', '') : '',
+				$eOperation['type'] === \journal\OperationElement::CREDIT ? number_format($eOperation['amount'], 2, ',', '') : '',
 				'',
 				'',
 				$eOperation['validatedAt'] !== NULL ? date('Ymd', strtotime($eOperation['validatedAt'])) : date('Ymd', strtotime($eOperation['date'])),
-				$eOperation['type'] === \journal\OperationElement::DEBIT ? $eOperation['amount'] : -$eOperation['amount'],
+				number_format($eOperation['type'] === \journal\OperationElement::DEBIT ? $eOperation['amount'] : -$eOperation['amount'], 2, ',', ''),
 				'EUR',
 			];
 			if($eFinancialYear['accountingType'] === FinancialYear::CASH) {
@@ -254,6 +256,71 @@ class FecLib  {
 
 		return $fecData;
 
+	}
+
+	private static function extractJournal(\Collection $cOperation, \journal\Operation $eOperation, array &$journals): \journal\JournalCode {
+
+		// On va utiliser le même journal pour toutes les opérations du même hash :
+		// utile dans l'import sur d'autres logiciels de compta pour l'équilibre des écritures
+		if(isset($journals[$eOperation['hash']]) === FALSE) {
+			if($eOperation['journalCode']->notEmpty()) {
+				$journals[$eOperation['hash']] = $eOperation['journalCode'];
+			} else {
+				$cOperationHash = $cOperation->find(function($e) use($eOperation) {
+					return $e['hash'] === $eOperation['hash'] and $e['journalCode']->notEmpty();
+				});
+				if($cOperationHash->notEmpty()) {
+					$journals[$eOperation['hash']] = $cOperationHash->first()['journalCode'];
+				}
+			}
+		}
+
+		return $journals[$eOperation['hash']] ?? new \journal\JournalCode();
+
+	}
+
+	public static function generateByFinancialYear(\account\FinancialYear $eFinancialYear): array {
+
+		$cOperation = \journal\Operation::model()
+			->select([
+				'id', 'hash', 'description', 'number', 'date', 'accountLabel', 'document', 'type', 'amount',
+				'account' => ['description'],
+				'journalCode' => ['code', 'name'],
+				'paymentMethod' => ['name'],
+			])
+			->whereFinancialYear($eFinancialYear)
+			->sort(['date' => SORT_ASC, 'hash' => SORT_ASC])
+			->getCollection();
+
+		$journals = [];
+		return $cOperation->makeArray(function($eOperation) use (&$journals, $cOperation) {
+
+			$eJournal = self::extractJournal($cOperation, $eOperation, $journals);
+
+			return [
+				$eJournal['code'] ?? 'ODJ',
+				$eJournal['name'] ?? 'Opérations Diverses Journal',
+				$eOperation['number'] ?? '',
+				date('Ymd', strtotime($eOperation['date'])),
+				$eOperation['accountLabel'],
+				$eOperation['account']['description'],
+				'',
+				'',
+				empty($eOperation['document']) ? $eOperation['id'] : $eOperation['document'],
+				str_replace('-', '', $eOperation['documentDate'] ?? $eOperation['date']),
+				$eOperation['description'],
+				$eOperation['type'] === \journal\Operation::DEBIT ? number_format($eOperation['amount'], 2, ',', '') : '',
+				$eOperation['type'] === \journal\Operation::CREDIT ? number_format($eOperation['amount'], 2, ',', '') : '',
+				'',
+				date('Ymd', strtotime($eOperation['date'])),
+				date('Ymd', strtotime($eOperation['date'])),
+				number_format($eOperation['type'] === \journal\Operation::DEBIT ? $eOperation['amount'] : -1 * $eOperation['amount'], 2, ',', ''),
+				'',
+				date('Ymd', strtotime($eOperation['date'])),
+				$eOperation['paymentMethod']['name'] ?? '',
+				''
+			];
+		});
 	}
 
 }

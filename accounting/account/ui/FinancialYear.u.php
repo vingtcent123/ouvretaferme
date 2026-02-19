@@ -986,6 +986,9 @@ class FinancialYearUi {
 					$fecMenu = '<a class="dropdown-item" data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:fec?id='.$eFinancialYear['id'].'">';
 						$fecMenu .= s("Télécharger un fichier FEC");
 					$fecMenu .= '</a>';
+					$fecMenu .= '<a class="dropdown-item" data-ajax-navigation="never" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:attestation?id='.$eFinancialYear['id'].'">';
+						$fecMenu .= s("Télécharger une attestation FEC");
+					$fecMenu .= '</a>';
 
 						if($eFinancialYear->acceptUpdate()) {
 

@@ -15,6 +15,7 @@ class PdfUi {
 	public function getName(\account\FinancialYear $eFinancialYear, string $type): string {
 
 		return match($type) {
+			'fec-attestation' => s("attestation-fec"),
 			FinancialYearDocumentLib::BALANCE_SHEET => s("bilan-provisoire-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
 			FinancialYearDocumentLib::OPENING => s("bilan-ouverture-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),
 			FinancialYearDocumentLib::OPENING_DETAILED => s("bilan-ouverture-detaille-{startDate}-{endDate}", ['startDate' => $eFinancialYear['startDate'], 'endDate' => $eFinancialYear['endDate']]),

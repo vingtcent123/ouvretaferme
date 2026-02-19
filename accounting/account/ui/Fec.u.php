@@ -3,6 +3,45 @@ namespace account;
 
 class FecUi {
 
+	public function getAttestation(\farm\Farm $eFarm): string {
+
+		$header = new \account\PdfUi()->getHeader($eFarm, s("Attestation conformité FEC"), $eFarm['eFinancialYear']);
+
+		$h = '<table class="pdf-table-bordered">';
+
+			$h .= '<thead>';
+				$h .= $header;
+			$h .= '</thead>';
+
+			$h .= '<tbody>';
+				$h .= '<tr>';
+					$h .= '<td style="border: none; background-color: transparent;">';
+
+						$h .= '<h3 class="mt-4">'.s("Texte de référence").'</h3>';
+						$h .= '<p>'.s("Article A-47 A-1 du Livre des Procédures Fiscales, modifié par l'arrêté du 29 juillet 2013 sur le Contrôle Fiscal des Comptabilités Informatisées.").'</p>';
+
+						$h .= '<p class="mt-3">'.s("Par la présente, l'association {siteName} atteste que la structure du Fichier des Ecritures Comptables (FEC) qui est géré par le site {siteName}.org est conforme aux spécifications techniques de l'Administration Fiscale en application du texte cité en référence.").'</p>';
+
+						$h .= '<p class="mt-3">'.s("La présente attestation est à produire auprès de l'Administration fiscale sur sa demande pour justifier de la conformité des logiciels utilisés pour l'entité :").'</p>';
+
+						$h .= '<ul style="list-style-type: none;">';
+							$h .= '<li>'.s("Raison sociale : {value}", $eFarm['legalName'] ?? $eFarm['name']).'</li>';
+							$h .= '<li>'.s("Adresse : {value}", $eFarm->getLegalAddress('html')).'</li>';
+						$h .= '</ul>';
+
+						$h .= '<p class="mt-3">'.s("Fait à Saint-Amant-Tallende, le {value}", \util\DateUi::numeric(date('Y-m-d'))).'</p>';
+						$h .= '<p>'.s("Vincent Guth, président de l'association {siteName}").'</p>';
+					$h .= '</td>';
+				$h .= '</tr>';
+			$h .= '</tbody>';
+
+		$h .= '</table>';
+
+
+		return $h;
+
+	}
+
 	public function getView(\farm\Farm $eFarm, array $data): \Panel {
 
 		$h = '';

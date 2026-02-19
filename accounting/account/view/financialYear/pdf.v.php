@@ -7,3 +7,9 @@ new AdaptativeView('generate', function($data, AjaxTemplate $t) {
 	]);
 
 });
+
+new HtmlView('attestation', function($data, AccountingPdfTemplate $t) {
+
+	echo new \account\FecUi()->getAttestation($data->eFarm);
+
+});

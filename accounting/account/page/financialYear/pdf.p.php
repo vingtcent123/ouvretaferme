@@ -63,4 +63,11 @@ new \account\FinancialYearPage(function($data) {
 
 	})
 ;
+new \Page()
+	->remote('attestation', 'accounting', function($data) {
+
+		throw new \ViewAction($data);
+
+	})
+;
 

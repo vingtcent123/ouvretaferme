@@ -3673,7 +3673,7 @@ Class VatUi {
 
 			}
 
-			if($eVatDeclaration->notEmpty() and $eVatDeclaration['declaredAt'] !== NULL) {
+			if($eVatDeclaration->exists() and $eVatDeclaration['declaredAt'] !== NULL) {
 				$h .= '<div class="ml-1 util-annotation">'.s("Enregistrée déclarée le {date}<br />par {user}", ['date' => \util\DateUi::numeric($eVatDeclaration['declaredAt'], \util\DateUi::DATE), 'user' => $eVatDeclaration['declaredBy']->getName()]).'</div>';
 			}
 
