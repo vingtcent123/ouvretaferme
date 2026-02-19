@@ -402,6 +402,7 @@ class TaskLib extends TaskCrud {
 			'todo' => self::getForWeekTodo($eFarm, $week),
 			'delayed' => self::getForWeekDelayed($eFarm, $week),
 			'unplanned' => self::getByUnplanned($eFarm, $week),
+			'done' => new \Collection()
 		]);
 
 		self::fillSeedling($cccTask['todo'], $cActionSeedling);
