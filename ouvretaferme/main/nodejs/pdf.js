@@ -11,6 +11,7 @@ const destination = argv.destination;
 const headerTemplate = argv.header || null;
 const title = argv.title || null;
 const footerTemplate = argv.footer || null;
+const landscape = !!(argv.landscape || false);
 const headerFooterArgs = {
 	...headerTemplate ? {headerTemplate: decodeURIComponent((headerTemplate + '').replace(/\+/g, '%20'))} : {},
 	...footerTemplate ? {footerTemplate: decodeURIComponent((footerTemplate + '').replace(/\+/g, '%20'))} : {},
@@ -38,6 +39,7 @@ const headerFooterArgs = {
 		scale: 1,
 		format: 'A4',
 		...headerFooterArgs,
+		landscape,
 	});
 
 	const buffer = fs.readFileSync(destination);

@@ -642,11 +642,11 @@ Class AssetUi {
 						$h .= '<th rowspan="3" class="text-center">'.s("Début d'exercice").'</th>';
 						$h .= '<th colspan="3" class="text-center">'.s("Augmentation (dotation de l'exercice)").'</th>';
 						$h .= '<th rowspan="3" class="text-center">'.s("Diminution").'</th>';
-						$h .= '<th rowspan="3" class="text-center">'.s("Fin exercice").'</th>';
+						$h .= '<th rowspan="3" class="text-center">'.s("Cumulé").'</th>';
 						$h .= '<th rowspan="3" class="text-center">'.s("Début exercice").'</th>';
 						$h .= '<th rowspan="3" class="text-center">'.s("Dotation").'</th>';
 						$h .= '<th rowspan="3" class="text-center">'.s("Reprise").'</th>';
-						$h .= '<th rowspan="3" class="text-center">'.s("Fin exercice").'</th>';
+						$h .= '<th rowspan="3" class="text-center">'.s("Cumulé").'</th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th rowspan="2" class="text-center no-border-left">'.s("Global").'</th>';

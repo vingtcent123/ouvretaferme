@@ -11,6 +11,8 @@ class PdfTemplate extends Template {
 	 */
 	public ?string $title = NULL;
 
+	public ?string $landscape = NULL;
+
 	public function __construct() {
 
 		parent::__construct();
@@ -44,7 +46,7 @@ class PdfTemplate extends Template {
 			$h .= Asset::importHtml();
 		$h .= '</head>';
 
-			$h .= '<body class="template-pdf">';
+			$h .= '<body class="template-pdf '.(($this->landscape ?? NULL) === NULL ? '' : 'landscape').'">';
 				$h .= $stream;
 			$h .= '</body>';
 

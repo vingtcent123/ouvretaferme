@@ -11,14 +11,14 @@ Class PdfLib {
 
 	}
 
-	public static function build(string $url, ?string $title, ?string $footer): string {
+	public static function build(string $url, ?string $title, ?string $footer, ?bool $landscape): string {
 
 		if(OTF_DEMO) {
 			return '';
 		}
 
 		return \Cache::redis()->lock(
-			'pdf-'.$url, function () use ($footer, $title, $url) {
+			'pdf-'.$url, function () use ($footer, $title, $url, $landscape) {
 
 			$file = tempnam('/tmp', 'pdf-').'.pdf';
 
@@ -34,6 +34,9 @@ Class PdfLib {
 			$args .= ' "--header= "';
 			if($title !== NULL) {
 				$args .= ' "--title='.rawurlencode($title).'"';
+			}
+			if($landscape !== NULL) {
+				$args .= ' "--landscape=1"';
 			}
 
 			if(LIME_ENV === 'dev') {
@@ -114,7 +117,13 @@ Class PdfLib {
 		$footer = \account\PdfUi::getFooter();
 		$title = new \account\PdfUi()->getName($eFinancialYear, $type);
 
-		return self::build(\Lime::getUrl().\farm\FarmUi::urlFinancialYear($eFinancialYear, $eFarm).$document.'?type='.$type, $title, $footer);
+		$landscape = match($type) {
+			\account\FinancialYearDocumentLib::ASSET_AMORTIZATION => TRUE,
+			\account\FinancialYearDocumentLib::ASSET_ACQUISITION => TRUE,
+			default => NULL,
+		};
+
+		return self::build(\Lime::getUrl().\farm\FarmUi::urlFinancialYear($eFinancialYear, $eFarm).$document.'?type='.$type, $title, $footer, $landscape);
 
 	}
 }

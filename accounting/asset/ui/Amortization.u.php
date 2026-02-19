@@ -159,8 +159,8 @@ Class AmortizationUi {
 		$showGrossValueDiminutionColumn = array_find($amortizations, fn($amortization) => $amortization['grossValueDiminution'] > 0) !== NULL;
 
 		$h = $header;
-		$h .= '<tr class="tr-bold">';
-			$h .= '<th colspan="99">'.match($type) {
+		$h .= '<tr class="tr-bold" style="border-bottom: 1px solid black;">';
+			$h .= '<th colspan="99" class="text-center">'.match($type) {
 				'asset' => s("Immobilisations"),
 				'grant' => s("Subventions"),
 			}.'</th>';
@@ -183,18 +183,18 @@ Class AmortizationUi {
 			$h .= '<th class="text-center">'.s("Libellé").'</th>';
 			$h .= '<th class="text-center">'.s("Date acquisition").'</th>';
 			$h .= '<th class="text-center">'.s("Date mise en service").'</th>';
-			$h .= '<th class="text-center border-bottom">'.s("Mode E/F").'</th>';
-			$h .= '<th class="text-center border-bottom">'.s("Durée").'</th>';
+			$h .= '<th class="text-center">'.s("Mode E/F").'</th>';
+			$h .= '<th class="text-center">'.s("Durée").'</th>';
 			$h .= '<th class="text-center">'.s("Début exercice").'</th>';
 			$h .= '<th class="text-end">'.s("Début").'</th>';
 			$h .= '<th class="text-end">'.s("Acquisition").'</th>';
 			$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
-			$h .= '<th class="text-center no-border-right">'.s("Fin exercice").'</th>';
+			$h .= '<th class="text-center no-border-right">'.s("Cumulé").'</th>';
 			if($showExcessColumns) {
 				$h .= '<th class="text-center">'.s("Début exercice").'</th>';
 				$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
 				$h .= '<th class="text-center">'.s("Reprise exercice").'</th>';
-				$h .= '<th class="text-center no-border-right">'.s("Fin exercice").'</th>';
+				$h .= '<th class="text-center no-border-right">'.s("Cumulé").'</th>';
 			}
 		$h .= '</tr>';
 
@@ -298,12 +298,12 @@ Class AmortizationUi {
 					$h .= '<th class="text-center">'.s("Acquisition<br />ou apport").'</th>';
 					$h .= '<th class="text-center">'.s("Début exercice").'</th>';
 					$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
-					$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
+					$h .= '<th class="text-center">'.s("Cumulé").'</th>';
 					if($showExcessColumns) {
 						$h .= '<th class="text-center">'.s("Début exercice").'</th>';
 						$h .= '<th class="text-center">'.s("Dotation exercice").'</th>';
 						$h .= '<th class="text-center">'.s("Reprise exercice").'</th>';
-						$h .= '<th class="text-center">'.s("Fin exercice").'</th>';
+						$h .= '<th class="text-center">'.s("Cumulé").'</th>';
 					}
 				$h .= '</tr>';
 			$h .= '</thead>';

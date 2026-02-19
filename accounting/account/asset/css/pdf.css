@@ -3,6 +3,7 @@
 	margin-left: 1cm;
 	margin-right: 1cm;
 }
+
 html {
 	margin: 0;
 	padding: 0;
@@ -24,11 +25,16 @@ table {
 	border-radius: 0.15cm;
 	border: 1px solid var(--secondary);
 	background-color: #20516029;
-	width: 19cm;
 	padding: .25cm 0 .5cm;
 	font-size: 12px;
 	align-content: center;
 	text-align: center;
+}
+body:not(.landscape) table .pdf-document-header {
+	width: 19cm;
+}
+body.landscape table .pdf-document-header {
+	width: 27cm;
 }
 
 .pdf-document-wrapper {
@@ -90,9 +96,14 @@ table.pdf-table-bordered {
 	page-break-after: always;
 	border-collapse: collapse;
 	margin: 0 auto 1cm;
-	max-width: 18.5cm;
 }
 
+body:not(.landscape) table.pdf-table-bordered {
+	max-width: 18.5cm;
+}
+body.landscape table.pdf-table-bordered {
+	max-width: 26.5cm;
+}
 table.pdf-table-bordered tbody td,
 table.pdf-table-bordered th {
 	padding: 0.1cm 0.2cm;
