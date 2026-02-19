@@ -177,23 +177,23 @@ Class BalanceUi {
 			$h .= '<th rowspan="2" class="td-vertical-align-middle td-min-content text-center">'.s("Numéro<br />de compte").'</th>';
 			$h .= '<th rowspan="2" class="td-vertical-align-middle">'.s("Libellé").'</th>';
 			$h .= '<th colspan="2" class="text-center">'.s("Totaux").'</th>';
-			$h .= '<th colspan="2" class="text-center">';
-				$h .= s("Soldes exercice {value}", $eFinancialYear->getLabel());
-			$h .= '</th>';
+			$h .= '<th colspan="2" class="text-center">'.s("Soldes").'</th>';
 			if($eFinancialYearPrevious->notEmpty()) {
-				$h .= '<th colspan="2" class="text-center">';
-					$h .= s("Soldes exercice {value}", $eFinancialYearPrevious->getLabel());
+				$h .= '<th class="text-center" rowspan="2">';
+					$h .= s("Variation");
 				$h .= '</th>';
 			}
 		$h .= '</tr>';
 		$h .= '<tr>';
 			$h .= '<th class="text-center" style="border: 0;">'.s("Débit").'</th>';
 			$h .= '<th class="text-center">'.s("Crédit").'</th>';
-			$h .= '<th class="text-center">'.s("Débit").'</th>';
-			$h .= '<th class="text-center">'.s("Crédit").'</th>';
+			$h .= '<th class="text-center">';
+				$h .= s("Exercice {value}", $eFinancialYear->getLabel());
+			$h .= '</th>';
 			if($eFinancialYearPrevious->notEmpty()) {
-				$h .= '<th class="text-center">'.s("Débit").'</th>';
-				$h .= '<th class="text-center">'.s("Crédit").'</th>';
+				$h .= '<th class="text-center" style="border-right: none;">';
+					$h .= s("Exercice {value}", $eFinancialYearPrevious->getLabel());
+				$h .= '</th>';
 			}
 		$h .= '</tr>';
 
@@ -366,12 +366,36 @@ Class BalanceUi {
 				$h .= '<td class="text-end">'.($lineCurrent['debit'] !== 0.0 ? \util\TextUi::money($lineCurrent['debit'], precision: 0) : '').'</td>';
 				$h .= '<td class="text-end">'.($lineCurrent['credit'] !== 0.0 ? \util\TextUi::money($lineCurrent['credit'], precision: 0) : '').'</td>';
 
-				$h .= '<td class="text-end">'.($lineCurrent['debit'] > $lineCurrent['credit'] ? \util\TextUi::money($lineCurrent['debit'] - $lineCurrent['credit'], precision: 0) : '').'</td>';
-				$h .= '<td class="text-end">'.($lineCurrent['credit'] > $lineCurrent['debit'] ? \util\TextUi::money($lineCurrent['credit'] - $lineCurrent['debit'], precision: 0) : '').'</td>';
+				if(in_array((int)mb_substr($class, 0, 1), \account\AccountSetting::ASSET_CLASSES)) {
+					$calculatedBalanceCurrent = $lineCurrent['debit'] - $lineCurrent['credit'];
+				} else {
+					$calculatedBalanceCurrent = $lineCurrent['credit'] - $lineCurrent['debit'];
+				}
+				$h .= '<td class="text-end">'.\util\TextUi::money($calculatedBalanceCurrent, precision: 0).'</td>';
 
 				if($hasPrevious) {
-					$h .= '<td class="text-end">'.($linePrevious['debit'] > $linePrevious['credit'] ? \util\TextUi::money($linePrevious['debit'] - $linePrevious['credit'], precision: 0) : '').'</td>';
-					$h .= '<td class="text-end">'.($linePrevious['credit'] > $linePrevious['debit'] ? \util\TextUi::money($linePrevious['credit'] - $linePrevious['debit'], precision: 0) : '').'</td>';
+					if(in_array((int)mb_substr($class, 0, 1), \account\AccountSetting::ASSET_CLASSES)) {
+						$calculatedBalancePrevious = $linePrevious['debit'] - $linePrevious['credit'];
+					} else {
+						$calculatedBalancePrevious = $linePrevious['credit'] - $linePrevious['debit'];
+					}
+					$h .= '<td class="text-end">'.\util\TextUi::money($calculatedBalancePrevious, precision: 0).'</td>';
+					$h .= '<td class="text-center">';
+						if(
+							($calculatedBalancePrevious > 0 and $calculatedBalanceCurrent > 0) or
+							($calculatedBalancePrevious < 0 and $calculatedBalanceCurrent < 0)
+						) {
+							$variation = round(($calculatedBalanceCurrent - $calculatedBalancePrevious) / abs($calculatedBalancePrevious) * 100);
+							if($variation !== 0.0) {
+								if($variation > 0) {
+									$h .= '+';
+								}
+								$h .= round(($calculatedBalanceCurrent - $calculatedBalancePrevious) / abs($calculatedBalancePrevious) * 100).'%';
+							} else {
+								$h .= '=';
+							}
+						}
+					$h .='</td>';
 				}
 			$h .= '</tr>';
 
@@ -395,11 +419,19 @@ Class BalanceUi {
 			$h .= '<td><b>'.s("Totaux").'<b></td>';
 			$h .= '<td class="text-end"><b>'.\util\TextUi::money($totalDebitCurrent, precision: 0).'<b></td>';
 			$h .= '<td class="text-end"><b>'.\util\TextUi::money($totalCreditCurrent, precision: 0).'<b></td>';
-			$h .= '<td class="text-end"><b>'.($totalDebitCurrent > $totalCreditCurrent ? \util\TextUi::money($totalDebitCurrent - $totalCreditCurrent) : '').'<b></td>';
-			$h .= '<td class="text-end"><b>'.($totalCreditCurrent > $totalDebitCurrent ? \util\TextUi::money($totalCreditCurrent - $totalDebitCurrent) : '').'<b></td>';
+			$balanceTotalCurrent = round($totalDebitCurrent - $totalCreditCurrent) === 0.0 ? 0.0 : round($totalDebitCurrent - $totalCreditCurrent);
+			$h .= '<td class="text-end"><b>'.\util\TextUi::money($balanceTotalCurrent).'<b></td>';
 			if($hasPrevious) {
-				$h .= '<td class="text-end"><b>'.($totalDebitPrevious > $totalCreditPrevious ? \util\TextUi::money($totalDebitPrevious - $totalCreditPrevious) : '').'<b></td>';
-				$h .= '<td class="text-end"><b>'.($totalCreditPrevious > $totalDebitPrevious ? \util\TextUi::money($totalCreditPrevious - $totalDebitPrevious) : '').'<b></td>';
+				$balanceTotalPrevious = round($totalDebitPrevious - $totalCreditPrevious) === 0.0 ? 0.0 : round($totalDebitPrevious - $totalCreditPrevious);
+				$h .= '<td class="text-end"><b>'.\util\TextUi::money($balanceTotalPrevious).'<b></td>';
+					$h .= '<td class="text-end">';
+						if(
+							($balanceTotalPrevious > 0 and $balanceTotalCurrent > 0) or
+							($balanceTotalPrevious < 0 and $balanceTotalCurrent < 0)
+						) {
+							$h .= round(($balanceTotalCurrent - $balanceTotalPrevious) / abs($balanceTotalPrevious) * 100, 2).'%';
+						}
+					$h .='</td>';
 			}
 		$h .= '</tr>';
 

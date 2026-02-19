@@ -36,6 +36,9 @@ class AccountSetting extends \Settings {
 	const CHARGE_ACCOUNT_CLASS = 6;
 	const PRODUCT_ACCOUNT_CLASS = 7;
 
+	const ASSET_CLASSES = [self::ASSET_GENERAL_CLASS];
+	const LIABILITY_CLASSES = [self::CAPITAL_CLASS, self::STOCK_GENERAL_CLASS, self::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS, self::FINANCIAL_GENERAL_CLASS];
+
 	const CAPITAL_AND_RESERVES_CLASS = 10; // Capital et réserves
 	const CAPITAL_CLASS = 101; // Capital
 	const FARMER_S_ACCOUNT_CLASS = 108; // Compte de l'exploitant
