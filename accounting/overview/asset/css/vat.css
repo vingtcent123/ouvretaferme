@@ -77,6 +77,14 @@ table.no-border-bottom td {
 	margin: 1rem;
 }
 
+.vat-form-buttons-container {
+	position: sticky;
+	bottom: 0;
+	padding: 2rem 0 2rem;
+	background-color: var(--background-body);
+	display: flex;
+	justify-content: end;
+}
 
 /* Récap des déclarations */
 .vat-period-container {

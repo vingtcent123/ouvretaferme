@@ -3653,7 +3653,7 @@ Class VatUi {
 			return '';
 		}
 
-		$h = '<div style="position: sticky; bottom: 0; padding: 2rem 0 2rem; background-color: var(--background-body); text-align: right">';
+		$h = '<div class="vat-form-buttons-container">';
 
 			if($eVatDeclaration->acceptReset()) {
 
@@ -3671,6 +3671,10 @@ Class VatUi {
 
 				$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/vat/doDeclare', 'post-id' => $eVatDeclaration['id']]);
 
+			}
+
+			if($eVatDeclaration->notEmpty() and $eVatDeclaration['declaredAt'] !== NULL) {
+				$h .= '<div class="ml-1 util-annotation">'.s("Enregistrée déclarée le {date}<br />par {user}", ['date' => \util\DateUi::numeric($eVatDeclaration['declaredAt'], \util\DateUi::DATE), 'user' => $eVatDeclaration['declaredBy']->getName()]).'</div>';
 			}
 
 		$h .= '</div>';
