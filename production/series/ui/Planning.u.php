@@ -1129,9 +1129,13 @@ class PlanningUi {
 
 								$eTool = $eTask['cTool?']()[$eTool['id']];
 
-								$body .= '<div>';
-									$body .= (ceil($eSlice['youngPlants'] / $eTool['routineValue']['value'] * 10) / 10);
-								$body .= '</div>';
+								if($eTool['routineValue']) {
+
+									$body .= '<div>';
+										$body .= (ceil($eSlice['youngPlants'] / $eTool['routineValue']['value'] * 10) / 10);
+									$body .= '</div>';
+
+								}
 
 							}
 

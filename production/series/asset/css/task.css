@@ -148,12 +148,6 @@ label.tasks-planning-select input {
 	height: 1.2rem;
 }
 
-div.tasks-planning-item.tasks-planning-item-with-series a.tasks-planning-item-top {
-	display: block;
-	padding-top: 0.5rem;
-	text-decoration: none;
-}
-
 
 a.tasks-year-item {
 	display: grid;
