@@ -1224,7 +1224,7 @@ class TaskLib extends TaskCrud {
 			]);
 
 			if($eFlow['crop']->notEmpty()) {
-				$e['cultivation'] = $cCultivation->find(fn($eCultivation) => ($eCultivation['crop']->notEmpty() and $eCultivation['crop']['id'] === $eFlow['crop']['id']), TRUE, limit: 1);
+				$e['cultivation'] = $cCultivation->find(fn($eCultivation) => ($eCultivation['crop']->notEmpty() and $eCultivation['crop']['id'] === $eFlow['crop']['id']), limit: 1);
 				$e['series'] = $e['cultivation']['series'];
 			} else {
 				$e['cultivation'] = new Cultivation();
