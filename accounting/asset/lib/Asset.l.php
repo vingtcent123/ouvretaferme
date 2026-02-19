@@ -337,7 +337,7 @@ class AssetLib extends \asset\AssetCrud {
 			->whereAccountLabel($search->get('accountLabel'), if: $search->get('accountLabel') and AssetLib::isAsset($search->get('accountLabel')))
 			->whereAccount($search->get('account'), if: $eAccount->notEmpty() and AssetLib::isAsset($eAccount['class']))
 			->where('description LIKE "%'.$search->get('query').'%" OR accountLabel LIKE "%'.$search->get('query').'%"', if: $search->get('query'))
-			->sort(['createdAt' => SORT_DESC])
+			->sort(['acquisitionDate' => SORT_DESC])
 			->getCollection();
 	}
 
