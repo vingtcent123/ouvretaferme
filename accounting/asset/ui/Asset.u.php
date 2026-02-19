@@ -411,9 +411,34 @@ Class AssetUi {
 		$total = 0;
 		$totalAmortizable = 0;
 
+		$totalByAccount = [];
+		$lastAccount = NULL;
+
 		foreach($cAsset as $eAsset) {
 
+			if(isset($totalByAccount[$eAsset['accountLabel']]) === FALSE) {
+				$totalByAccount[$eAsset['accountLabel']] = ['value' => 0, 'amortizableBase' => 0, 'account' => $eAsset['account']];
+			}
+
+			if($lastAccount !== NULL and $lastAccount !== $eAsset['accountLabel']) {
+
+				$h .= '<tr class="tr-bold">';
+					$h .= '<td>';
+						$h .= encode($lastAccount);
+					$h .= '</td>';
+					$h .= '<td colspan="6">';
+						$h .= encode($totalByAccount[$lastAccount]['account']['description']);
+					$h .= '</td>';
+					$h .= '<td class="text-end">'.$this->number($totalByAccount[$lastAccount]['value'], '', 2).'</td>';
+					$h .= '<td class="text-end">'.$this->number($totalByAccount[$lastAccount]['amortizableBase'], '', 2).'</td>';
+
+				$h .= '</tr>';
+			}
+
 			$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
+
+			$totalByAccount[$eAsset['accountLabel']]['value'] += $eAsset['value'];
+			$totalByAccount[$eAsset['accountLabel']]['amortizableBase'] += $amortizableBase;
 
 			$h .= '<tr>';
 				$h .= '<td>';
@@ -457,6 +482,8 @@ Class AssetUi {
 			$h .= '</tr>';
 			$total += $eAsset['value'];
 			$totalAmortizable += $amortizableBase;
+
+			$lastAccount = $eAsset['accountLabel'];
 
 		}
 
