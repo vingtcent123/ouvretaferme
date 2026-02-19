@@ -37,6 +37,7 @@ class CompanySetting extends \Settings {
 		2035, // 16 février
 		2433, 594, 3026, // 17 février
 		3501, // 18 février
+		17, 3493, // 19 février
 
 	];
 
