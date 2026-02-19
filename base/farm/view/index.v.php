@@ -4,7 +4,7 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 	$t->title = s("Planning de {value}", $data->eFarm['name']);
 	$t->nav = 'planning';
 
-	$uiTask = new \series\TaskUi();
+	$uiPlanning = new \series\PlanningUi();
 
 	$period = $data->eFarm->getView('viewPlanning');
 
@@ -19,14 +19,26 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 			$t->footer = '';
 			$t->canonical = \farm\FarmUi::urlPlanningDaily($data->eFarm, $data->week);
 
-			$t->mainTitle = $uiTask->getWeekCalendar(
+			$t->mainTitle = $uiPlanning->getCalendar(
 				$data->eFarm,
 				$data->week,
-				fn($week) => \farm\FarmUi::urlPlanningDaily($data->eFarm, $week)
+				fn($week) => \farm\FarmUi::urlPlanningDaily($data->eFarm, $week),
+				fn() => $uiPlanning->getCalendarFilter()
 			);
-			echo $uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone, new Collection());
 
-			echo $uiTask->getDayPlanning($data->eFarm, $data->week, $data->cccTask, $data->cccTaskAssign, $data->cUserFarm, $data->eUserSelected, $data->seasonsWithSeries, $data->cCategory);
+			$cccTaskAction = new Collection()
+				->setDepth(3)
+				->mergeCollection($data->cccTaskAssign)
+				->mergeCollection($data->cccTask);
+
+			echo '<div id="planning-daily-wrapper">';
+				echo '<div id="planning-daily-header">';
+					echo '<div class="container mb-1">'.$uiPlanning->getFilters($data->eFarm, $cccTaskAction, $data->cUserFarm, $data->search->get('user'), $data->cAction, $data->eActionSelected, NULL, $data->ePlantSelected).'</div>';
+					echo $uiPlanning->getSearch($data->eFarm, $data->search, $data->cZone);
+				echo '</div>';
+
+				echo $uiPlanning->getByDay($data->eFarm, $data->week, $data->cccTask, $data->cccTaskAssign, $data->eActionSelected, $data->ePlantSelected, $data->cUserFarm, $data->eUserDaily, $data->seasonsWithSeries, $data->cCategory);
+			echo '</div>';
 
 			break;
 
@@ -37,21 +49,18 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 			$t->template = 'farm farm-planning-weekly';
 			$t->canonical = \farm\FarmUi::urlPlanningWeekly($data->eFarm, $data->week);
 
-			$t->mainTitle = $uiTask->getWeekCalendar(
+			$t->mainTitle = $uiPlanning->getCalendar(
 				$data->eFarm,
 				$data->week,
 				fn($week) => \farm\FarmUi::urlPlanningWeekly($data->eFarm, $week),
-				fn() => (FEATURE_PLANNING ? $uiTask->getCustomization($data->eFarm).' ' : '').$uiTask->getCalendarFilter()
+				fn() => $uiPlanning->getExport($data->eFarm, $data->week).' '.$uiPlanning->getCalendarFilter()
 			);
 
 			echo new \main\HomeUi()->getTraining(TRUE);
 
-			echo $uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone, $data->cUserFarm);
+			echo $uiPlanning->getSearch($data->eFarm, $data->search, $data->cZone);
 
-			echo match($data->eFarm->getView('viewPlanningWeekly')) {
-				\farm\Farmer::COLUMN => $uiTask->getWeekPlanningColumns($data->eFarm, $data->week, $data->cccTask, $data->cUserFarm, $data->eUserTime, $data->seasonsWithSeries, $data->cActionMain, $data->cCategory),
-				\farm\Farmer::LINE => $uiTask->getWeekPlanningLines($data->eFarm, $data->week, $data->cccTask, $data->cUserFarm, $data->eUserTime, $data->seasonsWithSeries, $data->cActionMain, $data->cCategory)
-			};
+			echo $uiPlanning->getByWeek($data->eFarm, $data->week, $data->cccTask, $data->cUserFarm, $data->eUserTime, $data->seasonsWithSeries, $data->cAction, $data->search->get('user'), $data->eActionSelected, $data->ePlantSelected, $data->cCategory);
 
 			break;
 
@@ -63,19 +72,23 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 			$t->canonical = \farm\FarmUi::urlPlanningYear($data->eFarm, $data->year, $data->month);
 
-			$t->mainTitle = $uiTask->getYearCalendar(
+			$t->mainTitle = $uiPlanning->getYearCalendar(
 				$data->eFarm,
 				$data->year,
-				fn() => $uiTask->getCalendarFilter()
+				fn() => $uiPlanning->getCalendarFilter()
 			);
 
-			$t->main = $uiTask->getYearSearch(
+			$t->main = '<div class="container mb-2">';
+				$t->main .= $uiPlanning->getSearch($data->eFarm, $data->search, $data->cZone);
+				$t->main .= $uiPlanning->getFilters($data->eFarm, $data->ccTask, $data->cUserFarm, $data->search->get('user'), $data->cAction, $data->eActionSelected, $data->cPlant, $data->ePlantSelected, filterSelected: FALSE);
+			$t->main .= '</div>';
+
+			$t->main .= $uiPlanning->getYearSearch(
 				$data->eFarm,
-				$data->year,
-				fn() => '<div class="container">'.$uiTask->getWeekSearch($data->eFarm, $data->search, $data->cAction, $data->cZone, $data->cUserFarm).'</div>'
+				$data->year
 			);
 
-			$t->main .= $uiTask->getYearMonths($data->year, $data->month, $data->ccTask);
+			$t->main .= $uiPlanning->getYearMonths($data->year, $data->month, $data->ccTask);
 
 			$t->footer = '';
 
@@ -89,14 +102,9 @@ new AdaptativeView('planning', function($data, FarmTemplate $t) {
 
 });
 
-new AdaptativeView('/ferme/{id}/taches/{week}/{action}', function($data, FarmTemplate $t) {
+new AdaptativeView('/ferme/{id}/intervention/{week}/{action}', function($data, PanelTemplate $t) {
 
-	$t->title = $data->eAction['name'];
-	$t->nav = 'planning';
-	$t->subNav = $data->eFarm->getView('viewPlanning');
-
-	$t->mainTitle = new \series\TaskUi()->displayByActionTitle($data->eFarm, $data->week, $data->eAction);
-	echo new \series\TaskUi()->displayByAction($data->eFarm, $data->week, $data->eAction, $data->cTask);
+	return new \series\TaskUi()->displayByAction($data->eFarm, $data->week, $data->eAction, $data->cTask);
 
 });
 

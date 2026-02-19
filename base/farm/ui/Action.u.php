@@ -156,7 +156,7 @@ class ActionUi {
 		$h .= '<table class="tbody-even">';
 			$h .= '<thead>';
 				$h .= '<tr>';
-					$h .= '<th>'.s("Nom").'</th>';
+					$h .= '<th colspan="2">'.s("Nom").'</th>';
 					$h .= '<th class="hide-xs-down">'.s("Catégories").'</th>';
 					$h .= '<th>'.s("Méthodes de travail").'</th>';
 					$h .= '<th class="text-center hide-xs-down">'.s("Utilisations").'</th>';
@@ -180,10 +180,17 @@ class ActionUi {
 							$h .= encode($eAction['name']);
 							$h .= '<div class="action-manage-categories hide-sm-up">'.implode(' / ', $categories).'</div>';
 						$h .= '</td>';
+						$h .= '<td class="td-min-content">';
+							if($eAction['favorite']) {
+								$h .= '<a data-ajax="/farm/action:doUpdateFavorite" post-id="'.$eAction['id'].'" post-favorite="0">'.\Asset::icon('star-fill').'</a>';
+							} else {
+								$h .= '<a data-ajax="/farm/action:doUpdateFavorite" post-id="'.$eAction['id'].'" post-favorite="1">'.\Asset::icon('star').'</a>';
+							}
+						$h .= '</td>';
 						$h .= '<td class="hide-xs-down">';
 							$h .= implode('<br/>', $categories);
 						$h .= '</td>';
-						$h .= '<td>';
+						$h .= '<td style="max-width: 25rem">';
 							$h .= '<div class="action-manage-methods">';
 								foreach($eAction['cMethod'] as $eMethod) {
 									$h .= '<a data-dropdown="bottom-start" class="dropdown-toggle btn btn-sm btn-primary">'.encode($eMethod['name']).'</a> ';
@@ -293,14 +300,14 @@ class ActionUi {
 			$h .= $form->hidden('id', $eAction['id']);
 
 			if($eAction->isProtected() === FALSE) {
-				$properties = ['name', 'categories', 'color'];
+				$properties = ['name', 'categories', 'favorite', 'color'];
 			} else {
-				$properties = ['color'];
+				$properties = ['name', 'favorite', 'color'];
 			}
 
 			$h .= $form->dynamicGroups($eAction, $properties);
 			$h .= '<div class="util-block bg-background-light action-update-cultivation">';
-				$h .= $form->group(content: '<h4>'.s("Paramètrage avancé").'</h4>');
+				$h .= $form->group(content: '<h4>'.s("Paramétrage avancé").'</h4>');
 				$h .= $form->dynamicGroup($eAction, 'pace');
 				if($eAction->isProtected() === FALSE) {
 					$h .= $form->dynamicGroup($eAction, 'soil');
@@ -327,6 +334,7 @@ class ActionUi {
 			'name' => s("Nom de l'intervention"),
 			'short' => s("Raccourci du nom de l'intervention"),
 			'fqn' => s("Nom qualifié"),
+			'favorite' => s("Favori").'  '.\Asset::icon('star-fill'),
 			'color' => s("Couleur"),
 			'categories' => s("Catégories"),
 			'pace' => s("Calcul de la productivité de l'intervention"),
@@ -367,6 +375,11 @@ class ActionUi {
 			case 'soil' :
 				$d->field = 'yesNo';
 				$d->after = \util\FormUi::info(s("Si vous modifiez ce paramètre, seuls les plans d'assolement des saisons {value} et suivantes de votre ferme seront mis à jour.", currentYear()));
+				break;
+
+			case 'favorite' :
+				$d->field = 'yesNo';
+				$d->labelAfter = \util\FormUi::info(s("Les interventions en favori apparaissent en premier dans le planning."));
 				break;
 
 			case 'short' :

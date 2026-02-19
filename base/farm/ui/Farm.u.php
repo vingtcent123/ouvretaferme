@@ -90,7 +90,7 @@ class FarmUi {
 	}
 
 	public static function urlPlanningAction(Farm $eFarm, string $week, Action $eAction): string {
-		return self::url($eFarm).'/taches/'.$week.'/'.$eAction['id'];
+		return self::url($eFarm).'/intervention/'.$week.'/'.$eAction['id'];
 	}
 
 	public static function urlPlanningYear(Farm $eFarm, ?int $year = NULL, ?int $month = NULL): string {

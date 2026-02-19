@@ -49,6 +49,7 @@ class ActionModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
+			'favorite' => ['bool', 'cast' => 'bool'],
 			'fqn' => ['text8', 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'short' => ['text8', 'min' => 1, 'max' => 1, 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
@@ -61,7 +62,7 @@ class ActionModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'short', 'farm', 'color', 'pace', 'soil', 'categories', 'series', 'status'
+			'id', 'name', 'favorite', 'fqn', 'short', 'farm', 'color', 'pace', 'soil', 'categories', 'series', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -77,6 +78,9 @@ class ActionModel extends \ModuleModel {
 	public function getDefaultValue(string $property) {
 
 		switch($property) {
+
+			case 'favorite' :
+				return FALSE;
 
 			case 'color' :
 				return '#AAAAAA';
@@ -148,6 +152,10 @@ class ActionModel extends \ModuleModel {
 
 	public function whereName(...$data): ActionModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function whereFavorite(...$data): ActionModel {
+		return $this->where('favorite', ...$data);
 	}
 
 	public function whereFqn(...$data): ActionModel {

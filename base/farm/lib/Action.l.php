@@ -11,9 +11,9 @@ class ActionLib extends ActionCrud {
 		return function(Action $e) {
 			$e->expects(['fqn']);
 			if($e->isProtected() === FALSE) {
-				return ['name', 'categories', 'color', 'pace', 'soil'];
+				return ['name', 'categories', 'favorite', 'color', 'pace', 'soil'];
 			} else {
-				return ['color', 'pace'];
+				return ['name', 'favorite', 'color', 'pace'];
 			}
 		};
 	}
@@ -126,6 +126,16 @@ class ActionLib extends ActionCrud {
 		FarmSetting::$mainActions = $cAction;
 
 		return $cAction;
+
+	}
+
+	public static function saveMain(\Collection $cAction): void {
+
+		FarmSetting::$mainActions ??= $cAction
+			->find(fn($eAction) => (
+				in_array($eAction['fqn'], [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION, ACTION_RECOLTE]) or
+				$eAction['soil']
+			), indexByKey: 'fqn');
 
 	}
 

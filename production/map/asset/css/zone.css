@@ -16,7 +16,7 @@
 @media (max-width: 1099px), (max-height: 599px) {
 
 	body[data-touch="no"] main #zone-header {
-		top: var(--nav);
+		top: var(--nav-height);
 	}
 
 }

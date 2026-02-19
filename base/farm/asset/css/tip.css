@@ -36,7 +36,7 @@
 	#tip-wrapper:not(.tip-wrapper-inline) {
 		z-index: 2000;
 		position: absolute;
-		margin-top: calc(var(--mainNav) + var(--farmNav));
+		margin-top: calc(var(--nav-main) + var(--nav-farm));
 		padding-top: 2rem;
 		display: flex;
 		justify-content: center;

@@ -16,6 +16,7 @@ class AlertUi {
 
 			'Crop::variety.check' => s("Vous devez choisir au moins une variété."),
 			'Crop::variety.createEmpty' => s("Vous devez indiquer un nom pour une variété que vous souhaitez ajouter."),
+			'Crop::variety.createName' => s("Le nom de cette variété est trop long."),
 			'Crop::variety.notExists' => s("La variété n'existe pas."),
 			'Crop::variety.partZero' => s("Vous n'avez pas indiqué de répartition pour au moins une des variétés."),
 			'Crop::variety.duplicate' => s("Vous avez indiqué des variétés en doublon pour une culture."),

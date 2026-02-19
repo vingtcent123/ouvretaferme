@@ -62,6 +62,8 @@ class Action extends ActionElement {
 					$color = new ActionModel()->getDefaultValue('color');
 				}
 
+				$color = strtoupper($color);
+
 				return TRUE;
 
 			})

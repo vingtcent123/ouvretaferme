@@ -56,7 +56,7 @@ div.doc-wrapper {
 
 	#doc-menu-open {
 		position: absolute;
-		top: calc(var(--mainNav) + 1rem);
+		top: calc(var(--nav-main) + 1rem);
 		left: 1rem;
 		font-size: 1.75rem;
 		padding: 1rem;

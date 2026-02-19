@@ -442,7 +442,7 @@ class LegalUi {
 			$h .= '</div>';
 		$h .= '</div>';
 
-		$h .= '<p class="home-emphasis">'.s("75 % des fermes qui utilisent {siteName} ne sont pas adhérentes à l'AFOCG et une partie d'entre elles pourrait être intéressée par un accompagnement à la comptabilité et à la gestion.").'</p>';
+		$h .= '<p class="home-emphasis">'.s("75 % des fermes qui utilisent {siteName} ne sont pas adhérentes à une AFOCG et une partie d'entre elles pourrait être intéressée par un accompagnement à la comptabilité et à la gestion.").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<br/>';

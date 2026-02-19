@@ -278,7 +278,7 @@ class SliceUi {
 				});
 
 				$h .= '<div class="slice-item-create" style="display: none">';
-					$h .= $form->text($name.'['.($spare ? 'spare' : 'variety').'Create][]', '', ['data-action' => 'slice-variety-create', 'placeholder' => s("Tapez le nom de la variété")]);
+					$h .= $form->text($name.'['.($spare ? 'spare' : 'variety').'Create][]', '', ['data-action' => 'slice-variety-create', 'placeholder' => s("Tapez le nom de la variété"), 'maxlength' => \plant\Variety::model()->getPropertyRange('name')[1]]);
 					$h .= '<a class="slice-item-create-cancel" data-action="slice-variety-create-cancel">'.\Asset::icon('trash').'</a>';
 				$h .= '</div>';
 

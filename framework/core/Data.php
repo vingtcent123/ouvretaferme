@@ -740,7 +740,7 @@ class Collection extends ArrayIterator {
 	 *
 	 * @param mixed $filter Filter can be a callable function (works just as array_filter do) or a property name (delete entries which do not define the given property)
 	 */
-	public function find(?Closure $filter = NULL, bool $preserveKeys = TRUE, ?int $limit = NULL, int $depth = 1, bool $clone = TRUE, Closure|Element $default = new Element()): Collection|Element {
+	public function find(?Closure $filter = NULL, bool $preserveKeys = TRUE, ?string $indexByKey = NULL, ?int $limit = NULL, int $depth = 1, bool $clone = TRUE, Closure|Element $default = new Element()): Collection|Element {
 
 		if($depth > 1) {
 
@@ -761,7 +761,17 @@ class Collection extends ArrayIterator {
 
 			if($filter === NULL or $filter($e)) {
 
-				if($preserveKeys) {
+				if($indexByKey) {
+
+					if($e[$indexByKey] instanceof Element) {
+						$keyIndex = $e[$indexByKey]->notEmpty() ? $e[$indexByKey]['id'] : NULL;
+					} else {
+						$keyIndex = $e[$indexByKey];
+					}
+
+					$c[$keyIndex] = $clone ? clone $e : $e;
+
+				} else if($preserveKeys) {
 					$c[$key] = $clone ? clone $e : $e;
 				} else {
 					$c[] = $clone ? clone $e : $e;

@@ -73,7 +73,8 @@
 @media (min-width: 1100px) and (min-height: 600px) {
 
 	:root {
-		--mainNav: 3.5rem;
+		--nav-main: 3.5rem;
+		--nav-farm: 0;
 		--mainSticky: 0rem;
 	}
 
@@ -83,14 +84,14 @@
 
 	:root {
 		--farmSections: 3.5rem;
-		--farmNav: 3.25rem;
+		--nav-farm: 3.25rem;
 		--mainSticky: 6.75rem;
 	}
 
 	@media (max-width: 767px) {
 
 		:root {
-			--mainNav: 3rem;
+			--nav-main: 3rem;
 		}
 
 	}
@@ -98,15 +99,11 @@
 	@media (min-width: 768px) {
 
 		:root {
-			--mainNav: 3rem;
+			--nav-main: 3rem;
 		}
 
 	}
 
-}
-
-:root {
-	--nav: calc(var(--mainNav) + var(--farmNav));
 }
 
 .color-selling {
@@ -352,7 +349,7 @@ body[data-template~="default"] header {
 @media (min-width: 1100px) and (min-height: 600px) {
 
 	body[data-template~="farm"] > header {
-		top: var(--mainNav);
+		top: var(--nav-main);
 	}
 
 	body > nav {
@@ -390,8 +387,8 @@ div.nav-wrapper {
 	display: flex;
 	justify-content: space-between;
 	align-items: stretch;
-	height: var(--mainNav);
-	min-height: var(--mainNav);
+	height: var(--nav-main);
+	min-height: var(--nav-main);
 	column-gap: 0.5rem;
 	padding: 0 var(--container-padding);
 }

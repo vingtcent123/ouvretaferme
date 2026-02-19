@@ -425,42 +425,57 @@ new Page(function($data) {
 		\farm\FarmerLib::setView('viewPlanning', $data->eFarm, $view);
 
 		$data->cAction = \farm\ActionLib::getByFarm($data->eFarm, index: 'id');
-		$data->cCategory = \farm\CategoryLib::getByFarm($data->eFarm);
+		\farm\ActionLib::saveMain($data->cAction);
+
+		$data->cCategory = \farm\CategoryLib::getByFarm($data->eFarm, index: 'id');
 		$data->cZone = \map\ZoneLib::getByFarm($data->eFarm);
 
 		\map\PlotLib::putFromZone($data->cZone);
 
-		$search = get_exists('search') ? [] : ($data->eFarm->getView('viewPlanningSearch') ?? []);
+		$data->search = new Search([
+			'plot' => \map\PlotLib::getById(GET('plot')),
+		]);
 
-		$search = array_filter([
-			'plant' => GET('plant', '?int'),
-			'farmer' => GET('farmer', '?int'),
-			'action' => GET('action', '?int'),
-			'plot' => GET('plot', '?int')
-		]) + $search;
+		if(get_exists('actionSelected')) {
 
-		foreach($search as $key => $value) {
+			$eActionSelected = GET('actionSelected', 'farm\Action');
+			\farm\FarmerLib::setView('viewPlanningAction', $data->eFarm, $eActionSelected);
 
-			try {
-
-				$search[$key] = match($key) {
-					'plant' => $value ? \plant\PlantLib::getByFarm($data->eFarm, id: $value) : new \plant\Plant(),
-					'farmer' => $value ? new \user\User(['id' => $value]) : new \user\User(),
-					'action' => $data->cAction[$value] ?? new \farm\Action(),
-					'plot' => $value ? \map\PlotLib::getById($value)->validate('canRead') : new \map\Plot(),
-				};
-
-			} catch(Exception) {
-				// On ignore d'éventuels champs supplémentaires
-			}
-
+		} else {
+			$eActionSelected = $data->eFarm->getView('viewPlanningAction');
 		}
 
-		$data->search = new Search($search);
+		if(get_exists('userSelected')) {
 
-		\farm\FarmerLib::setView('viewPlanningSearch', $data->eFarm, $data->search->toArray() ?: NULL);
+			$eUserSelected = GET('userSelected', 'user\User');
+			\farm\FarmerLib::setView('viewPlanningUser', $data->eFarm, $eUserSelected);
 
-		$data->cActionMain = \farm\ActionLib::getMainByFarm($data->eFarm);
+		} else {
+			$eUserSelected = $data->eFarm->getView('viewPlanningUser');
+		}
+
+		$data->search->set('user', $eUserSelected);
+
+		if($eActionSelected->empty()) {
+			$data->eActionSelected = $eActionSelected;
+		} else {
+			$data->eActionSelected = $data->cAction[$eActionSelected['id']] ?? new \farm\Action();
+		}
+
+		if(get_exists('plantSelected')) {
+
+			$ePlantSelected = GET('plantSelected', 'plant\Plant');
+			\farm\FarmerLib::setView('viewPlanningPlant', $data->eFarm, $ePlantSelected);
+
+		} else {
+			$ePlantSelected = $data->eFarm->getView('viewPlanningPlant');
+		}
+
+		if($ePlantSelected->empty()) {
+			$data->ePlantSelected = $ePlantSelected;
+		} else {
+			$data->ePlantSelected = \plant\PlantLib::getById($ePlantSelected);
+		}
 
 		switch($data->eFarm->getView('viewPlanning')) {
 
@@ -474,14 +489,14 @@ new Page(function($data) {
 				if($data->eFarm->canManage()) {
 
 					if(get_exists('user')) {
-						$data->eUserSelected = GET('user', 'user\User');
-						\farm\FarmerLib::setView('viewPlanningUser', $data->eFarm, $data->eUserSelected);
+						$data->eUserDaily = GET('user', 'user\User');
+						\farm\FarmerLib::setView('viewPlanningUserDaily', $data->eFarm, $data->eUserDaily);
 					} else {
-						$data->eUserSelected = $data->eFarm->getView('viewPlanningUser') ?? new \user\User();
+						$data->eUserDaily = $data->eFarm->getView('viewPlanningUser') ?? new \user\User();
 					}
 
 				} else {
-					$data->eUserSelected = $data->eUserOnline;
+					$data->eUserDaily = $data->eUserOnline;
 				}
 
 				$data->seasonsWithSeries = \series\SeriesLib::getSeasonsAround($data->eFarm, week_year($data->week));
@@ -489,11 +504,11 @@ new Page(function($data) {
 				[
 					$data->ccTimesheet,
 					$data->cccTask
-				] = \series\TaskLib::getForDaily($data->eFarm, $data->week, $data->eUserSelected, $data->cActionMain[ACTION_RECOLTE], $data->search);
+				] = \series\TaskLib::getForDaily($data->eFarm, $data->week, $data->eUserDaily, $data->cAction, $data->search);
 
 				$data->cUserFarm = \farm\FarmerLib::getUsersByFarmForPeriod($data->eFarm, week_date_starts($data->week), week_date_ends($data->week), withPresenceAbsence: TRUE);
 
-				$data->cccTaskAssign = \series\TaskLib::getForAssign($data->eFarm, $data->week);
+				$data->cccTaskAssign = \series\TaskLib::getForAssign($data->eFarm, $data->week, $data->cAction);
 
 				\hr\WorkingTimeLib::fillByWeekFromUsers($data->eFarm, $data->cUserFarm, $data->week);
 				\series\TimesheetLib::fillTimesByDate($data->eFarm, $data->cUserFarm, $data->week);
@@ -505,7 +520,7 @@ new Page(function($data) {
 
 				\series\RepeatLib::createForWeek($data->eFarm, $data->week);
 
-				$data->cccTask = \series\TaskLib::getForWeek($data->eFarm, $data->week, $data->cActionMain[ACTION_RECOLTE], $data->search);
+				$data->cccTask = \series\TaskLib::getForWeek($data->eFarm, $data->week, $data->cAction, $data->search);
 
 				$data->seasonsWithSeries = \series\SeriesLib::getSeasonsAround($data->eFarm, week_year($data->week));
 
@@ -524,20 +539,29 @@ new Page(function($data) {
 				$data->year = (int)$period;
 				$data->month = (int)$subPeriod;
 
+				$data->search->set('action', $data->eActionSelected);
+				$data->search->set('plant', $data->ePlantSelected);
+
 				\series\RepeatLib::createForYear($data->eFarm, $data->year);
 
 				$data->cUserFarm = \farm\FarmerLib::getUsersByFarmForPeriod($data->eFarm, $data->year.'-01-01', $data->year.'-12-31', withPresenceAbsence: TRUE);
 
 				$data->ccTask = \series\TaskLib::getByYear($data->eFarm, $data->year, $data->search);
 
+				$data->cPlant = \plant\PlantLib::getByFarm($data->eFarm);
+
 				break;
 
+		}
+
+		if($eUserSelected->notEmpty()) {
+			$data->search->set('user', $data->cUserFarm[$eUserSelected['id']] ?? new \user\User());
 		}
 
 		throw new ViewAction($data, ':planning');
 
 	})
-	->get('/ferme/{id}/taches/{week}/{action}', function($data) {
+	->get('/ferme/{id}/intervention/{week}/{action}', function($data) {
 
 		$data->eFarm->validate('canPlanning');
 

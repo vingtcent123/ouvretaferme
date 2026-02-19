@@ -3,279 +3,6 @@ div.task-select-start {
 	position: relative;
 }
 
-div.tasks-calendar {
-	display: grid;
-	grid-template-columns: 1fr max-content 1fr;
-	grid-column-gap: 2rem;
-	grid-row-gap: 0.75rem;
-	align-items: center;
-}
-
-div.tasks-calendar.tasks-calendar-with-filter > *:last-child {
-	justify-self: end;
-}
-
-div.tasks-calendar.tasks-calendar-with-filter {
-	grid-template-columns: 1fr 4rem max-content 4rem 1fr;
-}
-
-@media (max-width: 1099px), (max-height: 599px) {
-
-	body[data-template~="farm-planning-daily"] div.tasks-calendar-search {
-		display: none;
-	}
-	body[data-template~="farm-planning-daily"] div.tasks-calendar.tasks-calendar-with-filter {
-		grid-template-columns: 1fr max-content 1fr;
-	}
-
-}
-
-@media (max-width: 575px) {
-
-	div.tasks-calendar {
-		grid-column-gap: 1rem;
-	}
-
-}
-
-@media (max-width: 449px) {
-
-	div.tasks-calendar {
-		grid-column-gap: .75rem;
-	}
-
-}
-
-div.tasks-calendar-week,
-div.tasks-calendar-year {
-	padding: .75rem 0;
-}
-
-#tasks-calendar-months-wrapper {
-	background-color: var(--background-light);
-	height: 3rem;
-}
-
-#tasks-calendar-months {
-	height: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	text-align: center;
-	background-color: var(--background-light);
-}
-
-a.tasks-calendar-month {
-	color: var(--text);
-	font-weight: bold;
-	text-decoration: none;
-	transition: border-color 0.25s;
-}
-
-@media (max-width: 767px) {
-
-	a.tasks-calendar-month {
-		text-transform: capitalize;
-	}
-
-}
-
-@media (min-width: 768px) {
-
-	a.tasks-calendar-month {
-		text-transform: uppercase;
-	}
-
-}
-
-a.tasks-calendar-month:hover,
-a.tasks-calendar-month.selected {
-	color: var(--secondary);
-}
-
-a.tasks-calendar-month.selected {
-	font-size: 1.2rem;
-}
-
-div.tasks-calendar-title {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-div.tasks-calendar-title h1 {
-	line-height: 1;
-	font-size: 2rem;
-}
-
-@media (max-width: 575px) {
-
-	div.tasks-calendar-title h1 {
-		font-size: 1.5rem;
-		letter-spacing: -0.2px;
-	}
-
-}
-
-div.tasks-calendar-title div.tasks-calendar-title-period {
-	font-size: 0.9rem;
-	line-height: 1.2;
-	color: var(--muted);
-}
-
-div.tasks-calendar-title h1:not(:only-child) {
-	margin-bottom: 0.25rem;
-}
-
-div.tasks-calendar-title h1:only-child {
-	font-size: 2rem;
-	margin-bottom: 0;
-}
-
-div.tasks-calendar-title a.dropdown-item small {
-	color: rgba(255, 255, 255, 0.5);
-}
-
-div.tasks-calendar-navigation {
-	display: flex;
-	align-items: center;
-}
-
-div.tasks-calendar-navigation-before {
-	justify-content: flex-end;
-}
-
-div.tasks-calendar-navigation a {
-	font-size: 2.25rem;
-	width: 3rem;
-	height: 3rem;
-	border-radius: 50%;
-	line-height: 1;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	text-decoration: none;
-	transition: background-color 0.5s;
-	color: var(--primary);
-}
-
-@media (max-width: 575px) {
-
-	div.tasks-calendar-navigation a {
-		font-size: 1.75rem;
-		width: 2.5rem;
-		height: 2rem;
-	}
-
-}
-
-div.tasks-calendar-navigation a:hover {
-	background: #eee;
-}
-
-#tasks-time.task-time-daily {
-	width: 100vw;
-	padding-left: var(--container-padding);
-	padding-right: var(--container-padding);
-}
-
-#planning-wrapper-weekly #tasks-time {
-	grid-area: time;
-}
-
-@media (max-width: 767px) {
-
-	#planning-wrapper-weekly #tasks-time {
-		border-top: 1px solid var(--background);
-		padding-top: 1rem;
-	}
-
-}
-
-#tasks-time:empty {
-	display: none;
-}
-
-#tasks-time .tasks-time-all {
-	display: flex;
-}
-
-#tasks-time .tasks-time-all > *:not(:first-child) {
-	margin-left: -1.5rem;
-}
-
-#tasks-time .tasks-time-all.tasks-time-all-condensed > *:not(:first-child) {
-	margin-left: -2rem;
-}
-
-#tasks-time .tabs-item {
-	margin-bottom: 0;
-	border-bottom: 1px solid white;
-}
-
-@media (max-width: 767px) {
-
-	#tasks-time .tabs-item {
-		margin-left: var(--responsive-padding);
-	}
-
-}
-
-@media (min-width: 768px) {
-
-	#tasks-time .tabs-item {
-		grid-column-gap: 1rem;
-	}
-
-}
-
-#tasks-time .tab-item {
-	padding: 0.5rem .75rem;
-}
-
-#tasks-time .tab-item.selected,
-#tasks-time .tab-item:hover {
-	background: var(--primary);
-}
-
-.tasks-time-content {
-	padding: 1rem 0.75rem;
-	background: var(--gradient);
-}
-
-
-#tasks-done {
-	grid-area: done;
-}
-
-#tasks-done .planning-week-header {
-	background-color: var(--done);
-}
-
-#tasks-todo {
-	grid-area: todo;
-}
-
-#tasks-todo .planning-week-header {
-	background-color: var(--todo);
-}
-
-@media (max-width: 767px) {
-
-	#tasks-todo {
-		margin-bottom: 1rem;
-	}
-
-}
-
-#tasks-harvested {
-	grid-area: harvested;
-}
-
-#tasks-harvested .planning-week-header {
-	background-color: var(--harvest);
-}
-
 
 div.tasks-planning-action,
 div.tasks-planning-plant {
@@ -302,27 +29,13 @@ div.tasks-planning-action {
 	position: sticky;
 	top: var(--mainSticky);
 	z-index: 12;
-	background-color: var(--background);
-	height: 3rem;
-}
-
-#planning-wrapper-daily div.tasks-planning-action {
-	position: initial;
-}
-
-#planning-wrapper-daily div.tasks-planning-items-first div.tasks-planning-action {
+	background-color: var(--background-light);
 	border-top-left-radius: var(--radius);
 	border-top-right-radius: var(--radius);
 }
 
-#planning-wrapper-daily div.tasks-planning-items-first div.tasks-planning-action label {
-	border-top-left-radius: var(--radius);
-}
-
-#planning-wrapper-daily div.planning-week-title + div.tasks-planning-items-first div.tasks-planning-action,
-#planning-wrapper-daily div.planning-week-title + div.tasks-planning-items-first div.tasks-planning-action label {
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
+#planning-daily-list div.tasks-planning-action {
+	position: initial;
 }
 
 a.tasks-planning-action-name {
@@ -330,6 +43,7 @@ a.tasks-planning-action-name {
 	font-weight: bold;
 	padding: 0.5rem 0;
 	align-self: center;
+	line-height: 1.3;
 }
 
 .tasks-planning-plant-name {
@@ -339,10 +53,9 @@ a.tasks-planning-action-name {
 }
 
 .tasks-planning-plant-image {
-	padding-top: 0.15rem;
+	padding-top: 0.25rem;
 	display: flex;
 	justify-content: center;
-	background-color: rgba(0, 0, 0, 0.05);
 	cursor: pointer;
 }
 
@@ -358,42 +71,17 @@ a.tasks-planning-action-name {
 	align-self: center;
 }
 
-#tasks-todo a.tasks-planning-action-name {
+#planning-weekly-todo a.tasks-planning-action-name {
 	color: var(--todo);
 }
 
-#tasks-done a.tasks-planning-action-name {
+#planning-weekly-done a.tasks-planning-action-name {
 	color: var(--done);
 }
 
-@media (min-width: 768px) {
-
-	#planning-wrapper-weekly div.tasks-planning-items {
-		border-left: 1px solid var(--border);
-		border-right: 1px solid var(--border);
-	}
-
-	#planning-wrapper-weekly div.tasks-planning-items.tasks-planning-items-last {
-		border-bottom: 1px solid var(--border);
-		border-bottom-left-radius: var(--radius);
-		border-bottom-right-radius: var(--radius);
-	}
-
-}
-
-#planning-wrapper-daily div.tasks-planning-items.tasks-planning-items-last {
-	border-bottom-left-radius: var(--radius);
-	border-bottom-right-radius: var(--radius);
-}
-
-#planning-wrapper-daily div.tasks-planning-items.tasks-planning-items-first {
-	border-top-left-radius: var(--radius);
-	border-top-right-radius: var(--radius);
-}
-
-#planning-wrapper-daily div.planning-week-title + div.tasks-planning-items.tasks-planning-items-first {
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
+div.tasks-planning-items {
+	border-radius: var(--radius);
+	margin-bottom: 1rem;
 }
 
 div.tasks-planning-item {
@@ -403,8 +91,13 @@ div.tasks-planning-item {
 	user-select: none; /* Avoid weird selection */
 }
 
+div.tasks-planning-item:last-child {
+	border-bottom-left-radius: calc(var(--radius) / 2);
+	border-bottom-right-radius: calc(var(--radius) / 2);
+}
+
 div.tasks-planning-item:not(:last-child) {
-	border-bottom: 1px solid var(--border);
+	border-bottom: 1px dashed var(--border);
 }
 
 div.tasks-planning-item {
@@ -435,10 +128,9 @@ div.tasks-planning-item div.tasks-planning-item-base {
 label.tasks-planning-select {
 	width: 2.25rem;
 	margin: 0;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background-color: rgba(0, 0, 0, 0.05);
+	padding-top: 0.5rem;
+	text-align: center;
+	line-height: 1;
 }
 
 @media (max-width: 575px) {
@@ -456,52 +148,10 @@ label.tasks-planning-select input {
 	height: 1.2rem;
 }
 
-div.tasks-planning-item:not(.tasks-planning-item-with-series):not(.tasks-planning-item-with-content) div.tasks-planning-item-base {
-	grid-template-columns: 1fr;
-}
-
 div.tasks-planning-item.tasks-planning-item-with-series a.tasks-planning-item-top {
+	display: block;
 	padding-top: 0.5rem;
-	padding-bottom: 0.25rem;
 	text-decoration: none;
-}
-
-div.tasks-planning-item.tasks-planning-item-with-series.tasks-planning-item-with-content a.tasks-planning-item-top {
-	grid-column: span	2;
-}
-
-div.tasks-planning-item.tasks-planning-item-with-series .tasks-planning-item-content,
-div.tasks-planning-item.tasks-planning-item-with-series.tasks-planning-item-with-content .tasks-planning-item-actions {
-	margin-top: -0.5rem;
-}
-
-div.tasks-planning-item.tasks-planning-item-with-series .flow-timeline-done {
-	grid-row: span	2;
-}
-
-div.tasks-planning-item a.flow-timeline-status-todo {
-	height: 100%;
-	border-radius: 0;
-}
-
-@media (max-width: 575px) {
-
-	div.tasks-planning-item a.flow-timeline-status-todo {
-		width: 2.5rem;
-	}
-
-}
-
-div.tasks-planning-items-last div.tasks-planning-item:last-child a.flow-timeline-status-todo {
-	border-bottom-right-radius: var(--radius);
-}
-
-@media (max-width: 767px) {
-
-	#planning-wrapper-weekly div.tasks-planning-items-last div.tasks-planning-item:last-child a.flow-timeline-status-todo {
-		border-bottom-right-radius: 0;
-	}
-
 }
 
 
@@ -525,7 +175,6 @@ div.tasks-planning-item.highlight {
 	position: relative;
 }
 
-div.tasks-planning-items.tasks-planning-items-last > div.tasks-planning-item:last-child,
 div.tasks-header + div.tasks-planning-item:last-child {
 	margin-bottom: 0;
 	border-bottom-left-radius: var(--radius);
@@ -534,7 +183,6 @@ div.tasks-header + div.tasks-planning-item:last-child {
 
 @media (max-width: 767px) {
 
-	#planning-wrapper-weekly div.tasks-planning-items.tasks-planning-items-last > div.tasks-planning-item:last-child,
 	#planning-wrapper-weekly div.tasks-header + div.tasks-planning-item:last-child {
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
@@ -543,23 +191,34 @@ div.tasks-header + div.tasks-planning-item:last-child {
 
 }
 
-.tasks-planning-item-content {
+.tasks-planning-item-main {
 	align-self: stretch;
 }
 
-a.tasks-planning-item-content {
+a.tasks-planning-item-main {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-gap: 0.25rem;
 	text-decoration: none;
 	color: var(--text);
-}
-
-.tasks-planning-item-content:not(:empty) {
 	padding: 0.5rem 0;
+	line-height: 1.4;
 }
 
 .tasks-planning-item-series {
 	color: var(--muted);
-	line-height: 1.3;
+	line-height: 1.4;
 	font-size: 0.9rem;
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+span.tasks-planning-item-plant {
+	font-weight: bold;
+	color: var(--text);
+	font-size: 1rem;
+	margin-right: 0.5rem;
 }
 
 span.tasks-planning-item-series-name {
@@ -584,15 +243,23 @@ div.tasks-planning-item-actions:only-child {
 	justify-self: end;
 }
 
-div.tasks-planning-item-description:empty {
+div.tasks-planning-item-validate {
+	padding: 0.125rem 0.25rem;
+}
+
+div.tasks-planning-item-content {
+	line-height: 1.2;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+div.tasks-planning-item-content:empty {
 	display: none;
 }
 
-div.tasks-planning-item-description {
-	line-height: 1.2;
-}
-
-div.tasks-planning-item-description:not(:first-child) {
+div.tasks-planning-item-content:not(:first-child) {
 	margin-top: 0.25rem;
 }
 
@@ -789,7 +456,7 @@ div.tasks-time-day-values {
 	align-items: center;
 }
 
-#planning-wrapper-daily div.tasks-time-day-values {
+#planning-daily-list div.tasks-time-day-values {
 	grid-auto-flow: column;
 }
 
@@ -851,6 +518,8 @@ div.tasks-time-day-full-form form {
 div.tasks-time-day-timesheet {
 	color: var(--primary);
 	font-size: 0.8rem;
+	letter-spacing: -0.3px;
+	text-align: center;
 }
 
 @media (min-width: 1200px) {
@@ -888,44 +557,6 @@ span.tasks-time-day-numeric {
 
 div.tasks-time-day-timesheet.tasks-time-day-timesheet-alert {
 	color: var(--danger);
-}
-
-.tasks-week-list-name {
-	max-width: 20rem;
-}
-
-.tasks-week-list-name > a {
-	display: block;
-	color: inherit;
-	text-decoration: none;
-}
-
-@media (max-width: 767px) {
-
-	.tasks-week-list-tools {
-		display: none;
-	}
-
-}
-
-.tasks-week-plant-list tbody tr:not(:nth-child(1)):not(:nth-child(2)) td {
-	border-top: 1px dashed var(--border);
-}
-
-.tasks-week-plant-list tbody td {
-	vertical-align: baseline;
-}
-
-@media (min-width: 576px) {
-
-	.tasks-week-plant-list tbody tr:not(:nth-child(1)) td:first-child {
-		padding-left: 3rem;
-	}
-
-}
-
-.tasks-week-plant-tray {
-	white-space: nowrap;
 }
 
 div.task-item-header {

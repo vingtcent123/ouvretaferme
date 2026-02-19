@@ -280,11 +280,14 @@ class TaskLib extends TaskCrud {
 		Task::model()
 			->whereAction($search->get('action'), if: $search->get('action') and $search->get('action')->notEmpty())
 			->wherePlant($search->get('plant'), if: $search->get('plant') and $search->get('plant')->notEmpty())
-			->where(fn() => 'JSON_CONTAINS(plannedUsers, \''.$search->get('farmer')['id'].'\')', if: $search->get('farmer') and $search->get('farmer')->notEmpty());
+			->where(fn() => 'JSON_CONTAINS(plannedUsers, \''.$search->get('user')['id'].'\')', if: $search->get('user') and $search->get('user')->notEmpty());
 
 	}
 
-	public static function getForDaily(\farm\Farm $eFarm, string $week, \user\User $eUser, \farm\Action $eActionHarvest, \Search $search = new \Search()): array {
+	public static function getForDaily(\farm\Farm $eFarm, string $week, \user\User $eUser, \Collection $cAction, \Search $search = new \Search()): array {
+
+		$eActionHarvest = $cAction->find(fn($eAction) => $eAction['fqn'] === ACTION_RECOLTE, limit: 1);
+		$cActionSeedling = $cAction->find(fn($eAction) => in_array($eAction['fqn'], [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION]));
 
 		$ccTimesheet = TimesheetLib::getTimesheetsByDaily($eFarm, $week, $eUser);
 
@@ -340,6 +343,8 @@ class TaskLib extends TaskCrud {
 
 			foreach($ccTask as $action => $cTask) {
 
+				self::fillSeedling($ccTask, $cActionSeedling);
+
 				foreach($cTask as $eTask) {
 
 					$in = (
@@ -387,16 +392,21 @@ class TaskLib extends TaskCrud {
 
 	}
 
-	public static function getForAssign(\farm\Farm $eFarm, string $week): \Collection {
+	public static function getForAssign(\farm\Farm $eFarm, string $week, \Collection $cAction): \Collection {
+
+		$cActionSeedling = $cAction->find(fn($eAction) => in_array($eAction['fqn'], [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION]));
 
 		Task::model()->wherePlannedDate(NULL);
-		$ccTaskTodo = self::getForWeekTodo($eFarm, $week);
 
 		$cccTask = new \Collection([
-			'todo' => $ccTaskTodo,
+			'todo' => self::getForWeekTodo($eFarm, $week),
 			'delayed' => self::getForWeekDelayed($eFarm, $week),
 			'unplanned' => self::getByUnplanned($eFarm, $week),
 		]);
+
+		self::fillSeedling($cccTask['todo'], $cActionSeedling);
+		self::fillSeedling($cccTask['delayed'], $cActionSeedling);
+		self::fillSeedling($cccTask['unplanned'], $cActionSeedling);
 
 		$cccTask->setDepth(3);
 
@@ -404,36 +414,83 @@ class TaskLib extends TaskCrud {
 
 	}
 
-	public static function getForWeek(\farm\Farm $eFarm, string $week, \farm\Action $eActionHarvest, \Search $search): \Collection {
+	public static function getForWeek(\farm\Farm $eFarm, string $week, \Collection $cAction, \Search $search): \Collection {
 
-		$ccTaskDone = self::getForWeekDone($eFarm, $week, $search);
-
-		$harvestId = \farm\ActionLib::getByFarm($eFarm, fqn: ACTION_RECOLTE)['id'];
+		$eActionHarvest = $cAction->find(fn($eAction) => $eAction['fqn'] === ACTION_RECOLTE, limit: 1);
+		$cActionSeedling = $cAction->find(fn($eAction) => in_array($eAction['fqn'], [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION]));
 
 		$cccTask = new \Collection([
 			'todo' => self::getForWeekTodo($eFarm, $week, $search),
 			'delayed' => self::getForWeekDelayed($eFarm, $week, $search),
 			'unplanned' => self::getByUnplanned($eFarm, $week, $search),
-			'done' => $ccTaskDone,
+			'done' => self::getForWeekDone($eFarm, $week, $search),
 		]);
 
 		$cccTask->setDepth(3);
 
 		foreach($cccTask as $ccTask) {
-
-			if($ccTask->offsetExists($eActionHarvest['id'])) {
-				$cTask = $ccTask[$eActionHarvest['id']];
-			} else {
-				continue;
-			}
-
-			// Mise à jour de la quantité récoltée par la quantité récoltée ce jour
-			\series\TaskLib::fillHarvestWeeks($cTask);
-			\series\TaskLib::fillHarvestByWeek($cTask, $week);
-
+			self::fillForWeek($week, $ccTask, $eActionHarvest, $cActionSeedling);
 		}
 
 		return $cccTask;
+
+	}
+
+	public static function getForExport(\farm\Farm $eFarm, string $week, \Collection $cAction): \Collection {
+
+		$eActionHarvest = $cAction->find(fn($eAction) => $eAction['fqn'] === ACTION_RECOLTE, limit: 1);
+		$cActionSeedling = $cAction->find(fn($eAction) => in_array($eAction['fqn'], [ACTION_SEMIS_PEPINIERE, ACTION_SEMIS_DIRECT, ACTION_PLANTATION]));
+
+		$ccTask = self::getForWeekExport($eFarm, $week);
+		self::fillForWeek($week, $ccTask, $eActionHarvest, $cActionSeedling);
+
+		return $ccTask;
+
+	}
+
+	private static function fillForWeek(string $week, \Collection $ccTask, \farm\Action $eActionHarvest, \Collection $cActionSeedling): void {
+
+		if($ccTask->offsetExists($eActionHarvest['id'])) {
+
+			$cTask = $ccTask[$eActionHarvest['id']];
+
+			// Mise à jour de la quantité récoltée par la quantité récoltée ce jour
+			self::fillHarvestWeeks($cTask);
+			self::fillHarvestByWeek($cTask, $week);
+
+		}
+
+		self::fillSeedling($ccTask, $cActionSeedling);
+	}
+
+	public static function fillSeedling(\Collection $ccTask, \Collection $cActionSeedling): void {
+
+		foreach($cActionSeedling as $eActionSeedling) {
+
+			if($ccTask->offsetExists($eActionSeedling['id'])) {
+
+				foreach($ccTask[$eActionSeedling['id']] as $eTask) {
+
+					if($eTask['cultivation']->empty()) {
+						$eTask['cCultivation'] = new \Collection();
+					} else {
+
+						$eTask['cCultivation'] = new \Collection([$eTask['cultivation']->merge([
+							'series' => $eTask['series'],
+							'plant' => $eTask['plant']
+						])]);
+
+						foreach($eTask['cCultivation'] as $eCultivation) {
+							\series\CultivationLib::fillSliceStats($eCultivation);
+						}
+
+					}
+
+				}
+
+			}
+
+		}
 
 	}
 
@@ -505,6 +562,31 @@ class TaskLib extends TaskCrud {
 
 	}
 
+	/**
+	 * Fusion de Done et Todo
+	 */
+	public static function getForWeekExport(\farm\Farm $eFarm, string $week, \Search $search = new \Search()): \Collection {
+
+		$cTaskTimesheet = TimesheetLib::getTasksByWeek($eFarm, $week);
+		$cTaskHarvest = HarvestLib::getTasksByWeek($eFarm, $week);
+
+		Task::model()
+			->option('index-force', ["farm", "status", "doneWeek"])
+			->or(
+				fn() => $this->whereId('IN', $cTaskTimesheet),
+				fn() => $this->whereId('IN', $cTaskHarvest),
+				fn() => $this
+					->wherePlannedWeek($week)
+					->whereStatus(Task::TODO),
+				fn() => $this
+					->whereStatus(Task::DONE)
+					->whereDoneWeek($week),
+			);
+
+		return self::getForPlanning($eFarm, $search, timesheetWeek: $week);
+
+	}
+
 	public static function getForWeekDelayed(\farm\Farm $eFarm, string $referenceWeek, \Search $search = new \Search()): \Collection {
 
 		// Pour une référence dans le futur, on n'affiche pas les retards
@@ -566,7 +648,11 @@ class TaskLib extends TaskCrud {
 				],
 				'cComment' => CommentLib::delegateByTask(),
 				'plant' => ['name'],
-				'cultivation' => ['startWeek', 'startAction', 'seedling', 'seedlingSeeds', 'distance', 'plantSpacing', 'rowSpacing', 'rows', 'density', 'sliceUnit'],
+				'cultivation' => [
+					'cSlice' => SliceLib::delegateByCultivation(),
+					'sliceTool' => ['routineValue'],
+					'startWeek', 'startAction', 'seedling', 'seedlingSeeds', 'distance', 'plantSpacing', 'rowSpacing', 'rows', 'density', 'sliceUnit'
+				],
 			])
 			->select([
 				'times' => TimesheetLib::delegateByTask($eUser, $timesheetWeek, $timesheetDate)
@@ -630,7 +716,7 @@ class TaskLib extends TaskCrud {
 		$delete = [];
 		$ePlotSearch = $search->get('plot');
 
-		if($ePlotSearch !== NULL) {
+		if($ePlotSearch !== NULL and $ePlotSearch->notEmpty()) {
 
 			foreach($cTask as $key => $eTask) {
 

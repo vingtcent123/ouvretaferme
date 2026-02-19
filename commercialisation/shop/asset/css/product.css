@@ -869,7 +869,7 @@ a.shop-department-item .department-vignette {
 
 	#product-department-list {
 		padding: 0;
-		top: calc(var(--mainNav));
+		top: calc(var(--nav-main));
 	}
 
 	a.shop-department-item {

@@ -1551,6 +1551,7 @@ class AnalyzeUi {
 							$h .= '</td>';
 							$h .= '<td>';
 								$h .= $uiTask->getTaskPlace($eTask);
+								$h .= $uiTask->getTaskContent($eTask);
 								$h .= $uiTask->getTaskDescription($eTask);
 							$h .= '</td>';
 							$h .= '<td class="analyze-tasks-users">';

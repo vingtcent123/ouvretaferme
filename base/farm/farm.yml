@@ -1,6 +1,7 @@
 Action:
   id: serial32
   name: text8(1, null) @collate(general)
+  favorite: bool = FALSE
   fqn: ?text8 @charset(ascii)
   short: ?text8(1, 1)
   farm: ?farm\Farm
@@ -131,14 +132,15 @@ Farmer:
   status: enum(INVITED, IN, OUT) = INVITED
   role: ?enum(SEASONAL, PERMANENT, OWNER, OBSERVER)
   viewPlanning: enum(DAILY, WEEKLY, YEARLY) = WEEKLY
-  viewPlanningWeekly: enum(COLUMN, LINE) = COLUMN
+  viewPlanningAction: ?farm\Action
+  viewPlanningPlant: ?plant\Plant
+  viewPlanningUser: ?user\User
   viewPlanningCategory: enum(TIME, TEAM, PACE, PERIOD) = TIME
   viewPlanningYear: ?int16(0, null)
   viewPlanningHarvestExpected: enum(TOTAL, WEEKLY) = TOTAL
   viewPlanningField: enum(VARIETY, SOIL) = VARIETY
   viewPlanningArea: enum(AREA, LENGTH) = LENGTH
-  viewPlanningSearch: ?json
-  viewPlanningUser: ?user\User
+  viewPlanningUserDaily: ?user\User
   viewCultivationCategory: enum(AREA, PLANT, FAMILY) = AREA
   viewSeries: enum(AREA, HARVESTING, WORKING_TIME) = AREA
   viewSoil: enum(PLAN, ROTATION) = PLAN

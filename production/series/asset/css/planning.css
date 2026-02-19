@@ -1,42 +1,33 @@
-#planning-week-tabs .tabs-item {
+#planning-weekly-container .tabs-item {
 	margin-bottom: 0;
-	border-bottom: 0;
+	border-bottom: 1px solid #ccc;
 }
 
-#planning-week-tabs .tabs-item a.tab-item[data-tab="todo"]:hover,
-#planning-week-tabs .tabs-item a.tab-item.selected[data-tab="todo"] {
+#planning-weekly-container .tabs-item a.tab-item[data-tab="todo"]:hover,
+#planning-weekly-container .tabs-item a.tab-item.selected[data-tab="todo"] {
 	background-color: var(--todo);
 	color: white;
 }
 
-#planning-week-tabs .tabs-item a.tab-item[data-tab="ordered"]:hover,
-#planning-week-tabs .tabs-item a.tab-item.selected[data-tab="ordered"] {
-	background-color: var(--order);
-	color: white;
+#planning-weekly-tabs:has(a.tab-item[data-tab="todo"].selected) {
 }
 
-#planning-week-tabs .tabs-item a.tab-item[data-tab="done"]:hover,
-#planning-week-tabs .tabs-item a.tab-item.selected[data-tab="done"] {
+#planning-weekly-container .tabs-item a.tab-item[data-tab="done"]:hover,
+#planning-weekly-container .tabs-item a.tab-item.selected[data-tab="done"] {
 	background-color: var(--done);
 	color: white;
 }
 
-#planning-week-tabs .tabs-item a.tab-item[data-tab="harvested"]:hover,
-#planning-week-tabs .tabs-item a.tab-item.selected[data-tab="harvested"] {
-	background-color: var(--harvest);
-	color: white;
+#planning-weekly-tabs:has(a.tab-item[data-tab="done"].selected) {
 }
 
-#planning-week-tabs .tabs-item a.tab-item[data-tab="time"]:hover,
-#planning-week-tabs .tabs-item a.tab-item.selected[data-tab="time"] {
-	background-color: var(--background);
-	color: var(--text);
-}
-
-#planning-week-tabs .tabs-item a.tab-item[data-tab="people"]:hover,
-#planning-week-tabs .tabs-item a.tab-item.selected[data-tab="people"] {
+#planning-weekly-container .tabs-item a.tab-item[data-tab="time"]:hover,
+#planning-weekly-container .tabs-item a.tab-item.selected[data-tab="time"] {
 	background-color: var(--primary);
 	color: white;
+}
+
+#planning-weekly-tabs:has(a.tab-item[data-tab="time"].selected) {
 }
 
 @media (max-width: 1099px), (max-height: 599px) {
@@ -117,8 +108,8 @@ body[data-template~="farm-planning-yearly"] {
 
 	[data-template~="farm-planning-yearly"][data-template~="farm-planning-scrolling"],
 	[data-template~="farm-planning-daily"][data-template~="farm-planning-scrolling"] {
-		height: calc(100vh + var(--nav));
-		min-height: calc(100vh + var(--nav));
+		height: calc(100vh + var(--nav-height));
+		min-height: calc(100vh + var(--nav-height));
 	}
 
 	body[data-template~="farm-planning-daily"] header {
@@ -127,11 +118,13 @@ body[data-template~="farm-planning-yearly"] {
 
 }
 
-body[data-template~="farm-planning-daily"] main {
+#planning-daily-wrapper {
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-template-rows: auto auto 1fr;
 	overflow: hidden;
+	height: calc(100vh - var(--nav-height));
+	padding-top: 1rem;
 }
 
 body[data-template~="farm-planning-weekly"] main > div.container,
@@ -139,20 +132,22 @@ body[data-template~="farm-planning-daily"] main > div.container {
 	margin-top: 0;
 }
 
-body[data-touch="no"][data-template~="farm-planning-daily"] main {
-	height: calc(100vh - var(--mainNav) - var(--farmNav));
-}
-
 body[data-touch="yes"][data-template~="farm-planning-daily"] main {
-	height: calc(100vh - var(--farmNav));
+	height: calc(100vh - var(--nav-farm));
 }
 
-#planning-container-daily {
+body[data-template~="farm-planning-daily"] #planning-search {
+	width: calc(var(--screen-width) - var(--nav-width));
+	padding-left: var(--container-padding);
+	padding-right: var(--container-padding);
+}
+
+#planning-daily-container {
 	overflow-x: auto;
 	overflow-y: hidden;
 }
 
-#planning-wrapper-daily {
+#planning-daily-list {
 	display: grid;
 	transition: all 1s;
 	height: 100%;
@@ -160,7 +155,7 @@ body[data-touch="yes"][data-template~="farm-planning-daily"] main {
 
 @media (max-width: 575px) {
 
-	#planning-wrapper-daily {
+	#planning-daily-list {
 		width: calc(100vw * 8);
 		grid-template-columns: repeat(8, 100vw);
 		padding: 0;
@@ -170,9 +165,9 @@ body[data-touch="yes"][data-template~="farm-planning-daily"] main {
 
 @media (min-width: 576px) {
 
-	#planning-wrapper-daily {
-		width: calc(27rem * 8 + var(--container-padding) * 2 + var(--nav-width));
-		grid-template-columns: repeat(8, 27rem);
+	#planning-daily-list {
+		width: calc(30rem * 8 + var(--container-padding) * 2 + var(--nav-width));
+		grid-template-columns: repeat(8, 30rem);
 		padding: 0 var(--container-padding);
 	}
 
@@ -189,14 +184,6 @@ body[data-touch="yes"][data-template~="farm-planning-daily"] main {
 	border-left: 1px solid white;
 }
 
-@media (min-width: 576px) {
-
-	.planning-daily {
-		padding: 0 1.5rem 2rem;
-	}
-
-}
-
 .planning-daily-header {
 	display: grid;
 	grid-template-columns: 1fr auto;
@@ -204,7 +191,7 @@ body[data-touch="yes"][data-template~="farm-planning-daily"] main {
 	position: sticky;
 	top: 0;
 	z-index: 400;
-	background-color: var(--background);
+	background-color: var(--background-body);
 	height: 5rem;
 	margin-left: -1rem;
 	margin-right: -1rem;
@@ -230,36 +217,54 @@ body[data-touch="yes"][data-template~="farm-planning-daily"] main {
 	margin-bottom: 1rem;
 }
 
-#planning-wrapper-weekly {
+#planning-weekly-wrapper {
 	display: grid;
-	grid-template:
-		"time time time" auto
-		"todo done harvested" 1fr / 1fr 1fr 1fr;
-	grid-column-gap: 1rem;
-	grid-row-gap: 1rem;
 	align-items: flex-start;
 	margin-bottom: 2rem;
 }
 
+@media (min-width: 992px) {
+
+	#planning-weekly-wrapper {
+		grid-template:
+			"time time" auto
+			"actions actions" auto
+			"todo done" 1fr / 1fr 1fr;
+		grid-column-gap: 2rem;
+		grid-row-gap: 1rem;
+	}
+
+	#planning-weekly-tabs {
+		display: none;
+	}
+
+}
+
 @media (min-width: 768px) and (max-width: 991px) {
 
-	#planning-wrapper-weekly {
+	#planning-weekly-wrapper {
 		grid-template:
-			"time time time" auto
-			"todo done harvested" 1fr / 1fr 1fr 1fr;
-		grid-column-gap: 0.5rem;
+			"time time" auto
+			"actions actions" auto
+			"todo done" 1fr / 1fr 1fr;
+		grid-column-gap: 1rem;
 		grid-row-gap: 0.5rem;
+	}
+
+	#planning-weekly-tabs {
+		display: none;
 	}
 
 }
 
 @media (max-width: 767px) {
 
-	#planning-wrapper-weekly {
+	#planning-weekly-wrapper {
 		grid-template:
+			"actions" auto
+			"tabs" auto
 			"todo" auto
 			"done" auto
-			"harvested" auto
 			"time" auto / 1fr;
 		grid-row-gap: 0;
 	}
@@ -268,88 +273,289 @@ body[data-touch="yes"][data-template~="farm-planning-daily"] main {
 
 @media (min-width: 768px) {
 
-	#planning-week-tabs > .tabs-item {
+	#planning-weekly-container > .tabs-item {
 		display: none;
 	}
 
 }
 
-@media (min-width: 575px) and (max-width: 767px) {
-
-	#planning-wrapper-weekly > .tab-panel {
-		border-radius: 0;
-		margin-left: calc(-1 * var(--container-padding));
-		margin-right: calc(-1 * var(--container-padding));
-	}
-
-}
-
-@media (max-width: 575px) {
-
-	#planning-wrapper-weekly > .tab-panel {
-		border-radius: 0;
-		margin-left: calc(-1 * var(--container-padding));
-		margin-right: calc(-1 * var(--container-padding));
-	}
-
-}
-
 @media (min-width: 768px) {
 
-	#planning-wrapper-weekly > .tab-panel:not(.selected) {
+	#planning-weekly-wrapper > .tab-panel:not(.selected) {
 		display: block;
 	}
 
 }
 
-#planning-wrapper-weekly div.tasks-action {
+div.tasks-calendar {
+	display: grid;
+	grid-template-columns: 1fr max-content 1fr;
+	grid-column-gap: 2rem;
+	grid-row-gap: 0.75rem;
+	align-items: center;
+}
+
+div.tasks-calendar.tasks-calendar-with-filter > *:last-child {
+	justify-self: end;
+}
+
+div.tasks-calendar.tasks-calendar-with-filter {
+	grid-template-columns: auto auto max-content auto auto;
+}
+
+@media (max-width: 1099px), (max-height: 599px) {
+
+
+}
+
+@media (max-width: 575px) {
+
+	div.tasks-calendar {
+		grid-column-gap: 1rem;
+	}
+
+}
+
+@media (max-width: 449px) {
+
+	div.tasks-calendar {
+		grid-column-gap: .75rem;
+	}
+
+}
+
+div.tasks-calendar-week,
+div.tasks-calendar-year {
+	padding: .75rem 0;
+}
+
+#tasks-calendar-months-wrapper {
+	background-color: var(--background-light);
+	height: 3rem;
+	margin-bottom: 0.5rem;
+}
+
+#tasks-calendar-months {
+	height: 100%;
 	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	text-align: center;
+	background-color: var(--background-light);
+}
+
+a.tasks-calendar-month {
+	color: var(--text);
+	font-weight: bold;
+	text-decoration: none;
+	transition: border-color 0.25s;
+}
+
+@media (max-width: 767px) {
+
+	a.tasks-calendar-month {
+		text-transform: capitalize;
+	}
+
+}
+
+@media (min-width: 768px) {
+
+	a.tasks-calendar-month {
+		text-transform: uppercase;
+	}
+
+}
+
+a.tasks-calendar-month:hover,
+a.tasks-calendar-month.selected {
+	color: var(--secondary);
+}
+
+a.tasks-calendar-month.selected {
+	font-size: 1.2rem;
+}
+
+div.tasks-calendar-title {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+div.tasks-calendar-title h1 {
+	line-height: 1;
+	font-size: 2rem;
+}
+
+@media (max-width: 575px) {
+
+	div.tasks-calendar-title h1 {
+		font-size: 1.5rem;
+		letter-spacing: -0.2px;
+	}
+
+}
+
+div.tasks-calendar-title div.tasks-calendar-title-period {
+	font-size: 0.9rem;
+	line-height: 1.2;
+	color: var(--muted);
+}
+
+div.tasks-calendar-title h1:not(:only-child) {
+	margin-bottom: 0.25rem;
+}
+
+div.tasks-calendar-title h1:only-child {
+	font-size: 2rem;
+	margin-bottom: 0;
+}
+
+div.tasks-calendar-title a.dropdown-item small {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+div.tasks-calendar-navigation {
+	display: flex;
+	align-items: center;
+}
+
+div.tasks-calendar-navigation-before {
+	justify-content: flex-end;
+}
+
+div.tasks-calendar-navigation a {
+	font-size: 2.25rem;
+	width: 3rem;
+	height: 3rem;
+	border-radius: 50%;
+	line-height: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-decoration: none;
+	transition: background-color 0.5s;
+	color: var(--primary);
+}
+
+@media (max-width: 575px) {
+
+	div.tasks-calendar-navigation a {
+		font-size: 1.75rem;
+		width: 2.5rem;
+		height: 2rem;
+	}
+
+}
+
+div.tasks-calendar-navigation a:hover {
+	background: #eee;
+}
+
+#planning-weekly-tabs {
+	grid-area: tabs;
+	margin-top: 1rem;
+}
+
+#planning-weekly-time {
+	grid-area: time;
+}
+
+@media (max-width: 767px) {
+
+	#planning-weekly-time {
+		border-top: 1px solid var(--background);
+		padding-top: 1rem;
+	}
+
+}
+
+#planning-weekly-time:empty {
+	display: none;
+}
+
+#planning-weekly-time .tabs-item {
+	border-bottom: 0;
+}
+
+#planning-daily-time {
+	width: calc(var(--screen-width) - var(--nav-width));
+	padding-left: var(--container-padding);
+	padding-right: var(--container-padding);
+}
+
+#planning-daily-time .tasks-time-all {
+	display: flex;
+}
+
+#planning-daily-time .tasks-time-all > *:not(:first-child) {
+	margin-left: -1.5rem;
+}
+
+#planning-daily-time .tasks-time-all.tasks-time-all-condensed > *:not(:first-child) {
+	margin-left: -2rem;
+}
+
+#planning-daily-time .tabs-item {
+	margin-bottom: 0;
+}
+
+#planning-weekly-time .tabs-item {
+	margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+
+	#planning-weekly-time .tabs-item {
+		grid-column-gap: 1rem;
+	}
+
+}
+
+#planning-weekly-time .tab-item {
+	padding: 0.5rem .75rem;
+}
+
+#planning-weekly-time .tab-item.selected,
+#planning-weekly-time .tab-item:hover {
+	background: var(--primary);
+}
+
+.tasks-time-content {
+	padding: 1rem 0.75rem;
+	background: var(--gradient);
+}
+
+
+#planning-weekly-done {
+	grid-area: done;
+}
+
+#planning-weekly-todo {
+	grid-area: todo;
+}
+
+@media (max-width: 767px) {
+
+	#planning-weekly-todo {
+		margin-bottom: 1rem;
+	}
+
 }
 
 div.planning-week h2 {
 	margin-bottom: 0;
-	color: white;
-}
-
-@media (min-width: 768px) {
-
-	div.planning-week {
-		border-radius: var(--radius);
-	}
-
 }
 
 div.planning-week-header {
-	padding: 1rem;
-}
-
-@media (min-width: 768px) {
-
-	div.planning-week-header {
-		border-top-left-radius: var(--radius);
-		border-top-right-radius: var(--radius);
-	}
-
-	div.planning-week-header:last-child {
-		border-bottom-left-radius: var(--radius);
-		border-bottom-right-radius: var(--radius);
-	}
-
-}
-
-@media (min-width: 992px) {
-
-	div.planning-week-header {
-		padding: 0.75rem 0.75rem 1rem 0.75rem;
-	}
-
-}
-
-div.planning-week-header div.tasks-action:not(:empty) {
-	margin-top: 0.75rem;
+	padding: 1rem 0;
 }
 
 @media (max-width: 767px) {
+
+	div.planning-week-header {
+		text-align: end;
+	}
 
 	h2.planning-week-title {
 		display: none;
@@ -357,26 +563,26 @@ div.planning-week-header div.tasks-action:not(:empty) {
 
 }
 
+@media (min-width: 767px) {
+
+	div.planning-week-header {
+		display: flex;
+		justify-content: space-between;
+	}
+
+}
+
 div.planning-week-title {
 	padding: 0.75rem 1rem;
 	background-color: var(--todo);
-	color: white;
 	margin-top: 2rem;
 	font-size: 1rem;
 	text-transform: uppercase;
 	letter-spacing: 0.5px;
 	font-weight: bold;
+	color: white;
 	border-top-left-radius: var(--radius);
 	border-top-right-radius: var(--radius);
-}
-
-@media (max-width: 767px) {
-
-	#planning-wrapper-weekly div.planning-week-title {
-		border-top-left-radius: 0;
-		border-top-right-radius: 0;
-	}
-
 }
 
 div.planning-week-title-container {
@@ -391,5 +597,168 @@ div.planning-week-title-action a {
 	font-weight: normal;
 	color: white;
 	font-size: 0.9rem;
-	color: #fffa;
+}
+
+#planning-weekly-wrapper div.planning-filters {
+	grid-area: actions;
+}
+
+div.planning-filters {
+	display: flex;
+	align-items: center;
+	background-color: var(--background-light);
+	padding: 0.5rem;
+	overflow-x: auto;
+}
+
+@media (max-width: 575px) {
+
+	div.planning-filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 0.125rem;
+		margin-left: calc(-1 * var(--container-xs-padding));
+		margin-right: calc(-1 * var(--container-xs-padding));
+	}
+
+}
+
+@media (min-width: 576px) {
+
+	div.planning-filters {
+		gap: 0.5rem;
+		width: 100%;
+		overflow-x: auto;
+		border-radius: var(--radius);
+	}
+
+}
+
+div.planning-filters-buttons {
+	display: flex;
+}
+
+div.planning-filters-buttons a.btn {
+	padding: 0.5rem;
+	font-size: 1.25rem;
+	margin-right: 0.5rem;
+}
+
+a.planning-filters-favorite {
+	display: block;
+	border-radius: var(--radius);
+	padding: 0.5rem;
+	font-size: 0.9rem;
+	white-space: nowrap;
+	transition: filter 0.5s;
+}
+
+@media (max-width: 767px) {
+
+	a.planning-filters-favorite {
+		letter-spacing: -0.1px;
+	}
+
+}
+
+a.planning-filters-favorite.selected {
+	border: 2px solid white;
+}
+
+a.planning-filters-favorite:hover {
+	text-decoration: none;
+	filter: brightness(0.9);
+}
+
+
+@media (max-width: 575px) {
+
+	div.planning-filters-dropdown .dropdown-item {
+		padding: 0.75rem 0.5rem;
+		letter-spacing: -0.2px;
+		font-size: 0.9rem;
+	}
+
+	div.planning-filters-dropdown.dropdown-list-4 {
+		grid-template-columns: minmax(25vw, auto) minmax(25vw, auto) minmax(25vw, auto);
+	}
+
+}
+
+@media (min-width: 575px) {
+
+	div.planning-filters-dropdown .dropdown-item {
+		padding: 0.75rem;
+	}
+
+}
+
+.planning-plant-list {
+	margin-bottom: 0;
+	font-size: 0.9rem;
+}
+
+.planning-daily .planning-plant-list {
+	font-size: 0.9rem;
+}
+
+.planning-plant-list tbody {
+	background-color: var(--background-odd);
+}
+
+.planning-plant-list tbody tr:not(:first-child) td {
+	border-top: 1px dashed var(--border);
+}
+
+.planning-plant-list thead th {
+	padding-top: 0;
+	padding-bottom: 0.125rem;
+	color: var(--muted);
+}
+
+.planning-plant-list tbody td {
+	vertical-align: baseline;
+	padding-top: 0.125rem;
+	padding-bottom: 0.125rem;
+}
+
+.planning-plant-value {
+	text-align: end;
+}
+
+table.planning-plant-list-semis-pepiniere .planning-plant-value {
+	width: 7rem;
+}
+
+.planning-daily .planning-plant-area {
+	display: none;
+}
+
+#planning-export-container .flow-timeline-comments,
+#planning-export-container .tasks-planning-plant,
+#planning-export-container .tasks-planning-item-validate {
+	display: none;
+}
+
+#planning-export-container .planning-export-container {
+	display: none;
+}
+
+#planning-export-container .tasks-planning-action {
+	position: relative;
+	top: 0;
+}
+
+#planning-export-container .tasks-planning-action .tasks-planning-select {
+	visibility: hidden;
+}
+
+#planning-export-container .tasks-planning-item-main {
+	grid-template-columns: 2fr 1fr;
+	padding: 0.375rem 0;
+}
+
+#planning-export-container .tasks-planning-item-description,
+#planning-export-container .tasks-planning-item-details {
+	grid-column: span 2;
 }

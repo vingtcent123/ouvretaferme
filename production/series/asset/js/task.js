@@ -68,7 +68,7 @@ document.delegateEventListener("scroll", '[data-planning-scroll]', (e) => {
 
 });
 
-document.delegateEventListener("scroll", '#planning-container-daily', (e) => {
+document.delegateEventListener("scroll", '#planning-daily-container', (e) => {
 
 	if(Task.isScrollByDay()) {
 		return;
@@ -94,7 +94,7 @@ document.delegateEventListener("click", '[data-action="task-checkbox"]', (e) => 
 });
 
 
-document.delegateEventListener("touchend", '#planning-container-daily', (e) => {
+document.delegateEventListener("touchend", '#planning-daily-container', (e) => {
 
 	if(Task.isScrollByDay() === false) {
 		return;
@@ -110,7 +110,7 @@ document.delegateEventListener("touchend", '#planning-container-daily', (e) => {
 		return;
 	}
 
-	const position = qs('#planning-container-daily').scrollLeft / window.innerWidth + 1;
+	const position = qs('#planning-daily-container').scrollLeft / window.innerWidth + 1;
 	let screen = null;
 
 	if(position >= cache[1] - 0.05 && position <= cache[1] + 0.05) {
@@ -123,9 +123,9 @@ document.delegateEventListener("touchend", '#planning-container-daily', (e) => {
 
 	if(screen !== null) {
 
-		qs('#planning-container-daily').style.overflowX = 'hidden';
+		qs('#planning-daily-container').style.overflowX = 'hidden';
 
-		const startPosition = qs('#planning-container-daily').scrollLeft;
+		const startPosition = qs('#planning-daily-container').scrollLeft;
 		const newPosition = window.innerWidth * (screen - 1);
 
 		const scrollFunction = function(value) {
@@ -133,10 +133,10 @@ document.delegateEventListener("touchend", '#planning-container-daily', (e) => {
 			return () => {
 
 				if(value === newPosition) {
-					qs('#planning-container-daily').style.overflowX = '';
+					qs('#planning-daily-container').style.overflowX = '';
 				}
 
-				qs('#planning-container-daily').scrollTo({
+				qs('#planning-daily-container').scrollTo({
 					left: value,
 					top: 0
 				});

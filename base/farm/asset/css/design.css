@@ -651,7 +651,7 @@ body[data-template~="farm"] .container {
 
 	:root {
 		--nav-width: 0rem;
-		--nav-height: 0rem;
+		--nav-height: calc(var(--nav-main) + var(--nav-farm));
 	}
 
 	body[data-touch="no"][data-template~="farm"] .nav-wrapper {
@@ -961,8 +961,8 @@ body[data-template~="farm"] .container {
 	#farm-nav {
 		display: flex;
 		align-items: center;
-		height: var(--farmNav);
-		min-height: var(--farmNav);
+		height: var(--nav-farm);
+		min-height: var(--nav-farm);
 		background-color: var(--secondary);
 	}
 

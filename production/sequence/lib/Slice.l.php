@@ -114,6 +114,15 @@ class SliceLib extends SliceCrud {
 					throw new \FailException('sequence\Crop::variety.createEmpty');
 				}
 
+				$fw = new \FailWatch();
+
+				$eVariety = new \plant\Variety();
+				$eVariety->build(['name'], ['name' => $varietyCreate]);
+
+				if($fw->ko()) {
+					throw new \FailException('sequence\Crop::variety.createName');
+				}
+
 				// On vérifie par acquit de conscience s'il n'en n'existe pas une du même nom
 				$eVariety = \plant\Variety::model()
 					->select('id')

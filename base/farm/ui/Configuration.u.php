@@ -680,7 +680,6 @@ class ConfigurationUi {
 					$cash .= '<li>'.s("Exigibilité par défaut pour les Régimes Simplifiés (Micro-BA, RSA...).").'</li>';
 					$cash .= '<li>'.s("Les prestations de service entrent dans cette règle d'office.").'</li>';
 				$cash .= '</ul>';
-				$cash .= '<p>'.\Asset::icon('arrow-right').' <i>'.s("Idéal pour que le paiement de la TVA corresponde aux mouvements de trésorerie.").'</i></p>';
 
 				$debit = '<h4>'.s("TVA sur les débits").'</h4>';
 				$debit .= '<ul>';

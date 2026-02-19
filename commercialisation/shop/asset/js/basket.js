@@ -25,7 +25,7 @@ class BasketManage {
 	static clickDepartment(target) {
 
 		const mainNavHeight = window.matchMedia('(min-height: 768px) and (min-width: 768px)').matches ?
-			parseFloat(window.getComputedStyle(document.body).getPropertyValue('--mainNav')) * rem() :
+			parseFloat(window.getComputedStyle(document.body).getPropertyValue('--nav-main')) * rem() :
 			0;
 		const departmentsListHeight = parseInt(window.getComputedStyle(qs('#product-department-list')).height);
 

@@ -3,8 +3,7 @@ namespace series;
 
 class TaskUi {
 
-	protected ?string $period = NULL;
-	protected ?\Collection $cUserFarm = NULL;
+	private static $export = FALSE;
 
 	public function __construct() {
 
@@ -13,6 +12,10 @@ class TaskUi {
 		\Asset::css('series', 'task.css');
 		\Asset::js('series', 'task.js');
 
+	}
+
+	public static function setExport(bool $export): void {
+		self::$export = $export;
 	}
 
 	public static function url(Task $eTask): string {
@@ -26,455 +29,6 @@ class TaskUi {
 		]);
 
 		return '<div class="panel-header-subtitle">'.encode($eTask['action']['name']).'</div>';
-
-	}
-
-	public function getDayPlanning(\farm\Farm $eFarm, string $week, \Collection $cccTask, \Collection $cccTaskAssign, \Collection $cUserFarm, \user\User $eUser, array $seasonsWithSeries, \Collection $cCategory): string {
-
-		$this->period = 'day';
-		$this->cUserFarm = $cUserFarm;
-
-		\Asset::css('series', 'planning.css');
-
-		$h = '<div id="tasks-time" class="task-time-daily">';
-			$h .= $this->getWeekUsers($eFarm, $week, $eUser, $cUserFarm, fn($eUserFarm) => 'data-ajax="'.\farm\FarmUi::urlPlanningDaily($eFarm, $week).'?user'.($eUserFarm->notEmpty() ? '='.$eUserFarm['id'] : '').'" data-ajax-method="get"', team: TRUE);
-		$h .= '</div>';
-
-		$form = new \util\FormUi();
-
-		if($week === currentWeek()) {
-			$position = (int)date('N') + 1;
-		} else {
-			$position = 1;
-		}
-
-		$h .= '<div id="planning-container-daily" onrender="Task.scrollPlanningDaily(this, '.$position.')" data-week="'.$week.'" data-farm="'.$eFarm['id'].'" data-batch="#batch-task">';
-
-			$h .= '<div id="planning-wrapper-daily">';
-
-				$h .= '<div class="planning-daily" data-planning-scroll="0">';
-
-					$h .= '<div class="planning-daily-header">';
-
-						$h .= '<div>';
-							$h .= '<h2>';
-								$h .= s("À assigner cette semaine");
-							$h .= '</h2>';
-						$h .= '</div>';
-						$h .= $this->getNewTask('daily', 'todo', $eFarm, $seasonsWithSeries, $cCategory, week: $week);
-
-					$h .= '</div>';
-
-					$h .= $this->getTodoPlanning($form, $eFarm, $week, $cccTaskAssign);
-
-				$h .= '</div>';
-
-			$eUserSelected = $eUser->notEmpty() ? ($cUserFarm[$eUser['id']] ?? new \user\User()) : $eUser;
-			$day = 0;
-
-			foreach(week_dates($week) as $date) {
-
-				$day++;
-				$timestamp = strtotime($date);
-				$cUserAbsent = $cUserFarm->find(fn($eUserFarm) => \hr\Absence::isDateAbsent($eUserFarm['cAbsence'], $date)->notEmpty());
-
-				$h .= '<div class="planning-daily '.($date === currentDate() ? 'planning-daily-today' : '').'" data-planning-scroll="0">';
-
-					$h .= '<div class="planning-daily-header">';
-
-						$h .= '<div>';
-							$h .= '<h2>';
-								$h .= \util\DateUi::getDayName($day);
-								$h .= ' <small>'.date('j', $timestamp).' / '.date('m', $timestamp).'</small>';
-							$h .= '</h2>';
-							if($eUserSelected->notEmpty()) {
-								if(\hr\Absence::isDateAbsent($eUserSelected['cAbsence'], $date)->notEmpty()) {
-									$h .= '<div class="color-danger">'.\Asset::icon('exclamation-triangle-fill').' '.s("Absent").'</div>';
-								}
-							}
-						$h .= '</div>';
-
-						if($eUserSelected->notEmpty()) {
-
-							$h .= '<div class="tasks-time-day-values">';
-								if($eFarm->hasFeatureTime()) {
-									$h .= $this->getDayWorkingTime($eFarm, $eUserSelected, $date, $eUserSelected['workingTime'][$date], $eUserSelected['timesheetTime'][$date]);
-									if($eUserSelected['timesheetTime']) {
-											$h .= $this->getDayTimesheetTime($eUserSelected['workingTime'][$date], $eUserSelected['timesheetTime'][$date]);
-									}
-								}
-							$h .= '</div>';
-
-						} else {
-							$h .= $this->getNewTask('daily', $date >= currentDate() ? 'todo' : 'done', $eFarm, $seasonsWithSeries, $cCategory, date: $date);
-						}
-
-					$h .= '</div>';
-
-					if(
-						$eUserSelected->empty() and
-						$cUserAbsent->notEmpty()
-					) {
-
-						$h .= '<div class="planning-daily-absent">';
-							foreach($cUserAbsent as $eUserAbsent) {
-								$h .= '<div class="color-danger">'.\user\UserUi::getVignette($eUserAbsent, '1.5rem').'  '.\Asset::icon('exclamation-triangle-fill').' '.s("Absent").'</div>';
-							}
-						$h .= '</div>';
-
-					} else {
-						$h .= '<div></div>';
-					}
-
-					$ccTask = $cccTask[$date];
-
-					if($ccTask->notEmpty()) {
-
-						$cTaskFirst = $ccTask->first();
-						$cTaskLast = $ccTask->last();
-
-						foreach($ccTask as $cTask) {
-							$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, $date, $week, TRUE);
-						}
-
-					} else {
-
-						$h .= '<div class="tasks-planning-items tasks-planning-items-first tasks-planning-items-last util-empty">';
-							$h .= s("Aucune intervention ce jour.");
-						$h .= '</div>';
-
-					}
-
-				$h .= '</div>';
-
-			}
-
-			$h .= $this->getBatch($eFarm, $week, $cUserFarm);
-
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public function getWeekCalendar(\farm\Farm $eFarm, string $week, \Closure $link, ?\Closure $filter = NULL): string {
-
-		$eFarm->expects(['seasonFirst', 'seasonLast']);
-
-		$weekAfter = date('o-\WW', strtotime($week.' + 1 WEEK'));
-		$weekBefore = date('o-\WW', strtotime($week.' - 1 WEEK'));
-
-		if($eFarm->isSeasonValid(week_year($weekBefore)) === FALSE) {
-			$weekBefore = NULL;
-		}
-
-		if($eFarm->isSeasonValid(week_year($weekAfter)) === FALSE) {
-			$weekAfter = NULL;
-		}
-
-		$h = '<div id="tasks-calendar-top" class="tasks-calendar tasks-calendar-week '.($filter ? 'tasks-calendar-with-filter' : '').'">';
-
-			if($filter !== NULL) {
-				$h .= '<div class="tasks-calendar-search">';
-				$h .= '</div>';
-			}
-
-			$h .= '<div class="tasks-calendar-navigation tasks-calendar-navigation-before">';
-				if($weekBefore !== NULL) {
-					$h .= '<a href="'.$link($weekBefore).'">';
-						$h .= \Asset::icon('chevron-left');
-					$h .= '</a>';
-				}
-			$h .= '</div>';
-
-			$h .= '<div class="tasks-calendar-title">';
-				$h .= '<h1>';
-					$h .= '<a class="dropdown-toggle" data-dropdown="bottom-center">';
-						$h .= s("Semaine {week}, {year}", ['week' => week_number($week), 'year' => week_year($week)]);
-					$h .= '</a>';
-					$h .= '<div class="dropdown-list dropdown-list-minimalist">';
-						$h .= \util\FormUi::weekSelector((string)substr($week, 0, 4), $link('{current}'), defaultWeek: $week, minYear: $eFarm->getFirstValidSeason(), maxYear: $eFarm->getLastValidSeason());
-					$h .= '</div>';
-				$h .= '</h1>';
-				$h .= '<div class="tasks-calendar-title-period">';
-					$h .= \util\DateUi::weekToDays($week);
-				$h .= '</div>';
-			$h .= '</div>';
-
-			$h .= '<div class="tasks-calendar-navigation tasks-calendar-navigation-after">';
-				if($weekAfter !== NULL) {
-					$h .= '<a href="'.$link($weekAfter).'">';
-						$h .= \Asset::icon('chevron-right');
-					$h .= '</a>';
-				}
-			$h .= '</div>';
-
-			if($filter !== NULL) {
-				$h .= '<div class="tasks-calendar-search">';
-					$h .= $filter();
-				$h .= '</div>';
-			}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public function getWeekPlanningColumns(\farm\Farm $eFarm, string $week, \Collection $cccTask, \Collection $cUserFarm, \user\User $eUserTime, array $seasonsWithSeries, \Collection $cActionMain, \Collection $cCategory): string {
-
-		$this->period = 'week';
-		$this->cUserFarm = $cUserFarm;
-
-		\Asset::css('series', 'planning.css');
-
-		$eActionHarvest = $cActionMain[ACTION_RECOLTE];
-
-		if($cccTask['done']->offsetExists($eActionHarvest['id'])) {
-			$cccTask['harvested'] = $cccTask['done'][$eActionHarvest['id']];
-			$cccTask['done']->offsetUnset($eActionHarvest['id']);
-		} else {
-			$cccTask['harvested'] = new \Collection();
-		}
-
-		$h = '<div id="planning-week-tabs" class="tabs-h" data-farm="'.$eFarm['id'].'" data-week="'.$week.'" onrender="'.encode('Lime.Tab.restore(this, "todo")').'" data-batch="#batch-task">';
-
-			$h .= '<div class="tabs-item util-print-hide">';
-				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="todo">'.s("À faire").'</a>';
-				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="done">'.s("Fait").'</a>';
-				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="harvested">'.s("Récolté").'</a>';
-				if($eFarm->hasFeatureTime()) {
-					$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="time">';
-						$h .= '<span class="hide-sm-up">'.\Asset::icon('clock').'&nbsp;&nbsp;'.s("Travaillé").'</span>';
-						$h .= '<span class="hide-xs-down">'.\Asset::icon('clock').'&nbsp;&nbsp;'.s("Temps de travail").'</span>';
-					$h .= '</a>';
-				}
-			$h .= '</div>';
-
-			$form = new \util\FormUi();
-
-			$canCreate = (new Task(['farm' => $eFarm]))->canCreate();
-
-			$h .= '<div id="planning-wrapper-weekly">';
-
-				$h .= '<div id="tasks-time" class="tab-panel util-print-hide" data-tab="time">';
-					$h .= $this->getWeekTime($eFarm, $week, $cccTask, $eUserTime, $cUserFarm);
-				$h .= '</div>';
-
-				$h .= '<div id="tasks-todo" class="tab-panel planning-week util-print-block" data-tab="todo">';
-
-					$h .= '<div class="planning-week-header">';
-
-						$h .= '<h2 class="planning-week-title util-print-block">'.s("À faire").'</h2>';
-						$h .= '<div class="tasks-action">';
-							if($canCreate) {
-								$h .= $this->getNewTask('weekly', 'todo', $eFarm, $seasonsWithSeries, $cCategory, week: $week);
-							}
-						$h .= '</div>';
-
-					$h .= '</div>';
-
-					$h .= $this->getTodoPlanning($form, $eFarm, $week, $cccTask);
-
-				$h .= '</div>';
-
-				$h .= '<div id="tasks-done" class="tab-panel planning-week util-print-block" data-tab="done">';
-
-					$h .= '<div class="planning-week-header">';
-
-						$h .= '<h2 class="planning-week-title util-print-block">'.s("Fait").'</h2>';
-						$h .= '<div class="tasks-action">';
-							if($canCreate) {
-								$h .= $this->getNewTask('weekly', 'done', $eFarm, $seasonsWithSeries, $cCategory, week: $week);
-							}
-						$h .= '</div>';
-
-					$h .= '</div>';
-
-
-					if($cccTask['done']->empty() === FALSE) {
-
-						$cTaskFirst = $cccTask['done']->first();
-						$cTaskLast = $cccTask['done']->last();
-						foreach($cccTask['done'] as $cTask) {
-							$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, NULL, $week);
-						}
-
-					}
-
-				$h .= '</div>';
-
-				$h .= '<div id="tasks-harvested" class="tab-panel planning-week util-print-block" data-tab="harvested">';
-
-					$h .= '<div class="planning-week-header">';
-
-						$h .= '<h2 class="planning-week-title util-print-block">'.s("Récolté").'</h2>';
-						$h .= '<div class="tasks-action">';
-							if($canCreate) {
-								$h .= $this->getNewHarvest($eFarm, $week, $seasonsWithSeries, $cActionMain[ACTION_RECOLTE]);
-							}
-						$h .= '</div>';
-
-					$h .= '</div>';
-
-
-					if($cccTask['harvested']->empty() === FALSE) {
-						$h .= '<div class="tasks-planning-items tasks-planning-items-first tasks-planning-items-last" data-filter-action="'.$cActionMain[ACTION_RECOLTE]['id'].'">';
-							$h .= $this->getPlantPlanningTask($form, $eFarm, $cccTask['harvested'], NULL, $week);
-						$h .= '</div>';
-					}
-
-				$h .= '</div>';
-
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		$h .= $this->getBatch($eFarm, $week, $cUserFarm);
-
-		return $h;
-
-	}
-
-	public function getWeekPlanningLines(\farm\Farm $eFarm, string $week, \Collection $cccTask, \Collection $cUserFarm, \user\User $eUserTime, array $seasonsWithSeries, \Collection $cActionMain, \Collection $cCategory): string {
-
-		$this->period = 'week';
-		$this->cUserFarm = $cUserFarm;
-
-		\Asset::css('series', 'planning.css');
-
-		$h = '<div id="planning-week-tabs" class="tabs-h" data-farm="'.$eFarm['id'].'" data-week="'.$week.'" onrender="'.encode('Lime.Tab.restore(this, "todo")').'" data-batch="#batch-task">';
-
-			$h .= '<div class="tabs-item util-print-hide">';
-				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="todo">'.s("À faire").'</a>';
-				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="done">'.s("Fait").'</a>';
-				$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="harvested">'.s("Récolté").'</a>';
-				if($eFarm->hasFeatureTime()) {
-					$h .= '<a class="tab-item" onclick="Lime.Tab.select(this)" data-tab="time">';
-						$h .= '<span class="hide-sm-up">'.\Asset::icon('clock').'&nbsp;&nbsp;'.s("Travaillé").'</span>';
-						$h .= '<span class="hide-xs-down">'.\Asset::icon('clock').'&nbsp;&nbsp;'.s("Temps de travail").'</span>';
-					$h .= '</a>';
-				}
-			$h .= '</div>';
-
-			$form = new \util\FormUi();
-
-			$canCreate = (new Task(['farm' => $eFarm]))->canCreate();
-
-			$h .= '<div id="planning-wrapper-weekly">';
-
-				$h .= '<div id="tasks-time" class="tab-panel util-print-hide" data-tab="time">';
-					$h .= $this->getWeekTime($eFarm, $week, $cccTask, $eUserTime, $cUserFarm);
-				$h .= '</div>';
-
-				$h .= '<div id="tasks-todo" class="tab-panel planning-week util-print-block" data-tab="todo">';
-
-					$h .= '<div class="planning-week-header">';
-
-						$h .= '<h2 class="planning-week-title util-print-block">'.s("À faire").'</h2>';
-						$h .= '<div class="tasks-action">';
-							if($canCreate) {
-								$h .= $this->getNewTask('weekly', 'todo', $eFarm, $seasonsWithSeries, $cCategory, week: $week);
-							}
-						$h .= '</div>';
-
-					$h .= '</div>';
-
-					$h .= $this->getTodoPlanning($form, $eFarm, $week, $cccTask);
-
-				$h .= '</div>';
-
-				$h .= '<div id="tasks-done" class="tab-panel planning-week util-print-block" data-tab="done">';
-
-					$h .= '<div class="planning-week-header">';
-
-						$h .= '<h2 class="planning-week-title util-print-block">'.s("Fait").'</h2>';
-						$h .= '<div class="tasks-action">';
-							if($canCreate) {
-								$h .= $this->getNewTask('weekly', 'done', $eFarm, $seasonsWithSeries, $cCategory, week: $week);
-							}
-						$h .= '</div>';
-
-					$h .= '</div>';
-
-
-					if($cccTask['done']->empty() === FALSE) {
-
-						$cTaskFirst = $cccTask['done']->first();
-						$cTaskLast = $cccTask['done']->last();
-						foreach($cccTask['done'] as $cTask) {
-							$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, NULL, $week);
-						}
-
-					}
-
-				$h .= '</div>';
-
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		$h .= $this->getBatch($eFarm, $week, $cUserFarm);
-
-		return $h;
-
-	}
-
-	protected function getTodoPlanning(\util\FormUi $form, \farm\Farm $eFarm, string $week, \Collection $cccTask) {
-
-		$h = '';
-
-		if($cccTask['todo']->empty() === FALSE) {
-
-
-				$cTaskFirst = $cccTask['todo']->first();
-				$cTaskLast = $cccTask['todo']->last();
-				foreach($cccTask['todo'] as $cTask) {
-					$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, NULL, $week);
-				}
-
-		}
-
-		if($cccTask['delayed']->empty() === FALSE) {
-
-				$h .= '<div class="planning-week-title planning-week-title-container">';
-					$h .= '<div>'.s("Retardé").'</div>';
-					$h .= '<div class="planning-week-title-action">';
-						$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle">'.p("depuis moins de {value} mois", "depuis moins de {value} mois", $eFarm['planningDelayedMax']).'</a>';
-						$h .= '<div class="dropdown-list bg-todo">';
-							$h .= '<div class="dropdown-title">'.s("N'afficher que les interventions retardées").'</div>';
-							$h .= '<a data-ajax="/farm/farm:doUpdatePlanningDelayedMax" post-id="'.$eFarm['id'].'" post-planning-delayed-max="1" class="dropdown-item">'.s("depuis moins de 1 mois").'</a>';
-							$h .= '<a data-ajax="/farm/farm:doUpdatePlanningDelayedMax" post-id="'.$eFarm['id'].'" post-planning-delayed-max="3" class="dropdown-item">'.s("depuis moins de 3 mois").'</a>';
-							$h .= '<a data-ajax="/farm/farm:doUpdatePlanningDelayedMax" post-id="'.$eFarm['id'].'" post-planning-delayed-max="6" class="dropdown-item">'.s("depuis moins de 6 mois").'</a>';
-						$h .= '</div>';
-					$h .= '</div>';
-				$h .= '</div>';
-
-				$cTaskFirst = $cccTask['delayed']->first();
-				$cTaskLast = $cccTask['delayed']->last();
-				foreach($cccTask['delayed'] as $cTask) {
-					$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, NULL, $week);
-				}
-
-		}
-
-		if($cccTask['unplanned']->empty() === FALSE) {
-
-				$h .= '<div class="planning-week-title">';
-					$h .= s("Non planifié");
-				$h .= '</div>';
-
-				$cTaskFirst = $cccTask['unplanned']->first();
-				$cTaskLast = $cccTask['unplanned']->last();
-				foreach($cccTask['unplanned'] as $cTask) {
-					$h .= $this->getPlanningTasks($form, $eFarm, $cTask, $cTask === $cTaskFirst, $cTask === $cTaskLast, NULL, $week);
-				}
-
-		}
-
-		return $h;
 
 	}
 
@@ -659,764 +213,7 @@ class TaskUi {
 
 	}
 
-	public function getWeekUsers(\farm\Farm $eFarm, string $week, \user\User $eUser, \Collection $cUserFarm, \Closure $link, bool $team = FALSE): string {
-
-		$cUserPresent = $cUserFarm->find(fn($eUserFarm) => \hr\Presence::isWeekPresent($eUserFarm['cPresence'], $week)->notEmpty());
-
-		if($cUserPresent->count() === 1) {
-			return '<br/>';
-		}
-
-		if($eFarm->canManage()) {
-
-			$h = '<div class="tabs-item">';
-
-				if($team and $cUserPresent->count() >= 2) {
-
-					$h .= '<div '.$link(new \user\User()).' class="tab-item '.($eUser->empty() ? 'selected' : '').' tasks-time-all '.($cUserPresent->count() >= 10 ? 'tasks-time-all-condensed' : '').'" title="'.s("Toute l'équipe").'">';
-						foreach($cUserPresent as $eUserPresent) {
-							$h .= \user\UserUi::getVignette($eUserPresent, '2rem');
-						}
-					$h .= '</div>';
-
-				}
-
-				foreach($cUserPresent as $eUserPresent) {
-
-					$h .= '<a '.$link($eUserPresent).' class="tab-item '.(($eUser->notEmpty() and $eUserPresent['id'] === $eUser['id']) ? 'selected' : '').'" title="'.$eUserPresent->getName().'">';
-						$h .= \user\UserUi::getVignette($eUserPresent, '2rem');
-					$h .= '</a>';
-
-				}
-
-			$h .= '</div>';
-
-			return $h;
-
-		} else {
-			return '<br/>';
-		}
-		
-	}
-
-	public function getWeekTime(\farm\Farm $eFarm, string $week, \Collection $ccTask, \user\User $eUser, \Collection $cUserFarm) {
-
-		if($eFarm->hasFeatureTime() === FALSE) {
-			return '';
-		}
-
-		$eUser->expects(['weekTimesheet', 'cWorkingTimeWeek']);
-
-		$tabItem = $this->getWeekUsers($eFarm, $week, $eUser, $cUserFarm, fn($eUserFarm) => 'data-ajax="/hr/workingTime:getByUser" post-farm="'.$eFarm['id'].'" post-week="'.$week.'" post-user="'.($eUserFarm->notEmpty() ? $eUserFarm['id'] : '').'"');
-
-		$tasks  = [];
-
-		$estimated =
-			($ccTask->offsetExists('todo') ? $ccTask['todo']->sum(function($e) use(&$tasks) {
-				$tasks[$e['id']] = $e['timeExpected'];
-				return $e['timeExpected'];
-			}, 2) : 0) +
-			($ccTask->offsetExists('done') ? $ccTask['done']->sum(fn($e) => array_key_exists($e['id'], $tasks) ? 0 : $e['timeExpected'], 2) : 0);
-
-		if($eFarm->hasFeatureTime() and $estimated > 0) {
-			$tabEstimated = '<div class="tabs-item-label" title="'.s("Inclus le temps de travail estimé sur les tâches planifiées et réalisées cette semaine.").'">';
-				$tabEstimated .= s("Travail estimé à {value} sur la semaine", self::convertTime($estimated));
-			$tabEstimated .= '</div>';
-		} else {
-			$tabEstimated = '';
-		}
-
-		$h = '';
-
-		if($tabEstimated) {
-
-			$h .= '<div class="tabs-item-wrapper">';
-				$h .= $tabItem;
-				$h .= $tabEstimated;
-			$h .= '</div>';
-
-		} else {
-			$h .= $tabItem;
-		}
-
-		$h .= '<div class="tasks-time-content">';
-
-			if($eUser['cPresence']->empty()) {
-				$h .= s("Vous ne travaillez pas à la ferme cette semaine !");
-			} else {
-
-				$h .= '<div class="tasks-time-days">';
-
-					for($i = 1; $i <= 7; $i++) {
-
-						$date = date('Y-m-d', strtotime($week.' + '.($i - 1).' DAY'));
-						$future = (strcmp($date, currentDate()) > 0);
-
-						$timeTimesheet = $eUser['weekTimesheet'][$date] ?? NULL;
-						$timeWorking = $eUser['cWorkingTimeWeek'][$date]['time'] ?? NULL;
-
-						$h .= '<div class="tasks-time-day '.($future ? 'tasks-time-day-future' : '').'">';
-							$h .= '<h5>';
-								$h .= \util\DateUi::getDayName($i);
-								$h .= '<span class="tasks-time-day-numeric">'.\util\DateUi::numeric($date, \util\DateUi::DAY_MONTH).'</span>';
-							$h .= '</h5>';
-							$h .= '<div class="tasks-time-day-values">';
-								$h .= $this->getDayWorkingTime($eFarm, $eUser, $date, $timeWorking, $timeTimesheet);
-								$h .= $this->getDayTimesheetTime($timeWorking, $timeTimesheet);
-							$h .= '</div>';
-
-							if(
-								\hr\Presence::isDatePresent($eUser['cPresence'], $date)->empty() or
-								\hr\Absence::isDateAbsent($eUser['cAbsence'], $date)->notEmpty()
-							) {
-								$h .= '<div class="tasks-time-day-absent">';
-									$h .= \Asset::icon('exclamation-triangle-fill').'&nbsp;&nbsp;'.s("Absent");
-								$h .= '</div>';
-							}
-
-						$h .= '</div>';
-
-
-					}
-
-					$h .= \Asset::icon('chevron-right');
-
-					$sumTimeWorking = array_sum($eUser['cWorkingTimeWeek']->getColumn('time'));
-					$future = (strcmp($week, currentWeek()) > 0);
-
-					$h .= '<div class="tasks-time-day tasks-time-day-global '.($future ? 'tasks-time-day-future' : '').'">';
-						$h .= '<h5>';
-							$h .= s("Semaine");
-							$h .= '<span class="tasks-time-day-numeric">&nbsp;</span>';
-						$h .= '</h5>';
-						$h .= '<div class="tasks-time-day-values">';
-							$h .= '<div class="tasks-time-day-full" title="'.s("Temps de travail réel sur la semaine").'">';
-								if($eUser['cWorkingTimeWeek']->notEmpty()) {
-									$h .= self::convertTime($sumTimeWorking);
-
-								}
-							$h .= '</div>';
-							if($eUser['weekTimesheet']) {
-
-								$sumTimeTimesheet = round(array_sum($eUser['weekTimesheet']), 2);
-
-								$alert = ($sumTimeWorking > 0 and $sumTimeTimesheet > $sumTimeWorking);
-								$title = $alert ? s("Le temps de travail sur les interventions excède sur le temps de travail réel renseigné pour cette semaine !") : s("Temps de travail sur les interventions de la semaine");
-
-								$h .= '<div class="tasks-time-day-timesheet '.($alert ? 'tasks-time-day-timesheet-alert' : '').'" title="'.$title.'">';
-									$h .= \Asset::icon('calendar3').'&nbsp;&nbsp;'.self::convertTime($sumTimeTimesheet);
-								$h .= '</div>';
-
-							}
-						$h .= '</div>';
-					$h .= '</div>';
-
-				$h .= '</div>';
-
-			}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function getDayTimesheetTime(?float $timeWorking, ?float $timeTimesheet): string {
-		
-		if($timeTimesheet === NULL) {
-			return '';
-		}
-
-		$alert = ($timeWorking > 0.0 and round($timeTimesheet, 2) > round($timeWorking, 2));
-		$title = $alert ? s("Le temps de travail sur les interventions excède sur le temps de travail réel renseigné pour ce jour !") : s("Temps de travail sur les interventions");
-
-		$h = '<div class="tasks-time-day-timesheet '.($alert ? 'tasks-time-day-timesheet-alert' : '').'" title="'.$title.'">';
-			$h .= \Asset::icon('calendar3').'&nbsp;&nbsp;'.$this->convertTime($timeTimesheet);
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function getDayWorkingTime(\farm\Farm $eFarm, \user\User $eUser, string $date, ?float $timeWorking, ?float $timeTimesheet): string {
-
-		$h = '';
-
-		if($eFarm->canManage() or $eUser->isOnline()) {
-
-			$future = (strcmp($date, currentDate()) > 0);
-			$inconsistency = (
-				$timeWorking > 0.0 and
-				round($timeWorking, 2) < round($timeTimesheet ?? 0.0, 2)
-			);
-
-			$h .= '<div class="tasks-time-day-full '.($inconsistency ? 'bg-danger' : '').'">';
-
-				$h .= '<a data-dropdown="bottom-start" class="tasks-time-day-full-link" title="'.($timeWorking !== NULL ? s("Temps de travail réel") : s("Renseigner le temps de travail total du jour")).'">';
-					$h .= ($timeWorking > 0.0 ? self::convertTime($timeWorking) : ($future ? '' : \Asset::icon('pencil-fill')));
-				$h .= '</a>';
-
-				$h .= '<div class="dropdown-list dropdown-list-minimalist" data-dropdown-keep>';
-
-					$h .= '<div class="tasks-time-day-full-form">';
-
-						$h .= '<h5>';
-							$h .= \util\DateUi::getDayName(date('N', strtotime($date)));
-						$h .= '</h5>';
-
-						$form = new \util\FormUi();
-
-						$h .= $form->openAjax('/hr/workingTime:doCreate');
-							$h .= $form->hidden('farm', $eFarm['id']);
-							$h .= $form->hidden('date', $date);
-							$h .= $form->hidden('user', $eUser['id']);
-							$h .= $form->dynamicField(new \hr\WorkingTime(['time' => $timeWorking]), 'time');
-							$h .= '<div class="form-buttons">';
-								$h .= $form->submit(s("Ok"), ['class' => 'btn btn-sm btn-primary']);
-								$h .= $form->button(s("Annuler"), ['class' => 'btn btn-sm btn-outline-primary', 'data-dropdown' => 'close']);
-							$h .= '</div>';
-						$h .= $form->close();
-
-					$h .= '</div>';
-				$h .= '</div>';
-			$h .= '</div>';
-
-		} else {
-			$h .= $timeWorking;
-		}
-
-		return $h;
-
-	}
-
-	public function getYearCalendar(\farm\Farm $eFarm, int $year, ?\Closure $filter = NULL): string {
-
-		$yearBefore = $year - 1;
-		$yearAfter = $year + 1;
-
-		if($eFarm->isSeasonValid($yearBefore) === FALSE) {
-			$yearBefore = NULL;
-		}
-
-		if($eFarm->isSeasonValid($yearAfter) === FALSE) {
-			$yearAfter = NULL;
-		}
-
-		$h = '<div id="tasks-calendar-top" class="tasks-calendar '.($filter ? 'tasks-calendar-with-filter' : '').' tasks-calendar-year">';
-
-			if($filter !== NULL) {
-				$h .= '<div class="tasks-calendar-search"></div>';
-			}
-
-
-			$h .= '<div class="tasks-calendar-navigation tasks-calendar-navigation-before">';
-				if($yearBefore !== NULL) {
-					$h .= '<a href="'.\farm\FarmUi::urlPlanningYear($eFarm, $yearBefore, 12).'">';
-						$h .= \Asset::icon('chevron-left');
-					$h .= '</a>';
-				}
-			$h .= '</div>';
-
-			$h .= '<div class="tasks-calendar-title">';
-				$h .= '<h1>'.$year.'</h1>';
-			$h .= '</div>';
-
-			$h .= '<div class="tasks-calendar-navigation tasks-calendar-navigation-after">';
-				if($yearAfter !== NULL) {
-					$h .= '<a href="'.\farm\FarmUi::urlPlanningYear($eFarm, $yearAfter, 1).'">';
-						$h .= \Asset::icon('chevron-right');
-					$h .= '</a>';
-				}
-			$h .= '</div>';
-
-			if($filter !== NULL) {
-				$h .= '<div class="tasks-calendar-search">';
-					$h .= $filter();
-				$h .= '</div>';
-			}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public function getYearSearch(\farm\Farm $eFarm, int $year, ?\Closure $search = NULL): string {
-
-		$h = '';
-
-		if($search !== NULL) {
-			$h .= $search();
-		}
-
-		$h .= '<div id="tasks-calendar-months-wrapper">';
-
-			$h .= '<div class="container" id="tasks-calendar-months" data-url="'.\farm\FarmUi::urlPlanningYear($eFarm).'">';
-
-				for($month = 1; $month <= 12; $month++) {
-
-					$h .= '<a '.attr('onclick', 'Task.clickPlanningMonth('.$year.', '.$month.')').' data-month="'.$month.'" class="tasks-calendar-month">';
-						$h .= '<span class="hide-sm-down">'.\util\DateUi::getMonthName($month).'</span>';
-						$h .= '<span class="hide-md-up">'.\util\DateUi::getMonthName($month, type: 'short').'</span>';
-					$h .= '</a>';
-
-				}
-
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public function getYearMonths(int $year, int $month, \Collection $ccTask): string {
-
-		\Asset::css('series', 'planning.css');
-
-		$weeks = date('W', strtotime($year.'-12-31')) === '53' ? 53 : 52;
-
-		$h = '<div id="planning-year-wrapper" '.attr('onrender', 'Task.selectPlanningMonth('.$year.', '.$month.')').'>';
-
-			$h .= '<div id="planning-year-weeks">';
-
-				for($weekNumber = 1; $weekNumber <= $weeks; $weekNumber++) {
-
-					$week = $year.'-W'.sprintf('%02d', $weekNumber);
-					$cTask = $ccTask[$week] ?? new \Collection();
-
-					$months = [
-						date('Y-n', strtotime($week)),
-						date('Y-n', strtotime($week.' + 6 days'))
-					];
-
-					$h .= '<div class="planning-year-week';
-						if($week === currentWeek()) {
-							$h .= ' planning-year-week-current';
-						}
-					$h .= '" data-planning-scroll="0" data-months="'.implode(' ', $months).'">';
-
-						$h .= '<h2 class="planning-year-week-title">';
-							$h .= s("Semaine {value}", week_number($week));
-						$h .= '</h2>';
-						$h .= '<div class="planning-year-week-days">';
-							$h .= \util\DateUi::weekToDays($week);
-						$h .= '</div>';
-
-						$h .= '<div class="planning-year-week-items">';
-
-							foreach($cTask as $eTask) {
-								$h .= $this->getYearTask($eTask);
-							}
-
-						$h .= '</div>';
-
-					$h .= '</div>';
-
-				}
-
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public function getCustomization(\farm\Farm $eFarm): string {
-
-		$eFarmer = $eFarm->getFarmer();
-
-		$h = '<a class="btn btn-primary dropdown-toggle" data-dropdown="bottom-end">';
-			$h .= \Asset::icon('palette-fill');
-		$h .= '</a> ';
-		$h .= '<div class="dropdown-list">';
-
-			$h .= match($eFarmer['viewPlanningWeekly']) {
-				\farm\Farmer::COLUMN => '<a data-ajax="/farm/farmer:doUpdatePlanningWeekly" post-id="'.$eFarmer['id'].'" post-view-planning-weekly="'.\farm\Farmer::LINE.'" class="dropdown-item">'.s("Afficher le planning par intervention").'</a>',
-				\farm\Farmer::LINE => '<a data-ajax="/farm/farmer:doUpdatePlanningWeekly" post-id="'.$eFarmer['id'].'" post-view-planning-weekly="'.\farm\Farmer::COLUMN.'" class="dropdown-item">'.s("Afficher le planning en séparant ce qui est fait et à faire").'</a>',
-			};
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	public function getCalendarFilter(): string {
-
-		$h = ' <a '.attr('onclick', 'Lime.Search.toggle("#planning-search")').' class="btn btn-primary">';
-			$h .= \Asset::icon('search');
-		$h .= '</a>';
-
-		return $h;
-
-	}
-
-	public function getWeekSearch(\farm\Farm $eFarm, \Search $search, \Collection $cAction, \Collection $cZone, \Collection $cUserFarm): string {
-
-		$form = new \util\FormUi();
-
-		$h = '<div id="planning-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
-
-			$h .= $form->openAjax(LIME_REQUEST_PATH, ['method' => 'get', 'class' => 'util-search']);
-
-					$h .= $form->hidden('search', 1);
-
-					if($cUserFarm->count() > 1) {
-						$h .= '<fieldset>';
-							$h .= '<legend>'.s("Affecté à").'</legend>';
-							$h .= $form->select('farmer', $cUserFarm->toArray(fn($eUserFarm) => [$eUserFarm['id'], $eUserFarm['firstName'].' '.$eUserFarm['lastName']], keys: TRUE), $search->get('farmer'));
-						$h .= '</fieldset>';
-					}
-
-					if($cAction->notEmpty()) {
-						$h .= '<fieldset>';
-							$h .= '<legend>'.s("Intervention").'</legend>';
-							$h .= $form->select('action', $cAction, $search->get('action'));
-						$h .= '</fieldset>';
-					}
-
-					$h .= '<fieldset>';
-						$h .= '<legend>'.s("Espèce").'</legend>';
-						$h .= $form->dynamicField(new \plant\Plant([
-							'farm' => $eFarm
-						]), 'id', function($d) use($search) {
-							$d->name = 'plant';
-							$d->autocompleteDefault = $search->get('plant');
-						});
-					$h .= '</fieldset>';
-
-					if($cZone->notEmpty()) {
-						$h .= '<fieldset>';
-							$h .= '<legend>'.s("Emplacement").'</legend>';
-							$h .= new \map\ZoneUi()->getZonePlotWidget($form, $cZone, $search->get('plot') ?? new \map\Plot());
-						$h .= '</fieldset>';
-					}
-
-				$h .= '<div class="util-search-submit">';
-					$h .= $form->submit(s("Chercher"));
-					$h .= '<a href="'.LIME_REQUEST_PATH.'?search" class="btn">'.\Asset::icon('x-lg').'</a>';
-				$h .= '</div>';
-
-			$h .= $form->close();
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function getNewTask(string $source, string $status, \farm\Farm $eFarm, array $seasonsWithSeries, \Collection $cCategory, ?string $week = NULL, ?string $date = NULL) {
-
-		$post = [
-			'farm' => $eFarm['id'],
-		];
-
-		switch($status) {
-			case 'todo' :
-				$background = ($source === 'weekly') ? 'bg-todo' : '';
-				$post['plannedWeek'] = $week;
-				$post['plannedDate'] = $date;
-				$post['status'] = Task::TODO;
-				break;
-			case 'done' :
-				$background = ($source === 'weekly') ? 'bg-done' : '';
-				$post['doneWeek'] = $week;
-				$post['doneDate'] = $date;
-				$post['status'] = Task::DONE;
-				break;
-		}
-
-		$button = ($source === 'weekly') ? 'btn-transparent' : 'btn-secondary';
-		$position = ($source === 'weekly') ? 'bottom-start' : 'bottom-end';
-
-		$h = '<div>';
-			$h .= '<a class="dropdown-toggle btn '.$button.'" data-dropdown="'.$position.'">';
-				$h .= \Asset::icon('plus-circle');
-				if($source === 'weekly') {
-					$h .= ' '.s("Nouvelle intervention");
-				}
-			$h .= '</a>';
-			$h .= '<div class="dropdown-list '.$background.'">';
-
-			if($source === 'daily') {
-				$h .= '<div class="dropdown-title">';
-					$h .= ($status === 'todo') ? s("Planifier une intervention") : s("Nouvelle intervention");
-				$h .= '</div>';
-			}
-
-			if($seasonsWithSeries) {
-
-				$h .= '<div class="dropdown-title">';
-					$h .= s("Dans une série");
-				$h .= '</div>';
-
-				foreach($seasonsWithSeries as $season) {
-
-					$postSeason = $post;
-
-					$h .= '<a href="/series/task:createFromSeries?season='.$season.'&'.http_build_query($postSeason).'" class="dropdown-item">';
-						$h .= '&nbsp;&nbsp;'.\Asset::icon('chevron-right').'&nbsp;&nbsp;'.s("Saison {value}", $season);
-					$h .= '</a>';
-
-				}
-
-				$h .= '<div class="dropdown-title">';
-					$h .= s("Intervention hors série");
-				$h .= '</div>';
-
-			}
-
-			foreach($cCategory as $eCategory) {
-
-				$h .= '<a href="/series/task:createFromScratch?category='.$eCategory['id'].'&'.http_build_query($post).'" class="dropdown-item">';
-					$h .= '&nbsp;&nbsp;'.\Asset::icon('chevron-right').'&nbsp;&nbsp;'.encode($eCategory['name']);
-				$h .= '</a>';
-
-			}
-
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
-	}
-
-	protected function getNewHarvest(\farm\Farm $eFarm, string $week, array $seasonsWithSeries, \farm\Action $eActionHarvest) {
-
-		$label = \Asset::icon('basket2-fill').' '.s("Nouvelle récolte");
-
-		$post = [
-			'farm' => $eFarm['id'],
-			'status' => Task::DONE,
-			'action' => $eActionHarvest['id'],
-			'doneWeek' => $week
-		];
-
-		$categoryId = $eActionHarvest['categories'][0];
-
-		if($seasonsWithSeries === []) {
-
-			$h = '<a href="/series/task:create?category='.$categoryId.'&'.http_build_query($post).'" class="btn btn-transparent">'.$label.'</a>';
-
-		} else {
-
-			$h = '<a class="dropdown-toggle btn btn-transparent" data-dropdown="bottom-start">'.$label.'</a>';
-			$h .= '<div class="dropdown-list bg-harvest">';
-
-				if(count($seasonsWithSeries) === 1) {
-
-					$season = first($seasonsWithSeries);
-
-					$h .= '<a href="/series/task:createFromSeries?season='.$season.'&'.http_build_query($post).'" class="dropdown-item">';
-						$h .= s("Dans une série");
-					$h .= '</a>';
-
-				} else {
-
-					$h .= '<div class="dropdown-title">';
-						$h .= s("Dans une série");
-					$h .= '</div>';
-
-					foreach($seasonsWithSeries as $season) {
-
-						$h .= '<a href="/series/task:createFromSeries?season='.$season.'&'.http_build_query($post).'" class="dropdown-item">';
-							$h .= '&nbsp;&nbsp;'.\Asset::icon('chevron-right').'&nbsp;&nbsp;'.s("Saison {value}", $season);
-						$h .= '</a>';
-
-					}
-
-					$h .= '<div class="dropdown-title">';
-						$h .= s("Récolte hors série");
-					$h .= '</div>';
-
-				}
-
-				$h .= '<a href="/series/task:createFromScratch?category='.$categoryId.'&'.http_build_query($post).'" class="dropdown-item">';
-					$h .= s("Choisir une plante");
-				$h .= '</a>';
-
-			$h .= '</div>';
-
-		}
-
-		return $h;
-
-	}
-
-	protected function getPlanningTasks(\util\FormUi $form, \farm\Farm $eFarm, \Collection $cTask, bool $first, bool $last, ?string $date, string $week, bool $displayTime = FALSE): string {
-
-		\Asset::css('sequence', 'flow.css');
-
-		$eAction = $cTask->first()['action'];
-
-		$users = array_unique($cTask->reduce(fn($eTask, $v) => array_merge($v, array_keys($eTask['times'])), []));
-
-		$h = '<div class="tasks-planning-items '.($first ? 'tasks-planning-items-first' : '').' '.($last ? 'tasks-planning-items-last' : '').'" data-filter-action="'.$eAction['id'].'"  data-filter-user="'.implode(' ', $users).'">';
-
-			$h .= '<div class="tasks-planning-action">';
-
-				$h .= '<label class="tasks-planning-select">';
-					$h .= $form->inputCheckbox('batchAction[]', attributes: ['onclick' => 'Task.checkPlanningAction(this)']);
-				$h .= '</label>';
-				$h .= '<a href="'.\farm\FarmUi::urlPlanningAction($eFarm, $week, $eAction).'" class="tasks-planning-action-name">';
-					$h .= encode($eAction['name']);
-				$h .= '</a>';
-
-			$h .= '</div>';
-
-			$h .= $this->getPlantPlanningTask($form, $eFarm, $cTask, $date, $week, $displayTime);
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function getPlantPlanningTask(\util\FormUi $form, \farm\Farm $eFarm, \Collection $cTask, ?string $date, string $week, bool $displayTime = FALSE): string {
-
-		$h = '';
-
-		$ePlantCurrent = new \plant\Plant();
-
-		foreach($cTask as $eTask) {
-
-			$ePlant = $eTask['plant'];
-
-			if(
-				$ePlant->notEmpty() and (
-					$ePlantCurrent->empty() or
-					$ePlantCurrent['id'] !== $ePlant['id']
-				)
-			) {
-
-				$ePlantCurrent = $ePlant;
-
-				$h .= '<div class="tasks-planning-plant">';
-
-					$h .= '<label class="tasks-planning-plant-image">';
-						$h .= \plant\PlantUi::getVignette($ePlant, '1.75rem');
-						$h .= $form->inputCheckbox('batchPlant[]', attributes: ['onclick' => 'Task.checkPlanningPlant(this, '.$ePlant['id'].')']);
-					$h .= '</label>';
-					$h .= '<div class="tasks-planning-plant-name">';
-						$h .= encode($ePlant['name']);
-					$h .= '</div>';
-
-				$h .= '</div>';
-
-			}
-
-			$h .= $this->getPlanningTask($form, $eFarm, $eTask, $date, $week, $displayTime);
-
-		}
-
-		return $h;
-
-	}
-
-	protected function getPlanningTask(\util\FormUi $form, \farm\Farm $eFarm, Task $eTask, ?string $date, string $week, bool $displayTime = FALSE): string {
-
-		$eTask->expects(['times']);
-
-		$users = array_keys($eTask['times']);
-		$series = $this->getTaskPlace($eTask);
-		$content = $this->getTaskContent($eFarm, $eTask);
-
-		$filters = [
-			'data-filter-action' => $eTask['action']['id'],
-			'data-filter-plant' => ($eTask['plant']->empty() ? '' : $eTask['plant']['id']),
-			'data-filter-harvest' => $this->getBatchHarvestString($eTask),
-			'data-filter-user' => implode(' ', $users)
-		];
-
-		$withContent = (
-			$content !== '' or
-			$series === ''
-		);
-
-		$h = '<div class="tasks-planning-item '.($series ? 'tasks-planning-item-with-series' : '').' '.($withContent ? 'tasks-planning-item-with-content' : '').' '.($eTask->isDone() ? 'tasks-planning-item-done' : 'tasks-planning-item-todo').' batch-checkbox" id="task-item-'.$eTask['id'].'" '.attrs($filters).'>';
-
-			$h .= '<label class="tasks-planning-select">';
-				$h .= $this->getBatchCheckbox($form, $eTask);
-			$h .= '</label>';
-
-			$h .= '<div class="tasks-planning-item-base">';
-
-				if($series) {
-					$h .= '<a href="'.TaskUi::url($eTask).'" class="tasks-planning-item-top">'.$series.'</a>';
-				}
-
-				if($withContent) {
-					$h .= '<a href="'.self::url($eTask).'" class="tasks-planning-item-content">'.$content.'</a>';
-				}
-
-				$h .= '<div class="tasks-planning-item-actions">';
-
-					if($eFarm->hasFeatureTime()) {
-
-						if(
-							$displayTime and
-							$this->cUserFarm !== NULL
-						) {
-
-							$hasTime = FALSE;
-
-							if($eTask['time'] > 0) {
-
-								foreach($eTask['times'] as $user => $time) {
-
-									if($this->cUserFarm->offsetExists($user)) {
-
-										$eUser = $this->cUserFarm[$user];
-
-										$url = '/series/timesheet?ids[]='.$eTask['id'].'&user='.$user;
-										if($date !== NULL) {
-											$url .= '&date='.$date;
-										}
-
-										$h .= '<a href="'.$url.'" class="tasks-planning-item-user" title="'.$eUser->getName().'">';
-											$h .= \user\UserUi::getVignette($eUser, '1.25rem').' '.self::convertTimeText($time);
-										$h .= '</a>';
-
-										$hasTime = TRUE;
-
-									}
-
-								}
-
-							}
-
-							if($hasTime === FALSE) {
-								$h .= $this->getTime($eTask, 0);
-							}
-
-						} else {
-
-							if($this->period === 'week' and $eTask['farm']->hasFeatureTime()) {
-								$weekTime = round(array_sum($eTask['times']), 2);
-								$h .= $this->getTime($eTask, $weekTime);
-							}
-
-						}
-
-					}
-
-				$h .= '</div>';
-
-			$h .= '</div>';
-
-			if($eTask->isDone() === FALSE) {
-				$h .= $this->getDone($eTask, $week, ['post-week' => $week]);
-			}
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
-	protected function getBatchHarvestString(Task $eTask): string {
+	public function getBatchHarvestString(Task $eTask): string {
 
 		$eTask->expects(['plant', 'variety', 'harvestSize', 'harvestUnit']);
 
@@ -1428,7 +225,7 @@ class TaskUi {
 
 	}
 
-	protected function getBatchCheckbox(\util\FormUi $form, Task $eTask): string {
+	public function getBatchCheckbox(\util\FormUi $form, Task $eTask): string {
 
 		$batch = [];
 
@@ -1454,7 +251,13 @@ class TaskUi {
 			}
 		}
 
+		$checked = (
+			self::$export and
+			$eTask->isDone()
+		);
+
 		return $form->inputCheckbox('batch[]', $eTask['id'], [
+			'checked' => $checked,
 			'data-week' => $eTask['doneWeek'] ?? $eTask['plannedWeek'],
 			'data-batch' => implode(' ', $batch),
 			'data-series' => $eTask['series']->empty() ? '' : $eTask['series']['id'],
@@ -1463,77 +266,27 @@ class TaskUi {
 
 	}
 
-	public function getTaskContent(\farm\Farm $eFarm, Task $eTask): string {
-
-		$h = $this->getTaskDescription(
-			$eTask,
-			showPlant: ($eTask['category']['fqn'] !== CATEGORIE_CULTURE),
-			showAction: FALSE,
-			showTools: TRUE
-		);
-
-		$more = '';
-
-		if($eFarm->hasFeatureTime() and $eTask['timeExpected'] > 0) {
-			$more .= '<span>'.s("Travail estimé à {value}", self::convertTime($eTask['timeExpected'])).'</span>';
-		}
-
-		if($this->period === 'week') {
-
-			if($eTask['delayed']) {
-				$more .= '<span>'.\Asset::icon('exclamation-circle').' '.s("Retardé de semaine {value}", week_number($eTask['plannedWeek'])).'</span>';
-			} else if($eTask['status'] === Task::TODO and $eTask['plannedDate']) {
-				$more .= '<span>'.\Asset::icon('watch').' '.\util\DateUi::getDayName((int)date('N', strtotime($eTask['plannedDate'])))  .'</span>';
-			}
-
-		}
-
-		if(
-			$eTask['status'] === Task::TODO and
-			$eTask['plannedUsers'] and
-			$this->cUserFarm !== NULL
-		) {
-
-			$selectedUsers = [];
-			foreach($eTask['plannedUsers'] as $user) {
-
-				if($this->cUserFarm->offsetExists($user)) {
-
-					$eUser = $this->cUserFarm[$user];
-					$selectedUsers[] = ''.\user\UserUi::getVignette($eUser, '1rem');
-
-				}
-			}
-
-			if($selectedUsers) {
-				$more .= '<span>'.\Asset::icon('person-fill').' '.implode(' ', $selectedUsers)   .'</span>';
-			}
-
-		}
-
-		if($more) {
-			$h .= '<div class="tasks-planning-item-more">';
-				$h .= $more;
-			$h .= '</div>';
-		}
-
-		$h .= $this->getComments($eTask);
-
-		return $h;
-
-	}
-
 	public function getTaskPlace(Task $eTask): string {
 
 		$place = '';
 
+		if(
+			self::$export and
+			$eTask['plant']->notEmpty()
+		) {
+			$place .= \plant\PlantUi::getVignette($eTask['plant'], '1.5rem');
+			$place .= '<span class="tasks-planning-item-plant">'.encode($eTask['plant']['name']).'</span>';
+		}
+
 		if($eTask['series']->empty() === FALSE) {
 			$name = '<span class="tasks-planning-item-series-name">'.SeriesUi::name($eTask['series']).'</span>';
-			$place .= s("Série {value}", $name);
-			$place .= \sequence\CropUi::start($eTask['cultivation'], \farm\FarmSetting::$mainActions);
-			if($eTask['series']['cccPlace']->notEmpty()) {
-				$place .= ' - <div class="tasks-planning-item-series-places">'.new CultivationUi()->displayPlaces($eTask['series']['use'], $eTask['series']['cccPlace']).'</div>';
-			}
+			$place .= '<span>';
+				$place .= s("Série {value}", $name);
+				$place .= \sequence\CropUi::start($eTask['cultivation'], \farm\FarmSetting::$mainActions);
+				if($eTask['series']['cccPlace']->notEmpty()) {
+					$place .= ' - <div class="tasks-planning-item-series-places">'.new CultivationUi()->displayPlaces($eTask['series']['use'], $eTask['series']['cccPlace']).'</div>';
+				}
+			$place .= '</span>';
 		} else if($eTask['cccPlace']->notEmpty()) {
 			$place .= '<div class="tasks-planning-item-series-places">'.new CultivationUi()->displayPlaces(Series::BED, $eTask['cccPlace']).'</div>';
 		} else {
@@ -1544,51 +297,66 @@ class TaskUi {
 
 	}
 
-	public function getTaskDescription(Task $eTask, bool $showPlant = TRUE, bool $showAction = TRUE, bool $showTools = FALSE): string {
+	public function getTaskContent(Task $eTask, bool $showPlant = TRUE, bool $showAction = TRUE, bool $showTools = FALSE): string {
 
 		\Asset::css('farm', 'action.css');
 
-		$description = '';
+		$content = '';
 
 		if($showAction) {
 
-			$description .= '<div class="tasks-planning-item-label">';
+			$content .= '<div class="tasks-planning-item-label">';
 				if($eTask->isDone() and $eTask['action']['fqn'] === ACTION_RECOLTE) {
 					if($showPlant) {
-						$description .= '<span class="action-name">'.encode($eTask['plant']['name']).'</span> ';
+						$content .= '<span class="action-name">'.encode($eTask['plant']['name']).'</span> ';
 					}
-					$description .= $this->getMore($eTask);
+					$content .= $this->getMore($eTask);
 				} else {
-					$description .= $this->getAction($eTask);
+					$content .= $this->getAction($eTask);
 				}
-			$description .= '</div>';
+			$content .= '</div>';
 
 		} else {
 
 			if($eTask['plant']->notEmpty()) {
 				if($showPlant) {
-					$description .= '<span class="action-name">'.encode($eTask['plant']['name']).'</span> ';
+					$content .= '<span class="action-name">'.encode($eTask['plant']['name']).'</span> ';
 				}
 			}
 
-			$description .= $this->getMore($eTask);
+			$content .= $this->getMore($eTask);
 
 			if($showTools) {
 
 				foreach($eTask['cTool?']() as $eTool) {
-					$description .= ' <span class="flow-tool-name">'.\farm\ToolUi::getVignette($eTool, '2rem', '1.5rem').' '.encode($eTool['name']).'</span> ';
+					$content .= ' <span class="flow-tool-name">'.\farm\ToolUi::getVignette($eTool, '2rem', '1.5rem').' '.encode($eTool['name']).'</span> ';
 				}
 
 			}
 
 		}
 
-		$description .= $this->getDescription($eTask);
+		$h = '';
+
+		if($content) {
+			$h .= '<div class="tasks-planning-item-content">';
+				$h .= $content;
+			$h .= '</div>';
+		}
+
+		return $h;
+	}
+
+	public function getTaskDescription(Task $eTask): string {
+
+		\Asset::css('farm', 'action.css');
 
 		$h = '';
 
+		$description = $this->getDescription($eTask);
+
 		if($description) {
-			$h = '<div class="tasks-planning-item-description">';
+			$h .= '<div class="tasks-planning-item-description">';
 				$h .= $description;
 			$h .= '</div>';
 		}
@@ -1626,38 +394,6 @@ class TaskUi {
 
 		$h = $this->getTaskComplement($eTask);
 		$h .= new \sequence\FlowUi()->getMore($eTask);
-
-		return $h;
-
-	}
-
-	protected function getYearTask(Task $eTask): string {
-
-		$eTask->expects(['times']);
-
-		$users = array_keys($eTask['times']);
-
-		$h = '<a href="'.self::url($eTask).'" class="tasks-year-item" data-filter-action="'.$eTask['action']['id'].'" data-filter-user="'.implode(' ', $users).'" id="task-item-'.$eTask['id'].'">';
-
-				$h .= '<div class="tasks-planning-item-series">';
-
-					if($eTask['series']->empty() === FALSE) {
-						$h .= s("Série {value}", encode($eTask['series']['name']));
-					} else if($eTask['cccPlace']->notEmpty()) {
-						$h .= new CultivationUi()->displayPlaces(Series::BED, $eTask['cccPlace']);
-					}
-
-				$h .= '</div>';
-
-				$h .= '<div class="tasks-planning-item-description">';
-
-					$h .= '<div class="tasks-planning-item-label">';
-						$h .= $this->getAction($eTask, \farm\FarmSetting::$mainActions);
-					$h .= '</div>';
-
-				$h .= '</div>';
-
-		$h .= '</a>';
 
 		return $h;
 
@@ -1806,7 +542,7 @@ class TaskUi {
 		return $h;
 	}
 
-	protected function getDone(Task $eTask, string $week, array $onUpdate = []): string {
+	public function getDone(Task $eTask, string $week, array $onUpdate = []): string {
 
 		\Asset::css('sequence', 'flow.css');
 
@@ -1891,7 +627,7 @@ class TaskUi {
 		$h = '';
 
 		if($eTask['cComment']->notEmpty()) {
-			$h .= '<div class="flow-timeline-comments" id="task-'.$eTask['id'].'-comments">';
+			$h .= '<div class="flow-timeline-comments util-print-hide" id="task-'.$eTask['id'].'-comments">';
 				$h .= new CommentUi()->getList($eTask['cComment']);
 			$h .= '</div>';
 		}
@@ -1974,7 +710,7 @@ class TaskUi {
 
 	}
 
-	public function getTime(Task $eTask, ?float $time = NULL): string {
+	public static function getTime(Task $eTask, ?float $time = NULL): string {
 
 		$time ??= $eTask['time'];
 
@@ -1982,19 +718,19 @@ class TaskUi {
 			$h .= '<div class="tasks-planning-item-time-icon">';
 				$h .= \Asset::icon('clock');
 			$h .= '</div>';
-				$h .= $this->getTimeValue($time);
+				$h .= self::getTimeValue($time);
 		$h .= '</a>';
 
 		return $h;
 
 	}
 
-	public function getTimeValue(?float $time): string {
+	public static function getTimeValue(?float $time): string {
 
 		$h = '<div class="tasks-planning-item-time-value '.($time > 0 ? 'text-end' : 'text-center').'">';
 
 		if($time > 0) {
-			$h .= $this->convertTime($time);
+			$h .= self::convertTime($time);
 		} else {
 			$h .= '&middot; &middot; &middot;';
 		}
@@ -2475,343 +1211,30 @@ class TaskUi {
 
 	}
 
-	public function displayByActionTitle(\farm\Farm $eFarm, string $week, \farm\Action $eAction): string {
-		return $this->getWeekCalendar($eFarm, $week, fn($week) => \farm\FarmUi::urlPlanningAction($eFarm, $week, $eAction));
-	}
+	public function displayByAction(\farm\Farm $eFarm, string $week, \farm\Action $eAction, \Collection $cTask): \Panel {
 
-	public function displayByAction(\farm\Farm $eFarm, string $week, \farm\Action $eAction, \Collection $cTask): string {
-
-		$hasPlant = in_array($eAction['fqn'], [ACTION_SEMIS_DIRECT, ACTION_SEMIS_PEPINIERE, ACTION_PLANTATION]);
 		$hasTools = $cTask->contains(fn($eTask) => $eTask['tools']);
-
-		$h = '<h2>'.encode($eAction['name']).'</h2>';
-
-		if($cTask->empty()) {
-			$h .= '<div class="util-empty">'.s("Aucune intervention de cette nature à afficher cette semaine.").'</div>';
-		} else if($hasPlant or $hasTools) {
-
-				$h .= $this->getListByAction($eFarm, $week, $cTask, $hasTools);
-
-				if($hasPlant) {
-					$h .= '<br/><h3>'.s("Répartition par variété").'</h3>';
-					$h .= $this->getListByPlant($eAction, $cTask);
-				}
-
-				if($hasTools) {
-					$h .= '<br/><h3>'.s("Répartition par matériel").'</h3>';
-					$h .= $this->getListByTool($eAction, $cTask);
-				}
-
-			$h .= '</div>';
-
-		} else {
-			$h .= $this->getListByAction($eFarm, $week, $cTask, FALSE);
-		}
-
-		return $h;
-
-	}
-
-	protected function getListByAction(\farm\Farm $eFarm, string $week, \Collection $cTask, bool $hasTools): string {
-
-		$h = '<table class="tr-even tasks-week-list stick-xs">';
-			$h .= '<thead>';
-				$h .= '<tr>';
-					$h .= '<th class="tasks-week-list-name">';
-						$h .= s("Tâche");
-					$h .= '</th>';
-					if($hasTools) {
-						$h .= '<th class="tasks-week-list-tools">';
-							$h .= s("Matériel");
-						$h .= '</th>';
-					}
-					$h .= '<th></th>';
-					if($eFarm->hasFeatureTime()) {
-						$h .= '<th>';
-							$h .= '<span class="hide-xs-down">'.s("Temps de travail").'</span>';
-						$h .= '</th>';
-					}
-					$h .= '<th></th>';
-				$h .= '</tr>';
-			$h .= '</thead>';
-
-			$h .= '<tbody>';
-
-			foreach($cTask as $eTask) {
-
-					$h .= '<tr>';
-						$h .= '<td class="tasks-week-list-name">';
-							$h .= '<a href="'.TaskUi::url($eTask).'">';
-								$h .= $this->getTaskPlace($eTask);
-								$h .= $this->getTaskDescription($eTask, showAction: FALSE);
-								$h .= $this->getComments($eTask);
-							$h .= '</a>';
-						$h .= '</td>';
-
-						if($hasTools) {
-
-							$h .= '<td class="tasks-week-list-tools">';
-
-								foreach($eTask['cTool?']() as $eTool) {
-
-									$h .= '<div>';
-										$h .= \farm\ToolUi::link($eTool);
-									$h .= '</div>';
-
-								}
-
-							$h .= '</td>';
-
-						}
-						$h .= '<td class="text-center">';
-							$h .= $this->getDone($eTask, $week);
-						$h .= '</td>';
-						if($eFarm->hasFeatureTime()) {
-							$h .= '<td>';
-								$h .= $this->getTime($eTask);
-							$h .= '</td>';
-						}
-						$h .= '<td class="text-end">';
-							$h .= $this->getUpdate($eTask, 'btn-outline-secondary');
-						$h .= '</td>';
-					$h .= '</tr>';
-
-				}
-
-			$h .= '</tbody>';
-
-		$h .= '</table>';
-
-		return $h;
-
-	}
-
-	protected function getListByPlant(\farm\Action $eAction, \Collection $cTask): string {
-
-		$validTasks = $cTask->find(fn($eTask) => $eTask['series']->notEmpty())->count();
 
 		$h = '';
 
-		if($validTasks !== $cTask->count()) {
+		if($cTask->empty()) {
+			$h .= '<div class="util-empty">'.s("Aucune intervention de cette nature à afficher cette semaine.").'</div>';
+		} else {
 
-			$h .= '<div class="util-info">';
-				$h .= s("Le détail par espèce n'est affiché que pour les interventions créées au sein de séries.");
-			$h .= '</div>';
-
-		}
-
-		if($validTasks === 0) {
-			return $h;
-		}
-
-		$targeted = FALSE;
-
-		$ccVariety = new \Collection();
-		$ccVariety->setDepth(2);
-
-		foreach($cTask as $eTask) {
-
-			$eSeries = $eTask['series'];
-
-			if(
-				$eSeries->empty() or
-				$eTask['cCultivation']->empty()
-			) {
-				continue;
-			}
-
-			foreach($eTask['cCultivation'] as $eCultivation) {
-
-				$ePlant = $eCultivation['plant'];
-
-				$ccVariety[$ePlant['id']] ??= new \Collection();
-
-				foreach($eCultivation['cSlice'] as $eSlice) {
-
-					$eVariety = $eSlice['variety'];
-
-					if($eVariety->empty()) {
-						$eVariety['id'] = NULL;
-						$id = '';
-					} else {
-						$id = $eVariety['id'];
-					}
-
-					$ccVariety[$ePlant['id']][$id] ??= $eVariety->merge([
-						'plant' => $ePlant,
-						'youngPlants' => 0,
-						'seeds' => 0,
-						'area' => 0,
-						'targeted' => FALSE,
-						'tools' => []
-					]);
-
-					if($eSlice['youngPlants'] !== NULL) {
-
-						$ccVariety[$ePlant['id']][$id]['youngPlants'] += $eSlice['youngPlants'];
-
-						foreach($eTask['cTool?']()->find(fn($eTool) => $eTool['routineName'] === 'tray') as $eTool) {
-
-							$ccVariety[$ePlant['id']][$id]['tools'][$eTool['id']] ??= [
-								'youngPlants' => 0,
-								'tool' => $eTool
-							];
-
-							$ccVariety[$ePlant['id']][$id]['tools'][$eTool['id']]['youngPlants'] += $eSlice['youngPlants'];
-
-						}
-
-					}
-
-					if($eSlice['seeds'] !== NULL) {
-						$ccVariety[$ePlant['id']][$id]['seeds'] += $eSlice['seeds'];
-					}
-
-					if($eSlice['area'] !== NULL) {
-						$ccVariety[$ePlant['id']][$id]['area'] += $eSlice['area'];
-					}
-
-					if($eSeries->isTargeted()) {
-						$ccVariety[$ePlant['id']][$id]['targeted'] = TRUE;
-						$targeted = TRUE;
-					}
-
-				}
-
+			if($hasTools) {
+				$h .= '<h3>'.s("Répartition par matériel").'</h3>';
+				$h .= $this->getListByTool($eAction, $cTask);
+			} else {
+				$h .= '<div class="util-empty">'.s("Vous n'engagez pas de matériel pour cette intervention cette semaine.").'</div>';
 			}
 
 		}
 
-		$ccVariety->sort(function(\Collection $c1, \Collection $c2) {
-			return \L::getCollator()->compare(
-				$c1->empty() ? '' : $c1->first()['plant']['name'],
-				$c2->empty() ? '' : $c2->first()['plant']['name']
-			);
-		});
-
-		$h = '<div class="stick-xs">';
-
-			$columns = 2;
-
-			$h .= '<table class="tbody-even tasks-week-plant-list">';
-				$h .= '<thead>';
-					$h .= '<tr>';
-						$h .= '<th></th>';
-						$h .= '<th class="text-end hide-xs-down">';
-							$h .= s("Surface");
-						$h .= '</th>';
-						if($eAction['fqn'] !== ACTION_SEMIS_DIRECT) {
-							$columns++;
-							$h .= '<th class="text-end">';
-								$h .= s("Plants");
-							$h .= '</th>';
-						}
-						if($eAction['fqn'] !== ACTION_PLANTATION) {
-							$columns++;
-							$h .= '<th class="text-end">';
-								$h .= s("Semences");
-							$h .= '</th>';
-						}
-						if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE) {
-							$columns++;
-							$h .= '<th>';
-								$h .= s("Plateaux de semis");
-							$h .= '</th>';
-						}
-					$h .= '</tr>';
-				$h .= '</thead>';
-
-			foreach($ccVariety as $cVariety) {
-
-				$eVariety = $cVariety->first();
-
-				$h .= '<tbody>';
-
-					$h .= '<tr>';
-						$h .= '<th colspan="'.$columns.'">';
-							$h .= \plant\PlantUi::getVignette($eVariety['plant'], '2rem').'<span style="font-weight: bold; margin-left: 0.5rem">'.encode($eVariety['plant']['name']).'</span>';
-						$h .= '</th>';
-					$h .= '</tr>';
-
-					foreach($cVariety as $eVariety) {
-
-						$h .= '<tr>';
-							$h .= '<td>';
-								$h .= ($eVariety['id'] === NULL) ? '<i>'.s("Variété non renseignée").'</i>' : encode($eVariety['name']);
-							$h .= '</td>';
-							$h .= '<td class="text-end hide-xs-down '.($eVariety['targeted'] ? 'color-warning' : '').'">';
-								if($eVariety['area'] > 0) {
-									$h .= s("{value} m²", $eVariety['area']).($eVariety['targeted'] ? '&nbsp;*' : '');
-								} else {
-									$h .= '?';
-								}
-							$h .= '</td>';
-							if($eAction['fqn'] !== ACTION_SEMIS_DIRECT) {
-								$h .= '<td class="text-end '.($eVariety['targeted'] ? 'color-warning' : '').'">';
-									if($eVariety['youngPlants'] > 0) {
-										$h .= $eVariety['youngPlants'].($eVariety['targeted'] ? '&nbsp;*' : '');
-									} else {
-										$h .= '?';
-									}
-
-									$h .= '<div>';
-										if($eVariety->exists() and $eVariety['seeds'] > 0 and $eVariety['numberPlantKilogram'] !== NULL) {
-											$h .= '<small class="color-muted">'.\plant\VarietyUi::getPlantsWeight($eVariety, $eVariety['seeds']).'</small>';
-										}
-									$h .= '</div>';
-								$h .= '</td>';
-							}
-							if($eAction['fqn'] !== ACTION_PLANTATION) {
-
-								$h .= '<td class="text-end '.($eVariety['targeted'] ? 'color-warning' : '').'">';
-
-									if($eVariety['seeds'] > 0) {
-										$h .= $eVariety['seeds'].($eVariety['targeted'] ? '&nbsp;*' : '');
-									} else {
-										$h .= '?';
-									}
-
-									$h .= '<div>';
-										if($eVariety->exists() and $eVariety['seeds'] > 0 and $eVariety['weightSeed1000'] !== NULL) {
-											$h .= '<small class="color-muted">'.\plant\VarietyUi::getSeedsWeight1000($eVariety, $eVariety['seeds']).'</small>';
-										}
-									$h .= '</div>';
-
-								$h .= '</td>';
-							}
-							if($eAction['fqn'] === ACTION_SEMIS_PEPINIERE) {
-
-								$h .= '<td>';
-
-									foreach($eVariety['tools'] as ['youngPlants' => $youngPlants, 'tool' => $eTool]) {
-
-										$h .= '<div>';
-											$h .= '<b>'.(ceil($youngPlants / $eTool['routineValue']['value'] * 10) / 10).'</b> ';
-											$h .= '<small class="color-muted tasks-week-plant-tray">'.encode($eTool['name']).'</small>';
-										$h .= '</div>';
-
-									}
-
-								$h .= '</td>';
-
-							}
-						$h .= '</tr>';
-
-					}
-
-				$h .= '</tbody>';
-
-			}
-
-			$h .= '</table>';
-
-		$h .= '</div>';
-
-		if($targeted) {
-			$h .= new CultivationUi()->getWarningTargeted();
-		}
-
-		return $h;
+		return new \Panel(
+			id: 'panel-task-tools',
+			title: encode($eAction['name']),
+			body: $h
+		);
 
 	}
 

@@ -20,6 +20,7 @@ new \farm\ActionPage()
 
 new \farm\ActionPage()
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ReloadAction('farm', 'Action::updated'.ucfirst($data->e['status'])), validate: ['canUpdate', 'isFree'])
+	->doUpdateProperties('doUpdateFavorite', ['favorite'], fn($data) => throw new ReloadAction(), validate: ['canUpdate'])
 	->doDelete(fn($data) => throw new ViewAction($data));
 
 new \farm\ActionPage()
@@ -39,9 +40,7 @@ new \farm\ActionPage()
 
 	})
 	->update(function($data) {
-
 		throw new ViewAction($data);
-
 	})
 	->doUpdate(fn($data) => throw new ViewAction($data));
 
