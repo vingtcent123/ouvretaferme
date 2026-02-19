@@ -8,34 +8,138 @@ Class VatUi {
 		\Asset::js('overview', 'vat.js');
 	}
 
-	public function getVatTabs(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, ?string $selectedTab = NULL): string {
+	public function list(\farm\Farm $eFarm, array $allPeriods, \Collection $cDeclaration): string {
 
-		$baseUrl = \farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva';
+		$h = '';
+
+		if(in_array($eFarm->getConf('vatFrequency'), [\farm\Configuration::MONTHLY, \farm\Configuration::QUARTERLY])) {
+
+			$h .= '<h2 class="mt-2">'.s("Les déclarations de TVA").'</h2>';
+
+		} else {
+
+			$h .= '<h2 class="mt-2">'.s("La déclaration de TVA").'</h2>';
+
+		}
+
+		$h .= '<div class="vat-period-container mb-2">';
+
+			foreach($allPeriods as $period) {
+
+				if($cDeclaration->offsetExists($period['from'])) {
+					$eDeclaration = $cDeclaration->offsetGet($period['from']);
+				} else {
+					$eDeclaration = new VatDeclaration();
+				}
+
+				if($period['from'] > date('Y-m-d')) {
+					$isInFuture = TRUE;
+				} else {
+					$isInFuture = FALSE;
+				}
+
+				$h .= '<div class="vat-period '.($isInFuture ? 'vat-period-future' : '').'">';
+
+					$h .= '<div class="vat-period-title">';
+						$h .= '<h3>'.$this->getPeriod($eFarm->getConf('vatFrequency'), $period).'</h3>';
+						if($isInFuture === FALSE) {
+							$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/declaration-de-tva?from='.$period['from'].'&tab=cerfa" class="btn btn-outline-primary">'.s("Consulter").'</a>';
+						}
+					$h .= '</div>';
+					$h .= '<div class="vat-period-details">';
+						$h .= s("Statut");
+						if($isInFuture) {
+							$h .= '<span>'.\Asset::icon('dash').'</span>';
+						} else if($eDeclaration->empty()) {
+							$h .= '<span class="util-empty">'.s("Non renseignée").'</span>';
+						} else if($eDeclaration['accountedAt'] !== NULL) {
+							$h .= '<span class="vat-period-value">'.\Asset::icon('journal-text').' '.s("Comptabilisée").'</span>';
+						} else if($eDeclaration['declaredAt'] !== NULL) {
+							$h .= '<span class="vat-period-value" title="'.s("Enregistrée déclarée le {value}", \util\DateUi::numeric($eDeclaration['declaredAt'], \util\DateUi::DATE)).'">'.\Asset::icon('building-check').' '.s("Déclarée").'</span>';
+						} else if($eDeclaration['updatedAt'] !== NULL) {
+							$h .= '<span class="vat-period-value">'.\Asset::icon('floppy-fill').' '.s("Enregistrée").'</span>';
+						}
+					$h .= '</div>';
+					if($eDeclaration->exists() and $eDeclaration['declaredAt'] === NULL) {
+						$h .= '<div class="vat-period-details">';
+							$h .= s("Date limite de déclaration");
+							$h .= '<span '.($eDeclaration['limit'] < date('Y-m-d') ? 'class="color-warning"' : '').'>'.\util\DateUi::numeric($eDeclaration['limit']).'</span>';
+						$h .= '</div>';
+					}
+
+				$h .= '</div>';
+			}
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	private function getPeriod(string $vatFrequency, array $vatParameters): string {
+
+		switch($vatFrequency) {
+
+			case \farm\Configuration::MONTHLY:
+
+				return s("{month} {year}", [
+					'month' => ucfirst(\util\DateUi::getMonthName(mb_substr($vatParameters['from'], 5, 2))),
+					'year' => mb_substr($vatParameters['from'], 0, 4)
+				]);
+
+			case \farm\Configuration::ANNUALLY:
+			case \farm\Configuration::QUARTERLY:
+
+				if(mb_substr($vatParameters['from'], 0, 4) !== mb_substr($vatParameters['to'], 0, 4)) {
+
+					return s("{month1} {year1} à {month2} {year2}", [
+						'month1' => ucfirst(\util\DateUi::getMonthName(mb_substr($vatParameters['from'], 5, 2))),
+						'month2' => ucfirst(\util\DateUi::getMonthName(mb_substr($vatParameters['to'], 5, 2))),
+						'year1' => mb_substr($vatParameters['from'], 0, 4),
+						'year2' => mb_substr($vatParameters['to'], 0, 4),
+					]);
+
+				}
+
+				return s("{month1} à {month2} {year}", [
+					'month1' => ucfirst(\util\DateUi::getMonthName(mb_substr($vatParameters['from'], 5, 2))),
+					'month2' => ucfirst(\util\DateUi::getMonthName(mb_substr($vatParameters['to'], 5, 2))),
+					'year' => mb_substr($vatParameters['from'], 0, 4),
+				]);
+
+			default:
+				throw new \Exception('Unknown vatFrequency');
+
+		}
+	}
+
+	public function getVatTabs(\farm\Farm $eFarm, array $vatParameters, ?string $selectedTab = NULL): string {
+
+		$baseUrl = \farm\FarmUi::urlConnected($eFarm).'/declaration-de-tva?from='.$vatParameters['from'];
 
 		$h = '<div class="tabs-item">';
 
 			$h .= '<a class="tab-item'.($selectedTab === NULL ? ' selected' : '').'" data-tab="journal" href="'.$baseUrl.'">'.s("Général").'</a>';
-			$h .= '<a class="tab-item'.($selectedTab === 'journal-sell' ? ' selected' : '').'" data-tab="journal-sell" href="'.$baseUrl.'?tab=journal-sell">';
+			$h .= '<a class="tab-item'.($selectedTab === 'journal-sell' ? ' selected' : '').'" data-tab="journal-sell" href="'.$baseUrl.'&tab=journal-sell">';
 					$h .= '<div class="text-center">';
 						$h .= s("Écritures de vente");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("TVA collectée").')</span></small>';
 					$h .= '</div>';
 			$h .= '</a>';
-			$h .= '<a class="tab-item'.($selectedTab === 'journal-buy' ? ' selected' : '').'" data-tab="journal-buy" href="'.$baseUrl.'?tab=journal-buy">';
+			$h .= '<a class="tab-item'.($selectedTab === 'journal-buy' ? ' selected' : '').'" data-tab="journal-buy" href="'.$baseUrl.'&tab=journal-buy">';
 					$h .= '<div class="text-center">';
 						$h .= s("Écritures d'achat");
 						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("TVA déductible").')</span></small>';
 					$h .= '</div>';
 			$h .= '</a>';
-			$h .= '<a class="tab-item'.($selectedTab === 'check' ? ' selected' : '').'" data-tab="journal-check" href="'.$baseUrl.'?tab=check">'.s("Contrôle").'</a>';
+			$h .= '<a class="tab-item'.($selectedTab === 'check' ? ' selected' : '').'" data-tab="journal-check" href="'.$baseUrl.'&tab=check">'.s("Contrôle").'</a>';
 			if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 				$textCerfa = s("Formulaire CA12");
 			} else {
 				$textCerfa = s("Formulaire CA3");
 			}
-			$h .= '<a class="tab-item'.($selectedTab === 'cerfa' ? ' selected' : '').'" data-tab="cerfa" href="'.$baseUrl.'?tab=cerfa">'.$textCerfa.'</a>';
+			$h .= '<a class="tab-item'.($selectedTab === 'cerfa' ? ' selected' : '').'" data-tab="cerfa" href="'.$baseUrl.'&tab=cerfa">'.$textCerfa.'</a>';
 
-			$h .= '<a class="tab-item'.($selectedTab === 'history' ? ' selected' : '').'" data-tab="history" href="'.$baseUrl.'?tab=history">'.s("Historique").'</a>';
+			$h .= '<a class="tab-item'.($selectedTab === 'history' ? ' selected' : '').'" data-tab="history" href="'.$baseUrl.'&tab=history">'.s("Historique").'</a>';
 
 		$h .= '</div>';
 
@@ -76,7 +180,7 @@ Class VatUi {
 					$h .= '<dd>';
 					$h .= \util\DateUi::numeric($vatParameters['limit']).' ';
 					if($eFinancialYear->isCurrent()) {
-						$h .= \util\FormUi::asterisk();
+						$h .= '<sup class="font-xs">'.\Asset::icon('asterisk').'</sup>';
 					}
 					$h .= '</dd>';
 					$h .= '<dt>'.\farm\FarmUi::p('legalEmail')->label.'</dt>';
@@ -126,14 +230,14 @@ Class VatUi {
 						if(mb_substr($eFinancialYear['endDate'], -5) === '12-31') {
 							$h .= '<div>'.s(
 								"Votre déclaration CA12 doit être déposée au plus tard le deuxième jour ouvré suivant le 1<sup>er</sup> mai, soit, pour la déclaration de l'exercice se terminant le {endDate}, le <b>{date}</b>.",
-								['endDate' => \util\DateUi::numeric($vatParameters['to']), 'date' => \util\DateUi::numeric($vatParameters['limit']).' '.\util\FormUi::asterisk()]
+								['endDate' => \util\DateUi::numeric($vatParameters['to']), 'date' => \util\DateUi::numeric($vatParameters['limit']).' <sup class="font-xs">'.\Asset::icon('asterisk').'</sup>']
 							).'</div>';
 
 						} else {
 
 							$h .= '<div>'.s(
 								"Votre déclaration CA12 doit être déposée au plus tard dans les 3 mois suivant la clôture de votre exercice comptable, soit, pour la déclaration de l'exercice se terminant le {endDate}, le <b>{date}</b>.",
-									['endDate' => \util\DateUi::numeric($vatParameters['to']), 'date' => \util\DateUi::numeric($vatParameters['limit']).' '.\util\FormUi::asterisk()]
+									['endDate' => \util\DateUi::numeric($vatParameters['to']), 'date' => \util\DateUi::numeric($vatParameters['limit']).' <sup class="font-xs">'.\Asset::icon('asterisk').'</sup>']
 							).'</div>';
 
 						}
@@ -142,24 +246,22 @@ Class VatUi {
 					case \farm\Configuration::QUARTERLY:
 						$h .= '<div>'.s(
 							"Votre déclaration CA3 doit être déposée au plus tard le {day} du mois suivant le trimestre déclaré, soit, pour la déclaration du trimestre se terminant le {endDate}, le <b>{date}</b>.",
-							['day' => date('d', strtotime($vatParameters['limit'])), 'endDate' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to']))), 'date' => \util\DateUi::numeric($vatParameters['limit']).' '.\util\FormUi::asterisk()]
+							['day' => date('d', strtotime($vatParameters['limit'])), 'endDate' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to']))), 'date' => \util\DateUi::numeric($vatParameters['limit']).' <sup class="font-xs">'.\Asset::icon('asterisk').'</sup>']
 						).'</div>';
 						break;
 
 					case \farm\Configuration::MONTHLY:
 						$h .= '<div>'.s(
 							"Votre déclaration CA3 doit être déposée au plus tard le {day} du mois suivant le mois déclaré, soit, pour la déclaration se terminant le {endDate}, le <b>{date}</b>.",
-							['day' => date('d', strtotime($vatParameters['limit'])), 'endDate' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to']))), 'date' => \util\DateUi::numeric($vatParameters['limit'])]
+							['day' => date('d', strtotime($vatParameters['limit'])), 'endDate' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to']))), 'date' => \util\DateUi::numeric($vatParameters['limit']).' <sup class="font-xs">'.\Asset::icon('asterisk').'</sup>']
 						).'</div>';
 				}
 
-				$h .= '<div>'.\util\FormUi::asterisk().' '.s("Attention, cette date est indicative et ne prend pas en compte votre situation particulière : référez vous toujours à ce qui est indiqué dans votre compte professionnel sur le site des impôts.").'</div>';
-
-
-				$h .= '<h3 class="mt-2">'.s("Comment puis-je la déposer ?").'</h3>';
-				$h .= '<div>'.s("Vous pouvez télé-déclarer via le portail <link>impots.gouv.fr {icon}</link>.<br />{siteName} ne l'enverra pas pour vous.", ['link' => '<a href="https://impots.gouv.fr">', 'icon' => \Asset::icon('box-arrow-up-right')]).'</div>';
+				$h .= '<div>'.s("Vous pouvez télé-déclarer via le portail <link>impots.gouv.fr {icon}</link>. Veuillez noter que {siteName} ne l'enverra pas pour vous.", ['link' => '<a href="https://impots.gouv.fr">', 'icon' => \Asset::icon('box-arrow-up-right')]).'</div>';
+				$h .= '<div class="mt-1"><sup class="font-xs">'.\Asset::icon('asterisk').'</sup> '.s("Attention, cette date est indicative et ne prend pas en compte votre situation particulière : référez vous toujours à ce qui est indiqué dans votre compte professionnel sur le site des impôts.").'</div>';
 
 			}
+
 		$h .= '</div>';
 
 		return $h;
@@ -331,7 +433,7 @@ Class VatUi {
 
 	}
 
-	public function getCheck(\farm\Farm $eFarm, array $check, array $vatParameters): string {
+	public function getCheck(array $check, array $vatParameters ): string {
 
 		$taxes = $check['taxes'];
 		$sales = $check['sales'];
@@ -542,7 +644,7 @@ Class VatUi {
 
 	}
 
-	public function getCerfa(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $cerfaData, int $precision, array $vatParameters, \account\FinancialYear $eFinancialYearLast): string {
+	public function getCerfa(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $cerfaData, int $precision, array $vatParameters, bool $hasData): string {
 
 		$h = '<div class="tab-panel selected" data-tab="cerfa">';
 
@@ -564,23 +666,21 @@ Class VatUi {
 					$h .= s("La déclaration est encore ouverte jusqu'au <b>{value}</b>. Vous pouvez reporter les informations que vous avez télédéclarées ici afin d'en conserver une trace.", \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['limit'].' + '.VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days'))));
 				$h .= '</div>';
 
+			} else if($hasData === FALSE) {
+				$h .= '<div class="util-warning-outline">';
+					$h .= s("Il semblerait que la période du {from} au {to} ne contienne aucune donnée pertinente d'après vos écritures, mais vous pouvez toujours remplir le formulaire à titre de conservation de données.", ['from' => \util\DateUi::numeric($vatParameters['from']), 'to' => \util\DateUi::numeric($vatParameters['to'])]);
+				$h .= '</div>';
 			}
 
 			// Infos sur la taxe ADAR
-			if($eFinancialYearLast->empty()) {
-
-				$h .= '<div class="util-info">';
-					$h .= s("La <b>taxe sur le chiffre d'affaire des exploitants agricoles</b> n'a pu être calculée car il n'y a aucune donnée comptable enregistrée pour le précédent exercice clos.");
-				$h .= '</div>';
-
-			} else if($eFarm['startedAt'] === NULL and $eFarm['cFinancialYear']->count() === 1) {
+			if($eFarm['startedAt'] === NULL and $eFarm['cFinancialYear']->count() === 1) {
 				// On ne connaît pas la date de création et il n'y a que 1 exercice enregistré => Doute
 
 				$h .= '<div class="util-info">';
 					$h .= s("L'année de création de votre exploitation n'étant pas connue, la <b>taxe sur le chiffre d'affaire des exploitants agricoles</b> a tout de même été calculée.");
 				$h .= '</div>';
 
-			} else if($eFarm['startedAt'] !== NULL and substr($eFarm['startedAt'], 0, 4) === substr($eFinancialYearLast['startDate'], 0, 4)) {
+			} else if($eFarm['startedAt'] !== NULL and substr($eFarm['startedAt'], 0, 4) === substr($eFinancialYear['startDate'], 0, 4)) {
 
 				$h .= '<div class="util-info">';
 				$h .= s("La période de déclaration étant l'année de création de votre exploitation, la <b>taxe sur le chiffre d'affaire des exploitants agricoles</b> n'est pas redevable.");
@@ -609,11 +709,11 @@ Class VatUi {
 
 			if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 
-				$h .= new VatUi()->getCerfaCA12($eFarm, $eFinancialYear, $cerfaData, $precision, $vatParameters);
+				$h .= new VatUi()->getCerfaCA12($eFarm, $cerfaData, $precision, $vatParameters);
 
 			} else {
 
-				$h .= new VatUi()->getCerfaCA3($eFarm, $eFinancialYear, $cerfaData, $precision, $vatParameters);
+				$h .= new VatUi()->getCerfaCA3($eFarm, $cerfaData, $precision, $vatParameters);
 
 			}
 
@@ -623,29 +723,18 @@ Class VatUi {
 
 	}
 
-	private function getCerfaCA12(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $data, int $precision, array $vatParameters): string {
+	private function getCerfaCA12(\farm\Farm $eFarm, array $data, int $precision, array $vatParameters): string {
 
-		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration();
-		$notAvailableAnymore = (
-			// On a une déclaration et elle est dépassée
-			($eVatDeclaration->notEmpty() and $eVatDeclaration['limit'] < date('Y-m-d', strtotime(VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days ago'))) or
-			// On n'a pas de déclaration mais la date est dépassée
-			$vatParameters['limit'] < date('Y-m-d', strtotime(VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days ago'))
-		);
+		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration(['from' => $vatParameters['from'], 'to' => $vatParameters['to']]);
+		$isDisabled = ($eVatDeclaration->acceptUpdate() === FALSE);
 
-		$notAvailableYet = (date('Y-m-d') < $vatParameters['to']);
-		$isDisabled = ($notAvailableAnymore or $notAvailableYet);
 		$attributes = $isDisabled ? ['disabled' => 'disabled'] : [];
 
 		$form = new \util\FormUi();
 
 		$h = '';
 
-		if($notAvailableYet) {
-
-			$h .= '<div class="util-info vat-width-100">'.s("Cette déclaration n'est pas encore ouverte mais vous pouvez consulter son encours.").'</div>';
-
-		} else if($eVatDeclaration->notEmpty()) {
+		if($eVatDeclaration->exists()) {
 
 			if($eVatDeclaration['declaredAt'] !== NULL) {
 
@@ -2540,34 +2629,7 @@ Class VatUi {
 
 			$h .= '</div>';
 
-			$h .= '<div style="position: sticky; bottom: 0; padding: 2rem 0 2rem; background-color: var(--background-body); text-align: right">';
-
-				if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate()) {
-
-					$h .= $form->button(s("Réinitialiser"), ['class' => 'btn btn-outline-danger mr-2', 'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/vat/reset', 'post-from' => $vatParameters['from'], 'post-to' => $vatParameters['to'], 'data-confirm' => s("Voulez-vous vraiment revenir aux calculs initiaux ?")]);
-
-				}
-
-				if($eVatDeclaration->notEmpty() and $eVatDeclaration['status'] === VatDeclaration::DECLARED) {
-
-						$h .= $form->submit(s("Sauvegarder et repasser la déclaration en brouillon"));
-
-				} else {
-
-					if($notAvailableYet === FALSE and ($eVatDeclaration->empty() or $eVatDeclaration->canUpdate())) {
-
-						$h .= $form->submit(s("Sauvegarder"));
-
-					}
-
-					if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate()) {
-
-						$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/vat/doDeclare', 'post-id' => $eVatDeclaration['id']]);
-
-					}
-				}
-
-			$h .= '</div>';
+			$h .= $this->buttons($eFarm, $form, $eVatDeclaration);
 
 			$h .= $form->close();
 
@@ -2576,25 +2638,15 @@ Class VatUi {
 
 	}
 
-	private function getCerfaCA3(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $data, int $precision, array $vatParameters): string {
+	private function getCerfaCA3(\farm\Farm $eFarm, array $data, int $precision, array $vatParameters): string {
 
 		$h = '';
 
-		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration();
+		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration(['from' => $vatParameters['from'], 'to' => $vatParameters['to']]);
 
-		$notAvailableAnymore = (
-			// On a une déclaration et elle est dépassée
-			($eVatDeclaration->notEmpty() and $eVatDeclaration['limit'] < date('Y-m-d', strtotime(date('Y-m-d').' - '.VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days'))) or
-			// On n'a pas de déclaration mais la date est dépassée
-			date('Y-m-d', strtotime($vatParameters['limit'].' + '.VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days')) < date('Y-m-d')
-		);
-
-		$notAvailableYet = (date('Y-m-d') < $vatParameters['to']);
-
-		$isDisabled = ($notAvailableAnymore or $notAvailableYet);
+		$isDisabled = ($eVatDeclaration->acceptUpdate() === FALSE);
 
 		$attributes = $isDisabled ? ['disabled' => 'disabled'] : [];
-		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration();
 
 		$form = new \util\FormUi();
 
@@ -3585,29 +3637,41 @@ Class VatUi {
 
 				$h .= $this->getCA3Annexe($form, $data, $vatParameters, $isDisabled === FALSE);
 
-				$h .= '<div style="position: sticky; bottom: 0; padding: 2rem 0 2rem; background-color: var(--background-body); text-align: right">';
-
-					if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate()) {
-
-						$h .= $form->button(s("Réinitialiser"), ['class' => 'btn btn-outline-danger mr-2', 'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/vat/reset', 'post-from' => $vatParameters['from'], 'post-to' => $vatParameters['to'], 'data-confirm' => s("Voulez-vous vraiment revenir aux calculs initiaux ?")]);
-
-					}
-
-					if($eVatDeclaration->empty() or $eVatDeclaration->canUpdate()) {
-
-						$h .= $form->submit(s("Sauvegarder"));
-
-					}
-
-					if($eVatDeclaration->notEmpty() and $eVatDeclaration->canUpdate() and $eVatDeclaration['status'] !== VatDeclaration::DECLARED) {
-
-						$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/vat/doDeclare', 'post-id' => $eVatDeclaration['id']]);
-
-					}
-
-				$h .= '</div>';
+				$h .= $this->buttons($eFarm, $form, $eVatDeclaration);
 
 			$h .= $form->close();
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	private function buttons(\farm\Farm $eFarm, \util\FormUi $form, VatDeclaration $eVatDeclaration): string {
+
+		if($eVatDeclaration->acceptUpdate() === FALSE and $eVatDeclaration->acceptReset() === FALSE and $eVatDeclaration->acceptDeclare() === FALSE) {
+			return '';
+		}
+
+		$h = '<div style="position: sticky; bottom: 0; padding: 2rem 0 2rem; background-color: var(--background-body); text-align: right">';
+
+			if($eVatDeclaration->acceptReset()) {
+
+				$h .= $form->button(s("Réinitialiser"), ['class' => 'btn btn-outline-danger mr-2', 'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/vat/doReset', 'post-id' => $eVatDeclaration['id'], 'data-confirm' => s("Voulez-vous vraiment revenir aux calculs initiaux ?")]);
+
+			}
+
+			if($eVatDeclaration->acceptUpdate()) {
+
+			$h .= $form->submit(s("Sauvegarder"));
+
+			}
+
+			if($eVatDeclaration->acceptDeclare()) {
+
+				$h .= $form->button(s("Enregistrer comme déclarée"), ['class' => 'btn btn-secondary ml-2', 'data-ajax' => \farm\FarmUi::urlConnected($eFarm).'/vat/doDeclare', 'post-id' => $eVatDeclaration['id']]);
+
+			}
 
 		$h .= '</div>';
 

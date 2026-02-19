@@ -6,6 +6,18 @@ Class VatDeclarationLib extends VatDeclarationCrud {
 	const DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS = 15;
 	const DELAY_OPEN_BEFORE_LIMIT_IN_DAYS = 15;
 
+	public static function getAll(array $froms): \Collection {
+
+		if(empty($froms)) {
+			return new \Collection();
+		}
+
+		return VatDeclaration::model()
+			->select(VatDeclaration::getSelection())
+			->whereFrom('IN', $froms)
+			->getCollection(index: 'from');
+
+	}
 	public static function declare(VatDeclaration $eVatDeclaration): void {
 
 		VatDeclaration::model()
@@ -36,20 +48,25 @@ Class VatDeclarationLib extends VatDeclarationCrud {
 			->get();
 
 	}
-	public static function saveCerfa(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $from, string $to, array $data, string $limit): void {
 
-		if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
-			$type = VatDeclaration::CA12;
-		} else {
-			$type = VatDeclaration::CA3;
+	public static function getCerfaFromFrequency(string $frequency): string {
+
+		if($frequency === \farm\Configuration::ANNUALLY) {
+			return VatDeclaration::CA12;
 		}
+
+		return VatDeclaration::CA3;
+
+	}
+
+	public static function saveCerfa(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $from, string $to, array $data, string $limit): void {
 
 		$eVatDeclaration = new VatDeclaration([
 			'from' => $from,
 			'to' => $to,
 			'associates' => $eFinancialYear['associates'],
 			'limit' => $limit, // Sauvegardé à titre historique
-			'cerfa' => $type,
+			'cerfa' => self::getCerfaFromFrequency($eFarm->getConf('vatFrequency')),
 			'data' => $data,
 			'status' => VatDeclaration::DRAFT,
 			'financialYear' => $eFinancialYear,

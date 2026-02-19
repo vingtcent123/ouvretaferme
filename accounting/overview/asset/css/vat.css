@@ -76,3 +76,59 @@ table.no-border-bottom td {
 .vat-period-block h3 {
 	margin: 1rem;
 }
+
+
+/* Récap des déclarations */
+.vat-period-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	grid-gap: 1rem;
+}
+
+
+@media (min-width: 768px) and (max-width: 1600px) {
+
+	.vat-period-container {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+@media (max-width: 767px) {
+
+	.vat-period-container {
+		grid-template-columns: 1fr;
+	}
+}
+
+
+.vat-period {
+	padding: 1rem;
+  border-radius: var(--radius);
+  transition: color 0.25s, background-color 0.25s, border-color 0.25s, box-shadow 0.25s;
+  text-decoration: none;
+  background-color: white;
+}
+
+.vat-period-future {
+	opacity: 0.33;
+}
+.vat-period-title {
+	display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.vat-period-title h3 {
+	margin: 0;
+}
+.vat-period-details {
+	display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+}
+.vat-period-details .vat-period-value {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}

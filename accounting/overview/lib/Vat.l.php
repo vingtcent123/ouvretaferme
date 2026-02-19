@@ -3,52 +3,27 @@ namespace overview;
 
 Class VatLib {
 
-	/**
-	 * Récupère la période par défaut de la déclaration de TVA
-	 * (celle qui est actuellement modifiable ou la dernière déclarée)
-	 * Cette période doit être calculée par rapport à la date actuelle et à la fréquence de TVA.
-	 * - Si annuelle => 01/01/N-1 au 31/12/N-1
-	 * - Si mensuelle => 01/M-1/N au 30|31/M-1/N
-	 * - Si trimestrielle => dernier trimestre complet (trimestre = 01 à 03, 04 à 06, 07 à 09, 10 à 12)
-	 *
-	 * @param \account\FinancialYear $eFinancialYear
-	 * @return array
-	 */
-	public static function getDefaultPeriod(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear): array {
+	public static function getPeriodForDates(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, string $from, string $to): ?array {
 
 		$allPeriods = self::getAllPeriodForFinancialYear($eFarm, $eFinancialYear);
-
-		if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
-			return first($allPeriods);
+		if(isset($allPeriods[$from.'|'.$to])) {
+			return $allPeriods[$from.'|'.$to];
 		}
 
-		$last = NULL;
-		foreach($allPeriods as $period) {
-			$eVatDeclaration = new VatDeclaration($period);
-			if($eVatDeclaration->canUpdate()) {
-				return $period;
-			}
-			if($period['from'] < date('Y-m-d')) {
-				$last = $period;
-			}
-		}
-
-		// On n'a pas trouvé de période modifiable => On prend la dernière de l'exercice
-		if($last !== NULL) {
-			return last($period);
-		}
-
-		// On n'a pas trouvé de période déjà passée => On prend la première de l'exercice
-		return first($period);
-
+		return NULL;
 	}
 
-	public static function extractCurrentPeriod(array $allPeriods): array {
+	public static function extractCurrentPeriod(array $allPeriods, string $from): array {
 
 		$currentPeriod = [];
 		$currentDate = date('Y-m-d');
 
 		foreach($allPeriods as $period) {
+
+			if($period['from'] === $from) {
+				return $period;
+			}
+
 			if($period['to'] < $currentDate) {
 				if(empty($currentPeriod) or $currentPeriod['to'] < $period['to']) {
 					$currentPeriod = $period;
@@ -250,20 +225,13 @@ Class VatLib {
 		$year = (int)mb_substr($referenceDate, 0, 4);
 		$month = (int)mb_substr($referenceDate, 5, 2);
 
-		// On prend comme valeur de référence l'année précédente
+		// On prend comme valeur de référence l'année courante
 		if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 
-			// Date limite de déclaration pour la période de référence : relative à l'exercice courant
-			$limitDate = date('Y-05-02', strtotime($eFinancialYear));
+			// Date limite de déclaration pour la période de référence : relative à l'exercice suivant
+			$limitDate = date('Y-05-02', strtotime($eFinancialYear['startDate'].' + 1 year'));
 
-			// Dates de calcul de l'assiette d'imposition : relates à l'exercice précédent
-			$eFinancialYearLast = \account\FinancialYearLib::getPreviousFinancialYear($eFinancialYear);
-
-			if($eFinancialYearLast->empty()) {
-				$referenceDate = date('Y-m-d', strtotime($eFinancialYear['startDate'].' - 1 YEAR'));
-			} else {
-				$referenceDate = $eFinancialYearLast['startDate'];
-			}
+			$referenceDate = $eFinancialYear['startDate'];
 
 			// On en déduit la période de déclaration
 			$periodFrom = date('Y-01-01', strtotime($referenceDate));
@@ -396,6 +364,8 @@ Class VatLib {
 		$taxes = $checkData['taxes'];
 		$deposits = $checkData['deposits'];
 
+		$cerfa = VatDeclarationLib::getCerfaFromFrequency($eFarm->getConf('vatFrequency'));
+
 		$vatData = [];
 
 		// OPÉRATIONS NON TAXÉES
@@ -415,37 +385,54 @@ Class VatLib {
 		// Ventes (comptes 70*) :
 		// 0207 => Ventes à 20%
 		$vatData['0207-base'] = round($sales[20]['amount'] ?? 0, $precision);
-		$vatData['0207-tax'] = round($taxes[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]['20']['amount'] ?? 0, $precision);
+		$vatData['0207'] = round($taxes[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]['20']['amount'] ?? 0, $precision);
 		// 0105 => Ventes à 5.5%
 		$vatData['0105-base'] = round($sales['5.5']['amount'] ?? 0, $precision);
-		$vatData['0105-tax'] = round($taxes[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]['5.5']['amount'] ?? 0, $precision);
+		$vatData['0105'] = round($taxes[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]['5.5']['amount'] ?? 0, $precision);
 		// 0151 => Ventes à 10%
 		$vatData['0151-base'] = round($sales['10']['amount'] ?? 0, $precision);
-		$vatData['0151-tax'] = round($taxes[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]['10']['amount'] ?? 0, $precision);
+		$vatData['0151'] = round($taxes[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]['10']['amount'] ?? 0, $precision);
 
-		// TVA s/ immos
+		// TVA s/ immos TODO : non calculé dans getForCheck
 		$vatData['0703'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_ASSET_CLASS] ?? [], 'amount')), $precision);
 
-		// TVA due intracom (achat autoliquidé)
-		$vatData['0044'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS] ?? [], 'amount')), $precision);
-		$vatData['0044-tax'] = round($vatData['0044'] * 0.2, $precision);
+		// TVA due intracom (achat autoliquidé) TODO Doute sur le 0044 ???
+		$vatData['0044-base'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS] ?? [], 'amount')), $precision);
+		$vatData['0044'] = round($vatData['0044-base'] * 0.2, $precision);
 
-		// TVA déductible intracom (achat auto liquidé)
-		$vatData['0034'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_CLASS] ?? [], 'amount')), $precision);
-		$vatData['0034-tax'] = round($vatData['0034'] * 0.2, $precision);
+		// TVA déductible intracom (achat auto liquidé) TODO non calculé dans getForCheck
+		$vatData['0034-base'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_CLASS] ?? [], 'amount')), $precision);
+		$vatData['0034'] = round($vatData['0034-base'] * 0.2, $precision);
 
 		// TVA s/ ABS
 		$vatData['0702'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT] ?? [], 'amount')), $precision);
 
-		$vatData['16-number'] = round(array_sum(array_filter($vatData, fn($item, $index) => in_array($index, ['0207-tax', '0208-tax', '0105-tax', '0151-tax', '0201-tax', '0100-tax', '0950-tax', '0152-tax', '0900-tax', '0030-tax', '0040-tax', '0044-tax', '0970-tax', '0980-tax', '0981-tax']), ARRAY_FILTER_USE_BOTH)), $precision);
-		$vatData['19-number'] = round(($vatData['16-number'] ?? 0) + ($vatData['0983'] ?? 0) + ($vatData['0600'] ?? 0) + ($vatData['0602'] ?? 0), $precision);
-		$vatData['22-number'] = round(($vatData['0702'] ?? 0) + ($vatData['0704'] ?? 0), $precision);
-		$vatData['26-number'] = round($vatData['22-number'] + ($vatData['0703'] ?? 0) + ($vatData['0058'] ?? 0) + ($vatData['0059'] ?? 0) + ($vatData['0603'] ?? 0), $precision);
+		if($cerfa === VatDeclaration::CA3) {
 
-		if($vatData['19-number'] > $vatData['26-number']) {
-			$vatData['8900'] = round($vatData['19-number'] - $vatData['26-number'], $precision);
+			$vatData['16-number'] = round(array_sum(array_filter($vatData, fn($item, $index) => in_array($index, ['0207', '0105', '0151', '0201', '0100', '1120', '1110', '1090', '1081', '1050', '1040', '1010', '0990', '0900', '0208', '0152', '0210', '0211', '0212', '0213', '0214', '0215', '0600', '0602']), ARRAY_FILTER_USE_BOTH)), $precision);
+
+			$vatData['23-number'] = round(($vatData['0703'] ?? 0) + ($vatData['0720'] ?? 0) + ($vatData['0059'] ?? 0) + ($vatData['8001'] ?? 0) + ($vatData['0603'] ?? 0), $precision);
+
+			if($vatData['16-number'] > $vatData['23-number']) {
+				$vatData['8900'] = round($vatData['16-number'] - $vatData['23-number'], $precision);
+			} else {
+				$vatData['0705'] = round($vatData['23-number'] - $vatData['16-number'], $precision);
+			}
+
 		} else {
-			$vatData['0705'] = round($vatData['26-number'] - $vatData['19-number'], $precision);
+
+			$vatData['16-number'] = round(array_sum(array_filter($vatData, fn($item, $index) => in_array($index, ['0207', '0208', '0105', '0151', '0201', '0100', '0950', '0152', '0900', '0030', '0040', '0044', '0970', '0980', '0981']), ARRAY_FILTER_USE_BOTH)), $precision);
+			$vatData['19-number'] = round(($vatData['16-number'] ?? 0) + ($vatData['0983'] ?? 0) + ($vatData['0600'] ?? 0) + ($vatData['0602'] ?? 0), $precision);
+
+			$vatData['22-number'] = round(($vatData['0702'] ?? 0) + ($vatData['0704'] ?? 0), $precision);
+			$vatData['26-number'] = round($vatData['22-number'] + ($vatData['0703'] ?? 0) + ($vatData['0058'] ?? 0) + ($vatData['0059'] ?? 0) + ($vatData['0603'] ?? 0), $precision);
+
+			if($vatData['19-number'] > $vatData['26-number']) {
+				$vatData['8900'] = round($vatData['19-number'] - $vatData['26-number'], $precision);
+			} else {
+				$vatData['0705'] = round($vatData['26-number'] - $vatData['19-number'], $precision);
+			}
+
 		}
 
 		$cOperationDeposit = \journal\OperationLib::applySearch($search)
@@ -531,7 +518,7 @@ Class VatLib {
 				// 3è mois de l'exercice :
 				$thirdMonth = (int)mb_substr($eFinancialYear['startDate'], 6, 2) + 2;
 				// Mois en cours de déclaration
-				$currentMonth = (int)mb_substr($search['minDate'], 6, 2);
+				$currentMonth = (int)mb_substr($search->get('minDate'), 6, 2);
 
 				// On prend le premier encore le 3è mois et le mois de mars
 				$isInPeriod = ($currentMonth === min($thirdMonth, 3));
@@ -566,21 +553,14 @@ Class VatLib {
 		$vatData['8901'] = round(($vatData['33-number'] ?? 0) - ($vatData['8103'] ?? 0), $precision);
 		$vatData['9992'] = round($vatData['8901'] + $vatData['55-number'] + ($vatData['8123'] ?? 0), $precision);
 
-		$vatData['57-number'] = max(0, round($vatData['16-number'] - (($vatData['0970'] ?? 0) + ($vatData['0980'] ?? 0) + $vatData['22-number']), $precision));
+		if($cerfa === VatDeclaration::CA12) {
+			$vatData['57-number'] = max(0, round($vatData['16-number'] - (($vatData['0970'] ?? 0) + ($vatData['0980'] ?? 0) + $vatData['22-number']), $precision));
+		}
 
 		// Achats intracom (4452 puis remonter sur l'opération initiale)
 
 
 		return $vatData;
-
-	}
-	public static function getVatHistory(\account\FinancialYear $eFinancialYear): \Collection {
-
-		return VatDeclaration::model()
-			->select(VatDeclaration::getSelection())
-			->whereFinancialYear($eFinancialYear)
-			->sort(['from' => SORT_ASC, 'createdAt' => SORT_ASC])
-			->getCollection();
 
 	}
 
@@ -632,8 +612,13 @@ Class VatLib {
 
 		// Étape 1
 		// 44571 - TVA collectée
-		$vat44571Declared = round($cerfa['19-number'], 2);
-		$vat44571Calculated = round($cerfaFromOperations['19-number'], 2);
+		if($eVatDeclaration['cerfa'] === VatDeclaration::CA3) {
+			$vat44571Declared = round($cerfa['16-number'], 2);
+			$vat44571Calculated = round($cerfaFromOperations['16-number'], 2);
+		} else {
+			$vat44571Declared = round($cerfa['19-number'], 2);
+			$vat44571Calculated = round($cerfaFromOperations['19-number'], 2);
+		}
 		if($vat44571Calculated > 0) {
 			$eOperation44571 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT],
@@ -649,7 +634,7 @@ Class VatLib {
 
 		// 4452 - TVA due intracom
 		$vat4452Declared = round($cerfa['0044'], 2);
-		$vat4452Calculated = round($cerfaFromOperations['0044-tax'], 2);
+		$vat4452Calculated = round($cerfaFromOperations['0044'], 2);
 		if($vat4452Calculated > 0) {
 			$eOperation44571 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS],
@@ -664,7 +649,11 @@ Class VatLib {
 		}
 
 		// Solde : crédit de TVA
-		$amountVatCredit = $cerfa['0020'];
+		if($eVatDeclaration['cerfa'] === VatDeclaration::CA12) {
+			$amountVatCredit = $cerfa['0020'];
+		} else {
+			$amountVatCredit = $cerfa['0705'];
+		}
 		if($amountVatCredit > 0) {
 			$eOperation44567 = new \journal\Operation([
 				'account' => $cAccount[\account\AccountSetting::VAT_CREDIT_CLASS],

@@ -48,6 +48,7 @@ Class FinancialYearDocumentUi {
 
 		$h .= '<div class="financial-year-documents">';
 
+			$h .= '<h2>'.s("Les documents").'</h2>';
 			$h .= '<h3>';
 				$h .= s("Bilans");
 				if($eFinancialYear->isClosed() === FALSE) {

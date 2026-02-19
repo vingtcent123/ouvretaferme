@@ -1126,7 +1126,6 @@ class FarmUi {
 				'balance' => s("Balance"),
 				'assets' => s("Immobilisations"),
 				'analyze' => s("États financiers"),
-				'summary' => s("Synthèse"),
 			},
 
 		};
@@ -1363,13 +1362,6 @@ class FarmUi {
 				$h .= $this->getNav('preaccounting', $nav, link: \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite/verifier:fec');
 
 			$h .= '</div>';
-/*
-			$h .= '<div class="farm-tab-wrapper farm-nav-invoicing">';
-
-				$h .= $this->getNav('invoicing', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/facturation-electronique');
-
-			$h .= '</div>';
-*/
 
 			$h .= '<div class="farm-tab-wrapper farm-tab-subnav farm-nav-accounting">';
 
@@ -2222,9 +2214,6 @@ class FarmUi {
 		\Asset::js('account', 'financialYearDocument.js');
 
 		$categories = $this->getAccountingFinancialsCategories($eFarm['eFinancialYear']);
-		if($eFarm['eFinancialYear']['hasVatAccounting'] === FALSE) {
-			unset($categories[\overview\AnalyzeLib::TAB_VAT]);
-		}
 
 		$title = $categories[$selectedView]['label'];
 
@@ -2288,7 +2277,6 @@ class FarmUi {
 			'1' => NULL,
 			\overview\AnalyzeLib::TAB_INCOME_STATEMENT => ['fqn' => 'compte-de-resultat', 'label' => s("Compte de résultat")],
 			\overview\AnalyzeLib::TAB_BALANCE_SHEET => ['fqn' => 'bilan', 'label' => s("Bilan")],
-			\overview\AnalyzeLib::TAB_VAT => ['fqn' => 'declaration-de-tva', 'label' => s("Déclaration de TVA")],
 		];
 	}
 

@@ -73,7 +73,7 @@ new AdaptativeView('updateVat', function($data, FarmTemplate $t) {
 	$t->nav = 'settings-accounting';
 
 	$h = '<h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlSettingsAccounting($data->e).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+		$h .= '<a href="javascript: history.back()"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
 		$h .= s("Paramétrage de la TVA");
 	$h .= '</h1>';
 

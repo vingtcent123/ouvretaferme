@@ -906,13 +906,6 @@ class FinancialYearUi {
 
 		$h = '<div class="util-buttons">';
 
-			if($eFarm['eFinancialYear']['hasVatAccounting']) {
-				$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva" class="util-button">';
-					$h .= '<h5>'.s("Déclarations de TVA").'</h5>';
-					$h .= \Asset::icon('pencil');
-				$h .= '</a>';
-			}
-
 			$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/tresorerie" class="util-button">';
 				$h .= '<h5>'.s("Trésorerie").'</h5>';
 				$h .= \Asset::icon('bank');

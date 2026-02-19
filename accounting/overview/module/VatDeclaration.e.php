@@ -3,12 +3,46 @@ namespace overview;
 
 class VatDeclaration extends VatDeclarationElement {
 
-	public function canUpdate(): bool {
+	public function acceptUpdate(): bool {
 
-		$this->expects(['limit', 'to']);
+		$this->expects(['from', 'to']);
 
-		return $this['limit'] > date('Y-m-d', strtotime('- '.VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days')) and
-			$this['to'] < date('Y-m-d');
+		return $this['to'] < date('Y-m-d') and ($this['accountedAt'] ?? NULL) === NULL;
+	}
+
+	public function acceptAccount(): bool {
+
+		if($this->exists() === FALSE) {
+			return FALSE;
+		}
+
+		$this->expects(['declaredAt', 'status']);
+
+		return $this['declaredAt'] !== NULL and $this['status'] !== VatDeclaration::DECLARED;
+
+	}
+
+	public function acceptDeclare(): bool {
+
+		if($this->exists() === FALSE) {
+			return FALSE;
+		}
+
+		$this->expects(['declaredAt']);
+
+		return $this['declaredAt'] === NULL;
+
+	}
+
+	public function acceptReset(): bool {
+
+		if($this->exists() === FALSE) {
+			return FALSE;
+		}
+
+		$this->expects(['accountedAt']);
+
+		return $this['accountedAt'] === NULL;
 
 	}
 

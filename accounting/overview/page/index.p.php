@@ -41,6 +41,9 @@ new Page(function($data) {
 			$data->eFinancialYearComparison = new \account\FinancialYear();
 		}
 
+		$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
+		$data->cDeclaration = \overview\VatDeclarationLib::getAll(array_column($data->allPeriods, 'from'));
+
 		switch($data->view) {
 
 			case \overview\AnalyzeLib::TAB_FINANCIAL_YEAR:
@@ -156,81 +159,6 @@ new Page(function($data) {
 
 				break;
 
-			case \overview\AnalyzeLib::TAB_VAT:
-				if($data->eFarm['eFinancialYear']['hasVatAccounting'] === FALSE) {
-					throw new NotExistsAction();
-				}
-
-				$tab = GET('tab');
-				if(in_array($tab, ['journal-sell', 'journal-buy', 'check', 'cerfa', 'history']) === FALSE) {
-					$tab = NULL;
-				}
-				$data->tab = $tab;
-
-				$search = new Search();
-
-				// On va filtrer sur les dates de la période de TVA
-				$search->set('financialYear', new \account\FinancialYear());
-
-				$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
-				$data->vatParameters = \overview\VatLib::extractCurrentPeriod($data->allPeriods);
-				$data->eFinancialYearLast = \account\FinancialYearLib::getPreviousFinancialYear($data->eFarm['eFinancialYear']);
-
-				$search->set('minDate', $data->vatParameters['from']);
-				$search->set('maxDate', $data->vatParameters['to']);
-
-				switch($tab) {
-
-					case NULL:
-						break;
-
-					case 'journal-buy':
-					case 'journal-sell':
-						$type = mb_substr($tab, mb_strlen('journal') + 1);
-						$search->validateSort(['date']);
-						$data->cOperation = \journal\OperationLib::getAllForVatJournal($type, $search, TRUE, NULL);
-						break;
-
-					case 'check':
-						$data->check = \overview\VatLib::getForCheck($data->eFarm, $search);
-						break;
-
-					case 'cerfa':
-						$data->check = \overview\VatLib::getForCheck($data->eFarm, $search);
-						$data->precision = 0;
-
-						// On tente par l'ID
-						$eVatDeclaration = \overview\VatDeclarationLib::getById(GET('id'));
-						if($eVatDeclaration->empty()) {
-							// On tente par les dates
-							$eVatDeclaration = \overview\VatDeclarationLib::getByDates($data->vatParameters['from'], $data->vatParameters['to']);
-						}
-						// On a trouvé
-						if($eVatDeclaration->notEmpty()) {
-
-							$data->cerfa = $eVatDeclaration->getArrayCopy()['data'] + ['eVatDeclaration' => $eVatDeclaration];
-							$data->vatParameters = [
-								'limit' => $eVatDeclaration['limit'],
-								'from' => $eVatDeclaration['from'],
-								'to' => $eVatDeclaration['to'],
-							];
-						} else {
-
-							// On génère
-							$search = new Search([
-								'minDate' => $data->vatParameters['from'],
-								'maxDate' => $data->vatParameters['to'],
-								'financialYear' => new \account\FinancialYear(),
-							]);
-							$data->cerfa = \overview\VatLib::getVatDataDeclaration($data->eFarm, $data->eFarm['eFinancialYear'], $search, precision: $data->precision);
-
-						}
-						break;
-
-					case 'history':
-						$data->cVatDeclaration = \overview\VatDeclarationLib::getHistory($data->eFarm['eFinancialYear']);
-						break;
-			}
 		}
 
 		throw new ViewAction($data, ':'.$data->view);

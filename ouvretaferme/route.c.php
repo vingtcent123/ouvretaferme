@@ -68,6 +68,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['configuration', 'accounting'],
 		],
+		'/declaration-de-tva' => [
+			'request' => 'overview/vat',
+			'priority' => 5,
+			'route' => ['declaration-de-tva'],
+		],
 		'/doc/' => [
 			'request' => 'main/doc/main',
 			'priority' => 5,
@@ -1032,10 +1037,10 @@ Route::register([
 			'priority' => 5,
 			'route' => ['vat', 'doDeclare'],
 		],
-		'/vat/reset' => [
+		'/vat/doReset' => [
 			'request' => 'overview/vat',
 			'priority' => 5,
-			'route' => ['vat', 'reset'],
+			'route' => ['vat', 'doReset'],
 		],
 		'/vat/saveCerfa' => [
 			'request' => 'overview/vat',
