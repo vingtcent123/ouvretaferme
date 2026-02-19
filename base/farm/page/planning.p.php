@@ -23,5 +23,5 @@ new \farm\FarmPage(function($data) {
 
 		throw new PdfAction($content, $filename);
 
-	}, validate: ['canWrite']);
+	}, validate: ['canPlanning']);
 ?>
