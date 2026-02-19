@@ -76,7 +76,8 @@ Class AssetUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th>'.s("Numéro de compte").'</th>';
-						$h .= '<th>'.s("Date d'acquisition").'</th>';
+						$h .= '<th class="text-center">'.s("Date d'acquisition").'</th>';
+						$h .= '<th class="text-center">'.s("Date de de mise en service").'</th>';
 						$h .= '<th>'.s("Libellé").'</th>';
 						$h .= '<th class="highlight-stick-right text-end">'.s("Valeur d'acquisition (HT)").'</th>';
 						$h .= '<th class="text-center">'.s("Durée éco").'</th>';
@@ -90,7 +91,8 @@ Class AssetUi {
 
 						$h .= '<tr>';
 							$h .= '<td>'.encode($eAsset['accountLabel']).'</td>';
-							$h .= '<td>'.\util\DateUi::numeric($eAsset['acquisitionDate']).'</td>';
+							$h .= '<td class="text-center">'.\util\DateUi::numeric($eAsset['acquisitionDate']).'</td>';
+							$h .= '<td class="text-center">'.\util\DateUi::numeric($eAsset['startDate']).'</td>';
 							$h .= '<td>'.encode($eAsset['description']).'</td>';
 							$h .= '<td class="highlight-stick-right text-end">'.\util\TextUi::money($eAsset['value']).'</td>';
 							$h .= '<td class="text-center">';
