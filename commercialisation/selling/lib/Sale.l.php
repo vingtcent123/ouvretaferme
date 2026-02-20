@@ -899,7 +899,7 @@ class SaleLib extends SaleCrud {
 		foreach($cItem as $eItem) {
 
 			$eItemCreate = new Item(
-				$eItem->extracts(['name', 'product', 'additional', 'origin', 'quality', 'nature', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'vatRate'])
+				$eItem->extracts(['name', 'product', 'customer', 'additional', 'origin', 'quality', 'nature', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'vatRate'])
 			);
 
 			$eItemCreate['farm'] = $eSale['farm'];

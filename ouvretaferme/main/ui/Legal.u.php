@@ -438,7 +438,19 @@ class LegalUi {
 			$h .= '</div>';
 			$h .= '<div class="home-why-item">';
 				$h .= \Asset::icon('3-circle');
-				$h .= '<h4>'.s("Vous pouvez étendre vos actions de formation.").'</h4>';
+				$h .= '<h4>'.s("Vous proposez à vos adhérents un logiciel en ligne qui facilite le travail en collectifs.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-why-item">';
+				$h .= \Asset::icon('4-circle');
+				$h .= '<h4>'.s("Vous pouvez diversifier vos actions de formation grâce aux fonctionnalités étendues du logiciel.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-why-item">';
+				$h .= \Asset::icon('5-circle');
+				$h .= '<h4>'.s("Vous avez accès à une interface de gestion centralisée pour le suivi de vos adhérents.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-why-item">';
+				$h .= \Asset::icon('6-circle');
+				$h .= '<h4>'.s("Nous proposons également une solution pour la gestion des sessions de formation et des apprenants.").'</h4>';
 			$h .= '</div>';
 		$h .= '</div>';
 
@@ -475,8 +487,9 @@ class LegalUi {
 		$h .= '<div class="util-block">';
 		$h .= '<h2>'.s("Vous voulez en savoir plus ?").'</h2>';
 
-			$h .= '<h4>'.s("Contactez-nous pour une courte présentation.").'</h4>';
-			$h .= '<a href="https://asso.ouvretaferme.org/nous-contacter" class="btn btn-primary">'.s("Nous contacter").'</a>';
+			$h .= '<p>'.s("Contactez-nous pour une courte présentation, ou n'hésitez pas à tester le logiciel grâce au site de démo pour en découvrir les fonctionnalités.").'</p>';
+			$h .= '<a href="https://asso.ouvretaferme.org/nous-contacter" class="btn btn-xl btn-primary">'.s("Nous contacter").'</a> ';
+			$h .= '<a href="https://demo.ouvretaferme.org/ferme/1/ventes" class="btn btn-xl btn-secondary">'.s("Consulter la démo").'</a>';
 		$h .= '</div>';
 
 		return $h;
