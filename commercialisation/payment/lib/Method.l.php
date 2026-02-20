@@ -16,8 +16,18 @@ class MethodLib extends MethodCrud {
 		return ['name'];
 	}
 
-	public static function getPropertiesUpdate(): array {
-		return self::getPropertiesCreate();
+	public static function getPropertiesUpdate(): \Closure {
+
+		return function(Method $e) {
+
+			if($e['fqn'] === NULL) {
+				return ['name', 'status'];
+			} else {
+				return ['status'];
+			}
+
+		};
+
 	}
 
 	public static function duplicateForFarm(\farm\Farm $eFarm): void {

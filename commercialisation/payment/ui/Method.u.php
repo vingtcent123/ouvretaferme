@@ -82,16 +82,15 @@ class MethodUi {
 
 							$h .= '<td class="text-end">';
 
-							if($eMethod['farm']->notEmpty()) {
-
 								$h .= '<a href="/payment/method:update?id='.$eMethod['id'].'" class="btn btn-outline-secondary">';
 									$h .= \Asset::icon('gear-fill');
 								$h .= '</a> ';
-								$h .= '<a data-ajax="/payment/method:doDelete" post-id="'.$eMethod['id'].'" class="btn btn-outline-secondary">';
-									$h .= \Asset::icon('trash-fill');
-								$h .= '</a> ';
 
-							}
+								if($eMethod->acceptDelete()) {
+									$h .= '<a data-ajax="/payment/method:doDelete" post-id="'.$eMethod['id'].'" class="btn btn-outline-secondary">';
+										$h .= \Asset::icon('trash-fill');
+									$h .= '</a> ';
+								}
 
 							$h .= '</td>';
 						$h .= '</tr>';
@@ -138,7 +137,13 @@ class MethodUi {
 		$h = $form->openAjax('/payment/method:doUpdate');
 
 		$h .= $form->hidden('id', $eMethod['id']);
-		$h .= $form->dynamicGroups($eMethod, ['name', 'status']);
+
+		if($eMethod['fqn'] === NULL) {
+			$h .= $form->dynamicGroup($eMethod, 'name');
+		}
+
+		$h .= $form->dynamicGroup($eMethod, 'status');
+
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))
 		);

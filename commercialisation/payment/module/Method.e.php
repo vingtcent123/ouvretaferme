@@ -21,9 +21,16 @@ class Method extends MethodElement {
 		);
 
 	}
+
 	public function canDelete(): bool {
 
 		return ($this['farm']->empty() or $this['farm']->canWrite());
+
+	}
+
+	public function acceptDelete(): bool {
+
+		return $this['fqn'] === NULL;
 
 	}
 
