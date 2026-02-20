@@ -259,7 +259,7 @@ Class SuperPdpLib {
 
 	}
 
-	private static function refreshAccessToken(): string {
+	private static function refreshAccessToken(): ?string {
 
 		$ePartner = PartnerLib::getByPartner(PartnerSetting::SUPER_PDP);
 		$redirectionUri = self::getRedirectionUri();
@@ -283,7 +283,7 @@ Class SuperPdpLib {
 		$data = json_decode($curl->exec(PartnerSetting::SUPER_PDP_OAUTH_URL.'token', http_build_query($body), 'POST', $options), TRUE);
 
 		if(($data['error'] ?? NULL) !== NULL) {
-			throw new \NotExpectedAction('SuperPdp : cannot retrieve access token. Error '.$data['error'].', description : '.$data['error_description']);
+			return null;
 		}
 
 		$ePartner = new Partner([

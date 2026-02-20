@@ -40,7 +40,6 @@ class AlertUi {
 
 			'Import::accountNotCorresponding' => s("Le numéro de compte du FEC doit commencer par les mêmes chiffres que le compte choisi. Vous pouvez créer le compte auquel affecter cette écriture, ou modifier votre sélection."),
 
-
 			default => null
 
 		};

@@ -1,0 +1,9 @@
+Invoice:
+  id: serial32
+  direction: enum(IN, OUT)
+  createdAt: datetime
+  synchronizedAt: datetime = SPECIAL(now)
+
+InvoiceLine:
+  id: serial32
+  invoice: invoicing\Invoice
