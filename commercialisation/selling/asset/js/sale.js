@@ -1,10 +1,25 @@
 document.delegateEventListener('autocompleteSelect', '#sale-create', function(e) {
 
-	if(e.detail.value === '') {
+	if(
+		e.detail.value === '' ||
+		e.detail.input.dataset.number === 'collection'
+	) {
 		return;
 	}
 
 	Sale.refreshCustomerCreate(e.detail.value);
+
+});
+
+document.delegateEventListener('autocompleteUpdate', '#sale-create', function(e) {
+
+	if(
+		e.detail.input.dataset.number === 'collection' &&
+		qs('#sale-create').qsa('[name="customers[]"]').length === 0
+	) {
+		Sale.resetCustomerCreate();
+	}
+
 
 });
 
@@ -14,6 +29,18 @@ class Sale {
 
 		target.classList.add('hide');
 		qs('#sale-customize').classList.remove('hide');
+
+	}
+
+	static resetCustomerCreate() {
+
+		let request = document.location.href;
+		request = request.removeArgument('customer');
+
+		new Ajax.Query()
+			.url(request)
+			.method('get')
+			.fetch();
 
 	}
 

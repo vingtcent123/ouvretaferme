@@ -1862,6 +1862,7 @@ class SaleUi {
 		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use($form, $eSale) {
 
 			$d->autocompleteDispatch = '#sale-create';
+			$d->attributes['data-number'] = 'one';
 
 			if($eSale['shopDate']->notEmpty()) {
 
@@ -1988,12 +1989,9 @@ class SaleUi {
 
 		if($eSale['cCustomer']->notEmpty()) {
 
-			$formId = 'sale-create-collection';
-
 			$h .= $form->dynamicGroup($eSale, 'customers*', function($d) {
-
-				$d->autocompleteDispatch = '#sale-create-collection';
-
+				$d->autocompleteDispatch = '#sale-create';
+				$d->attributes['data-number'] = 'collection';
 			});
 
 			$h .= $form->dynamicGroup($eSale, 'deliveredAt');
@@ -2024,11 +2022,10 @@ class SaleUi {
 
 		} else {
 
-			$formId = 'sale-create';
-
 			$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use($form, $eSale) {
 
 				$d->autocompleteDispatch = '#sale-create';
+				$d->attributes['data-number'] = 'one';
 
 			});
 
@@ -2051,9 +2048,9 @@ class SaleUi {
 		}
 
 		return new \Panel(
-			id: 'panel-sale-create-collection',
+			id: 'panel-sale-create',
 			title: s("Créer une vente"),
-			dialogOpen: $form->openAjax('/selling/sale:doCreateCollection', ['id' => $formId, 'class' => 'panel-dialog']),
+			dialogOpen: $form->openAjax('/selling/sale:doCreateCollection', ['id' => 'sale-create', 'class' => 'panel-dialog']),
 			dialogClose: $form->close(),
 			body: $h,
 			footer: $footer
