@@ -646,7 +646,7 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Écritures comptables & Règles de TVA").'</h2>';
 
-		echo '<p>'.s("Afin de calculer au plus juste la déclaration de TVA, les écritures doivent être ventilées selon la règle de TVA qui leur correspond. Cela permet à l'administration fiscale de vérifier le chiffre d'affaires et les seuils des diférents régimes.").'</p>';
+		echo '<p>'.s("Afin de calculer au plus juste la déclaration de TVA, les écritures doivent être ventilées selon la règle de TVA qui leur correspond. Cela permet à l'administration fiscale de vérifier le chiffre d'affaires et les seuils des différents régimes.").'</p>';
 		echo '<p>'.s("La règle renseignée lors de l'enregistrement des écritures sera utilisée pour les calculs de la déclaration de TVA.").'</p>';
 
 		echo '<table class="td-vertical-align-top">';
