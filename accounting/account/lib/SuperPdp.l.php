@@ -262,6 +262,10 @@ Class SuperPdpLib {
 	private static function refreshAccessToken(): ?string {
 
 		$ePartner = PartnerLib::getByPartner(PartnerSetting::SUPER_PDP);
+		if($ePartner->empty()) {
+			return NULL;
+		}
+
 		$redirectionUri = self::getRedirectionUri();
 
 		$body = [
