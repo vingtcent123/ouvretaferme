@@ -25,7 +25,7 @@ new AdaptativeView('/factures/', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \farm\FarmUi()->getAccountingInvoiceTitle($data->eFarm, $data->counts);
 
-	if(FEATURE_PA === FALSE) {
+	if(FEATURE_PDP === FALSE) {
 
 		echo '<div class="util-block-info	">'.s("Cette fonctionnalité arrive bientôt ! On se dépêche... ").' '.Asset::icon('lightning-charge-fill').Asset::icon('lightning-charge-fill').Asset::icon('lightning-charge-fill').'</div>';
 

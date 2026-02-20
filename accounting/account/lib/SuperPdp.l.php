@@ -3,10 +3,6 @@ namespace account;
 
 Class SuperPdpLib {
 
-
-	const AUTHORIZE_URL = 'https://api.superpdp.tech/oauth2/';
-	const API_URL = 'https://api.superpdp.tech/v1.beta/';
-
 	const TMP_SUPERPDP_FOLDER = '/tmp/superpdp';
 
 	public static function sendInvoice(string $accessToken, string $filepath): ?int {
@@ -19,7 +15,7 @@ Class SuperPdpLib {
 
 		$curl = new \util\CurlLib();
 
-		$data = json_decode($curl->exec(self::API_URL.'invoices', file_get_contents($filepath), 'POST', $options), TRUE);
+		$data = json_decode($curl->exec(PartnerSetting::SUPER_PDP_API_URL.'invoices', file_get_contents($filepath), 'POST', $options), TRUE);
 
 		if(isset($data['id'])) {
 			return $data['id'];
@@ -49,7 +45,7 @@ Class SuperPdpLib {
 		];
 		$curl = new \util\CurlLib();
 
-		$data = json_decode($curl->exec(self::API_URL.'validation_reports', $params, 'POST', $options), TRUE);
+		$data = json_decode($curl->exec(PartnerSetting::SUPER_PDP_API_URL.'validation_reports', $params, 'POST', $options), TRUE);
 
 		if($data === NULL or isset($data['data'][0]) === FALSE) {
 			throw new \Exception('Unable to validate invoice '.$filepath.' to SuperPDP');
@@ -76,7 +72,7 @@ Class SuperPdpLib {
 
 		$curl = new \util\CurlLib();
 
-		$curl->exec(self::API_URL.'invoices/'.$invoiceId.'/download', [], 'GET', $options);
+		$curl->exec(PartnerSetting::SUPER_PDP_API_URL.'invoices/'.$invoiceId.'/download', [], 'GET', $options);
 		if(mb_strlen(file_get_contents($filepath)) === 0) {
 			throw new \Exception('Unable to download invoice '.$invoiceId.' from SuperPDP.');
 		}
@@ -97,10 +93,10 @@ Class SuperPdpLib {
 		];
 
 		$curl = new \util\CurlLib();
-		$data = json_decode($curl->exec(self::API_URL.'invoices/'.$invoiceId, [], 'GET', $options), TRUE);
+		$data = json_decode($curl->exec(PartnerSetting::SUPER_PDP_API_URL.'invoices/'.$invoiceId, [], 'GET', $options), TRUE);
 
 		if($data === NULL) {
-			throw new \Exception('Unable to egt invoice '.$invoiceId.' from SuperPDP.');
+			throw new \Exception('Unable to get invoice '.$invoiceId.' from SuperPDP.');
 		}
 
 		LogLib::save('getInvoice', 'Superpdp', ['invoiceId' => $invoiceId]);
@@ -122,7 +118,7 @@ Class SuperPdpLib {
 		];
 
 		$curl = new \util\CurlLib();
-		$data = json_decode($curl->exec(self::API_URL.'invoices', http_build_query($body), 'GET', $options), TRUE);
+		$data = json_decode($curl->exec(PartnerSetting::SUPER_PDP_API_URL.'invoices', http_build_query($body), 'GET', $options), TRUE);
 
 		LogLib::save('getInvoices', 'Superpdp');
 
@@ -130,22 +126,150 @@ Class SuperPdpLib {
 
 	}
 
+	/*** AUTH METHODS ***/
+
+	public static function getAuthorizeUrl(\farm\Farm $eFarm): string {
+
+		$clientId = PartnerSetting::$pdpCredentials['client_id'];
+		$state = self::getState($eFarm);
+		$redirectionUri = self::getRedirectionUri();
+
+		return PartnerSetting::SUPER_PDP_OAUTH_URL.'authorize?grant_type=authorization_code&client_id='.$clientId.'&state='.$state.'&scopes=&response_type=code&redirect_uri='.urlencode($redirectionUri);
+	}
+
+	public static function getState(\farm\Farm $eFarm): string {
+
+		return \main\CryptLib::encrypt($eFarm['id'], 'superpdp');
+
+	}
+
+	public static function getFarm(string $state): \farm\Farm {
+
+		$farmId = (int)\main\CryptLib::decrypt($state, 'superpdp');
+		return \farm\FarmLib::getById($farmId);
+
+	}
+
+	public static function retrieveToken(string $code, string $state): \farm\Farm {
+
+		$eFarm = self::getFarm($state);
+		if($eFarm->empty()) {
+			throw new \NotExistsAction();
+		}
+
+		\farm\FarmLib::connectDatabase($eFarm);
+
+		$url = PartnerSetting::SUPER_PDP_OAUTH_URL.'/token';
+		$redirectionUri = self::getRedirectionUri();
+		$clientId = PartnerSetting::$pdpCredentials['client_id'];
+		$clientSecret = PartnerSetting::$pdpCredentials['client_secret'];
+
+		$body = [
+			'grant_type' => 'authorization_code',
+			'code' => $code,
+			'redirect_uri' => $redirectionUri,
+			'client_id' => $clientId,
+			'client_secret' => $clientSecret,
+		];
+
+		$options = [
+			CURLOPT_HTTPHEADER => [
+				'Content-Type: application/x-www-form-urlencoded',
+			],
+			CURLOPT_RETURNTRANSFER => TRUE,
+			CURLOPT_VERBOSE => TRUE,
+		];
+
+		$curl = new \util\CurlLib();
+		$data = json_decode($curl->exec($url, http_build_query($body), 'POST', $options), TRUE);
+
+		if(($data['error'] ?? NULL) !== NULL) {
+			throw new \NotExpectedAction('SuperPdp, cannot retrieve access token, error : '.$data['error'].', error description : '.$data['error_description']);
+		}
+
+		$ePartner = new Partner([
+			'partner' => PartnerSetting::SUPER_PDP,
+			'accessToken' => $data['access_token'],
+			'refreshToken' => $data['refresh_token'],
+			'params' => [],
+			'expiresAt' => new \Sql('ADDDATE(NOW(), INTERVAL '.$data['expires_in'].' SECOND)'),
+			'updatedAt' => new \Sql('NOW()'),
+			'updatedBy' => \user\ConnectionLib::getOnline(),
+		]);
+
+		if(LIME_ENV === 'dev') {
+			$ePartner['updatedBy'] = new \user\User(['id' => 21]);
+			$ePartner['createdBy'] = new \user\User(['id' => 21]);
+		}
+
+		Partner::model()->option('add-replace')->insert($ePartner);
+
+		LogLib::save('getAccessToken', 'Superpdp');
+
+		return $eFarm;
+
+	}
+
+	public static function getCompany(): array {
+
+		$accessToken = self::getValidToken();
+
+		$options = [
+			CURLOPT_HTTPHEADER => [
+				'Authorization: Bearer '.$accessToken,
+				'Content-Type: application/json',
+			],
+			CURLOPT_RETURNTRANSFER => TRUE,
+		];
+		$curl = new \util\CurlLib();
+		$data = json_decode($curl->exec(PartnerSetting::SUPER_PDP_API_URL.'companies/me', [], 'GET', $options), TRUE);
+
+		if($data === NULL) {
+			return [];
+		}
+
+		return $data;
+
+	}
+
 	public static function getValidToken(): ?string {
 
-		return Partner::model()
+		$accessToken = Partner::model()
 			->wherePartner(PartnerSetting::SUPER_PDP)
 			->where(new \Sql('expiresAt > NOW()'))
 			->getValue('accessToken');
 
+		if($accessToken === NULL) {
+
+			$accessToken = \account\SuperPdpLib::refreshAccessToken();
+
+		}
+
+		return $accessToken;
+
 	}
 
+	private static function getRedirectionUri(): string {
 
-	public static function refreshAccessToken(array $clientIdentifiers): string {
+		if(LIME_ENV === 'dev') {
+			return 'http://www.dev-ouvretaferme.localhost/public:superpdp';
+		}
+
+		return \Lime::getUrl().'/public:superpdp';
+
+	}
+
+	private static function refreshAccessToken(): string {
+
+		$ePartner = PartnerLib::getByPartner(PartnerSetting::SUPER_PDP);
+		$redirectionUri = self::getRedirectionUri();
 
 		$body = [
-			'grant_type' => 'client_credentials',
-			'client_id' => $clientIdentifiers['id'],
-			'client_secret' => $clientIdentifiers['secret'],
+			'grant_type' => 'refresh_token',
+			'refresh_token' => $ePartner['refreshToken'],
+			'redirect_uri' => $redirectionUri,
+			'client_id' => PartnerSetting::$pdpCredentials['client_id'],
+			'client_secret' => PartnerSetting::$pdpCredentials['client_secret'],
 		];
 
 		$options = [
@@ -156,15 +280,16 @@ Class SuperPdpLib {
 		];
 
 		$curl = new \util\CurlLib();
-		$data = json_decode($curl->exec(self::AUTHORIZE_URL.'token', http_build_query($body), 'POST', $options), TRUE);
+		$data = json_decode($curl->exec(PartnerSetting::SUPER_PDP_OAUTH_URL.'token', http_build_query($body), 'POST', $options), TRUE);
 
 		if(($data['error'] ?? NULL) !== NULL) {
-			throw new \NotExpectedAction('SuperPdp : cannot retrieve access token');
+			throw new \NotExpectedAction('SuperPdp : cannot retrieve access token. Error '.$data['error'].', description : '.$data['error_description']);
 		}
 
 		$ePartner = new Partner([
 			'partner' => PartnerSetting::SUPER_PDP,
 			'accessToken' => $data['access_token'],
+			'refreshToken' => $data['refresh_token'],
 			'params' => [],
 			'expiresAt' => new \Sql('ADDDATE(NOW(), INTERVAL '.$data['expires_in'].' SECOND)'),
 			'updatedAt' => new \Sql('NOW()'),

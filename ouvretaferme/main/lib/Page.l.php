@@ -69,7 +69,7 @@ class PageLib {
 		$package = $data->__page['package'];
 		$app = \Package::getApp($package);
 
-		if($app === 'accounting' and LIME_REQUEST_PATH !== '/company/admin/') {
+		if($app === 'accounting' and LIME_REQUEST_PATH !== '/company/admin/' and str_starts_with(LIME_REQUEST_PATH, '/public') === FALSE) {
 
 			\company\CompanyLib::load($data);
 

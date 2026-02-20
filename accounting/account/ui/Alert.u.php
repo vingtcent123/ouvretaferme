@@ -85,6 +85,8 @@ class AlertUi {
 			'Import::cancelled' => s("Cet import a bien été annulé !"),
 			'Import::updated' => s("L'import va bientôt se relancer !"),
 
+			'Pdp::connected' => s("Votre ferme est bien connectée à la plateforme agréée !"),
+
 			default => null
 
 		};

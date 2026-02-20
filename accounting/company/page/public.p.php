@@ -49,3 +49,20 @@ new Page()
 		throw new ViewAction($data, ':beta');
 
 	});
+
+
+new Page()
+	->get('superpdp', function($data) {
+
+		if(FEATURE_PDP === FALSE) {
+			throw new NotExistsAction();
+		}
+
+		$code = GET('code');
+		$state = GET('state');
+
+		$eFarm = \account\SuperPdpLib::retrieveToken($code, $state);
+
+		throw new RedirectAction(\company\CompanyUi::urlAccount($eFarm).'/pdp?success=account\\Pdp::connected');
+
+	});

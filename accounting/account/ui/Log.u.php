@@ -153,6 +153,7 @@ class LogUi {
 			'reclose' => s("Refermeture de l'exercice #{value}", $params['id']),
 			'generatefec' => s("Génération du FEC de l'exercice #{value}", $params['id']),
 			'lock' => s("Validation d'écritures pour l'exercice #{value}", $params['id']),
+			'import' => s("Import d'un fichier FEC"),
 		};
 
 	}
@@ -206,9 +207,9 @@ class LogUi {
 		return match(strtolower($action)) {
 			'sendinvoice' => s("Envoi de la facture #{value}", $params['filepath']),
 			'downloadinvoice' => s("Téléchargement de la facture #{value}", $params['invoiceId']),
-			'getinvoice' => s("Récupération des informatons de facture #{value}", $params['invoiceId']),
+			'getinvoice' => s("Récupération des informations de la facture #{value}", $params['invoiceId']),
 			'getinvoices' => s("Récupération des factures"),
-			'getaccesstoken' => s("Récupération d'un token d'accès"),
+			'getaccesstoken' => s("Récupération d'un jeton d'accès"),
 		};
 
 	}

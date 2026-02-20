@@ -41,8 +41,11 @@ class PartnerModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'partner' => ['enum', PartnerSetting::$PARTNERS, 'unique' => TRUE, 'cast' => 'enum'],
+			'identifier' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'accessToken' => ['text16', 'cast' => 'string'],
+			'refreshToken' => ['text16', 'cast' => 'string'],
 			'params' => ['json', 'null' => TRUE, 'cast' => 'array'],
+			'synchronizedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'expiresAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
@@ -51,7 +54,7 @@ class PartnerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'partner', 'accessToken', 'params', 'createdAt', 'updatedAt', 'expiresAt', 'createdBy', 'updatedBy'
+			'partner', 'identifier', 'accessToken', 'refreshToken', 'params', 'synchronizedAt', 'createdAt', 'updatedAt', 'expiresAt', 'createdBy', 'updatedBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -134,12 +137,24 @@ class PartnerModel extends \ModuleModel {
 		return $this->where('partner', ...$data);
 	}
 
+	public function whereIdentifier(...$data): PartnerModel {
+		return $this->where('identifier', ...$data);
+	}
+
 	public function whereAccessToken(...$data): PartnerModel {
 		return $this->where('accessToken', ...$data);
 	}
 
+	public function whereRefreshToken(...$data): PartnerModel {
+		return $this->where('refreshToken', ...$data);
+	}
+
 	public function whereParams(...$data): PartnerModel {
 		return $this->where('params', ...$data);
+	}
+
+	public function whereSynchronizedAt(...$data): PartnerModel {
+		return $this->where('synchronizedAt', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): PartnerModel {

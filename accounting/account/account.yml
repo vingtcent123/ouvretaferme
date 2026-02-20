@@ -72,8 +72,11 @@ Log:
 
 Partner:
   partner: enum(PHP(PartnerSetting::$PARTNERS))
+  identifier: ?int(0, null)
   accessToken: text16
+  refreshToken: text16
   params: ?json = PHP([])
+  synchronizedAt: ?datetime
   createdAt: datetime = SQL(NOW())
   updatedAt: datetime = SQL(NOW())
   expiresAt: ?datetime
