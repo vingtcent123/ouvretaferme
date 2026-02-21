@@ -658,7 +658,7 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 			echo '<tr>';
 				echo '<td>'.s("Avec TVA").'</td>';
 				echo '<td>'.s("Opération imposable à la TVA au taux indiqué").'</td>';
-				echo '<td>'.s("Achat de graines, frais de livraison, vente directe, aide ou subvention versée en contrepartie d'une opération (bien ou service), achat ou cession d'immobilisation").'</td>';
+				echo '<td>'.s("Achat de graines, frais de livraison, vente directe, aide ou subvention versée en contrepartie d'une opération (bien ou service), achat ou cession d'immobilisation.<br />À utiliser également pour un achat pour lequel la TVA n'est pas déduite (cas d'un justificatif sans TVA affichée ou pas de déduction de la TVA : le taux de TVA est alors de 0%)").'</td>';
 			echo '</tr>';
 			echo '<tr>';
 				echo '<td>'.s("Exonéré de TVA").'</td>';
