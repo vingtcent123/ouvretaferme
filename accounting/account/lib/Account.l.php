@@ -24,6 +24,15 @@ class AccountLib extends AccountCrud {
 
 	}
 
+	public static function countByThirdParty(): \Collection {
+
+		return Account::model()
+			->select(['count' => new \Sql('COUNT(*)', 'int'), 'thirdParty'])
+			->group(['thirdParty'])
+			->getCollection();
+
+	}
+
 	public static function countByClass(string $class): int {
 
 		return Account::model()

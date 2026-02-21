@@ -11,10 +11,11 @@ class ThirdParty extends ThirdPartyElement {
 
 	public function acceptDelete(): bool {
 
+		$this->expects(['operations', 'accounts']);
 		return (
 			$this->exists() === TRUE and
-			\journal\Operation::model()->whereThirdParty($this)->count() === 0 and
-			Account::model()->whereThirdParty($this)->count() === 0
+			$this['operations'] === 0 and
+			$this['accounts'] === 0
 		);
 
 	}

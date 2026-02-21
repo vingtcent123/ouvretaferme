@@ -11,6 +11,7 @@ new \account\ThirdPartyPage()
 
 		$cOperation = \journal\OperationLib::countGroupByThirdParty(array_slice($financialYearIds, 0, 2));
 		$cOperationAll = \journal\OperationLib::countByThirdParty();
+		$cAccountByThirdParty = \account\AccountLib::countByThirdParty();
 
 		foreach($data->cThirdParty as &$eThirdParty) {
 
@@ -20,6 +21,8 @@ new \account\ThirdPartyPage()
 				$eThirdParty['operations'][$financialYearId] = $cOperation[$eThirdParty['id']][$financialYearId]['count'] ?? 0;
 			}
 			$eThirdParty['operations']['all'] = $cOperationAll[$eThirdParty['id']] ?? 0;
+
+			$eThirdParty['accounts'] = $cAccountByThirdParty[$eThirdParty['id']]['count'] ?? 0;
 		}
 
 		throw new ViewAction($data);
