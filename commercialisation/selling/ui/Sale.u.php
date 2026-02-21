@@ -1509,7 +1509,7 @@ class SaleUi {
 							$h .= '<td class="sale-summary-value sale-summary-value-highlight">'.\util\TextUi::money($eSale['priceIncludingVat'] ?? 0).'</td>';
 						$h .= '</tr>';
 
-						$h .= '<tr class="color-muted"">';
+						$h .= '<tr class="color-muted">';
 							$h .= '<td style="padding-left: 2rem">'.s("Dont TVA").'</td>';
 							$h .= '<td class="sale-summary-value">'.\util\TextUi::money($eSale['vat'] ?? 0).'</td>';
 						$h .= '</tr>';
