@@ -3,7 +3,10 @@ new \shop\ShopPage()
 	->update(function($data) {
 
 		$data->e['stripe'] = \payment\StripeLib::getByFarm($data->e['farm']);
-		$data->e['cCustomer'] = \selling\CustomerLib::getByIds($data->e['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
+
+		$data->e['cGroupLimit'] = \selling\CustomerGroupLib::getByIds($data->e['limitGroups'], sort: ['name' => SORT_ASC]);
+		$data->e['cCustomerLimit'] = \selling\CustomerLib::getByIds($data->e['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
+
 		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);

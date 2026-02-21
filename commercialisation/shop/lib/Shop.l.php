@@ -10,7 +10,7 @@ class ShopLib extends ShopCrud {
 	public static function getPropertiesUpdate(): \Closure {
 		return function($eShop) {
 
-			$properties = ['fqn', 'name', 'type', 'email', 'description', 'opening', 'openingDelivery', 'openingFrequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption'];
+			$properties = ['fqn', 'name', 'type', 'email', 'description', 'opening', 'openingDelivery', 'openingFrequency', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'limitGroups', 'hasPoint', 'comment', 'commentCaption'];
 
 			if($eShop['paymentCard'] === FALSE) {
 				$properties[] = 'approximate';

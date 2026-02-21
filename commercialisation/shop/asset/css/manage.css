@@ -37,6 +37,20 @@ div.shop-write-fqn label {
 	white-space: nowrap;
 }
 
+div.shop-write-group {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 1rem;
+}
+
+@media (max-width: 575px) {
+
+	div.shop-write-group {
+		grid-template-columns: 1fr;
+	}
+
+}
+
 .date-products {
 	display: grid;
 	align-items: center;

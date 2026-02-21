@@ -125,9 +125,10 @@ class Shop extends ShopElement {
 		$this->expects(['limitCustomers']);
 
 		return (
-			$this['limitCustomers'] === [] or
+			($this['limitCustomers'] === [] and $this['limitGroups'] === []) or
 			$this->canRead() or
-			($e->notEmpty() and in_array($e['id'], $this['limitCustomers']))
+			($e->notEmpty() and in_array($e['id'], $this['limitCustomers'])) or
+			($e->notEmpty() and array_intersect($e['groups'], $this['limitGroups']))
 		);
 
 	}
@@ -369,6 +370,20 @@ class Shop extends ShopElement {
 					->select('id')
 					->whereId('IN', $customers)
 					->whereFarm($this['farm'])
+					->getColumn('id');
+
+				return TRUE;
+
+			})
+			->setCallback('limitGroups.prepare', function(mixed &$groups): bool {
+
+				$this->expects(['farm']);
+
+				$groups = \selling\CustomerGroup::model()
+					->select('id')
+					->whereId('IN', (array)($groups ?? []))
+					->whereFarm($this['farm'])
+					->whereType($this['type'])
 					->getColumn('id');
 
 				return TRUE;

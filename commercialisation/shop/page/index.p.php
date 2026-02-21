@@ -10,7 +10,8 @@ new \farm\FarmPage()
 
 		\farm\FarmerLib::setView('viewShopCurrent', $data->e, $data->eShop);
 
-		$data->eShop['cCustomer'] = \selling\CustomerLib::getByIds($data->eShop['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
+		$data->eShop['cGroupLimit'] = \selling\CustomerGroupLib::getByIds($data->eShop['limitGroups'], sort: ['name' => SORT_ASC]);
+		$data->eShop['cCustomerLimit'] = \selling\CustomerLib::getByIds($data->eShop['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
 
 		if($data->eShop['shared']) {
 
@@ -139,7 +140,9 @@ new shop\ShopPage()
 
 	}, validate: ['canWrite'])
 	->update(function($data) {
+
 		throw new ViewAction($data);
+
 	}, page: 'updateEmbed')
 	->doUpdateProperties('doUpdateEmbed', ['embedUrl', 'embedOnly'], fn() => throw new ReloadAction('shop', 'Shop::updatedEmbed'))
 	->doUpdateProperties('doUpdateStatus', ['status'], function($data) {

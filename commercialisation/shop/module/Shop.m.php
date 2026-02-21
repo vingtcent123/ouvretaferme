@@ -88,6 +88,7 @@ class ShopModel extends \ModuleModel {
 			'terms' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'termsField' => ['bool', 'cast' => 'bool'],
 			'limitCustomers' => ['json', 'cast' => 'array'],
+			'limitGroups' => ['json', 'cast' => 'array'],
 			'orderMin' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'shippingUntil' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
@@ -109,7 +110,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedCategory', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedCategory', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'limitGroups', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -151,6 +152,9 @@ class ShopModel extends \ModuleModel {
 				return FALSE;
 
 			case 'limitCustomers' :
+				return [];
+
+			case 'limitGroups' :
 				return [];
 
 			case 'embedOnly' :
@@ -206,6 +210,9 @@ class ShopModel extends \ModuleModel {
 			case 'limitCustomers' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
+			case 'limitGroups' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+
 			case 'outOfStock' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -224,6 +231,9 @@ class ShopModel extends \ModuleModel {
 		switch($property) {
 
 			case 'limitCustomers' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'limitGroups' :
 				return $value === NULL ? NULL : json_decode($value, TRUE);
 
 			default :
@@ -347,6 +357,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereLimitCustomers(...$data): ShopModel {
 		return $this->where('limitCustomers', ...$data);
+	}
+
+	public function whereLimitGroups(...$data): ShopModel {
+		return $this->where('limitGroups', ...$data);
 	}
 
 	public function whereOrderMin(...$data): ShopModel {

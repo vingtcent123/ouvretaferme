@@ -250,7 +250,7 @@ class ShopUi {
 
 		$h .= $this->getOpeningFields($form, $eShop);
 
-		$update = ['approximate', 'outOfStock', 'orderMin', 'shipping', 'shippingUntil', 'limitCustomers', 'hasPoint', 'comment', 'commentCaption', 'description'];
+		$update = ['description', 'approximate', 'outOfStock', 'orderMin', 'shipping', 'shippingUntil', 'hasPoint', 'comment', 'commentCaption'];
 
 		if($eShop['shared']) {
 			array_delete($update, 'shipping');
@@ -267,6 +267,26 @@ class ShopUi {
 				$d->group['class'] = 'hide';
 			}
 		]);
+
+		$limit = '<div class="shop-write-group">';
+			$limit .= '<div>';
+				$limit .= '<fieldset>';
+					$limit .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Clients").'</legend>';
+					$limit .= $form->dynamicField($eShop, 'limitCustomers');
+				$limit .= '</fieldset>';
+			$limit .= '</div>';
+			$limit .= '<div>';
+				$limit .= '<fieldset>';
+					$limit .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Groupes de clients").'</legend>';
+					$limit .= $form->dynamicField($eShop, 'limitGroups');
+				$limit .= '</fieldset>';
+			$limit .= '</div>';
+		$limit .= '</div>';
+
+		$h .= $form->group(
+			s("Limiter l'accès à cette boutique à certains clients seulement").\util\FormUi::info(s("Seuls les clients que vous aurez choisis pourront accéder à cette boutique.")),
+			$limit
+		);
 
 		$h .= $form->group(
 			self::p('logo')->label,
@@ -1197,15 +1217,22 @@ class ShopUi {
 
 				}
 
-				if($eShop['cCustomer']->notEmpty()) {
+				if(
+					$eShop['cCustomerLimit']->notEmpty() or
+					$eShop['cGroupLimit']->notEmpty()
+				) {
 
 					$h .= '<dt>';
 						$h .= s("Clients autorisés");
 					$h .= '</dt>';
 					$h .= '<dd>';
 
-						$customers = $eShop['cCustomer']->toArray(fn($eCustomer) => encode($eCustomer->getName()));
-						$h .= implode(' / ', $customers);
+						$limits = array_merge(
+							$eShop['cCustomerLimit']->toArray(fn($eCustomer) => encode($eCustomer->getName())),
+							$eShop['cGroupLimit']->toArray(fn($eGroup) => \selling\CustomerGroupUi::link($eGroup))
+						);
+
+						$h .= implode(', ', $limits);
 
 					$h .= '</dd>';
 
@@ -1239,7 +1266,6 @@ class ShopUi {
 			'sharedGroup' => s("Groupage des produits sur la boutique"),
 			'sharedCategory' => s("Conserver les catégories créées par les producteurs à l'affichage des produits"),
 			'orderMin' => s("Montant minimal de commande"),
-			'limitCustomers' => s("Limiter l'accès à cette boutique à certains clients seulement"),
 			'shipping' => s("Frais de livraison par commande"),
 			'shippingUntil' => s("Montant minimal de commande au delà duquel les frais de livraison sont offerts"),
 			'embedUrl' => s("Adresse de votre site internet"),
@@ -1450,8 +1476,8 @@ class ShopUi {
 				break;
 
 			case 'limitCustomers' :
-				$d->after = \util\FormUi::info(s("Seuls les clients que vous aurez choisis pourront accéder à cette boutique."));
-				$d->autocompleteDefault = fn(Shop $e) => $e['cCustomer'] ?? $e->expects(['cCustomer']);
+				$d->autocompleteDefault = fn(Shop $e) => $e['cCustomerLimit'] ?? $e->expects(['cCustomerLimit']);
+				$d->placeholder = s("Tapez un nom de client à autoriser");
 				$d->autocompleteBody = function(\util\FormUi $form, Shop $e) {
 					return [
 						'farm' => $e['farm']['id'],
@@ -1459,6 +1485,19 @@ class ShopUi {
 				};
 				new \selling\CustomerUi()->query($d, TRUE);
 				$d->group = ['wrapper' => 'limitCustomers'];
+				break;
+
+			case 'limitGroups' :
+				$d->autocompleteDefault = fn(Shop $e) => $e['cGroupLimit'] ?? $e->expects(['cGroupLimit']);
+				$d->placeholder = s("Tapez un nom de groupe de clients à autoriser");
+				$d->autocompleteBody = function(\util\FormUi $form, Shop $e) {
+					return [
+						'farm' => $e['farm']['id'],
+						'type' => $e['type']
+					];
+				};
+				new \selling\CustomerGroupUi()->query($d, TRUE);
+				$d->group = ['wrapper' => 'limitGroups'];
 				break;
 
 			case 'customFont':
