@@ -1,5 +1,5 @@
 <?php
-namespace account;
+namespace pdp;
 
 Class PdpUi {
 
@@ -17,4 +17,5 @@ Class PdpUi {
 		return $h;
 
 	}
+
 }

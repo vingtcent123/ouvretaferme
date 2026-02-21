@@ -1,0 +1,17 @@
+Address:
+  id: serial32
+  identifier: text8(0, null)
+  company: pdp\Company
+  status: enum(SENDING, PENDING, CREATED, ERROR) = SENDING
+  statusMessage : ?text(0, null)
+  type: enum(PEPPOL, PPF) = PEPPOL
+  isReplyTo: bool
+  createdAt: datetime
+
+Company:
+  id: serial32
+  number: int(0, null)
+  formal_name: ?text8(0, null)
+  address: ?text(0, null)
+  postcode: ?text8(0, null)
+  city: ?text8(0, null)

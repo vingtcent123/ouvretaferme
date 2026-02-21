@@ -61,8 +61,8 @@ new Page()
 		$code = GET('code');
 		$state = GET('state');
 
-		$eFarm = \account\SuperPdpLib::retrieveToken($code, $state);
+		$eFarm = \pdp\ConnectionLib::retrieveToken($code, $state);
 
-		throw new RedirectAction(\company\CompanyUi::urlAccount($eFarm).'/pdp?success=account\\Pdp::connected');
+		throw new RedirectAction(Lime::getUrl().\farm\FarmUi::urlConnected($eFarm).'/pdp/?success=account\\Pdp::connected');
 
 	});

@@ -146,7 +146,7 @@ class CompanyUi {
 				$h .= '</a>';
 
 				if(FEATURE_PDP) {
-					$h .= '<a href="'.CompanyUi::urlAccount($eFarm).'/pdp" class="util-button">';
+					$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/pdp/" class="util-button">';
 						$h .= '<h4>'.s("La plateforme agréée").'<br /><small>'.s("Super PDP").'</small></h4>';
 						$h .= \Asset::icon('archive');
 					$h .= '</a>';

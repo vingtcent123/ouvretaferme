@@ -154,6 +154,14 @@ class Farm extends FarmElement {
 
 	}
 
+	public function siren(): string {
+
+		$this->expects(['siret']);
+
+		return mb_substr($this['siret'], 0, 9);
+
+	}
+
 	public function canSection(string $section): bool {
 
 		switch($section) {

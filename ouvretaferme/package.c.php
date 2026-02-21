@@ -25,6 +25,7 @@ Package::setList([
 	'media' => 'base',
 	'overview' => 'accounting',
 	'payment' => 'commercialisation',
+	'pdp' => 'accounting',
 	'plant' => 'production',
 	'preaccounting' => 'accounting',
 	'securing' => 'base',
