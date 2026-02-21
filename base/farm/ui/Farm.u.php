@@ -1002,6 +1002,10 @@ class FarmUi {
 				'icon' => \Asset::icon('journal-text'),
 				'label' => s("Journal de caisse")
 			],
+			'invoicing' => [
+				'icon' => \Asset::icon('receipt'),
+				'label' => s("Facturation électronique")
+			],
 			'accounting' => [
 				'icon' => \Asset::icon('journal-bookmark'),
 				'label' => s("Logiciel comptable").' <span class="util-badge bg-primary">'.s("BETA").'</span>'
@@ -1054,6 +1058,10 @@ class FarmUi {
 				'balance' => \company\CompanyUi::urlJournal($eFarm).'/'.$name,
 				'assets' => \farm\FarmUi::urlConnected($eFarm).'/immobilisations',
 				'analyze' => \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/etats-financiers/',
+			},
+			'invoicing' => match($name) {
+				'buy' => \farm\FarmUi::urlConnected($eFarm).'/facturation-electronique/achats/',
+				'sell' => \farm\FarmUi::urlConnected($eFarm).'/facturation-electronique/ventes/',
 			},
 
 		};
@@ -1126,6 +1134,11 @@ class FarmUi {
 				'balance' => s("Balance"),
 				'assets' => s("Immobilisations"),
 				'analyze' => s("États financiers"),
+			},
+
+			'invoicing' => match($name) {
+				'buy' => s("Factures d'achat"),
+				'sell' => s("Factures de vente"),
 			},
 
 		};
@@ -1362,6 +1375,17 @@ class FarmUi {
 				$h .= $this->getNav('preaccounting', $nav, link: \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite/verifier:fec');
 
 			$h .= '</div>';
+
+			if(FEATURE_PDP and $eFarm['hasPdp']) {
+
+				$h .= '<div class="farm-tab-wrapper farm-nav-invoicing">';
+
+					$h .= $this->getNav('invoicing', $nav);
+					$h .= $this->getInvoicingMenu($eFarm, subNav: $subNav);
+
+				$h .= '</div>';
+
+			}
 
 			$h .= '<div class="farm-tab-wrapper farm-tab-subnav farm-nav-accounting">';
 
@@ -1923,6 +1947,16 @@ class FarmUi {
 		$h .= '</div>';
 
 		return $h;
+
+	}
+
+	public function getInvoicingMenu(Farm $eFarm, ?string $subNav = NULL): string {
+
+		return $this->getSubNav(
+			$eFarm,
+			'invoicing',
+			$subNav
+		);
 
 	}
 
@@ -2580,6 +2614,9 @@ class FarmUi {
 
 			case 'accounting':
 				return ['operations', 'preaccounting', 'book', 'balance', 'assets', 'analyze'];
+
+			case 'invoicing':
+				return ['buy', 'sell'];
 
 		};
 

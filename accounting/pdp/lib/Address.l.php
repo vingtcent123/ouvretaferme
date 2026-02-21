@@ -62,28 +62,30 @@ Class AddressLib extends AddressCrud {
 
 	}
 
-	public static function formatIdentifier(string $identifier): string {
+	public static function getSchemeIdentifier(): string {
 
 		$eFarm = \farm\Farm::getConnected();
 
 		if($eFarm->isFR()) {
 
-			if(LIME_ENV === 'dev') {
-				return '0225:315143296_103_'.uniqid();
-			}
-
-			return self::FR_SCHEME_ID.':'.$identifier;
+			return self::FR_SCHEME_ID;
 
 		} else if($eFarm->isBE()) {
 
 			if($eFarm->getConf('hasVat')) {
-				return self::BE_VAT_SCHEME_ID.':'.$identifier;
+				return self::BE_VAT_SCHEME_ID;
 			}
-			return self::BE_SCHEME_ID.':'.$identifier;
+			return self::BE_SCHEME_ID;
 
 		}
 
-		throw new Exception('Unhandled farm for e-invoicing');
+		throw new \Exception('Unhandled farm for e-invoicing');
+
+	}
+
+	public static function formatIdentifier(string $identifier): string {
+
+		return self::getSchemeIdentifier().':'.$identifier;
 
 	}
 

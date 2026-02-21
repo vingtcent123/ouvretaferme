@@ -1,9 +1,61 @@
-Invoice:
-  id: serial32
-  direction: enum(IN, OUT)
-  createdAt: datetime
-  synchronizedAt: datetime = SPECIAL(now)
-
-InvoiceLine:
+Event:
   id: serial32
   invoice: invoicing\Invoice
+  statusCode: text8 @charset(ascii)
+  statusText: text8
+  createdAt: datetime
+  INDEX: [
+    ["invoice"]
+  ]
+
+Invoice:
+  id: serial32
+  company: pdp\Company
+  direction: ?enum(IN, OUT)
+  number: ?text8
+  issuedAt: ?date
+  paymentDueAt: ?date
+  buyer: invoicing\ThirdParty
+  seller: invoicing\ThirdParty
+  amountExcludingVat: ?decimal(10, 2, 0.0, null)
+  amountIncludingVat: ?decimal(10, 2, 0.0, null)
+  vatByRate: ?json
+  vat: decimal(8, 2)
+  status: enum(SYNCHRONIZED, ERROR)
+  createdAt: datetime
+  synchronizedAt: datetime = SPECIAL(now)
+  cashflow: ?bank\Cashflow
+  accountingHash: ?textFixed(20, 20) @charset(ascii)
+  INDEX: [
+    ["company"]
+  ]
+
+Line:
+  id: serial32
+  invoice: invoicing\Invoice
+  identifier: text8
+  name: text8
+  unitPrice: ?decimal(12, 6)
+  price: ?decimal(8, 2) # net_amount
+  vatRate: ?decimal(4, 2, 0.0, 100)
+  vatCode: text8 @charset(ascii)
+  quantity: ?decimal(10, 4)
+  quantityCode: text8 @charset(ascii)
+  nature: enum(GOOD, SERVICE) = GOOD
+  account: ?account\Account
+  INDEX: [
+    ["invoice"]
+  ]
+
+ThirdParty:
+  id: serial32
+  name: text8
+  siren: ?text8
+  electronicAddress: text8
+  legalIdentifier: text8
+  vatNumber: ?text8
+  countryCode: ?text8(2,2)
+  UNIQUE: [
+    ["siren"],
+    ["electronicAddress"],
+  ]

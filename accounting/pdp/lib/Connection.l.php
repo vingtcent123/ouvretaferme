@@ -90,6 +90,8 @@ Class ConnectionLib {
 
 		CompanyLib::synchronize();
 
+		\farm\Farm::model()->update($eFarm, ['hasPdp' => TRUE]);
+
 		\account\LogLib::save('getAccessToken', 'Superpdp');
 
 		return $eFarm;

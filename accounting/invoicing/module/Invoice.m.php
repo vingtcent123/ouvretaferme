@@ -10,6 +10,9 @@ abstract class InvoiceElement extends \Element {
 	const IN = 'in';
 	const OUT = 'out';
 
+	const SYNCHRONIZED = 'synchronized';
+	const ERROR = 'error';
+
 	public static function getSelection(): array {
 		return Invoice::model()->getProperties();
 	}
@@ -44,13 +47,37 @@ class InvoiceModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'direction' => ['enum', [\invoicing\Invoice::IN, \invoicing\Invoice::OUT], 'cast' => 'enum'],
+			'company' => ['element32', 'pdp\Company', 'cast' => 'element'],
+			'direction' => ['enum', [\invoicing\Invoice::IN, \invoicing\Invoice::OUT], 'null' => TRUE, 'cast' => 'enum'],
+			'number' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'issuedAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'paymentDueAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
+			'buyer' => ['element32', 'invoicing\ThirdParty', 'cast' => 'element'],
+			'seller' => ['element32', 'invoicing\ThirdParty', 'cast' => 'element'],
+			'amountExcludingVat' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => 0.0, 'max' => 99999999.99, 'null' => TRUE, 'cast' => 'float'],
+			'amountIncludingVat' => ['decimal', 'digits' => 10, 'decimal' => 2, 'min' => 0.0, 'max' => 99999999.99, 'null' => TRUE, 'cast' => 'float'],
+			'vatByRate' => ['json', 'null' => TRUE, 'cast' => 'array'],
+			'vat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'cast' => 'float'],
+			'status' => ['enum', [\invoicing\Invoice::SYNCHRONIZED, \invoicing\Invoice::ERROR], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'synchronizedAt' => ['datetime', 'cast' => 'string'],
+			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
+			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'direction', 'createdAt', 'synchronizedAt'
+			'id', 'company', 'direction', 'number', 'issuedAt', 'paymentDueAt', 'buyer', 'seller', 'amountExcludingVat', 'amountIncludingVat', 'vatByRate', 'vat', 'status', 'createdAt', 'synchronizedAt', 'cashflow', 'accountingHash'
+		]);
+
+		$this->propertiesToModule += [
+			'company' => 'pdp\Company',
+			'buyer' => 'invoicing\ThirdParty',
+			'seller' => 'invoicing\ThirdParty',
+			'cashflow' => 'bank\Cashflow',
+		];
+
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['company']
 		]);
 
 	}
@@ -76,8 +103,28 @@ class InvoiceModel extends \ModuleModel {
 			case 'direction' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'vatByRate' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+
+			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			default :
 				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'vatByRate' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			default :
+				return parent::decode($property, $value);
 
 		}
 
@@ -95,8 +142,52 @@ class InvoiceModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
+	public function whereCompany(...$data): InvoiceModel {
+		return $this->where('company', ...$data);
+	}
+
 	public function whereDirection(...$data): InvoiceModel {
 		return $this->where('direction', ...$data);
+	}
+
+	public function whereNumber(...$data): InvoiceModel {
+		return $this->where('number', ...$data);
+	}
+
+	public function whereIssuedAt(...$data): InvoiceModel {
+		return $this->where('issuedAt', ...$data);
+	}
+
+	public function wherePaymentDueAt(...$data): InvoiceModel {
+		return $this->where('paymentDueAt', ...$data);
+	}
+
+	public function whereBuyer(...$data): InvoiceModel {
+		return $this->where('buyer', ...$data);
+	}
+
+	public function whereSeller(...$data): InvoiceModel {
+		return $this->where('seller', ...$data);
+	}
+
+	public function whereAmountExcludingVat(...$data): InvoiceModel {
+		return $this->where('amountExcludingVat', ...$data);
+	}
+
+	public function whereAmountIncludingVat(...$data): InvoiceModel {
+		return $this->where('amountIncludingVat', ...$data);
+	}
+
+	public function whereVatByRate(...$data): InvoiceModel {
+		return $this->where('vatByRate', ...$data);
+	}
+
+	public function whereVat(...$data): InvoiceModel {
+		return $this->where('vat', ...$data);
+	}
+
+	public function whereStatus(...$data): InvoiceModel {
+		return $this->where('status', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): InvoiceModel {
@@ -105,6 +196,14 @@ class InvoiceModel extends \ModuleModel {
 
 	public function whereSynchronizedAt(...$data): InvoiceModel {
 		return $this->where('synchronizedAt', ...$data);
+	}
+
+	public function whereCashflow(...$data): InvoiceModel {
+		return $this->where('cashflow', ...$data);
+	}
+
+	public function whereAccountingHash(...$data): InvoiceModel {
+		return $this->where('accountingHash', ...$data);
 	}
 
 

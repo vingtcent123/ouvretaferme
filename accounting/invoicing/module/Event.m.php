@@ -40,19 +40,24 @@ class EventModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
+			'id' => ['serial32', 'cast' => 'int'],
 			'invoice' => ['element32', 'invoicing\Invoice', 'cast' => 'element'],
-			'statusCode' => ['text', 'null' => TRUE, 'cast' => 'string'],
-			'statusText' => ['text', 'null' => TRUE, 'cast' => 'string'],
+			'statusCode' => ['text8', 'charset' => 'ascii', 'cast' => 'string'],
+			'statusText' => ['text8', 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'invoice', 'statusCode', 'statusText', 'createdAt'
+			'id', 'invoice', 'statusCode', 'statusText', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
 			'invoice' => 'invoicing\Invoice',
 		];
+
+		$this->indexConstraints = array_merge($this->indexConstraints, [
+			['invoice']
+		]);
 
 	}
 
@@ -62,6 +67,10 @@ class EventModel extends \ModuleModel {
 
 	public function where(...$data): EventModel {
 		return parent::where(...$data);
+	}
+
+	public function whereId(...$data): EventModel {
+		return $this->where('id', ...$data);
 	}
 
 	public function whereInvoice(...$data): EventModel {

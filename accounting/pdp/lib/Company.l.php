@@ -9,26 +9,6 @@ namespace pdp;
 
 Class CompanyLib extends CompanyCrud {
 
-	private static function applyNumberFilter(): CompanyModel {
-
-		if(LIME_ENV === 'dev') {
-
-			return Company::model()->whereNumber(1);
-
-		} else {
-
-			$eFarm = \farm\Farm::getConnected();
-
-			if($eFarm->isFR()) {
-				return Company::model()->whereNumber($eFarm->siren());
-			} else {
-				// TODO belges : numéro entreprise ?? C'est le siren ?
-				return Company::model()->whereNumber($eFarm->siren());
-			}
-		}
-
-	}
-
 	public static function get(): Company {
 
 
@@ -78,6 +58,26 @@ Class CompanyLib extends CompanyCrud {
 			AddressLib::synchronize($eCompany);
 
 		Company::model()->commit();
+	}
+
+	private static function applyNumberFilter(): CompanyModel {
+
+		if(LIME_ENV === 'dev') {
+
+			return Company::model()->whereNumber(1);
+
+		} else {
+
+			$eFarm = \farm\Farm::getConnected();
+
+			if($eFarm->isFR()) {
+				return Company::model()->whereNumber($eFarm->siren());
+			} else {
+				// TODO belges : numéro entreprise ?? C'est le siren ?
+				return Company::model()->whereNumber($eFarm->siren());
+			}
+		}
+
 	}
 
 }

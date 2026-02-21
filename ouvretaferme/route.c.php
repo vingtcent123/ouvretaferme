@@ -113,6 +113,21 @@ Route::register([
 			'priority' => 5,
 			'route' => ['facturation-electronique-les-mains-dans-les-poches'],
 		],
+		'/facturation-electronique/achats/' => [
+			'request' => 'invoicing/buy',
+			'priority' => 5,
+			'route' => ['facturation-electronique', 'achats'],
+		],
+		'/facturation-electronique/facture/{id}' => [
+			'request' => 'invoicing/invoice',
+			'priority' => 5,
+			'route' => ['facturation-electronique', 'facture', '{id}'],
+		],
+		'/facturation-electronique/ventes/' => [
+			'request' => 'invoicing/sell',
+			'priority' => 5,
+			'route' => ['facturation-electronique', 'ventes'],
+		],
 		'/facture/{id}' => [
 			'request' => 'selling/invoice',
 			'priority' => 5,

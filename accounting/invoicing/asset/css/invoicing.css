@@ -4,3 +4,18 @@
 	text-align: center;
 	min-height: 20rem;
 }
+
+
+.invoice-summary {
+	margin-bottom: 2rem;
+	max-width: 40rem;
+}
+
+.invoice-summary-value {
+	text-align: right;
+}
+
+.invoice-summary-value-highlight {
+	font-weight: bold;
+	font-size: 1.2rem;
+}

@@ -89,6 +89,7 @@ class FarmModel extends \ModuleModel {
 			'hasCultivations' => ['bool', 'cast' => 'bool'],
 			'hasAccounting' => ['bool', 'cast' => 'bool'],
 			'hasFinancialYears' => ['bool', 'cast' => 'bool'],
+			'hasPdp' => ['bool', 'cast' => 'bool'],
 			'membership' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'startedAt' => ['int16', 'min' => date('Y') - 100, 'max' => date('Y') + 10, 'null' => TRUE, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -96,7 +97,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'legalName', 'legalEmail', 'legalCountry', 'siret', 'verified', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'hasFinancialYears', 'membership', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'legalName', 'legalEmail', 'legalCountry', 'siret', 'verified', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasCultivations', 'hasAccounting', 'hasFinancialYears', 'hasPdp', 'membership', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -147,6 +148,9 @@ class FarmModel extends \ModuleModel {
 				return FALSE;
 
 			case 'hasFinancialYears' :
+				return FALSE;
+
+			case 'hasPdp' :
 				return FALSE;
 
 			case 'membership' :
@@ -375,6 +379,10 @@ class FarmModel extends \ModuleModel {
 
 	public function whereHasFinancialYears(...$data): FarmModel {
 		return $this->where('hasFinancialYears', ...$data);
+	}
+
+	public function whereHasPdp(...$data): FarmModel {
+		return $this->where('hasPdp', ...$data);
 	}
 
 	public function whereMembership(...$data): FarmModel {
