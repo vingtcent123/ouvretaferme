@@ -46,7 +46,7 @@ class InvoiceModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
-			'id' => ['serial32', 'cast' => 'int'],
+			'id' => ['serial64', 'cast' => 'int'],
 			'company' => ['element32', 'pdp\Company', 'cast' => 'element'],
 			'direction' => ['enum', [\invoicing\Invoice::IN, \invoicing\Invoice::OUT], 'null' => TRUE, 'cast' => 'enum'],
 			'number' => ['text8', 'null' => TRUE, 'cast' => 'string'],

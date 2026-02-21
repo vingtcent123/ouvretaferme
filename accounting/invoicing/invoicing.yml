@@ -1,5 +1,5 @@
 Event:
-  id: serial32
+  id: serial64
   invoice: invoicing\Invoice
   statusCode: text8 @charset(ascii)
   statusText: text8
@@ -9,7 +9,7 @@ Event:
   ]
 
 Invoice:
-  id: serial32
+  id: serial64
   company: pdp\Company
   direction: ?enum(IN, OUT)
   number: ?text8
@@ -31,7 +31,7 @@ Invoice:
   ]
 
 Line:
-  id: serial32
+  id: serial64
   invoice: invoicing\Invoice
   identifier: text8
   name: text8

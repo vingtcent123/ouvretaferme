@@ -40,8 +40,8 @@ class EventModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
-			'id' => ['serial32', 'cast' => 'int'],
-			'invoice' => ['element32', 'invoicing\Invoice', 'cast' => 'element'],
+			'id' => ['serial64', 'cast' => 'int'],
+			'invoice' => ['element64', 'invoicing\Invoice', 'cast' => 'element'],
 			'statusCode' => ['text8', 'charset' => 'ascii', 'cast' => 'string'],
 			'statusText' => ['text8', 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],

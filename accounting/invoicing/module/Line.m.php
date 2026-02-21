@@ -43,8 +43,8 @@ class LineModel extends \ModuleModel {
 		parent::__construct();
 
 		$this->properties = array_merge($this->properties, [
-			'id' => ['serial32', 'cast' => 'int'],
-			'invoice' => ['element32', 'invoicing\Invoice', 'cast' => 'element'],
+			'id' => ['serial64', 'cast' => 'int'],
+			'invoice' => ['element64', 'invoicing\Invoice', 'cast' => 'element'],
 			'identifier' => ['text8', 'cast' => 'string'],
 			'name' => ['text8', 'cast' => 'string'],
 			'unitPrice' => ['decimal', 'digits' => 12, 'decimal' => 6, 'min' => -999999.999999, 'max' => 999999.999999, 'null' => TRUE, 'cast' => 'float'],
