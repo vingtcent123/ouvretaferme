@@ -310,8 +310,11 @@ class DateLib extends DateCrud {
 		$eDate['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($cProduct);
 		$eDate['cGroup'] = \selling\CustomerGroupLib::getLimitedByProducts($cProduct);
 
-		// Uniquement les boutiques avec un seul producteur
-		$cProduct->mergeCollection(\shop\ProductLib::aggregateBySales($eDate['cSale'], $cProduct));
+		// Uniquement les boutiques avec un seul producteur et des dates de livraison
+		if($eShop['opening'] === \shop\Shop::FREQUENCY) {
+			$cProduct->mergeCollection(\shop\ProductLib::aggregateBySales($eDate['cSale'], $cProduct));
+		}
+
 		$cProduct->sort(['product' => ['name']], natural: TRUE);
 
 		if($eShop['shared']) {
