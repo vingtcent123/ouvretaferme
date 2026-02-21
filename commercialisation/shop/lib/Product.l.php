@@ -299,16 +299,42 @@ class ProductLib extends ProductCrud {
 
 				if($eCustomer->notEmpty()) {
 
+					$eShop = $eDate['shop'];
+
+					$eShop->expects(['shared']);
+
+					if($eShop->isShared()) {
+						$eShop->expects(['ccRange']);
+					}
+
 					$eCustomer->expects(['groups']);
+
+					if(
+						$eShop->isShared() and
+						$eShop['farm']->is($eCustomer['farm'])
+					) {
+
+						$cCustomer = \selling\CustomerLib::getByUserAndFarms(
+							$eCustomer['user'],
+							$eShop['ccRange']->getColumnCollection('farm')
+						);
+
+						$customersIds = $cCustomer->getIds();
+						$customersGroups = array_merge(...$cCustomer->getColumn('groups'));
+
+					} else {
+						$customersIds = [$eCustomer['id']];
+						$customersGroups = $eCustomer['groups'];
+					}
 
 					$m
 						->or(
 							fn() => $this->where(fn() => 'JSON_LENGTH(limitCustomers) = 0 AND JSON_LENGTH(limitGroups) = 0'),
-							fn() => $this->where(fn() => 'JSON_CONTAINS(limitCustomers, \''.$eCustomer['id'].'\')'),
-							fn() => $this->where(fn() => 'JSON_OVERLAPS(limitGroups, "['.implode(', ', $eCustomer['groups']).']")')
+							fn() => $this->where(fn() => 'JSON_OVERLAPS(limitCustomers, "['.implode(', ', $customersIds).']")'),
+							fn() => $this->where(fn() => 'JSON_OVERLAPS(limitGroups, "['.implode(', ', $customersGroups).']")')
 						)
-						->where(fn() => 'JSON_LENGTH(excludeCustomers) = 0 OR JSON_CONTAINS(excludeCustomers, \''.$eCustomer['id'].'\') = 0')
-						->where(fn() => 'JSON_LENGTH(excludeGroups) = 0 OR JSON_OVERLAPS(excludeGroups, "['.implode(', ', $eCustomer['groups']).']") = 0');
+						->where(fn() => 'JSON_LENGTH(excludeCustomers) = 0 OR JSON_OVERLAPS(excludeCustomers, "['.implode(', ', $customersIds).']") = 0')
+						->where(fn() => 'JSON_LENGTH(excludeGroups) = 0 OR JSON_OVERLAPS(excludeGroups, "['.implode(', ', $customersGroups).']") = 0');
 
 				} else {
 
