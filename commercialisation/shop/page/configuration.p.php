@@ -4,8 +4,8 @@ new \shop\ShopPage()
 
 		$data->e['stripe'] = \payment\StripeLib::getByFarm($data->e['farm']);
 
-		$data->e['cGroupLimit'] = \selling\CustomerGroupLib::getByIds($data->e['limitGroups'], sort: ['name' => SORT_ASC]);
-		$data->e['cCustomerLimit'] = \selling\CustomerLib::getByIds($data->e['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
+		$data->e['cCustomerLimit'] = \selling\CustomerLib::getForRestrictions($data->e['limitCustomers']);
+		$data->e['cGroupLimit'] = \selling\CustomerGroupLib::getForRestrictions($data->e['limitGroups']);
 
 		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 

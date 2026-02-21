@@ -114,7 +114,7 @@ new Page(function($data) {
 		$data->search = new Search([
 			'name' => GET('name'),
 			'group' => GET('group', 'selling\CustomerGroup'),
-			'cGroup' => \selling\CustomerGroupLib::getByFarm($data->eFarm),
+			'cCustomerGroup' => \selling\CustomerGroupLib::getByFarm($data->eFarm),
 			'email' => GET('email'),
 			'category' => GET('category')
 		], GET('sort', default: 'lastName'));
@@ -318,8 +318,8 @@ new Page(function($data) {
 		if($data->eCatalogSelected->notEmpty()) {
 			$data->eCatalogSelected['cProduct'] = \shop\ProductLib::getByCatalog($data->eCatalogSelected, onlyActive: FALSE, reorderChildren: TRUE);
 			$data->eCatalogSelected['cCategory'] = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
-			$data->eCatalogSelected['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($data->eCatalogSelected['cProduct']);
-			$data->eCatalogSelected['cGroup'] = \selling\CustomerGroupLib::getLimitedByProducts($data->eCatalogSelected['cProduct']);
+			$data->eCatalogSelected['cCustomer'] = \selling\CustomerLib::getRestrictedByCollection($data->eCatalogSelected['cProduct']);
+			$data->eCatalogSelected['cCustomerGroup'] = \selling\CustomerGroupLib::getRestrictedByCollection($data->eCatalogSelected['cProduct']);
 		}
 
 		throw new ViewAction($data);

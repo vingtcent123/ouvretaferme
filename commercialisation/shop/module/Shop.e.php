@@ -177,60 +177,6 @@ class Shop extends ShopElement {
 
 	}
 
-	public function getPayments(Point $ePoint): array {
-
-		$payments = [];
-
-		if($ePoint->empty()) {
-
-			if($this['paymentCard']) {
-				$payments[] = \payment\MethodLib::ONLINE_CARD;
-			}
-			if($this['paymentTransfer']) {
-				$payments[] = \payment\MethodLib::TRANSFER;
-			}
-			if($this['paymentOffline']) {
-				$payments[] = NULL;
-			}
-
-		} else {
-
-			if(
-				$ePoint['paymentCard'] or
-				($ePoint['paymentCard'] === NULL and $this['paymentCard'])
-			) {
-				$payments[] = \payment\MethodLib::ONLINE_CARD;
-			}
-			if(
-				$ePoint['paymentTransfer'] or
-				($ePoint['paymentTransfer'] === NULL and $this['paymentTransfer'])
-			) {
-				$payments[] = \payment\MethodLib::TRANSFER;
-			}
-			if(
-				$ePoint['paymentOffline'] or
-				($ePoint['paymentOffline'] === NULL and $this['paymentOffline'])
-			) {
-				$payments[] = NULL;
-			}
-
-		}
-
-		foreach($payments as $key => $payment) {
-
-			if(
-				$payment === \payment\MethodLib::ONLINE_CARD and
-				\payment\StripeLib::getByFarm($this['farm'])->empty()
-			) {
-				unset($payments[$key]);
-			}
-
-		}
-
-		return $payments;
-
-	}
-
 	public function hasSharedKey(): bool {
 		return ($this['sharedHash'] !== NULL);
 	}
@@ -360,35 +306,8 @@ class Shop extends ShopElement {
 				return \payment\MethodLib::isSelectable($this['farm'], $eMethod);
 
 			})
-			->setCallback('limitCustomers.prepare', function(mixed &$customers): bool {
-
-				$this->expects(['farm']);
-
-				$customers = (array)($customers ?? []);
-
-				$customers = \selling\Customer::model()
-					->select('id')
-					->whereId('IN', $customers)
-					->whereFarm($this['farm'])
-					->getColumn('id');
-
-				return TRUE;
-
-			})
-			->setCallback('limitGroups.prepare', function(mixed &$groups): bool {
-
-				$this->expects(['farm']);
-
-				$groups = \selling\CustomerGroup::model()
-					->select('id')
-					->whereId('IN', (array)($groups ?? []))
-					->whereFarm($this['farm'])
-					->whereType($this['type'])
-					->getColumn('id');
-
-				return TRUE;
-
-			})
+			->setCallback('limitCustomers.prepare', fn(mixed &$customers) => \selling\CustomerLib::buildCollection($this, $customers, FALSE))
+			->setCallback('limitGroups.prepare', fn(mixed &$groups) => \selling\CustomerGroupLib::buildCollection($this, $groups, TRUE))
 			->setCallback('customColor.light', function(?string $color): bool {
 
 				if($color === NULL) {

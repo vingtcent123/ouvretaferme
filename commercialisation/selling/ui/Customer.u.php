@@ -139,7 +139,7 @@ class CustomerUi {
 
 	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
 
-		$h = '<div id="customer-search" class="util-block-search '.($search->empty(['cGroup']) ? 'hide' : '').'">';
+		$h = '<div id="customer-search" class="util-block-search '.($search->empty(['cCustomerGroup']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlSellingCustomers($eFarm);
@@ -149,10 +149,10 @@ class CustomerUi {
 					$h .= '<legend>'.s("Nom").'</legend>';
 					$h .= $form->text('name', $search->get('name'), ['placeholder' => s("Nom de client")]);
 				$h .= '</fieldset>';
-				if($search->get('cGroup')->notEmpty()) {
+				if($search->get('cCustomerGroup')->notEmpty()) {
 					$h .= '<fieldset>';
 						$h .= '<legend>'.s("Groupe").'</legend>';
-						$h .= $form->select('group', $search->get('cGroup'), $search->get('group'));
+						$h .= $form->select('group', $search->get('cCustomerGroup'), $search->get('group'));
 					$h .= '</fieldset>';
 				}
 				$h .= '<fieldset>';
@@ -944,6 +944,109 @@ class CustomerUi {
 		}
 
 		return $h;
+
+	}
+	
+	public function getLimitFields(\util\FormUi $form, \Element $e): string {
+
+		$h = '<div class="customer-write-restriction">';
+			$h .= '<div>';
+				$h .= '<fieldset>';
+					$h .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Clients").'</legend>';
+					$h .= $form->dynamicField($e, 'limitCustomers');
+				$h .= '</fieldset>';
+			$h .= '</div>';
+			$h .= '<div>';
+				$h .= '<fieldset>';
+					$h .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Groupes de clients").'</legend>';
+					$h .= $form->dynamicField($e, 'limitGroups');
+				$h .= '</fieldset>';
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+		
+	}
+
+	public static function getLimitAutocomplete(\PropertyDescriber $d, bool $checkType): void {
+
+		$d->autocompleteDefault = fn(\Element $e) => $e['cCustomerLimit'] ?? $e->expects(['cCustomerLimit']);
+		$d->placeholder = s("Tapez un nom de client à autoriser");
+		$d->autocompleteBody = function(\util\FormUi $form, \Element $e) use ($checkType) {
+
+			$body = [
+				'farm' => $e['farm']['id'],
+			];
+
+			if($checkType) {
+				$body['type'] = $e['type'];
+			}
+
+			return $body;
+
+		};
+		new \selling\CustomerUi()->query($d, TRUE);
+		$d->group = ['wrapper' => 'limitCustomers'];
+
+	}
+
+	public static function getExcludeAutocomplete(\PropertyDescriber $d, bool $checkType): void {
+
+		$d->autocompleteDefault = fn(\Element $e) => $e['cCustomerExclude'] ?? $e->expects(['cCustomerExclude']);
+		$d->placeholder = s("Tapez un nom de client à interdire");
+		$d->autocompleteBody = function(\util\FormUi $form, \Element $e) use ($checkType) {
+
+			$body = [
+				'farm' => $e['farm']['id'],
+			];
+
+			if($checkType) {
+				$body['type'] = $e['type'];
+			}
+
+			return $body;
+
+		};
+		new \selling\CustomerUi()->query($d, TRUE);
+		$d->group = ['wrapper' => 'excludeCustomers'];
+
+	}
+
+	public function getExcludeFields(\util\FormUi $form, \Element $e): string {
+
+		$h = '<div class="customer-write-restriction">';
+			$h .= '<div>';
+				$h .= '<fieldset>';
+					$h .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Clients").'</legend>';
+					$h .= $form->dynamicField($e, 'excludeCustomers');
+				$h .= '</fieldset>';
+			$h .= '</div>';
+			$h .= '<div>';
+				$h .= '<fieldset>';
+					$h .= '<legend class="color-danger">'.\Asset::icon('x-circle-fill').' '.s("Groupes de clients").'</legend>';
+					$h .= $form->dynamicField($e, 'excludeGroups');
+				$h .= '</fieldset>';
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getRestrictions(\Collection $cCustomer, \Collection $cCustomerGroup, ?\Closure $encapsulate = NULL): string {
+
+		if($cCustomer->notEmpty() or $cCustomerGroup->notEmpty()) {
+
+			$list = implode(', ', array_merge(
+				$cCustomer->toArray(fn($eCustomer) => encode($eCustomer->getName())),
+				$cCustomerGroup->toArray(fn($eGroup) => \selling\CustomerGroupUi::link($eGroup))
+			));
+
+			return $encapsulate ? $encapsulate($list) : $list;
+
+		} else {
+			return '';
+		}
 
 	}
 

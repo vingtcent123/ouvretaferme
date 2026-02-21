@@ -129,3 +129,17 @@ form.customer-form-collective .customer-form-category:not(.customer-form-collect
 .customer-form-address:has(input[type="checkbox"]:checked) .form-control-address {
 	display: none;
 }
+
+div.customer-write-restriction {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 1rem;
+}
+
+@media (max-width: 575px) {
+
+	div.customer-write-restriction {
+		grid-template-columns: 1fr;
+	}
+
+}

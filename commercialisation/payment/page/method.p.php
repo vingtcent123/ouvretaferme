@@ -28,8 +28,17 @@ new \payment\MethodPage(function($data) {
 		$data->eFarm->validate('active');
 
 	})
-	->quick(['name'])
-	->update()
+	->update(function($data) {
+
+		$data->e['cCustomerLimit'] = \selling\CustomerLib::getForRestrictions($data->e['limitCustomers']);
+		$data->e['cCustomerExclude'] = \selling\CustomerLib::getForRestrictions($data->e['excludeCustomers']);
+
+		$data->e['cGroupLimit'] = \selling\CustomerGroupLib::getForRestrictions($data->e['limitGroups']);
+		$data->e['cGroupExclude'] = \selling\CustomerGroupLib::getForRestrictions($data->e['excludeGroups']);
+
+		throw new ViewAction($data);
+
+	})
 	->doUpdate(fn() => throw new ReloadAction('payment', 'Method::updated'))
 	->doUpdateProperties('doUpdateStatus', ['status'], fn($data) => throw new ViewAction($data))
 	->doDelete(fn() => throw new ReloadAction('payment', 'Method::deleted'));
@@ -43,6 +52,9 @@ new Page(function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
 		$data->cMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL, FALSE);
+
+		$data->cCustomer = \selling\CustomerLib::getRestrictedByCollection($data->cMethod);
+		$data->cCustomerGroup = \selling\CustomerGroupLib::getRestrictedByCollection($data->cMethod);
 
 		throw new ViewAction($data);
 

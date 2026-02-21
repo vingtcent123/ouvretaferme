@@ -23,6 +23,10 @@ Method:
   fqn: ?text8
   farm: ?farm\Farm
   online: bool = FALSE
+  limitCustomers: json = PHP([])
+  limitGroups: json = PHP([])
+  excludeCustomers: json = PHP([])
+  excludeGroups: json = PHP([])
   status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
   use: set(SELLING, ACCOUNTING) = SELLING
   UNIQUE: [

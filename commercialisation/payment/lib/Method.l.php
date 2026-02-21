@@ -20,11 +20,17 @@ class MethodLib extends MethodCrud {
 
 		return function(Method $e) {
 
+			$properties = ['status'];
+
 			if($e['fqn'] === NULL) {
-				return ['name', 'status'];
-			} else {
-				return ['status'];
+				$properties[] = 'name';
 			}
+
+			if($e->acceptRestrictions()) {
+				$properties = array_merge($properties, ['limitGroups', 'excludeGroups', 'limitCustomers', 'excludeCustomers']);
+			}
+
+			return $properties;
 
 		};
 

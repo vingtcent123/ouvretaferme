@@ -52,12 +52,16 @@ class MethodModel extends \ModuleModel {
 			'fqn' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'online' => ['bool', 'cast' => 'bool'],
+			'limitCustomers' => ['json', 'cast' => 'array'],
+			'limitGroups' => ['json', 'cast' => 'array'],
+			'excludeCustomers' => ['json', 'cast' => 'array'],
+			'excludeGroups' => ['json', 'cast' => 'array'],
 			'status' => ['enum', [\payment\Method::ACTIVE, \payment\Method::INACTIVE, \payment\Method::DELETED], 'cast' => 'enum'],
 			'use' => ['set', [\payment\Method::SELLING, \payment\Method::ACCOUNTING], 'cast' => 'set'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'farm', 'online', 'status', 'use'
+			'id', 'name', 'fqn', 'farm', 'online', 'limitCustomers', 'limitGroups', 'excludeCustomers', 'excludeGroups', 'status', 'use'
 		]);
 
 		$this->propertiesToModule += [
@@ -77,6 +81,18 @@ class MethodModel extends \ModuleModel {
 			case 'online' :
 				return FALSE;
 
+			case 'limitCustomers' :
+				return [];
+
+			case 'limitGroups' :
+				return [];
+
+			case 'excludeCustomers' :
+				return [];
+
+			case 'excludeGroups' :
+				return [];
+
 			case 'status' :
 				return Method::ACTIVE;
 
@@ -94,11 +110,46 @@ class MethodModel extends \ModuleModel {
 
 		switch($property) {
 
+			case 'limitCustomers' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+
+			case 'limitGroups' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+
+			case 'excludeCustomers' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+
+			case 'excludeGroups' :
+				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
 				return parent::encode($property, $value);
+
+		}
+
+	}
+
+	public function decode(string $property, $value) {
+
+		switch($property) {
+
+			case 'limitCustomers' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'limitGroups' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'excludeCustomers' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			case 'excludeGroups' :
+				return $value === NULL ? NULL : json_decode($value, TRUE);
+
+			default :
+				return parent::decode($property, $value);
 
 		}
 
@@ -130,6 +181,22 @@ class MethodModel extends \ModuleModel {
 
 	public function whereOnline(...$data): MethodModel {
 		return $this->where('online', ...$data);
+	}
+
+	public function whereLimitCustomers(...$data): MethodModel {
+		return $this->where('limitCustomers', ...$data);
+	}
+
+	public function whereLimitGroups(...$data): MethodModel {
+		return $this->where('limitGroups', ...$data);
+	}
+
+	public function whereExcludeCustomers(...$data): MethodModel {
+		return $this->where('excludeCustomers', ...$data);
+	}
+
+	public function whereExcludeGroups(...$data): MethodModel {
+		return $this->where('excludeGroups', ...$data);
 	}
 
 	public function whereStatus(...$data): MethodModel {

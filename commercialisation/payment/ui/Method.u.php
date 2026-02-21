@@ -23,7 +23,7 @@ class MethodUi {
 
 	}
 
-	public function getManage(\Collection $cMethod): string {
+	public function getManage(\Collection $cMethod, \Collection $cCustomer, \Collection $cCustomerGroup): string {
 
 		$h = '';
 
@@ -40,8 +40,8 @@ class MethodUi {
 			$h .= '<table class="tr-even">';
 				$h .= '<thead>';
 					$h .= '<tr>';
-					$h .= '<th></th>';
 					$h .= '<th>'.s("Nom").'</th>';
+					$h .= '<th></th>';
 					$h .= '<th>'.s("Activé").'</th>';
 					$h .= '<th></th>';
 					$h .= '</tr>';
@@ -51,18 +51,30 @@ class MethodUi {
 
 					foreach($cMethod as $eMethod) {
 
-						$h .= '<tr class="'.($eMethod['farm']->empty() ? 'color-muted' : '').'">';
+						$h .= '<tr>';
 							$h .= '<td>';
+								$h .= encode($eMethod['name']);
+								$h .= '<div class="color-muted font-sm">';
+									$h .= new \selling\CustomerUi()->getRestrictions(
+										$cCustomer->find(fn($eCustomer) => in_array($eCustomer['id'], $eMethod['limitCustomers'])),
+										$cCustomerGroup->find(fn($eCustomerGroup) => in_array($eCustomerGroup['id'], $eMethod['limitGroups'])),
+										fn($list) => '<span>'.s("Uniquement pour {value}", $list).'</span>'
+									);
+									$h .= new \selling\CustomerUi()->getRestrictions(
+										$cCustomer->find(fn($eCustomer) => in_array($eCustomer['id'], $eMethod['excludeCustomers'])),
+										$cCustomerGroup->find(fn($eCustomerGroup) => in_array($eCustomerGroup['id'], $eMethod['excludeGroups'])),
+										fn($list) => '<span>'.s("Pas pour {value}", $list).'</span>'
+									);
+								$h .= '</div>';
+							$h .= '</td>';
+							$h .= '<td class="color-muted">';
 
-							if($eMethod['farm']->empty()) {
+							if($eMethod['fqn'] !== NULL) {
 								$h .= s("Fourni par défaut");
 							} else {
 								$h .= s("Personnalisé");
 							}
 
-							$h .= '</td>';
-							$h .= '<td>';
-								$h .= $eMethod['farm']->empty() ? encode($eMethod['name']) : $eMethod->quick('name', encode($eMethod['name']));
 							$h .= '</td>';
 
 
@@ -144,6 +156,29 @@ class MethodUi {
 
 		$h .= $form->dynamicGroup($eMethod, 'status');
 
+		if($eMethod->acceptRestrictions()) {
+
+			$h .= '<br/>';
+			$h .= '<h3>'.\Asset::icon('person-circle').'  '.s("Autorisations et interdictions à certains clients").'</h3>';
+
+			$h .= '<p class="util-info">'.s("Les autorisations et interdictions de moyens de paiement ne s'appliquent que sur les boutiques en ligne que vous avez créées. Vous pouvez laisser ces champs vides si vous souhaitez que ce moyen de paiement soit accessible à tous vos clients.").'</pa>';
+
+			$h .= '<div class="util-block bg-background-light">';
+
+				$h .= $form->group(
+					s("Autoriser uniquement les commandes avec ce moyen de paiement à :"),
+					new \selling\CustomerUi()->getLimitFields($form, $eMethod)
+				);
+
+				$h .= $form->group(
+					s("Interdire les commandes avec ce moyen de paiement à :"),
+					new \selling\CustomerUi()->getExcludeFields($form, $eMethod)
+				);
+
+			$h .= '</div>';
+
+		}
+
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))
 		);
@@ -224,6 +259,22 @@ class MethodUi {
 					'valueOn' => Method::ACTIVE,
 					'valueOff' => Method::INACTIVE,
 				];
+				break;
+
+			case 'limitCustomers' :
+				\selling\CustomerUi::getLimitAutocomplete($d, FALSE);
+				break;
+
+			case 'excludeCustomers' :
+				\selling\CustomerUi::getExcludeAutocomplete($d, FALSE);
+				break;
+
+			case 'limitGroups' :
+				\selling\CustomerGroupUi::getLimitAutocomplete($d, FALSE);
+				break;
+
+			case 'excludeGroups' :
+				\selling\CustomerGroupUi::getExcludeAutocomplete($d, FALSE);
 				break;
 
 		}

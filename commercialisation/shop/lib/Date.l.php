@@ -307,8 +307,8 @@ class DateLib extends DateCrud {
 			new \Collection();
 
 		$cProduct = \shop\ProductLib::getByDate($eDate, reorderChildren: TRUE);
-		$eDate['cCustomer'] = \selling\CustomerLib::getLimitedByProducts($cProduct);
-		$eDate['cGroup'] = \selling\CustomerGroupLib::getLimitedByProducts($cProduct);
+		$eDate['cCustomer'] = \selling\CustomerLib::getRestrictedByCollection($cProduct);
+		$eDate['cCustomerGroup'] = \selling\CustomerGroupLib::getRestrictedByCollection($cProduct);
 
 		// Uniquement les boutiques avec un seul producteur et des dates de livraison
 		if($eShop['opening'] === \shop\Shop::FREQUENCY) {

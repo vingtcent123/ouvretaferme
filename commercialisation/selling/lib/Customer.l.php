@@ -45,6 +45,10 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
+	public static function getForRestrictions(array $customers): \Collection {
+		return self::getByIds($customers, sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
+	}
+
 	public static function getFromQuery(string $query, \farm\Farm $eFarm, ?string $type = NULL, ?string $destination = NULL, ?array $properties = []): \Collection {
 
 		if(str_starts_with($query, '#') and ctype_digit(substr($query, 1))) {
@@ -207,9 +211,9 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getLimitedByProducts(\Collection $cProduct): \Collection {
+	public static function getRestrictedByCollection(\Collection $c): \Collection {
 
-		$customers = array_merge(...$cProduct->getColumn('limitCustomers'), ...$cProduct->getColumn('excludeCustomers'));
+		$customers = array_merge(...$c->getColumn('limitCustomers'), ...$c->getColumn('excludeCustomers'));
 
 		return Customer::model()
 			->select(Customer::getSelection())
@@ -508,6 +512,25 @@ class CustomerLib extends CustomerCrud {
 			\mail\ContactLib::deleteCustomer($e);
 
 		Customer::model()->commit();
+
+	}
+
+	public static function buildCollection(\Element $e, mixed &$customers, bool $checkType): bool {
+
+		$e->expects(['farm']);
+
+		if($checkType) {
+			$e->expects(['type']);
+		}
+
+		$customers = \selling\Customer::model()
+			->select('id')
+			->whereId('IN', (array)($customers ?? []))
+			->whereFarm($e['farm'])
+			->whereType(fn() => $e['type'], if: $checkType)
+			->getColumn('id');
+
+		return TRUE;
 
 	}
 

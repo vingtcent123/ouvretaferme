@@ -381,4 +381,79 @@ class ShopLib extends ShopCrud {
 
 	}
 
+	public static function getPayments(Shop $eShop, Point $ePoint, \selling\Customer $eCustomer): array {
+
+		$payments = [];
+		$isOffline = FALSE;
+
+		if($ePoint->empty()) {
+
+			if($eShop['paymentCard']) {
+				$payments[] = \payment\MethodLib::ONLINE_CARD;
+			}
+			if($eShop['paymentTransfer']) {
+				$payments[] = \payment\MethodLib::TRANSFER;
+			}
+			if($eShop['paymentOffline']) {
+				$isOffline = TRUE;
+			}
+
+		} else {
+
+			if(
+				$ePoint['paymentCard'] or
+				($ePoint['paymentCard'] === NULL and $eShop['paymentCard'])
+			) {
+				$payments[] = \payment\MethodLib::ONLINE_CARD;
+			}
+			if(
+				$ePoint['paymentTransfer'] or
+				($ePoint['paymentTransfer'] === NULL and $eShop['paymentTransfer'])
+			) {
+				$payments[] = \payment\MethodLib::TRANSFER;
+			}
+			if(
+				$ePoint['paymentOffline'] or
+				($ePoint['paymentOffline'] === NULL and $eShop['paymentOffline'])
+			) {
+				$isOffline = TRUE;
+			}
+
+		}
+
+		foreach($payments as $key => $payment) {
+
+			if(
+				$payment === \payment\MethodLib::ONLINE_CARD and
+				\payment\StripeLib::getByFarm($eShop['farm'])->empty()
+			) {
+				unset($payments[$key]);
+			}
+
+		}
+
+		if($payments) {
+
+			$payments = \payment\Method::model()
+				->whereFarm($eShop['farm'])
+				->whereFqn('IN', $payments)
+				->or(
+					fn() => $this->where(fn() => 'JSON_LENGTH(limitCustomers) = 0 AND JSON_LENGTH(limitGroups) = 0'),
+					fn() => $this->where(fn() => 'JSON_CONTAINS(limitCustomers, \''.$eCustomer['id'].'\')'),
+					fn() => $this->where(fn() => 'JSON_OVERLAPS(limitGroups, "['.implode(', ', $eCustomer['groups']).']")')
+				)
+				->where(fn() => 'JSON_LENGTH(excludeCustomers) = 0 OR JSON_CONTAINS(excludeCustomers, \''.$eCustomer['id'].'\') = 0')
+				->where(fn() => 'JSON_LENGTH(excludeGroups) = 0 OR JSON_OVERLAPS(excludeGroups, "['.implode(', ', $eCustomer['groups']).']") = 0')
+				->getColumn('fqn');
+
+		}
+
+		if($isOffline) {
+			$payments[] = NULL;
+		}
+
+		return $payments;
+
+	}
+
 }

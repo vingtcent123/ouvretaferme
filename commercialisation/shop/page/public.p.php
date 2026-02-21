@@ -436,6 +436,12 @@ new Page(function($data) {
 		$eFarm = $data->eShop['farm'];
 		$data->eCustomer = \selling\CustomerLib::getByUserAndFarm($data->eUserOnline, $eFarm);
 
+		$data->eShop['paymentsSelected'] = \shop\ShopLib::getPayments(
+			$data->eShop,
+			$data->eShop['ccPoint']->find(fn($ePoint) => $data->eSaleReference['shopPoint']->is($ePoint), depth: 2, limit: 1, default: new \shop\Point()),
+			$data->eCustomer
+		);
+
 		$data->eStripeFarm = \payment\StripeLib::getByFarm($eFarm);
 
 		$data->eSaleReference['isApproximate'] = (
@@ -462,6 +468,12 @@ new Page(function($data) {
 			\selling\Item::containsApproximate($data->cItemExisting)
 		);
 
+		$data->eShop['paymentsSelected'] = \shop\ShopLib::getPayments(
+			$data->eShop,
+			$data->eSaleReference['shopPoint'],
+			$data->eSaleReference['customer']
+		);
+
 		if(FEATURE_GAME) {
 			$data->ePlayer = \game\PlayerLib::getOnline();
 		}
@@ -485,7 +497,13 @@ new Page(function($data) {
 
 		$data->payment = POST('payment');
 
-		if(in_array($data->payment, $data->eShop->getPayments($data->eSaleReference['shopPoint'])) === FALSE) {
+		$paymentsSelected = \shop\ShopLib::getPayments(
+			$data->eShop,
+			$data->eSaleReference['shopPoint'],
+			$data->eSaleReference['customer']
+		);
+
+		if(in_array($data->payment, $paymentsSelected) === FALSE) {
 			throw new NotExpectedAction('Invalid payment for shop');
 		}
 

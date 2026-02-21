@@ -266,7 +266,7 @@ class ProductUi {
 						$h .= '</td>';
 
 						$h .= '<td class="product-item-vignette">';
-							$h .= new \media\ProductVignetteUi()->getCamera($eProduct, size: '4rem');
+							$h .= new \media\ProductVignetteUi()->getCamera($eProduct, size: '3.5rem');
 						$h .= '</td>';
 
 						$h .= '<td class="product-item-name">';

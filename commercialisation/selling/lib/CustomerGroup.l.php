@@ -13,9 +13,13 @@ class CustomerGroupLib extends CustomerGroupCrud {
 		return ['name', 'color'];
 	}
 
-	public static function getLimitedByProducts(\Collection $cProduct): \Collection {
+	public static function getForRestrictions(array $groups): \Collection {
+		return self::getByIds($groups, sort: ['name' => SORT_ASC]);
+	}
 
-		$groups = array_merge(...$cProduct->getColumn('limitGroups'), ...$cProduct->getColumn('excludeGroups'));
+	public static function getRestrictedByCollection(\Collection $c): \Collection {
+
+		$groups = array_merge(...$c->getColumn('limitGroups'), ...$c->getColumn('excludeGroups'));
 
 		return CustomerGroup::model()
 			->select(CustomerGroup::getSelection())
@@ -128,6 +132,25 @@ class CustomerGroupLib extends CustomerGroupCrud {
 			parent::delete($e);
 
 		CustomerGroup::model()->commit();
+
+	}
+
+	public static function buildCollection(\Element $e, mixed &$groups, bool $checkType): bool {
+
+		$e->expects(['farm']);
+
+		if($checkType) {
+			$e->expects(['type']);
+		}
+
+		$groups = \selling\CustomerGroup::model()
+			->select('id')
+			->whereId('IN', (array)($groups ?? []))
+			->whereFarm($e['farm'])
+			->whereType(fn() => $e['type'], if: $checkType)
+			->getColumn('id');
+
+		return TRUE;
 
 	}
 

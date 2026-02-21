@@ -5,7 +5,7 @@ new AdaptativeView('manage', function($data, FarmTemplate $t) {
 	$t->nav = 'settings-commercialisation';
 
 	$t->mainTitle = new \payment\MethodUi()->getManageTitle($data->eFarm);
-	echo new \payment\MethodUi()->getManage($data->cMethod);
+	echo new \payment\MethodUi()->getManage($data->cMethod, $data->cCustomer, $data->cCustomerGroup);
 
 });
 

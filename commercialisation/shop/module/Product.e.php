@@ -121,62 +121,10 @@ class Product extends ProductElement {
 				return TRUE;
 
 			})
-			->setCallback('limitCustomers.prepare', function(mixed &$customers): bool {
-
-				$this->expects(['farm']);
-
-				$customers = \selling\Customer::model()
-					->select('id')
-					->whereId('IN', (array)($customers ?? []))
-					->whereFarm($this['farm'])
-					->whereType($this['type'])
-					->getColumn('id');
-
-				return TRUE;
-
-			})
-			->setCallback('excludeCustomers.prepare', function(mixed &$customers): bool {
-
-				$this->expects(['farm']);
-
-				$customers = \selling\Customer::model()
-					->select('id')
-					->whereId('IN', (array)($customers ?? []))
-					->whereFarm($this['farm'])
-					->whereType($this['type'])
-					->getColumn('id');
-
-				return TRUE;
-
-			})
-			->setCallback('limitGroups.prepare', function(mixed &$groups): bool {
-
-				$this->expects(['farm']);
-
-				$groups = \selling\CustomerGroup::model()
-					->select('id')
-					->whereId('IN', (array)($groups ?? []))
-					->whereFarm($this['farm'])
-					->whereType($this['type'])
-					->getColumn('id');
-
-				return TRUE;
-
-			})
-			->setCallback('excludeGroups.prepare', function(mixed &$groups): bool {
-
-				$this->expects(['farm']);
-
-				$groups = \selling\CustomerGroup::model()
-					->select('id')
-					->whereId('IN', (array)($groups ?? []))
-					->whereFarm($this['farm'])
-					->whereType($this['type'])
-					->getColumn('id');
-
-				return TRUE;
-
-			})
+			->setCallback('limitCustomers.prepare', fn(mixed &$customers) => \selling\CustomerLib::buildCollection($this, $customers, TRUE))
+			->setCallback('excludeCustomers.prepare', fn(mixed &$customers) => \selling\CustomerLib::buildCollection($this, $customers, TRUE))
+			->setCallback('limitGroups.prepare', fn(mixed &$groups) => \selling\CustomerGroupLib::buildCollection($this, $groups, TRUE))
+			->setCallback('excludeGroups.prepare', fn(mixed &$groups) => \selling\CustomerGroupLib::buildCollection($this, $groups, TRUE))
 			->setCallback('excludeCustomers.consistency', function($customers): bool {
 
 				if(

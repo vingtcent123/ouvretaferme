@@ -706,15 +706,14 @@ class BasketUi {
 
 	public function getPayment(Shop $eShop, Date $eDate, \selling\Customer $eCustomer, \selling\Sale $eSale, \payment\StripeFarm $eStripeFarm): string {
 
+		$eShop->expects(['paymentsSelected']);
+
 		\Asset::js('shop', 'basket.js');
 
-		$ePoint = $eShop['ccPoint']->find(fn($ePoint) => $eSale['shopPoint']->notEmpty() and $ePoint['id'] === $eSale['shopPoint']['id'], depth: 2, limit: 1, default: new Point());
-
-		$payments = $eShop->getPayments($ePoint);
 
 		$h = '<h2>'.s("Mon moyen de paiement").'</h2>';
 
-		switch(count($payments)) {
+		switch(count($eShop['paymentsSelected'])) {
 
 			case 0 :
 				$h .= '<p class="util-danger">';
@@ -732,7 +731,7 @@ class BasketUi {
 
 		$h .= '<div class="shop-payments">';
 
-			foreach($payments as $payment) {
+			foreach($eShop['paymentsSelected'] as $payment) {
 
 				$h .= '<a data-ajax="'.ShopUi::userUrl($eShop, $eDate, ':doCreatePayment').'" post-payment="'.$payment.'" class="util-block shop-payment">';
 					$h .= $this->getPaymentBlock($eShop, $eDate, $eCustomer, $payment);
@@ -928,7 +927,7 @@ class BasketUi {
 							}
 							if(
 								$eSaleReference->acceptUpdatePaymentByCustomer() and
-								count($eShop->getPayments($eSaleReference['shopPoint'])) > 1
+								count($eShop['paymentsSelected']) > 1
 							) {
 								$h .= ' (<a data-ajax="'.ShopUi::dateUrl($eShop, $eDate, ':doUpdatePayment').'" data-confirm="'.s("En retournant sur la page de choix du moyen de paiement, votre commande NE SERA PLUS CONFIRMÉE jusqu'à ce que vous ayez sélectionné un nouveau moyen de paiement. Voulez-vous continuer ?").'">'.s("changer").'</a>)';
 							}

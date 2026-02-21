@@ -15,6 +15,7 @@ class AlertUi {
 
 			'Cb::error' => s("Une erreur est intervenue pendant la procédure, la commande n'a pas abouti."),
 
+			'Method::excludeCustomers.consistency' => s("Vous ne pouvez pas à la fois autoriser et interdire un moyen de paiement à certains clients."),
 			'Method::deleteUsed' => s("Ce moyen de paiement ne peut pas être supprimé car il est utilisée dans une vente."),
 
 			default => null

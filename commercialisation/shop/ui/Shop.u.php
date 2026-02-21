@@ -268,24 +268,9 @@ class ShopUi {
 			}
 		]);
 
-		$limit = '<div class="shop-write-group">';
-			$limit .= '<div>';
-				$limit .= '<fieldset>';
-					$limit .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Clients").'</legend>';
-					$limit .= $form->dynamicField($eShop, 'limitCustomers');
-				$limit .= '</fieldset>';
-			$limit .= '</div>';
-			$limit .= '<div>';
-				$limit .= '<fieldset>';
-					$limit .= '<legend class="color-success">'.\Asset::icon('check-circle-fill').' '.s("Groupes de clients").'</legend>';
-					$limit .= $form->dynamicField($eShop, 'limitGroups');
-				$limit .= '</fieldset>';
-			$limit .= '</div>';
-		$limit .= '</div>';
-
 		$h .= $form->group(
 			s("Limiter l'accès à cette boutique à certains clients seulement").\util\FormUi::info(s("Seuls les clients que vous aurez choisis pourront accéder à cette boutique.")),
-			$limit
+			new \selling\CustomerUi()->getLimitFields($form, $eShop)
 		);
 
 		$h .= $form->group(
@@ -1226,14 +1211,7 @@ class ShopUi {
 						$h .= s("Clients autorisés");
 					$h .= '</dt>';
 					$h .= '<dd>';
-
-						$limits = array_merge(
-							$eShop['cCustomerLimit']->toArray(fn($eCustomer) => encode($eCustomer->getName())),
-							$eShop['cGroupLimit']->toArray(fn($eGroup) => \selling\CustomerGroupUi::link($eGroup))
-						);
-
-						$h .= implode(', ', $limits);
-
+						$h .= new \selling\CustomerUi()->getRestrictions($eShop['cCustomerLimit'], $eShop['cGroupLimit']);
 					$h .= '</dd>';
 
 				}
@@ -1476,28 +1454,11 @@ class ShopUi {
 				break;
 
 			case 'limitCustomers' :
-				$d->autocompleteDefault = fn(Shop $e) => $e['cCustomerLimit'] ?? $e->expects(['cCustomerLimit']);
-				$d->placeholder = s("Tapez un nom de client à autoriser");
-				$d->autocompleteBody = function(\util\FormUi $form, Shop $e) {
-					return [
-						'farm' => $e['farm']['id'],
-					];
-				};
-				new \selling\CustomerUi()->query($d, TRUE);
-				$d->group = ['wrapper' => 'limitCustomers'];
+				\selling\CustomerUi::getLimitAutocomplete($d, FALSE);
 				break;
 
 			case 'limitGroups' :
-				$d->autocompleteDefault = fn(Shop $e) => $e['cGroupLimit'] ?? $e->expects(['cGroupLimit']);
-				$d->placeholder = s("Tapez un nom de groupe de clients à autoriser");
-				$d->autocompleteBody = function(\util\FormUi $form, Shop $e) {
-					return [
-						'farm' => $e['farm']['id'],
-						'type' => $e['type']
-					];
-				};
-				new \selling\CustomerGroupUi()->query($d, TRUE);
-				$d->group = ['wrapper' => 'limitGroups'];
+				\selling\CustomerGroupUi::getLimitAutocomplete($d, TRUE);
 				break;
 
 			case 'customFont':

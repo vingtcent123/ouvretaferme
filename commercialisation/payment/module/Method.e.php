@@ -13,6 +13,7 @@ class Method extends MethodElement {
 		);
 
 	}
+
 	public function canUse(): bool {
 
 		return (
@@ -20,6 +21,10 @@ class Method extends MethodElement {
 			and $this['status'] === Method::ACTIVE
 		);
 
+	}
+
+	public function acceptRestrictions(): bool {
+		return in_array($this['fqn'], [MethodLib::ONLINE_CARD, MethodLib::TRANSFER]);
 	}
 
 	public function canDelete(): bool {
@@ -54,6 +59,30 @@ class Method extends MethodElement {
 		$this->expects(['online']);
 
 		return $this['online'] === TRUE;
+
+	}
+
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
+
+		$p
+			->setCallback('limitCustomers.prepare', fn(mixed &$customers) => \selling\CustomerLib::buildCollection($this, $customers, FALSE))
+			->setCallback('excludeCustomers.prepare', fn(mixed &$customers) => \selling\CustomerLib::buildCollection($this, $customers, FALSE))
+			->setCallback('limitGroups.prepare', fn(mixed &$groups) => \selling\CustomerGroupLib::buildCollection($this, $groups, FALSE))
+			->setCallback('excludeGroups.prepare', fn(mixed &$groups) => \selling\CustomerGroupLib::buildCollection($this, $groups, FALSE))
+			->setCallback('excludeCustomers.consistency', function($customers): bool {
+
+				if(
+					($this['limitCustomers'] === [] and $this['limitGroups'] === [] and $this['excludeGroups'] === [] and $customers === []) or
+					($this['limitCustomers'] or $this['limitGroups']) xor ($this['excludeGroups'] or $customers)
+				) {
+					return TRUE;
+				} else {
+					return FALSE;
+				}
+
+			});
+
+		parent::build($properties, $input, $p);
 
 	}
 }

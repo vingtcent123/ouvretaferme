@@ -31,7 +31,7 @@ new \selling\GridPage()
 			$data->e['customer']->empty()
 		) {
 
-			$data->e['cGroup'] = \selling\CustomerGroupLib::getByFarm($data->eFarm);
+			$data->e['cCustomerGroup'] = \selling\CustomerGroupLib::getByFarm($data->eFarm);
 
 		}
 

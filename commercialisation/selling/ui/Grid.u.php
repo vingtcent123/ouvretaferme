@@ -389,7 +389,7 @@ class GridUi {
 				break;
 
 			case 'group':
-				$d->values = fn(Grid $e) => $e['cGroup'] ?? $e->expects(['cGroup']);
+				$d->values = fn(Grid $e) => $e['cCustomerGroup'] ?? $e->expects(['cCustomerGroup']);
 				$d->prepend = s("Un groupe de clients");
 				$d->attributes = [
 					'onchange' => 'Grid.changeGroup(this);'

@@ -9,11 +9,11 @@ new \shop\ProductPage()
 	})
 	->update(function($data) {
 
-		$data->e['cCustomerLimit'] = \selling\CustomerLib::getByIds($data->e['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
-		$data->e['cCustomerExclude'] = \selling\CustomerLib::getByIds($data->e['excludeCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
+		$data->e['cCustomerLimit'] = \selling\CustomerLib::getForRestrictions($data->e['limitCustomers']);
+		$data->e['cCustomerExclude'] = \selling\CustomerLib::getForRestrictions($data->e['excludeCustomers']);
 
-		$data->e['cGroupLimit'] = \selling\CustomerGroupLib::getByIds($data->e['limitGroups'], sort: ['name' => SORT_ASC]);
-		$data->e['cGroupExclude'] = \selling\CustomerGroupLib::getByIds($data->e['excludeGroups'], sort: ['name' => SORT_ASC]);
+		$data->e['cGroupLimit'] = \selling\CustomerGroupLib::getForRestrictions($data->e['limitGroups']);
+		$data->e['cGroupExclude'] = \selling\CustomerGroupLib::getForRestrictions($data->e['excludeGroups']);
 
 		throw new ViewAction($data);
 

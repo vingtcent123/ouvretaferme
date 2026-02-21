@@ -216,6 +216,50 @@ class CustomerGroupUi {
 
 	}
 
+	public static function getLimitAutocomplete(\PropertyDescriber $d, bool $checkType): void {
+
+		$d->autocompleteDefault = fn(\Element $e) => $e['cGroupLimit'] ?? $e->expects(['cGroupLimit']);
+		$d->placeholder = s("Tapez un nom de groupe de clients à autoriser");
+		$d->autocompleteBody = function(\util\FormUi $form, \Element $e) use ($checkType) {
+
+			$body = [
+				'farm' => $e['farm']['id'],
+			];
+
+			if($checkType) {
+				$body['type'] = $e['type'];
+			}
+
+			return $body;
+
+		};
+		new \selling\CustomerGroupUi()->query($d, TRUE);
+		$d->group = ['wrapper' => 'limitGroups'];
+
+	}
+
+	public static function getExcludeAutocomplete(\PropertyDescriber $d, bool $checkType): void {
+
+		$d->autocompleteDefault = fn(\Element $e) => $e['cGroupExclude'] ?? $e->expects(['cGroupExclude']);
+		$d->placeholder = s("Tapez un nom de groupe de clients à interdire");
+		$d->autocompleteBody = function(\util\FormUi $form, \Element $e) use ($checkType) {
+
+			$body = [
+				'farm' => $e['farm']['id'],
+			];
+
+			if($checkType) {
+				$body['type'] = $e['type'];
+			}
+
+			return $body;
+
+		};
+		new \selling\CustomerGroupUi()->query($d, TRUE);
+		$d->group = ['wrapper' => 'excludeGroups'];
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = CustomerGroup::model()->describer($property, [
