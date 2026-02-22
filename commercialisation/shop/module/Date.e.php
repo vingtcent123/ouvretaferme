@@ -41,11 +41,48 @@ class Date extends DateElement {
 
 	}
 
+	public function canCreateSale(\farm\Farm $eFarm): bool {
+
+		$eShop = $this['shop'];
+
+		if($eShop['shared']) {
+
+			if($this['farm']->is($eFarm)) {
+				return FALSE;
+			} else {
+				return $eShop->canShareRead($eFarm);
+			}
+
+
+		} else {
+			return $eShop->canRead();
+		}
+
+	}
+
 	public function acceptCreateSale(): bool {
 
 		return (
 			($this['deliveryDate'] === NULL or $this->isPast() === FALSE)
 		);
+
+	}
+
+	public function canDownload(\farm\Farm $eFarm): bool {
+
+		$eShop = $this['shop'];
+
+		if($eFarm->notEmpty()) {
+			return $eShop->canShare($eFarm);
+		} else {
+			return $eShop->canShare($this['farm'], validateShared: 'canWrite');
+		}
+
+	}
+
+	public function acceptDownload(): bool {
+
+		return ($this['deliveryDate'] !== NULL);
 
 	}
 

@@ -93,9 +93,9 @@ new \shop\DatePage()
 	->read('downloadSales', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
-		$data->eShop = \shop\ShopLib::getById($data->e['shop'])
-			->validateShare($data->eFarm, validateShared: 'canWrite')
-			->validateFrequency();
+		$data->e['shop'] = \shop\ShopLib::getById($data->e['shop']);
+
+		$data->e->canDownload($data->eFarm) ?: throw new NotAllowedAction();
 
 		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->eFarm, $data->e);
 
@@ -114,7 +114,7 @@ new \shop\DatePage()
 
 		throw new PdfAction($content, $filename);
 
-	}, validate: [])
+	}, validate: ['acceptDownload'])
 	->doDelete(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['farm'], $data->e['shop']).'&success=shop\\Date::deleted'));
 
 new Page()

@@ -967,18 +967,21 @@ class DateUi {
 
 					}
 
-					if($eShop->canShare($eFarm, validateShared: 'canWrite')) {
+					if(
+						$eDate->acceptCreateSale() and
+						$eDate->canCreateSale($eDate['eFarmSelected'])
+					) {
+						$actions .= '<a href="/selling/sale:createCollection?farm='.$eDate['eFarmSelected']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une vente").'</a> ';
+					}
 
-						if($eDate->acceptCreateSale()) {
-							$actions .= '<a href="/selling/sale:createCollection?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une vente").'</a> ';
-						}
+					if(
+						$eDate->acceptDownload() and
+						$eDate->canDownload($eDate['eFarmSelected']) and
+						$cSale->notEmpty()
+					) {
 
-						if(
-							$eDate['deliveryDate'] !== NULL and
-							$cSale->notEmpty()
-						) {
-							$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eDate['eFarmSelected']->empty() ? '' : '&farm='.$eDate['eFarmSelected']['id']).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
-						}
+						$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eDate['eFarmSelected']->empty() ? '' : '&farm='.$eDate['eFarmSelected']['id']).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
+
 
 					}
 

@@ -1081,15 +1081,12 @@ class Sale extends SaleElement {
 						return FALSE;
 					} else {
 
-						$eShop = \shop\ShopLib::getById($eDate['shop']);
-						$this['shop'] = $eShop;
-						$this['shopShared'] = $eShop['shared'];
+						$eDate['shop'] = \shop\ShopLib::getById($eDate['shop']);
 
-						if($eShop['shared']) {
-							return $eShop->canShareRead($this['farm']);
-						} else {
-							return $eShop->canWrite();
-						}
+						$this['shop'] = $eDate['shop'];
+						$this['shopShared'] = $eDate['shop']['shared'];
+
+						return $eDate->canCreateSale($this['farm']);
 
 					}
 
