@@ -971,7 +971,11 @@ class DateUi {
 						$eDate->acceptCreateSale() and
 						$eDate->canCreateSale($eDate['eFarmSelected'])
 					) {
-						$actions .= '<a href="/selling/sale:createCollection?farm='.$eDate['eFarmSelected']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une vente").'</a> ';
+
+						$eFarmSale = $eDate['eFarmSelected']->empty() ? $eFarm : $eDate['eFarmSelected'];
+
+						$actions .= '<a href="/selling/sale:createCollection?farm='.$eFarmSale['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une vente").'</a> ';
+						
 					}
 
 					if(
