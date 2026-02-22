@@ -207,7 +207,7 @@ class Report extends ReportElement {
 			})
 			->setCallback('testAreaOperator.set', function(?string $operator) {
 
-				if(empty($this['testArea'])) {
+				if($this['testArea'] === NULL) {
 					$this['testAreaOperator'] = NULL;
 				} else {
 					$this['testAreaOperator'] = $operator ?? Report::ABSOLUTE;
@@ -218,11 +218,11 @@ class Report extends ReportElement {
 				if($this['workingTime'] === 0.0) {
 					$value = NULL;
 				}
-				$this['testWorkingTime'] = ($value === 0.0) ? NULL : $value;
+				$this['testWorkingTime'] = ($value === 0) ? NULL : $value;
 			})
 			->setCallback('testWorkingTimeOperator.set', function(?string $operator) {
 
-				if(empty($this['testWorkingTime'])) {
+				if($this['testWorkingTime'] === NULL) {
 					$this['testWorkingTimeOperator'] = NULL;
 				} else {
 					$this['testWorkingTimeOperator'] = $operator ?? Report::ABSOLUTE;
@@ -237,7 +237,7 @@ class Report extends ReportElement {
 			})
 			->setCallback('testCostsOperator.set', function(?string $operator) {
 
-				if(empty($this['testCosts'])) {
+				if($this['testCosts'] === NULL) {
 					$this['testCostsOperator'] = NULL;
 				} else {
 					$this['testCostsOperator'] = $operator ?? Report::ABSOLUTE;
@@ -252,7 +252,7 @@ class Report extends ReportElement {
 			})
 			->setCallback('testTurnoverOperator.set', function(?string $operator) {
 
-				if(empty($this['testTurnover'])) {
+				if($this['testTurnover'] === NULL) {
 					$this['testTurnoverOperator'] = NULL;
 				} else {
 					$this['testTurnoverOperator'] = $operator ?? Report::ABSOLUTE;
