@@ -441,7 +441,7 @@ Class PreaccountingUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<th class="td-checkbox">';
-							$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="product" onclick="Preaccounting.toggleGroupSelection(this)"/>';
+							$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="item" onclick="Preaccounting.toggleGroupSelection(this)"/>';
 						$h .= '</th>';
 						$h .= '<th>'.s("Nom").'</th>';
 					$h .= '</tr>';
