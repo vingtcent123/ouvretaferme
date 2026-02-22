@@ -223,6 +223,10 @@ class MarketLib {
 
 	public static function close(Sale $eSale): void {
 
+		$eSale->expects([
+			'farm' => ['legalCountry']
+		]);
+
 		if($eSale['preparationStatus'] !== Sale::SELLING) {
 			return;
 		}
@@ -242,7 +246,14 @@ class MarketLib {
 				->wherePreparationStatus(Sale::DRAFT)
 				->getCollection();
 
-			\selling\SaleLib::updatePreparationStatusCollection($cSaleMarketDraft, \selling\Sale::CANCELED);
+			if($cSaleMarketDraft->notEmpty()) {
+
+				// Transfert des propriétés
+				$cSaleMarketDraft->setColumn('farm', $eSale['farm']);
+
+				\selling\SaleLib::updatePreparationStatusCollection($cSaleMarketDraft, \selling\Sale::CANCELED);
+
+			}
 
 			SaleLib::closeMarket($eSale);
 
