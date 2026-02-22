@@ -113,7 +113,7 @@ class Cultivation extends CultivationElement {
 					$this->expects([
 						'sliceTool' => ['routineValue']
 					]);
-					return round($eSlice['partTray'] * $this['sliceTool']['routineValue']['value'] * $safetyMarginMultiplier);
+					return round($eSlice['partTray'] * $this['sliceTool']['routineValue']['value']);
 
 			}
 
