@@ -148,9 +148,13 @@ class UblLib {
 			foreach($eSale['cItem'] as $eItem) {
         $xml .= '
     <cac:InvoiceLine><!--BG-25-->
-        <cbc:ID>'.$lineNumber.'</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="'.self::getUnitCode($eItem['unit']).'">'.$eItem['number'].'</cbc:InvoicedQuantity><!--BT-130-->
+        <cbc:ID>'.$lineNumber.'</cbc:ID><!--BT-126-->
+        <cbc:InvoicedQuantity unitCode="'.self::getUnitCode($eItem['unit']).'">'.$eItem['number'].'</cbc:InvoicedQuantity><!--BT-129--><!--BT-130-->
         <cbc:LineExtensionAmount currencyID="EUR">'.$eItem['price'].'</cbc:LineExtensionAmount><!--BT-131-->
+        <cac:InvoicePeriod><!--BG-26-->
+          <cbc:StartDate>'.$eSale['deliveredAt'].'</cbc:StartDate><!--BT-134-->
+          <cbc:EndDate>'.$eSale['deliveredAt'].'</cbc:EndDate><!--BT-135-->
+        </cac:InvoicePeriod>
         <cac:Item>
             <cbc:Name>'.$eItem['name'].'</cbc:Name><!--BT-153-->
             <cac:ClassifiedTaxCategory><!--BG-30-->
@@ -171,7 +175,8 @@ class UblLib {
                 <cbc:BaseAmount currencyID="EUR">'.$eItem['unitPriceInitial'].'</cbc:BaseAmount>
             </cac:AllowanceCharge>';
 				}
-        $xml .= '</cac:Price>
+        $xml .= '
+        </cac:Price>
     </cac:InvoiceLine>';
 				$lineNumber++;
 			}
