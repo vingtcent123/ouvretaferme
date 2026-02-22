@@ -366,7 +366,8 @@ class LegalUi {
 		$h .= '</div>';
 
 		$h .= '<h2>'.s("Que propose {siteName} à votre AFOCG ?").'</h2>';
-		$h .= '<p class="util-info">'.s("Les fonctionnalités suivantes pourraient intéresser votre AFOCG pour des actions de formation. La plupart de ces fonctionnalités sont accessibles gratuitement et celles relatives à la comptabilité sont disponibles pour 100 € / an.").'</p>';
+
+		$h .= '<p class="util-info">'.s("{siteName} est un écosystème unique qui couvrira bientôt la plupart des besoins logiciels de producteurs et productrices. Nous l'avons conçu pour que chaque fonctionnalité puisse être utilisée indépendamment des autres. Un producteur ou une productrice qui s'investit à 100 % dans le logiciel profite de la synergie entre chaque fonctionnalité et d'une efficacité décuplée sur la gestion de la ferme !").'</p>';
 
 		$h .= '<div class="util-block util-overflow-sm">';
 		$h .= '<table style="font-size: 1.2rem" class="tr-bordered">';
@@ -420,7 +421,7 @@ class LegalUi {
 		$h .= '</table>';
 		$h .= '</div>';
 
-		$h .= '<p class="home-emphasis">'.s("Une ferme qui utilise {siteName} pour sa commercialisation et sa comptabilité divise par deux le temps de saisie de sa comptabilité par rapport à ISTEA et réduit les erreurs de saisie.").'</p>';
+		$h .= '<p class="home-emphasis">'.s("Une ferme qui utilise {siteName} pour sa commercialisation et sa comptabilité divise par deux le temps de saisie de sa comptabilité par rapport à ISTEA tout en réduisant les erreurs de saisie.").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<br/>';
@@ -464,28 +465,43 @@ class LegalUi {
 
 		$h .= '<div class="home-points">';
 			$h .= '<div class="home-point">';
-				$h .= '<h3>Mi-2026</h3>';
-				$h .= '<h4>'.s("Ouvretaferme sera pleinement compatible avec la réforme de la facturation électronique.").'</h4>';
+				$h .= '<h3>Printemps 2026</h3>';
+				$h .= '<h4>'.s("Ouvretaferme sera compatible avec l'envoi et la réception de factures électroniques (<i>e-invoicing</i>).").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
-				$h .= '<h3>Fin 2026</h3>';
+				$h .= '<h3>Automne 2026</h3>';
+				$h .= '<h4>'.s("Les structures qui accompagnent les producteurs auront accès à une interface de gestion centralisée pour le suivi de leurs adhérents / clients.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-point">';
+				$h .= '<h3>Hiver 2026</h3>';
 				$h .= '<h4>'.s("Ouvretaferme proposera aux producteurs de se rassembler en collectifs pour échanger sur leurs pratiques.").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
-				$h .= '<h3>2027</h3>';
-				$h .= '<h4>'.s("La comptabilité au réel sera disponible sur {siteName}.").'</h4>';
+				$h .= '<h3>Hiver 2026</h3>';
+				$h .= '<h4>'.s("Ouvretaferme permettra aux producteurs de gérer leur AMAP.").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
-				$h .= '<h3>À partir de 2028</h3>';
-				$h .= '<h4>'.s("Étendre le module de production aux productions animales et aux grandes cultures.").'</h4>';
+				$h .= '<h3>Mi-2027</h3>';
+				$h .= '<h4>'.s("Ajout de la comptabilité à l'engagement et le réel sur {siteName}.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-point">';
+				$h .= '<h3>Été 2027</h3>';
+				$h .= '<h4>'.s("{siteName} sera pleinement compatible avec les obligations de <i>e-reporting</i> qui entrent en vigueur en septembre 2027.").'</h4>';
+			$h .= '</div>';
+			$h .= '<div class="home-point">';
+				$h .= '<h3>Septembre 2027</h3>';
+				$h .= '<h4>'.s("Mise en place de fonctionnalités permettant aux producteurs de faire des commandes groupées.").'</h4>';
 			$h .= '</div>';
 		$h .= '</div>';
 
 		$h .= '<br/>';
 		$h .= '<br/>';
 
+		$h .= '<h2>'.s("Notre calendrier").'</h2>';
+		$h .= '<p class="util-info">'.s("Ouvretaferme n'est pas et ne sera jamais un organisme de formation et nous identifions actuellement les structures partenaires pour couvrir les besoins en accompagnement et formation pour nos producteurs et productrices. Notre objectif est de définir le cadre de nos différents partenariats avant septembre 2026 afin de proposer une solution complète d'accompagnement sur chaque département pour la saison 2027.").'</p>';
+
 		$h .= '<div class="util-block">';
-		$h .= '<h2>'.s("Vous voulez en savoir plus ?").'</h2>';
+		$h .= '<h4>'.s("Vous voulez en savoir plus ?").'</h4>';
 
 			$h .= '<p>'.s("Contactez-nous pour une courte présentation, ou n'hésitez pas à tester le logiciel grâce au site de démo pour en découvrir les fonctionnalités.").'</p>';
 			$h .= '<a href="https://asso.ouvretaferme.org/nous-contacter" class="btn btn-xl btn-primary">'.s("Nous contacter").'</a> ';
