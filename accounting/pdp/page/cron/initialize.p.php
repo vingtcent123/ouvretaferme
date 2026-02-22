@@ -25,8 +25,8 @@ new Page()
 			$token = \pdp\ConnectionLib::getValidToken();
 
 			$affected = \account\Partner::model()
-        ->wherePartner(\account\PartnerSetting::SUPER_PDP)
-        ->update(['synchronization' => \account\Partner::IN_PROGRESS]);
+				->wherePartner(\account\PartnerSetting::SUPER_PDP)
+				->update(['synchronization' => \account\Partner::IN_PROGRESS]);
 
 			if($affected !== 1) {
 				continue;
@@ -38,16 +38,16 @@ new Page()
 				\pdp\EventLib::synchronize($token);
 
 				\account\Partner::model()
-          ->wherePartner(\account\PartnerSetting::SUPER_PDP)
-          ->update(['synchronization' => \account\Partner::DONE, 'synchronizedAt' => new Sql('NOW()')]);
+					->wherePartner(\account\PartnerSetting::SUPER_PDP)
+					->update(['synchronization' => \account\Partner::DONE, 'synchronizedAt' => new Sql('NOW()')]);
 
 				\company\CompanyCron::model()->delete($eCompanyCron);
 
 			} catch (Exception $e) {
 
 				\account\Partner::model()
-	        ->wherePartner(\account\PartnerSetting::SUPER_PDP)
-	        ->update(['synchronization' => \account\Partner::FAIL]);
+					->wherePartner(\account\PartnerSetting::SUPER_PDP)
+					->update(['synchronization' => \account\Partner::FAIL]);
 
 				trigger_error('Error while synchronizing farm 1 '.$eCompanyCron['farm']['id'].' : '.$e->getMessage());
 
