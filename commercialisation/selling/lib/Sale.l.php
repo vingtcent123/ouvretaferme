@@ -217,7 +217,9 @@ class SaleLib extends SaleCrud {
 
 		if(get_exists('shopDate')) {
 
-			$eDate = \shop\DateLib::getById(GET('shopDate'), \shop\Date::getSelection() + ['shop' => ['shared']])->validate();
+			$eDate = \shop\DateLib::getById(GET('shopDate'), \shop\Date::getSelection() + [
+				'shop' => \shop\ShopElement::getSelection()
+			])->validate();
 			$eDate->canCreateSale($eSale['farm']) ?: throw new \NotAllowedAction();
 
 		} else {
