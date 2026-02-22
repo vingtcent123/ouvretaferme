@@ -1218,7 +1218,6 @@ class FarmUi {
 			$h .= '<div class="farm-tab-wrapper farm-nav-selling">';
 
 				$h .= $this->getNav('selling', $nav);
-
 				$h .= $this->getSellingMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
@@ -1227,7 +1226,6 @@ class FarmUi {
 				if($eFarm['hasShops']) {
 
 					$h .= $this->getNav('shop', $nav);
-
 					$h .= $this->getShopMenu($eFarm, subNav: $subNav);
 
 				} else {
@@ -2565,11 +2563,7 @@ class FarmUi {
 
 			case 'selling' :
 
-				$categories = ['sale', 'customer', 'product'];
-
-				if($eFarm['hasSales']) {
-					$categories[] = 'invoice';
-				}
+				$categories = ['sale', 'customer', 'product', 'invoice'];
 
 				if($eFarm['featureStock']) {
 					$categories[] = 'stock';
