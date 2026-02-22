@@ -41,8 +41,12 @@ new Page(function($data) {
 			$data->eFinancialYearComparison = new \account\FinancialYear();
 		}
 
-		$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
-		$data->cDeclaration = \overview\VatDeclarationLib::getAll(array_column($data->allPeriods, 'from'));
+		if($data->eFarm->getConf('hasVat')) {
+
+			$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
+			$data->cDeclaration = \overview\VatDeclarationLib::getAll(array_column($data->allPeriods, 'from'));
+
+		}
 
 		switch($data->view) {
 
