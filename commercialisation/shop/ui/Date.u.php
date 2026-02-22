@@ -962,20 +962,20 @@ class DateUi {
 							if($cSaleConfirmed->notEmpty()) {
 								$actions .= '<a href="'.\selling\SaleUi::url($cSaleConfirmed->first()).'?prepare='.implode(',', $cSaleConfirmed->getIds()).'" data-ajax-navigation="never" class="btn sale-preparation-status-prepared-button" data-confirm="'.p("Il y a {value} commande confirmée à préparer. Démarrer la préparation de la commande ?", "Il y a {value} commandes confirmées à préparer. Démarrer la préparation des commandes ?", $cSaleConfirmed->count()).'">'.\Asset::icon('person-workspace').' '.s("Préparer les commandes").'</a> ';
 							}
+
 						}
+
+					}
+
+					if($eShop->canShare($eFarm, validateShared: 'canWrite')) {
 
 						if($eDate->acceptCreateSale()) {
 							$actions .= '<a href="/selling/sale:createCollection?farm='.$eDate['farm']['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une vente").'</a> ';
 						}
 
-					}
-
-					if($eDate['deliveryDate'] === NULL) {
-
 						if(
 							$eDate['deliveryDate'] !== NULL and
-							$cSale->notEmpty() and
-							$eShop->canShare($eFarm, validateShared: 'canWrite')
+							$cSale->notEmpty()
 						) {
 							$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eDate['eFarmSelected']->empty() ? '' : '&farm='.$eDate['eFarmSelected']['id']).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
 						}
@@ -1189,7 +1189,7 @@ class DateUi {
 		$id = 'search-'.microtime(TRUE);
 
 		$h = '<div class="input-group">';
-			$h .= '<a data-dropdown="bottom-end" data-dropdown-id="'.$id.'" class="btn btn-outline-primary dropdown-toggle">';
+			$h .= '<a data-dropdown="bottom-start" data-dropdown-id="'.$id.'" class="btn btn-outline-primary dropdown-toggle">';
 				$h .= \Asset::icon('search').'  ';
 				$h .= $eDate['eFarmSelected']->empty() ? s("Producteur") : encode($eDate['eFarmSelected']['name']);
 			$h .= '</a>';
@@ -1199,6 +1199,8 @@ class DateUi {
 			}
 		$h .= '</div>';
 		$h .= '<div class="dropdown-list" data-dropdown-id="'.$id.'-list">';
+			$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?farm=" class="dropdown-item '.($eDate['eFarmSelected']->empty() ? 'selected' : '').'">'.s("Tous les producteurs").'</a>';
+			$h .= '<div class="dropdown-divider"></div>';
 			foreach($cShare as $eShare) {
 				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?farm='.$eShare['farm']['id'].'" class="dropdown-item '.($eShare['farm']->is($eDate['eFarmSelected']) ? 'selected' : '').'">'.encode($eShare['farm']['name']).'</a>';
 			}

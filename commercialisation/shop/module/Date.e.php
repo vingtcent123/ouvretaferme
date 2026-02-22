@@ -44,8 +44,7 @@ class Date extends DateElement {
 	public function acceptCreateSale(): bool {
 
 		return (
-			($this['deliveryDate'] === NULL or $this->isPast() === FALSE) and
-			$this->acceptNotShared()
+			($this['deliveryDate'] === NULL or $this->isPast() === FALSE)
 		);
 
 	}

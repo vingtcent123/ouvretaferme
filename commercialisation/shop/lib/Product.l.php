@@ -304,7 +304,7 @@ class ProductLib extends ProductCrud {
 					$eShop->expects(['shared']);
 
 					if($eShop->isShared()) {
-						$eShop->expects(['ccRange']);
+						$eShop->expects(['cShare']);
 					}
 
 					$eCustomer->expects(['groups']);
@@ -316,7 +316,7 @@ class ProductLib extends ProductCrud {
 
 						$cCustomer = \selling\CustomerLib::getByUserAndFarms(
 							$eCustomer['user'],
-							$eShop['ccRange']->getColumnCollection('farm')
+							$eShop['cShare']->getColumnCollection('farm')
 						);
 
 						$customersIds = $cCustomer->getIds();
