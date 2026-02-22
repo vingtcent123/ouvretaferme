@@ -54,7 +54,7 @@ new Page()
 new Page()
 	->get('superpdp', function($data) {
 
-		if(FEATURE_PDP === FALSE) {
+		if(\pdp\PdpLib::isActive(new \farm\Farm()) === FALSE) {
 			throw new NotExistsAction();
 		}
 

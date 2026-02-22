@@ -42,7 +42,7 @@ class ThirdPartyModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'cast' => 'string'],
-			'siren' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
+			'siren' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'electronicAddress' => ['text8', 'unique' => TRUE, 'cast' => 'string'],
 			'legalIdentifier' => ['text8', 'cast' => 'string'],
 			'vatNumber' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -54,7 +54,6 @@ class ThirdPartyModel extends \ModuleModel {
 		]);
 
 		$this->uniqueConstraints = array_merge($this->uniqueConstraints, [
-			['siren'],
 			['electronicAddress']
 		]);
 

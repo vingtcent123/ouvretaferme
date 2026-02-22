@@ -6,7 +6,7 @@ namespace pdp;
  * Lib pour gérer l'OAuth avec Super PDP
  *
  */
-Class ConnectionLib {
+class ConnectionLib {
 
 	public static function getAuthorizeUrl(\farm\Farm $eFarm): string {
 
@@ -88,9 +88,8 @@ Class ConnectionLib {
 
 		\account\Partner::model()->option('add-replace')->insert($ePartner);
 
-		CompanyLib::synchronize();
-
 		\farm\Farm::model()->update($eFarm, ['hasPdp' => TRUE]);
+		\company\CompanyCronLib::addConfiguration($eFarm, \company\CompanyCronLib::SUPER_PDP_INITIALIZE, \company\CompanyCron::WAITING, $ePartner['id']);
 
 		\account\LogLib::save('getAccessToken', 'Superpdp');
 

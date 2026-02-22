@@ -77,6 +77,7 @@ Partner:
   refreshToken: text16
   params: ?json = PHP([])
   synchronizedAt: ?datetime
+  synchronization: enum(WAITING, IN_PROGRESS, DONE, FAIL) = WAITING
   createdAt: datetime = SQL(NOW())
   updatedAt: datetime = SQL(NOW())
   expiresAt: ?datetime

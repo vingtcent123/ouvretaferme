@@ -56,6 +56,5 @@ ThirdParty:
   vatNumber: ?text8
   countryCode: ?text8(2,2)
   UNIQUE: [
-    ["siren"],
     ["electronicAddress"],
   ]

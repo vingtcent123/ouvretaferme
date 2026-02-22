@@ -3,7 +3,6 @@ namespace pdp;
 
 class PdpSetting extends \Settings {
 
-	const SUPER_PDP_URL = 'https://www.superpdp.tech/';
 	const SUPER_PDP_OAUTH_URL = 'https://api.superpdp.tech/oauth2/';
 	const SUPER_PDP_API_URL = 'https://api.superpdp.tech/v1.beta/';
 

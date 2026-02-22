@@ -1,7 +1,7 @@
 <?php
 namespace pdp;
 
-Class AddressLib extends AddressCrud {
+class AddressLib extends AddressCrud {
 
 	const FR_SCHEME_ID = '0225';
 	const BE_VAT_SCHEME_ID = '9925';
@@ -62,9 +62,11 @@ Class AddressLib extends AddressCrud {
 
 	}
 
-	public static function getSchemeIdentifier(): string {
+	public static function getSchemeIdentifier(\farm\Farm $eFarm = new \farm\Farm()): string {
 
-		$eFarm = \farm\Farm::getConnected();
+		if($eFarm->empty()) {
+			$eFarm = \farm\Farm::getConnected();
+		}
 
 		if($eFarm->isFR()) {
 

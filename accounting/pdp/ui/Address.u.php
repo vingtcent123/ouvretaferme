@@ -10,7 +10,7 @@ Class AddressUi {
 		if($cAddress->count() <= 2) {
 
 			$h .= '<div class="util-info">';
-				$h .= s("Les <b>adresses techniques</b> sont utilisées pour recevoir des messages liées à des factures envoyées depuis l'adresse originale. Elle ne peuvent pas être supprimées.");
+				$h .= s("Les <b>adresses techniques</b> sont utilisées pour recevoir des messages liées à des factures envoyées depuis l'adresse initialement transmise à votre partenaire. Elle ne peuvent pas être supprimées.");
 			$h .= '</div>';
 
 		}

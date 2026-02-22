@@ -1,7 +1,7 @@
 <?php
 namespace pdp;
 
-Class CurlLib {
+class CurlLib {
 
 	public static function send(string $accessToken, string $url, mixed $params, string $mode): ?array {
 

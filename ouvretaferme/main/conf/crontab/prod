@@ -9,6 +9,7 @@
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme account/cron/pdf
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme data/cron/calculate
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme mail/cron/send
+0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme pdp/cron/initialize
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme preaccounting/cron/reconciliate
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme selling/cron/invoice
 0 * * * * php /var/www/otf/framework/lime.php -e prod -a ouvretaferme shop/cron/delivery:finish

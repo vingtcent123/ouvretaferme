@@ -3,7 +3,7 @@
 new Page()
 	->get('connect', function($data) {
 
-		if(FEATURE_PDP === FALSE) {
+		if(\pdp\PdpLib::isActive($data->eFarm) === FALSE) {
 			throw new NotExistsAction();
 		}
 
@@ -13,7 +13,7 @@ new Page()
 
 new Page(function($data) {
 
-	if(FEATURE_PDP === FALSE) {
+	if(\pdp\PdpLib::isActive($data->eFarm) === FALSE) {
 		throw new NotExistsAction();
 	}
 

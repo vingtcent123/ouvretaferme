@@ -1376,7 +1376,7 @@ class FarmUi {
 
 			$h .= '</div>';
 
-			if(FEATURE_PDP and $eFarm['hasPdp']) {
+			if(\pdp\PdpLib::isActive($eFarm) and $eFarm['hasPdp']) {
 
 				$h .= '<div class="farm-tab-wrapper farm-nav-invoicing">';
 

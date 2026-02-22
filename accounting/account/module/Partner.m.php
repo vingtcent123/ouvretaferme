@@ -7,6 +7,11 @@ abstract class PartnerElement extends \Element {
 
 	private static ?PartnerModel $model = NULL;
 
+	const WAITING = 'waiting';
+	const IN_PROGRESS = 'in-progress';
+	const DONE = 'done';
+	const FAIL = 'fail';
+
 	public static function getSelection(): array {
 		return Partner::model()->getProperties();
 	}
@@ -46,6 +51,7 @@ class PartnerModel extends \ModuleModel {
 			'refreshToken' => ['text16', 'cast' => 'string'],
 			'params' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'synchronizedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'synchronization' => ['enum', [\account\Partner::WAITING, \account\Partner::IN_PROGRESS, \account\Partner::DONE, \account\Partner::FAIL], 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'expiresAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
@@ -54,7 +60,7 @@ class PartnerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'partner', 'identifier', 'accessToken', 'refreshToken', 'params', 'synchronizedAt', 'createdAt', 'updatedAt', 'expiresAt', 'createdBy', 'updatedBy'
+			'partner', 'identifier', 'accessToken', 'refreshToken', 'params', 'synchronizedAt', 'synchronization', 'createdAt', 'updatedAt', 'expiresAt', 'createdBy', 'updatedBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -74,6 +80,9 @@ class PartnerModel extends \ModuleModel {
 
 			case 'params' :
 				return [];
+
+			case 'synchronization' :
+				return Partner::WAITING;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -103,6 +112,9 @@ class PartnerModel extends \ModuleModel {
 
 			case 'params' :
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+
+			case 'synchronization' :
+				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
 				return parent::encode($property, $value);
@@ -155,6 +167,10 @@ class PartnerModel extends \ModuleModel {
 
 	public function whereSynchronizedAt(...$data): PartnerModel {
 		return $this->where('synchronizedAt', ...$data);
+	}
+
+	public function whereSynchronization(...$data): PartnerModel {
+		return $this->where('synchronization', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): PartnerModel {

@@ -1,7 +1,7 @@
 <?php
 namespace invoicing;
 
-Class EventLib extends EventCrud {
+class EventLib extends EventCrud {
 
 	public static function getByInvoice(Invoice $eInvoice): \Collection {
 
@@ -12,6 +12,5 @@ Class EventLib extends EventCrud {
 			->getCollection();
 
 	}
-
 
 }

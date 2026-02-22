@@ -7,7 +7,7 @@ namespace pdp;
  *
  */
 
-Class CompanyLib extends CompanyCrud {
+class CompanyLib extends CompanyCrud {
 
 	public static function get(): Company {
 
