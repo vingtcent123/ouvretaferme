@@ -11,14 +11,27 @@ class UnitLib extends UnitCrud {
 		return self::getPropertiesCreate();
 	}
 
+	public static function duplicateForFarm(\farm\Farm $eFarm): void {
+
+		$cUnit = Unit::model()
+			->select(Unit::getSelection())
+			->whereFarm(NULL)
+			->getCollection();
+
+		$cUnit->map(function(Unit $eUnit) use($eFarm) {
+			$eUnit['id'] = NULL;
+			$eUnit['farm'] = $eFarm;
+		});
+
+		Unit::model()->insert($cUnit);
+
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm, string|\Sql|null $sort = 'singular', ?string $index = NULL): \Collection {
 
 		return Unit::model()
 			->select(Unit::getSelection())
-			->or(
-				fn() => $this->whereFarm($eFarm),
-				fn() => $this->whereFarm(NULL)
-			)
+			->whereFarm($eFarm)
 			->sort($sort)
 			->getCollection(index: $index);
 

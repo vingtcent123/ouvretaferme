@@ -22,6 +22,14 @@ class Unit extends UnitElement {
 
 	}
 
+	public function acceptUpdate(): bool {
+		return ($this['fqn'] === NULL);
+	}
+
+	public function acceptDelete(): bool {
+		return ($this['fqn'] === NULL);
+	}
+
 	public function isInteger(): bool {
 
 		return (
@@ -37,7 +45,7 @@ class Unit extends UnitElement {
 			->setCallback('singular.duplicate', function(string $name): bool {
 
 				return Unit::model()
-					->whereFarm(NULL)
+					->whereFarm($this['farm'])
 					->whereSingular($name)
 					->exists() === FALSE;
 

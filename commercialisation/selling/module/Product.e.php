@@ -159,7 +159,7 @@ class Product extends ProductElement {
 			'unprocessedPlant' => [Product::UNPROCESSED_PLANT],
 			'unprocessedVariety' => [Product::UNPROCESSED_PLANT],
 			'mixedFrozen' => [Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD],
-			'processedPackaging' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
+			'processedPackaging' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
 			'processedAllergen' => [Product::PROCESSED_FOOD],
 			'processedComposition' => [Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT],
 			'proPackaging' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],

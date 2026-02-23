@@ -157,10 +157,10 @@ class UnitUi {
 			$h .= '<table class="tr-even">';
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<th></th>';
 						$h .= '<th>'.s("Singulier").'</th>';
 						$h .= '<th>'.s("Pluriel").'</th>';
 						$h .= '<th>'.s("Version courte").'</th>';
+						$h .= '<th></th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -171,30 +171,34 @@ class UnitUi {
 
 					$h .= '<tr class="'.($eUnit['farm']->empty() ? 'color-muted' : '').'">';
 						$h .= '<td>';
+							$h .= $eUnit->acceptUpdate() ? $eUnit->quick('singular', encode($eUnit['singular'])) : encode($eUnit['singular']);
+						$h .= '</td>';
+						$h .= '<td>';
+							$h .= $eUnit->acceptUpdate() ? $eUnit->quick('plural', encode($eUnit['plural'])) : encode($eUnit['plural']);
+						$h .= '</td>';
+						$h .= '<td>';
+							$h .= $eUnit->acceptUpdate() ? $eUnit->quick('short', encode($eUnit['short'])) : encode($eUnit['short']);
+						$h .= '</td>';
+						$h .= '<td class="color-muted">';
 
-							if($eUnit['farm']->empty()) {
-								$h .= s("Fournie par défaut");
-							} else {
-								$h .= s("Personnalisée");
-							}
+						if($eUnit['fqn'] !== NULL) {
+							$h .= s("Fournie par défaut");
+						} else {
+							$h .= s("Personnalisée");
+						}
 
-						$h .= '</td>';
-						$h .= '<td>';
-							$h .= $eUnit['farm']->empty() ? encode($eUnit['singular']) : $eUnit->quick('singular', encode($eUnit['singular']));
-						$h .= '</td>';
-						$h .= '<td>';
-							$h .= $eUnit['farm']->empty() ? encode($eUnit['plural']) : $eUnit->quick('plural', encode($eUnit['plural']));
-						$h .= '</td>';
-						$h .= '<td>';
-							$h .= $eUnit['farm']->empty() ? encode($eUnit['short']) : $eUnit->quick('short', encode($eUnit['short']));
 						$h .= '</td>';
 						$h .= '<td class="text-end">';
 
-							if($eUnit['farm']->notEmpty()) {
+							if($eUnit->acceptUpdate()) {
 
 								$h .= '<a href="/selling/unit:update?id='.$eUnit['id'].'" class="btn btn-outline-secondary">';
 									$h .= \Asset::icon('gear-fill');
 								$h .= '</a> ';
+
+							}
+
+							if($eUnit->acceptDelete()) {
 
 								$h .= '<a data-ajax="/selling/unit:doDelete" data-confirm="'.s("Supprimer cette unité de vente ?").'" post-id="'.$eUnit['id'].'" class="btn btn-outline-secondary">';
 									$h .= \Asset::icon('trash-fill');
@@ -224,6 +228,8 @@ class UnitUi {
 
 			$h .= $form->asteriskInfo();
 
+			$h .= $this->getWarning();
+
 			$h .= $form->hidden('farm', $eUnit['farm']['id']);
 			$h .= $form->dynamicGroups($eUnit, ['singular*', 'plural*', 'short*', 'type*', 'approximate*']);
 			$h .= $form->group(
@@ -246,6 +252,8 @@ class UnitUi {
 
 		$h = $form->openAjax('/selling/unit:doUpdate');
 
+			$h .= $this->getWarning();
+
 			$h .= $form->hidden('id', $eUnit['id']);
 			$h .= $form->dynamicGroups($eUnit, ['singular', 'plural', 'short', 'type', 'approximate']);
 			$h .= $form->group(
@@ -259,6 +267,21 @@ class UnitUi {
 			title: s("Modifier l'unité"),
 			body: $h
 		);
+
+	}
+
+	public function getWarning(): string {
+
+		$h = '<div class="util-block-info mb-2">';
+			$h .= '<h4>'.s("Utilisation des unités personnalisées").'</h4>';
+			$h .= '<ul>';
+				$h .= '<li>'.s("Elles sont bien prises en compte sur toutes les pages et documents générés par Ouvretaferme").'</li>';
+				$h .= '<li>'.s("Elles sont remplacées par &laquo; Unité &raquo; dans les factures électroniques qui sont envoyées à une plateforme agréée car <b>la facture électronique ne gère pas les unités personnalisées</b>").'</li>';
+			$h .= '</ul>';
+			$h .= '<p>'.s("Si vous avez des unités très spécifiques dont vous souhaitez garder la trace sur vos factures électroniques, nous vous suggérons plutôt d'utiliser le champ <i>Conditionnement</i> dans vos produits.").'</p>';
+		$h .= '</div>';
+
+		return $h;
 
 	}
 
