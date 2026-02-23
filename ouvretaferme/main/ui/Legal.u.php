@@ -321,7 +321,7 @@ class LegalUi {
 
 			$h .= '<p>';
 				$h .= '<span class="font-xl mr-1" style="font-weight: bold">'.s("Facturation électronique").'</span><br/>';
-				$h .= s("La réception et l'envoi de factures électroniques sera <b>GRATUITE</b> pour tous sur Ouvretaferme !<br/>Commencez dès aujourd'hui à transférer votre commercialisation et votre comptabilité sur Ouvretaferme 🥳");
+				$h .= s("La réception et l'envoi de factures électroniques sera <b>GRATUITE</b> pour tous sur Ouvretaferme !<br/>Commencez dès aujourd'hui à transférer votre commercialisation et votre comptabilité 🥳");
 			$h .= '</p>';
 
 			$h .= \Asset::image('main', 'facturation-electronique.png', ['style' => 'height: 5rem']);
