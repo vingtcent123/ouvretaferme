@@ -314,25 +314,20 @@ class LegalUi {
 
 		$h .= '<div class="home-features home-features-2 mb-1">';
 			$h .= '<div class="home-feature"><h4>'.s("Agriculture biologique").'</h4><div>'.s("Utilisation gratuite pour les modules <sale>VENTE</sale> et de <production>PRODUCTION</production> et soumise à l'adhésion à l'association pour {fee} € / an pour le module <accounting>COMPTABILITÉ</accounting>.", $arguments + ['fee' => \association\AssociationSetting::MEMBERSHIP_FEE_DISCOUNT]).'</div></div>';
-			$h .= '<div class="home-feature"><h4>'.s("Agriculture conventionnelle").'</h4><div>'.s("Utilisation gratuite pour le module <production>PRODUCTION</production> et soumise à l'adhésion à l'association pour {fee} € / an, avec une période d'essai gratuite de 6 mois pour les modules <sale>VENTE</sale> et <accounting>COMPTABILITÉ</accounting>.", $arguments + ['fee' => \association\AssociationSetting::MEMBERSHIP_FEE_FULL]).'</div></div>';
+			$h .= '<div class="home-feature"><h4>'.s("Agriculture conventionnelle").'</h4><div>'.s("Utilisation gratuite pour le module <production>PRODUCTION</production> et l'envoi et réception de factures électroniques. Utilisation soumise à l'adhésion à l'association pour {fee} € / an, avec une période d'essai gratuite de 6 mois pour les modules <sale>VENTE</sale> et <accounting>COMPTABILITÉ</accounting>.", $arguments + ['fee' => \association\AssociationSetting::MEMBERSHIP_FEE_FULL]).'</div></div>';
 		$h .= '</div>';
-		$h .= '<div>'.s("L'utilisation du module de <production>PRODUCTION</production> uniquement est gratuite pour les particuliers ou les établissements scolaires.", $arguments).'</div>';
 
-		$h .= '<br/>';
-		$h .= '<br/>';
+		$h .= '<div class="home-highlight">';
 
-		$h .= '<h2>'.s("Pourquoi le logiciel est-il aussi accessible ?").'</h2>';
+			$h .= '<p>';
+				$h .= '<span class="font-xl mr-1" style="font-weight: bold">'.s("Facturation électronique").'</span><br/>';
+				$h .= s("La réception et l'envoi de factures électroniques sera <b>GRATUITE</b> pour tous sur Ouvretaferme !<br/>Commencez dès aujourd'hui à transférer votre commercialisation et votre comptabilité sur Ouvretaferme 🥳");
+			$h .= '</p>';
 
-		$h .= '<div class="home-category">';
-
-			$h .= '<ul>';
-				$h .= '<li>'.s("Nous sommes une association et nous n'avons pas de pression commerciale").'</li>';
-				$h .= '<li>'.s("Nous sommes bénévoles").'</a></li>';
-			$h .= '</ul>';
+			$h .= \Asset::image('main', 'facturation-electronique.png', ['style' => 'height: 5rem']);
 
 		$h .= '</div>';
 
-		$h .= '<br/>';
 		$h .= '<br/>';
 
 		$h .= '<h2>'.s("Vous n'êtes pas tout à fait convaincu ?").'</h2>';
