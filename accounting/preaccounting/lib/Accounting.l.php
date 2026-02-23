@@ -193,6 +193,14 @@ Class AccountingLib {
 
 		$lines = [];
 
+		$eJournalCode = match($eCash['source']) {
+			\cash\Cash::SELL_SALE => \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL),
+			\cash\Cash::SELL_INVOICE => \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL),
+			\cash\Cash::SELL_MANUAL => \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL),
+			\cash\Cash::BUY_MANUAL => \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_BUY),
+			default => \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_OD),
+		};
+
 		if($eCash['type'] === \cash\Cash::DEBIT) { // L'argent sort de la caisse
 
 			$counterpartType = \journal\Operation::DEBIT;
@@ -216,7 +224,7 @@ Class AccountingLib {
 		$lines[] = self::getFecLine(
 			eAccount    : $eAccount,
 			date        : $eCash['date'],
-			eCode       : new \journal\JournalCode(),
+			eCode       : $eJournalCode,
 			ecritureLib : $description,
 			document    : $document,
 			documentDate: $eCash['date'],
@@ -235,7 +243,7 @@ Class AccountingLib {
 			$lines[] = self::getFecLine(
 				eAccount    : $eAccount['vatAccount'],
 				date        : $eCash['date'],
-				eCode       : new \journal\JournalCode(),
+				eCode       : $eJournalCode,
 				ecritureLib : $eCash['description'],
 				document    : $document,
 				documentDate: $eCash['date'],
@@ -259,7 +267,7 @@ Class AccountingLib {
 		$lines[] = self::getFecLine(
 			eAccount    : $eRegister['account'],
 			date        : $eCash['date'],
-			eCode       : new \journal\JournalCode(),
+			eCode       : $eJournalCode,
 			ecritureLib : $description,
 			document    : $document,
 			documentDate: $eCash['date'],
@@ -279,7 +287,7 @@ Class AccountingLib {
 
 	public static function generateSalesFec(\Collection $cSale, \Collection $cAccount, \account\Account $eAccountFilter, \selling\Payment $ePaymentFilter = new \selling\Payment(), \cash\Cash $eCash = new \cash\Cash(), ?string $counterpart = NULL): array {
 
-		$eJournalCode = \journal\JournalCodeLib::askByCode('VEN');
+		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL);
 
 		$fecData = [];
 		$nSale = 0;
@@ -389,7 +397,7 @@ Class AccountingLib {
 	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cAccount, \account\Account $eAccountFilter = new \account\Account(), \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
 
 		$eAccountBank = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
-		$eJournalCode = \journal\JournalCodeLib::askByCode('VEN');
+		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL);
 
 		$fecData = [];
 		$nInvoices = 0;
@@ -470,6 +478,7 @@ Class AccountingLib {
 	public static function generatePaymentsFec(\Collection $cPayment, \Collection $cAccount, bool $forImport, \account\Account $eAccountFilter = new \account\Account()): array {
 
 		$eAccountBank = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
+		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL);
 
 		$fecData = [];
 		$nPayment = 0;
@@ -532,7 +541,7 @@ Class AccountingLib {
 					$fecDataItemPayment = self::getFecLine(
 						eAccount    : $eAccount,
 						date        : $referenceDate,
-						eCode       : $eAccount['journalCode'] ?? new \journal\JournalCode,
+						eCode       : $eJournalCode,
 						ecritureLib : $ecritureLib,
 						document    : $document,
 						documentDate: $documentDate,
@@ -603,7 +612,7 @@ Class AccountingLib {
 						$fecDataRegul = self::getFecLine(
 							eAccount    : $eAccountRegul,
 							date        : $referenceDate,
-							eCode       : $eAccountBank['journalCode'],
+							eCode       : $eJournalCode,
 							ecritureLib : $document,
 							document    : $document,
 							documentDate: $documentDate,
