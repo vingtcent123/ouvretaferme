@@ -5,7 +5,7 @@ class UblLib {
 
 	public static function generate(\farm\Farm $eFarm, Invoice $eInvoice): string {
 
-		list($dateMin, $dateMax) = self::getInvoicePeriod($eInvoice);
+		[$dateMin, $dateMax] = self::getInvoicePeriod($eInvoice);
 
 		/* vraies valeurs de production */
 		$sellerSiret = $eFarm['siret'];
@@ -34,6 +34,7 @@ class UblLib {
 			$buyerSiren = '000000001';
 			$buyerSiret = '00000000100020';
 		}
+		$discount = self::getDiscount($eInvoice);
 
 		$xml = '<?xml version="1.0" encoding="utf-8" ?>
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
@@ -57,7 +58,7 @@ class UblLib {
 	<cac:InvoicePeriod><!--BG-14-->
 		<cbc:StartDate>'.$dateMin.'</cbc:StartDate><!--BT-73-->
 		<cbc:EndDate>'.$dateMax.'</cbc:EndDate><!--BT-74-->
-		<cbc:DescriptionCode>'.self::getVatChargeability($eFarm, $eInvoice).'</cbc:DescriptionCode><!--BT-8-->
+		<cbc:DescriptionCode>'.self::getVatChargeability($eFarm).'</cbc:DescriptionCode><!--BT-8-->
 	</cac:InvoicePeriod>
 	<cac:OrderReference>
 		<cbc:ID>PO202525478</cbc:ID><!--BT-13 (TODO)-->
@@ -118,14 +119,47 @@ class UblLib {
 				<cbc:CompanyID schemeID="0002">'.$buyerSiren.'</cbc:CompanyID><!--BT-47-->
 			</cac:PartyLegalEntity>
 		</cac:Party>
-	</cac:AccountingCustomerParty>
+	</cac:AccountingCustomerParty>';
+	if($discount !== 0.0) {
+		foreach($eInvoice['cSale'] as $eSale) {
+			foreach($eSale['cItem'] as $eItem) {
+				if($eItem['priceInitial'] === NULL) {
+					continue;
+				}
+				$itemAllowance = match($eSale['taxes']) {
+					Sale::EXCLUDING => ($eItem['priceInitial'] - $eItem['price']),
+					Sale::INCLUDING => ($eItem['priceInitial'] - $eItem['price']) / (1 + $eItem['vatRate']),
+				};
+				$itemInitialPrice = match($eSale['taxes']) {
+					Sale::EXCLUDING => ($eItem['priceInitial']),
+					Sale::INCLUDING => ($eItem['priceInitial']) / (1 + $eItem['vatRate']),
+				};
+				$xml .= '
+	<cac:AllowanceCharge><!--BG-20-->
+		<cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+		<cbc:AllowanceChargeReasonCode>95</cbc:AllowanceChargeReasonCode><!--BT-98-->
+		<cbc:AllowanceChargeReason>'.s("Remise").'</cbc:AllowanceChargeReason><!--BT-97-->
+		<cbc:Amount currencyID="EUR">'.$itemAllowance.'</cbc:Amount><!--BT-92-->
+		<cbc:BaseAmount currencyID="EUR">'.$itemInitialPrice.'</cbc:BaseAmount><!--BT-93-->
+		<cac:TaxCategory><!--BT-95-00-->
+			<cbc:ID>S</cbc:ID><!--BT-95-->
+			<cbc:Percent>'.$eItem['vatRate'].'</cbc:Percent><!--BT-96-->
+			<cac:TaxScheme>
+				<cbc:ID>VAT</cbc:ID>
+			</cac:TaxScheme>
+		</cac:TaxCategory>
+	</cac:AllowanceCharge>';
+			}
+		}
+	}
+	$xml .= '
 	<cac:TaxTotal><!--BT-110-00-->
 		<cbc:TaxAmount currencyID="EUR">'.$eInvoice['vat'].'</cbc:TaxAmount><!--BT-110-->';
 			foreach($eInvoice['vatByRate'] as $vatByRate) {
         $xml .= '
 		<cac:TaxSubtotal><!--BG-23-->
-			<cbc:TaxableAmount currencyID="EUR">'.$vatByRate['amount'].'</cbc:TaxableAmount>
-			<cbc:TaxAmount currencyID="EUR">'.$vatByRate['vat'].'</cbc:TaxAmount>
+			<cbc:TaxableAmount currencyID="EUR">'.$vatByRate['amount'].'</cbc:TaxableAmount><!--BT-116-->
+			<cbc:TaxAmount currencyID="EUR">'.$vatByRate['vat'].'</cbc:TaxAmount><!--BT-117-->
 			<cac:TaxCategory>
 				<cbc:ID>'.self::getVatCode($vatByRate).'</cbc:ID><!--BT-118-->
 				<cbc:Percent>'.$vatByRate['vatRate'].'</cbc:Percent><!--BT-119-->
@@ -140,17 +174,33 @@ class UblLib {
 	<cac:LegalMonetaryTotal>
 		<cbc:LineExtensionAmount currencyID="EUR">'.self::sumPriceExcludingVat($eInvoice).'</cbc:LineExtensionAmount><!--BT-106-->
 		<cbc:TaxExclusiveAmount currencyID="EUR">'.$eInvoice['priceExcludingVat'].'</cbc:TaxExclusiveAmount><!--BT-109-->
-		<cbc:TaxInclusiveAmount currencyID="EUR">'.$eInvoice['priceIncludingVat'].'</cbc:TaxInclusiveAmount><!--BT-112-->
+		<cbc:TaxInclusiveAmount currencyID="EUR">'.$eInvoice['priceIncludingVat'].'</cbc:TaxInclusiveAmount><!--BT-112-->';
+		if($discount !== 0.0) {
+			$xml .= '
+		<cbc:AllowanceTotalAmount currencyID="EUR">'.$discount.'</cbc:AllowanceTotalAmount><!--BT-107-->';
+		}
+		$xml .= '
 		<cbc:PayableAmount currencyID="EUR">'.$eInvoice['priceIncludingVat'].'</cbc:PayableAmount><!--BT-115-->
 	</cac:LegalMonetaryTotal>';
 	$lineNumber = 1;
 	foreach($eInvoice['cSale'] as $eSale) {
 		foreach($eSale['cItem'] as $eItem) {
+			if($eItem['priceInitial'] !== NULL) {
+				$price = match($eSale['taxes']) {
+					Sale::EXCLUDING => $eItem['priceInitial'],
+					Sale::INCLUDING => round($eItem['priceInitial'] / (1 + $eItem['vatRate']), 2),
+				};
+			} else {
+				$price = match($eSale['taxes']) {
+					Sale::EXCLUDING => $eItem['price'],
+					Sale::INCLUDING => round($eItem['price'] / (1 + $eItem['vatRate']), 2),
+				};
+			}
       $xml .= '
 	<cac:InvoiceLine><!--BG-25-->
 		<cbc:ID>'.$lineNumber.'</cbc:ID><!--BT-126-->
 		<cbc:InvoicedQuantity unitCode="'.self::getUnitCode($eItem['unit']).'">'.$eItem['number'].'</cbc:InvoicedQuantity><!--BT-129--><!--BT-130-->
-		<cbc:LineExtensionAmount currencyID="EUR">'.$eItem['price'].'</cbc:LineExtensionAmount><!--BT-131-->
+		<cbc:LineExtensionAmount currencyID="EUR">'.$price.'</cbc:LineExtensionAmount><!--BT-131 (prix non remisé)-->
 		<cac:InvoicePeriod><!--BG-26-->
 			<cbc:StartDate>'.$eSale['deliveredAt'].'</cbc:StartDate><!--BT-134-->
 			<cbc:EndDate>'.$eSale['deliveredAt'].'</cbc:EndDate><!--BT-135-->
@@ -158,10 +208,10 @@ class UblLib {
 		<cac:Item>
 			<cbc:Name>'.$eItem['name'].'</cbc:Name><!--BT-153-->
 			<cac:ClassifiedTaxCategory><!--BG-30-->
-				<cbc:ID>'.self::getVatCode($eItem['vatRate']).'</cbc:ID>
-				<cbc:Percent>'.$eItem['vatRate'].'</cbc:Percent>
-				<cac:TaxScheme>
-					<cbc:ID>VAT</cbc:ID>
+				<cbc:ID>'.self::getVatCode($eItem['vatRate']).'</cbc:ID><!--BT-151-->
+				<cbc:Percent>'.$eItem['vatRate'].'</cbc:Percent><!--BT-152-->
+				<cac:TaxScheme><!--BT-151-1-->
+					<cbc:ID>VAT</cbc:ID><!--BT-151-2-->
 				</cac:TaxScheme>
 			</cac:ClassifiedTaxCategory>
 		</cac:Item>
@@ -185,17 +235,28 @@ class UblLib {
 	private static function getUnitCode(Unit $eUnit): string { // TODO
 		return 'C62'; // ONE
 	}
-	private static function sumAllowance(Invoice $eInvoice): float { // TODO BT-107 (toutes les remises par item et somme pour la facture)
 
-		$sum = 0;
+	private static function getDiscount(Invoice $eInvoice): float {
+
+		$discount = 0.0;
 
 		foreach($eInvoice['cSale'] as $eSale) {
+
 			foreach($eSale['cItem'] as $eItem) {
-				$sum += $eItem['price'];
+
+				if($eItem['priceInitial'] === NULL) {
+					continue;
+				}
+
+				$discount += match($eSale['taxes']) {
+					Sale::EXCLUDING => ($eItem['priceInitial'] - $eItem['price']),
+					Sale::INCLUDING => ($eItem['priceInitial'] - $eItem['price']) / (1 + $eItem['vatRate']),
+				};
 			}
+
 		}
 
-		return $sum;
+		return round($discount, 2);
 
 	}
 
@@ -205,7 +266,14 @@ class UblLib {
 
 		foreach($eInvoice['cSale'] as $eSale) {
 			foreach($eSale['cItem'] as $eItem) {
-				$sum += $eItem['price'];
+
+				$priceField = $eItem['priceInitial'] === NULL ? 'price' : 'priceInitial';
+
+				$sum += match($eSale['taxes']) {
+					Sale::EXCLUDING => $eItem[$priceField],
+					Sale::INCLUDING => round($eItem[$priceField] / (1 + $eItem['vatRate'] ?? 0)),
+				};
+
 			}
 		}
 
@@ -226,7 +294,7 @@ class UblLib {
 
 	}
 
-	private static function getVatChargeability(\farm\Farm $eFarm, Invoice $eInvoice): int {
+	private static function getVatChargeability(\farm\Farm $eFarm): int {
 
 		if($eFarm->getConf('vatChargeability') === \farm\Configuration::DEBIT) {
 			return 3;
