@@ -721,7 +721,7 @@ class ItemLib extends ItemCrud {
 			// Marché en cours, à priori zéro vente à la création
 			if($e['sale']['preparationStatus'] === Sale::SELLING) {
 				$e['price'] = 0.0;
-				$e['priceInitial'] = 0.0;
+				$e['priceInitial'] = NULL;
 				$e['priceStats'] = 0.0;
 				$e['number'] = 0.0;
 			} else {
@@ -811,9 +811,13 @@ class ItemLib extends ItemCrud {
 			$priceStats *= (100 - $e['discount']) / 100;
 		}
 
-		$priceInitial = $e['unitPriceInitial'] * $e['number'];
-		if($e['packaging']) {
-			$priceInitial *= $e['packaging'];
+		if($e['unitPriceInitial'] === NULL) {
+			$priceInitial = NULL;
+		} else {
+			$priceInitial = $e['unitPriceInitial'] * $e['number'];
+			if($e['packaging']) {
+				$priceInitial *= $e['packaging'];
+			}
 		}
 		$e['priceInitial'] = $priceInitial;
 
