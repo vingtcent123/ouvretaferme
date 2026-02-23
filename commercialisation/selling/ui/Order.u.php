@@ -489,8 +489,8 @@ class OrderUi {
 					$eSale['price'] !== NULL
 				) {
 
-					$discountAmount = -1 * ($eSale['priceGross'] - $eSale['price']);
-					$h .= $this->getItemTotal($eSale, $withPackaging, s("Total avant remise"), \util\TextUi::money($eSale['priceGross']));
+					$discountAmount = -1 * ($eSale['priceInitial'] - $eSale['price']);
+					$h .= $this->getItemTotal($eSale, $withPackaging, s("Total avant remise"), \util\TextUi::money($eSale['priceInitial']));
 					$h .= $this->getItemTotal($eSale, $withPackaging, s("Remise <i>- {value} %</i>", $eSale['discount']), \util\TextUi::money($discountAmount));
 
 				}

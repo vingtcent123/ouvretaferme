@@ -19,7 +19,7 @@ class BasketLib {
 				}
 				return $products;
 			}
-		} catch(Exception) {
+		} catch(\Exception) {
 		}
 
 		return NULL;
@@ -122,7 +122,7 @@ class BasketLib {
 				'farm' => $eFarm,
 				'products' => [],
 				'discount' => $discounts[$eFarm['id']] ?? 0,
-				'priceGross' => NULL,
+				'priceInitial' => NULL,
 				'price' => 0
 			];
 
@@ -145,7 +145,7 @@ class BasketLib {
 
 			if($basket['discount'] > 0) {
 
-				$basketByFarm[$farm]['priceGross'] = $basket['price'];
+				$basketByFarm[$farm]['priceInitial'] = $basket['price'];
 				$basketByFarm[$farm]['price'] = round($basket['price'] - \selling\Sale::calculateDiscount($basket['price'], $basket['discount']), 2);
 
 			}

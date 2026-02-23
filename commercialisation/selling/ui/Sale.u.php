@@ -1484,12 +1484,12 @@ class SaleUi {
 
 			if($eSale['discount'] > 0) {
 
-				$discountAmount = -1 * ($eSale['priceGross'] - $eSale['price']);
+				$discountAmount = -1 * ($eSale['priceInitial'] - $eSale['price']);
 				$taxes = $eSale->getTaxes();
 
 				$h .= '<tr>';
 					$h .= '<td>'.s("Montant total avant remise {taxes}", ['taxes' => $taxes]).'</td>';
-					$h .= '<td class="sale-summary-value sale-summary-value-highlight">'.\util\TextUi::money($eSale['priceGross'] ?? 0).'</td>';
+					$h .= '<td class="sale-summary-value sale-summary-value-highlight">'.\util\TextUi::money($eSale['priceInitial'] ?? 0).'</td>';
 				$h .= '</tr>';
 				$h .= '<tr>';
 					$h .= '<td>'.s("Remise <i>- {value} %</i>", $eSale['discount']).'</td>';
@@ -2508,8 +2508,6 @@ class SaleUi {
 						return '<div class="util-info">'.$message.'</div>';
 
 					}
-
-					return $h;
 
 				};
 				$d->group = function(Sale $e) {

@@ -414,14 +414,14 @@ class PdfUi {
 
 							if($eSale['discount'] > 0) {
 
-								$discountAmount = -1 * ($eSale['priceGross'] - $eSale['price']);
+								$discountAmount = -1 * ($eSale['priceInitial'] - $eSale['price']);
 
 								$h .= '<tr class="pdf-document-item pdf-document-item-subtotal">';
 									$h .= '<td class="pdf-document-product" colspan="4">';
 										$h .= s("Total de la livraison avant remise");
 									$h .= '</td>';
 									$h .= '<td class="pdf-document-price">';
-										$h .= \util\TextUi::money($eSale['priceGross']);
+										$h .= \util\TextUi::money($eSale['priceInitial']);
 									$h .= '</td>';
 									if($eInvoice['hasVat']) {
 										$h .= '<td></td>';
@@ -647,13 +647,13 @@ class PdfUi {
 						$e['discount'] > 0
 					) {
 
-						$discountAmount = -1 * ($e['priceGross'] - $e['price']);
+						$discountAmount = -1 * ($e['priceInitial'] - $e['price']);
 
 						$h .= '<div class="pdf-document-total-label">';
 							$h .= s("Total {taxes}<br/>avant remise", ['taxes' => $taxes]);
 						$h .= '</div>';
 						$h .= '<div class="pdf-document-total-value">';
-							$h .= \util\TextUi::money($e['priceGross']);
+							$h .= \util\TextUi::money($e['priceInitial']);
 						$h .= '</div>';
 						$h .= '<div class="pdf-document-total-label">';
 							$h .= s("Remise").' <i>- '.s("{value} %", $e['discount']).'</i>';

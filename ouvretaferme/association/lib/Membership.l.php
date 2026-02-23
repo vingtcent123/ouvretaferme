@@ -440,7 +440,7 @@ class MembershipLib {
 			'taxes' => \selling\Sale::EXCLUDING,
 			'type' => \selling\Sale::PRO,
 			'hasVat' => FALSE,
-			'priceGross' => $eHistory['amount'],
+			'priceInitial' => $eHistory['amount'],
 			'priceExcludingVat' => NULL,
 			'priceIncludingVat' => $eHistory['amount'],
 			'preparationStatus' => \selling\Sale::DELIVERED,

@@ -1465,7 +1465,7 @@ class SaleLib extends SaleCrud {
 				'vat' => NULL,
 				'vatByRate' => NULL,
 				'organic' => FALSE,
-				'priceGross' => NULL,
+				'priceInitial' => NULL,
 				'priceIncludingVat' => NULL,
 				'priceExcludingVat' => NULL,
 			];
@@ -1558,10 +1558,10 @@ class SaleLib extends SaleCrud {
 
 			}
 
-			$newValues['priceGross'] = round($total, 2);
+			$newValues['priceInitial'] = round($total, 2);
 
 		} else {
-			$newValues['priceGross'] = NULL;
+			$newValues['priceInitial'] = NULL;
 		}
 
 		if($e['shipping'] !== NULL) {
@@ -1589,8 +1589,8 @@ class SaleLib extends SaleCrud {
 			$vatList[(string)$shippingVatRate] ??= 0;
 			$vatList[(string)$shippingVatRate] += $e['shipping'];
 
-			if($newValues['priceGross'] !== NULL) {
-				$newValues['priceGross'] += $e['shipping'];
+			if($newValues['priceInitial'] !== NULL) {
+				$newValues['priceInitial'] += $e['shipping'];
 			}
 
 		} else {

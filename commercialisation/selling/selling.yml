@@ -309,7 +309,7 @@ Sale:
   hasVat: bool
   vat: ?decimal(8, 2)
   vatByRate: ?json
-  priceGross: ?decimal(8, 2)
+  priceInitial: ?decimal(8, 2)
   priceExcludingVat: ?decimal(8, 2)
   priceIncludingVat: ?decimal(8, 2)
   shippingVatRate: ?decimal(4, 2)

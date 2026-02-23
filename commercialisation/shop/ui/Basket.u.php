@@ -237,15 +237,15 @@ class BasketUi {
 						$approximate = $subApproximate ?: $approximate;
 						$isTotal = count($basketByFarm) === 1;
 
-						if($basket['priceGross'] !== NULL) {
+						if($basket['priceInitial'] !== NULL) {
 
-							$discountAmount = -1 * ($basket['priceGross'] - $basket['price']);
+							$discountAmount = -1 * ($basket['priceInitial'] - $basket['price']);
 
 							$h .= $this->getSummaryTotal(
 								$eDate,
 								$subApproximate,
 								$isTotal ? s("Total avant remise") : s("Sous-total avant remise"),
-								\util\TextUi::money($basket['priceGross']).' '.ProductUi::getTaxes($eDate)
+								\util\TextUi::money($basket['priceInitial']).' '.ProductUi::getTaxes($eDate)
 							);
 							$h .= $this->getSummaryTotal($eDate, $subApproximate, s("Remise <i>- {value} %</i>", $basket['discount']), \util\TextUi::money($discountAmount).' '.ProductUi::getTaxes($eDate), $isTotal);
 
