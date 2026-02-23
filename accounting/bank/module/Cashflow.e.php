@@ -42,6 +42,15 @@ class Cashflow extends CashflowElement {
 		return $this['status'] === Cashflow::WAITING;
 	}
 
+	public function acceptAddAllocate(): bool {
+
+		if($this->empty()) {
+			return FALSE;
+		}
+
+		return $this['status'] === Cashflow::ALLOCATED;
+	}
+
 	public function accept(): bool {
 
 		return $this->acceptAllocate();

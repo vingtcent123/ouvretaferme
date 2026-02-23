@@ -91,10 +91,6 @@ new \bank\CashflowPage(function($data) {
 			throw new NotExistsAction();
 		}
 
-		if($e->acceptAllocate() === FALSE) {
-			throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations');
-		}
-
 	})
 	->read('allocate', function($data) {
 
@@ -108,7 +104,7 @@ new \bank\CashflowPage(function($data) {
 
 		throw new ViewAction($data);
 
-	})
+	}, validate: ['acceptAllocate'])
 	->write('addAllocate', function($data) {
 
 		$data->index = POST('index');
@@ -125,7 +121,7 @@ new \bank\CashflowPage(function($data) {
 
 		throw new ViewAction($data);
 
-	})
+	}, validate: ['acceptAddAllocate'])
 	->write('doAllocate', function($data) {
 
 		\bank\CashflowLib::getImportData($data->e);
@@ -181,7 +177,7 @@ new \bank\CashflowPage(function($data) {
 
 		throw new ViewAction($data);
 
-	})
+	}, validate: ['acceptAllocate'])
 	->write('doAttach', function($data) {
 
 		\bank\CashflowLib::getImportData($data->e);
