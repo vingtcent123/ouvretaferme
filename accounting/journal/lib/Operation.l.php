@@ -502,6 +502,8 @@ class OperationLib extends OperationCrud {
 
 		}
 
+		$eOperationDefault['journalCode'] = JournalCodeLib::getById(POST('journalCode'));
+
 		if($for === 'update') {
 
 			$cOperationOriginByHash = OperationLib::getByHash($input['hash']);
@@ -545,7 +547,7 @@ class OperationLib extends OperationCrud {
 			'account', 'accountLabel',
 			'description', 'amount', 'type', 'document',
 			'asset',
-			'journalCode', 'thirdParty',
+			'thirdParty',
 		];
 		if($isFromCashflow === FALSE) {
 			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);

@@ -42,20 +42,6 @@
 }
 
 /* Allocating form */
-.cashflow-create-operation-general {
-	display: grid;
-	grid-template-columns: 1fr 2fr 1fr 2fr;
-	grid-gap: 0.5rem;
-	align-items: center;
-}
-.cashflow-operation-create-title {
-	background-color: var(--background-light);
-	height: 100%;
-	display: flex;
-	align-items: center;
-	padding: 0.5rem;
-	border-radius: var(--radius);
-}
 .operation-create .cashflow-create-operation-validate div {
 	display: flex;
 	flex-direction: row;

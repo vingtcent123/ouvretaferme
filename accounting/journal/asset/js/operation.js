@@ -105,25 +105,6 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
 
 	if(e.detail.value.length !== 0) {
 
-		if(e.detail.journalCode) {
-
-			qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').hide();
-
-			const actualJournalCode = qs('[name="journalCode[' + index + ']"]').value;
-
-			if(actualJournalCode && parseInt(e.detail.journalCode) !== parseInt(actualJournalCode)) {
-
-				const journalName = qs('[name="journalCode[' + index + ']"] option[value="'+ e.detail.journalCode +'"]').text;
-				qs('[data-journalCode="journal-name"][data-index="' + index + '"]').innerHTML = journalName;
-				qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').removeHide();
-				qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').dataset.journalSuggested = e.detail.journalCode;
-
-			} else {
-
-				qs('[name="journalCode[' + index + ']"]').value = e.detail.journalCode;
-
-			}
-		}
 		Operation.updateType(e.detail);
 
 		if(Operation.hasVat()) {
@@ -313,13 +294,6 @@ class Operation {
 		selector.indexOf('linked') > 0
 			? qs('[name-linked="' + selector + '"]').classList.remove('row-highlight')
 			: qs('[name="' + selector + '"]').classList.remove('row-highlight');
-	}
-
-	static applyJournal(index) {
-
-		const journalCodeId = qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').dataset.journalSuggested;
-		qs('[name="journalCode[' + index + ']"]').value = journalCodeId;
-		qs('[data-journal-code="journal-code-info"][data-index="' + index + '"]').hide();
 	}
 
 	static preFillNewOperation(index) {

@@ -665,31 +665,6 @@ class CashflowUi {
 
 	}
 
-	public function getAllocateGeneralPayment(\account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod, array $defaultValues, \util\FormUi $form, string $for): string {
-
-		$hasPaymentMethod = ($for === 'update' and
-			$defaultValues['paymentMethod'] !== NULL and
-			$defaultValues['paymentMethod']->notEmpty()
-		);
-		$h = '<div class="cashflow-create-operation-general">';
-			$h .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentDate').'</div>';
-			$h .= $form->date(
-				'paymentDate',
-					$defaultValues['paymentDate'] ?? '',
-				['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']] + ($for == 'update' ? ['disabled' => 'disabled'] : []),
-			);
-			$h .= '<div class="cashflow-operation-create-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
-			$h .= $form->select(
-				'paymentMethod',
-				$cPaymentMethod,
-					$defaultValues['paymentMethod'] ?? '',
-				['mandatory' => TRUE] + ($hasPaymentMethod ? ['disabled' => 'disabled'] : []),
-			);
-		$h .= '</div>';
-
-		return $h;
-	}
-
 	public function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cPaymentMethod, \Collection $cJournalCode, bool $hasVat): \Panel {
 
 		\Asset::js('journal', 'operation.js');
@@ -735,7 +710,7 @@ class CashflowUi {
 		$h .= $form->hidden('financialYear', $eFinancialYear['id']);
 		$h .= '<span name="cashflow-amount" class="hide">'.$eCashflow['amount'].'</span>';
 
-		$h .= $this->getAllocateGeneralPayment($eFinancialYear,  $cPaymentMethod, $defaultValues, $form, 'copy');
+		$h .= new \journal\OperationUi()->getOperationGeneral($eFinancialYear,  $cPaymentMethod, $cJournalCode, $defaultValues, $form, 'copy', TRUE);
 
 		// Proposer de partir d'une opération similaire
 		$eCashflowCopySelected = new Cashflow();
@@ -787,10 +762,7 @@ class CashflowUi {
 
 		if($eCashflowCopySelected->notEmpty()) {
 
-			$eOperationBase = $eCashflowCopySelected['cOperation']->find(fn($e) => $e['operation']->empty())->first();
-			$eOperationBase['cJournalCode'] = $cJournalCode;
-
-			$cOperationFormatted = new \journal\OperationUi()->formatOperationForUpdate($eCashflow, $eCashflowCopySelected['cOperation'], $eOperationBase, 'copy');
+			$cOperationFormatted = new \journal\OperationUi()->formatOperationForUpdate($eCashflow, $eCashflowCopySelected['cOperation'], 'copy');
 
 			$h .= \journal\OperationUi::getUpdateGrid(
 				eFinancialYear: $eFinancialYear,

@@ -22,7 +22,7 @@ new \journal\OperationPage(function($data) {
 })
 ->read('/journal/operation/{id}/update', function($data) {
 
-	$data->e['cJournalCode'] = \journal\JournalCodeLib::deferred();
+	$data->cJournalCode = \journal\JournalCodeLib::deferred();
 
 	$data->referer = SERVER('HTTP_REFERER');
 
@@ -164,10 +164,10 @@ new \journal\OperationPage(function($data) {
 			'type' => GET('type'),
 			'amount' => GET('amount', 'float'),
 			'cashflow' => $eCashflow,
-			'cJournalCode' => $cJournalCode,
 			'journalCode' => $eJournalCode,
 		]);
 
+		$data->cJournalCode = $cJournalCode;
 		$data->hasVatAccounting = \farm\ConfigurationLib::getConfigurationForDate($data->eFarm, 'hasVatAccounting', $data->eFarm['eFinancialYear']['endDate']);
 		throw new ViewAction($data);
 

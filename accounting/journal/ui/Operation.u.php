@@ -129,7 +129,7 @@ class OperationUi {
 		);
 	}
 
-	public function formatOperationForUpdate(\bank\Cashflow $eCashflow, \Collection $cOperation, Operation $eOperationBase, string $for): \Collection {
+	public function formatOperationForUpdate(\bank\Cashflow $eCashflow, \Collection $cOperation, string $for): \Collection {
 
 		// Formattage des opérations (association de la TVA avec son écriture d'origine + ne pas mettre l'opération de banque)
 		$cOperationFormatted = new \Collection();
@@ -185,7 +185,6 @@ class OperationUi {
 				$eOperation['date'] = $eCashflow['date'];
 				$eOperation['paymentDate'] = $eCashflow['date'];
 			}
-			$eOperation['cJournalCode'] = $eOperationBase['cJournalCode'];
 
 			$cOperationFormatted->append($eOperation);
 
@@ -194,7 +193,42 @@ class OperationUi {
 		return $cOperationFormatted;
 	}
 
-	public function getUpdate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cPaymentMethod, \bank\Cashflow $eCashflow, Operation $eOperationBase, bool $hasVatAccounting): \Panel {
+	public function getOperationGeneral(\account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod, \Collection $cJournalCode, array $defaultValues, \util\FormUi $form, string $for, bool $isFromCashflow): string {
+
+		$hasPaymentMethod = ($for === 'update' and
+			($defaultValues['paymentMethod'] ?? NULL) !== NULL and
+			$defaultValues['paymentMethod']->notEmpty()
+		);
+		$h = '<div class="operation-general-fields">';
+
+			if($isFromCashflow) {
+				$h .= '<div class="operation-general-title">'.\journal\OperationUi::p('paymentDate').'</div>';
+				$h .= $form->date(
+					'paymentDate',
+						$defaultValues['paymentDate'] ?? '',
+					['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']] + ($for == 'update' ? ['disabled' => 'disabled'] : []),
+				);
+				$h .= '<div class="operation-general-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
+				$h .= $form->select(
+					'paymentMethod',
+					$cPaymentMethod,
+						$defaultValues['paymentMethod'] ?? '',
+					['mandatory' => TRUE] + ($hasPaymentMethod ? ['disabled' => 'disabled'] : []),
+				);
+			}
+
+			$h .= '<div class="operation-general-title">'.\journal\OperationUi::p('journalCode').'</div>';
+			$h .= $form->select(
+				'journalCode',
+				$cJournalCode,
+					$defaultValues['journalCode'] ?? '',
+			);
+		$h .= '</div>';
+
+		return $h;
+	}
+
+	public function getUpdate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cOperation, \Collection $cPaymentMethod, \Collection $cJournalCode, \bank\Cashflow $eCashflow, Operation $eOperationBase, bool $hasVatAccounting): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -206,7 +240,7 @@ class OperationUi {
 			\Asset::js('bank', 'cashflow.js');
 		}
 
-		$cOperationFormatted = $this->formatOperationForUpdate($eCashflow, $cOperation, $eOperationBase, 'update');
+		$cOperationFormatted = $this->formatOperationForUpdate($eCashflow, $cOperation, 'update');
 
 		$form = new \util\FormUi();
 
@@ -238,9 +272,15 @@ class OperationUi {
 				'paymentMethod' => $ePaymentMethod,
 			];
 
-			$h .= new \bank\CashflowUi()->getAllocateGeneralPayment($eFinancialYear,  $cPaymentMethod, $defaultValues, $form, 'update');
+		} else {
+
+			$defaultValues = [];
 
 		}
+
+		$defaultValues['journalCode'] = $cOperation->first()['journalCode']['id'];
+
+		$h .= new OperationUi()->getOperationGeneral($eFinancialYear,  $cPaymentMethod, $cJournalCode, $defaultValues, $form, 'update', $eCashflow->notEmpty());
 
 		$h .= self::getUpdateGrid(
 			eFinancialYear: $eFinancialYear,
@@ -668,7 +708,7 @@ class OperationUi {
 
 	}
 
-	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod, bool $hasVat): \Panel {
+	public function create(\farm\Farm $eFarm, Operation $eOperation, \account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod, \Collection $cJournalCode, bool $hasVat): \Panel {
 
 		\Asset::css('journal', 'operation.css');
 		\Asset::js('journal', 'operation.js');
@@ -690,7 +730,13 @@ class OperationUi {
 
 		$h = '';
 
-		$h .= '<div style="display: flex;">';
+		$defaultValues = [
+			'journalCode' => $eOperation['journalCode']['id'] ?? NULL,
+		];
+
+		$h .= new OperationUi()->getOperationGeneral($eFinancialYear,  $cPaymentMethod, $cJournalCode, $defaultValues, $form, 'create', FALSE);
+
+		$h .= '<div style="display: flex;" class="mt-1">';
 
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('financialYear', $eFinancialYear['id']);
@@ -742,7 +788,6 @@ class OperationUi {
 			$h .= '<div class="operation-create-header">'.self::p('document')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('thirdParty')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('account')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('journalCode')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header" data-wrapper="asset-label">'.self::p('asset')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
@@ -865,24 +910,6 @@ class OperationUi {
 					$d->attributes['data-account'] = $form->getId();
 					$d->label .=  ' '.\util\FormUi::asterisk();
 				});
-			$h .='</div>';
-
-			$h .= '<div data-wrapper="journalCode'.$suffix.'" class="company_form_group-with-tip">';
-				$h .=  $form->dynamicField($eOperation, 'journalCode'.$suffix, function($d) use($eOperation, $index) {
-					$d->attributes['data-index'] = $index;
-					$d->attributes['data-field'] = 'journalCode';
-					$d->default = fn() => isset($eOperation['journalCode']) === FALSE ? GET('journalCode') : $eOperation['journalCode'];
-				});
-				$h .= '<div data-journal-code="journal-code-info" class="hide" data-index="'.$index.'" data-journal-suggested="" onclick=Operation.applyJournal('.$index.');>';
-					$h .= '<a class="btn btn-outline-warning operation-hint" data-dropdown="bottom" data-dropdown-hover="true">';
-						$h .= \Asset::icon('exclamation-triangle');
-					$h .= '</a>';
-					$h .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-						$h .= '<span class="dropdown-item">';
-						$h .= s("Ce numéro de compte est normalement configuré pour être dans le journal \"{value}\".", ['value' => '<span data-index="'.$index.'" data-journalCode="journal-name"></span>']);
-						$h .= '</span>';
-					$h .= '</div>';
-				$h .= '</div>';
 			$h .='</div>';
 
 			$h .= '<div data-wrapper="accountLabel'.$suffix.'">';
@@ -1132,7 +1159,6 @@ class OperationUi {
 		$h = '<div class="operation-create operation-create-validation">';
 
 			$h .= '<h4></h4>';
-			$h .= '<div></div>';
 			$h .= '<div></div>';
 			$h .= '<div></div>';
 			$h .= '<div></div>';
