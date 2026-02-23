@@ -721,14 +721,17 @@ class ItemLib extends ItemCrud {
 			// Marché en cours, à priori zéro vente à la création
 			if($e['sale']['preparationStatus'] === Sale::SELLING) {
 				$e['price'] = 0.0;
+				$e['priceInitial'] = 0.0;
 				$e['priceStats'] = 0.0;
 				$e['number'] = 0.0;
 			} else {
 				$e['price'] = NULL;
+				$e['priceInitial'] = NULL;
 				$e['priceStats'] = NULL;
 			}
 
 			$properties[] = 'price';
+			$properties[] = 'priceInitial';
 			$properties[] = 'priceStats';
 
 		} else {
@@ -787,15 +790,16 @@ class ItemLib extends ItemCrud {
 
 			}
 
-			self::preparePriceStats($e);
+			self::recalculatePricing($e);
+
+			$properties[] = 'priceInitial';
+			$properties[] = 'priceStats';
 
 		}
 
-		$properties[] = 'priceStats';
-
 	}
 
-	public static function preparePriceStats(Item $e): void {
+	public static function recalculatePricing(Item $e): void {
 
 		$priceStats = match($e['sale']['taxes']) {
 			Sale::INCLUDING => $e['price'] / (1 + $e['vatRate'] / 100),
@@ -806,6 +810,12 @@ class ItemLib extends ItemCrud {
 		if($e['discount'] > 0) {
 			$priceStats *= (100 - $e['discount']) / 100;
 		}
+
+		$priceInitial = $e['unitPriceInitial'] * $e['number'];
+		if($e['packaging']) {
+			$priceInitial *= $e['packaging'];
+		}
+		$e['priceInitial'] = $priceInitial;
 
 		$e['priceStats'] = round($priceStats, 2);
 

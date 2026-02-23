@@ -173,6 +173,7 @@ Item:
   discount: int8(0, 100) = 0
   number: ?decimal(8, 2)
   price: ?decimal(8, 2)
+  priceInitial: ?decimal(8, 2)
   priceStats: ?decimal(8, 2)
   locked: enum(UNIT_PRICE, NUMBER, PRICE) = PRICE
   vatRate: ?decimal(4, 2, 0.0, 100)

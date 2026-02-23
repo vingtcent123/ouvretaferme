@@ -86,6 +86,7 @@ class ItemModel extends \ModuleModel {
 			'discount' => ['int8', 'min' => 0, 'max' => 100, 'cast' => 'int'],
 			'number' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
+			'priceInitial' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'priceStats' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'locked' => ['enum', [\selling\Item::UNIT_PRICE, \selling\Item::NUMBER, \selling\Item::PRICE], 'cast' => 'enum'],
 			'vatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'min' => 0.0, 'max' => 99.99, 'null' => TRUE, 'cast' => 'float'],
@@ -98,7 +99,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'reference', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'reference', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceInitial', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -298,6 +299,10 @@ class ItemModel extends \ModuleModel {
 
 	public function wherePrice(...$data): ItemModel {
 		return $this->where('price', ...$data);
+	}
+
+	public function wherePriceInitial(...$data): ItemModel {
+		return $this->where('priceInitial', ...$data);
 	}
 
 	public function wherePriceStats(...$data): ItemModel {

@@ -345,7 +345,7 @@ class SaleModel extends \ModuleModel {
 		return $this->where('vatByRate', ...$data);
 	}
 
-	public function wherepriceInitial(...$data): SaleModel {
+	public function wherePriceInitial(...$data): SaleModel {
 		return $this->where('priceInitial', ...$data);
 	}
 
