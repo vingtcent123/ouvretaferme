@@ -34,7 +34,8 @@ class UblLib {
 			$buyerSiren = '000000001';
 			$buyerSiret = '00000000100020';
 		}
-		$discount = self::getDiscount($eInvoice);
+		$discountSales = self::getDiscountSales($eInvoice);
+		$discountItems = self::getDiscountItems($eInvoice);
 
 		$xml = '<?xml version="1.0" encoding="utf-8" ?>
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
@@ -120,7 +121,7 @@ class UblLib {
 			</cac:PartyLegalEntity>
 		</cac:Party>
 	</cac:AccountingCustomerParty>';
-	if($discount !== 0.0) {
+	if($discountItems !== 0.0) {
 		foreach($eInvoice['cSale'] as $eSale) {
 			foreach($eSale['cItem'] as $eItem) {
 				if($eItem['priceInitial'] === NULL) {
@@ -152,6 +153,33 @@ class UblLib {
 			}
 		}
 	}
+	if($discountSales !== 0.0) {
+		foreach($eInvoice['cSale'] as $eSale) {
+			foreach($eSale['vatByRate'] as $vatByRate) { // Prix remisé dans amount
+				$reducedPrice = match($eSale['taxes']) {
+					Sale::EXCLUDING => ($vatByRate['amount']),
+					Sale::INCLUDING => round(($vatByRate['amount']) / (1 + $vatByRate['vatRate']), 2),
+				};
+				$initialPrice = round($reducedPrice / (1 - $eSale['discount'] / 100), 2);
+				$allowance = $initialPrice - $reducedPrice;
+				$xml .= '
+	<cac:AllowanceCharge><!--BG-20-->
+		<cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+		<cbc:AllowanceChargeReasonCode>95</cbc:AllowanceChargeReasonCode><!--BT-98-->
+		<cbc:AllowanceChargeReason>'.s("Remise").'</cbc:AllowanceChargeReason><!--BT-97-->
+		<cbc:Amount currencyID="EUR">'.$allowance.'</cbc:Amount><!--BT-92-->
+		<cbc:BaseAmount currencyID="EUR">'.$initialPrice.'</cbc:BaseAmount><!--BT-93-->
+		<cac:TaxCategory><!--BT-95-00-->
+			<cbc:ID>S</cbc:ID><!--BT-95-->
+			<cbc:Percent>'.$vatByRate['vatRate'].'</cbc:Percent><!--BT-96-->
+			<cac:TaxScheme>
+				<cbc:ID>VAT</cbc:ID>
+			</cac:TaxScheme>
+		</cac:TaxCategory>
+	</cac:AllowanceCharge>';
+			}
+		}
+	}
 	$xml .= '
 	<cac:TaxTotal><!--BT-110-00-->
 		<cbc:TaxAmount currencyID="EUR">'.$eInvoice['vat'].'</cbc:TaxAmount><!--BT-110-->';
@@ -175,9 +203,9 @@ class UblLib {
 		<cbc:LineExtensionAmount currencyID="EUR">'.self::sumPriceExcludingVat($eInvoice).'</cbc:LineExtensionAmount><!--BT-106-->
 		<cbc:TaxExclusiveAmount currencyID="EUR">'.$eInvoice['priceExcludingVat'].'</cbc:TaxExclusiveAmount><!--BT-109-->
 		<cbc:TaxInclusiveAmount currencyID="EUR">'.$eInvoice['priceIncludingVat'].'</cbc:TaxInclusiveAmount><!--BT-112-->';
-		if($discount !== 0.0) {
+		if($discountItems !== 0.0 or $discountSales !== 0.0) {
 			$xml .= '
-		<cbc:AllowanceTotalAmount currencyID="EUR">'.$discount.'</cbc:AllowanceTotalAmount><!--BT-107-->';
+		<cbc:AllowanceTotalAmount currencyID="EUR">'.round($discountItems + $discountSales, 2).'</cbc:AllowanceTotalAmount><!--BT-107-->';
 		}
 		$xml .= '
 		<cbc:PayableAmount currencyID="EUR">'.$eInvoice['priceIncludingVat'].'</cbc:PayableAmount><!--BT-115-->
@@ -236,7 +264,33 @@ class UblLib {
 		return 'C62'; // ONE
 	}
 
-	private static function getDiscount(Invoice $eInvoice): float {
+	private static function getDiscountSales(Invoice $eInvoice): float {
+
+		$discount = 0.0;
+
+		foreach($eInvoice['cSale'] as $eSale) {
+
+			if($eSale['discount'] !== NULL) { // Remise globale au niveau de la vente
+
+				foreach($eSale['vatByRate'] as $vatByRate) {
+
+					$discountByRate = $vatByRate['amount'] / (1 - $eSale['discount']/100) - $vatByRate['amount'];
+
+					$discount += match($eSale['taxes']) {
+						Sale::EXCLUDING => $discountByRate,
+						Sale::INCLUDING => $discountByRate / (1 + $vatByRate['vatRate']),
+					};
+
+				}
+			}
+
+		}
+
+		return round($discount, 2);
+
+	}
+
+	private static function getDiscountItems(Invoice $eInvoice): float {
 
 		$discount = 0.0;
 
