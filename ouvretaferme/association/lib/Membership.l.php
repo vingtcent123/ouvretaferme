@@ -459,6 +459,7 @@ class MembershipLib {
 				'name' => self::getProductName($eHistory['type'], $eHistory['membership']),
 				'customer' => $eCustomer,
 				'unitPrice' => $eHistory['amount'],
+				'unitPriceInitial' => NULL,
 				'number' => 1,
 				'quality' => \selling\Item::NO,
 				'product' => $eProduct,
