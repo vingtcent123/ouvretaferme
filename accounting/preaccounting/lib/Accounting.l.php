@@ -351,7 +351,7 @@ Class AccountingLib {
 					if($counterpart !== NULL and $eAccount->notEmpty() and $eAccount['class'] === $counterpart) {
 						$isCounterpart = TRUE;
 						$eAccountSelected = clone($eAccount);
-						$eAccountSelected['class'] = $counterpart.str_pad($eSale['customer']['id'], 5, '0');
+						$eAccountSelected['class'] = $counterpart.str_pad($eSale['customer']['document'], 5, '0');
 					} else {
 						$eAccountSelected = clone($eAccount);
 						$isCounterpart = (
@@ -394,7 +394,7 @@ Class AccountingLib {
 
 	}
 
-	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cAccount, \account\Account $eAccountFilter = new \account\Account(), \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
+	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cAccount, \account\Account $eAccountFilter = new \account\Account(), \selling\Payment $ePaymentFilter = new \selling\Payment(), ?string $counterpart = NULL): array {
 
 		$eAccountBank = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL);
@@ -417,7 +417,7 @@ Class AccountingLib {
 			}
 			$eInvoice['cItem'] = $cItems;
 
-			$ratios = self::computeRatios($eInvoice, $cAccount, $ePaymentFilter);
+			$ratios = self::computeRatios($eInvoice, $cAccount, $ePaymentFilter, $counterpart);
 			$allEntries = array_merge(...array_values($ratios));
 
 			foreach($allEntries as $item) {
@@ -439,8 +439,20 @@ Class AccountingLib {
 						$payment = '';
 					}
 
+					if($counterpart !== NULL and $eAccount->notEmpty() and $eAccount['class'] === $counterpart) {
+						$isCounterpart = TRUE;
+						$eAccountSelected = clone($eAccount);
+						$eAccountSelected['class'] = $counterpart.str_pad($eInvoice['customer']['document'], 5, '0');
+					} else {
+						$eAccountSelected = clone($eAccount);
+						$isCounterpart = (
+							\account\AccountLabelLib::isFromClass($eAccountSelected['class'] ?? '', \account\AccountSetting::FINANCIAL_GENERAL_CLASS) or
+							\account\AccountLabelLib::isFromClass($eAccountSelected['class'] ?? '', \account\AccountSetting::THIRD_PARTY_GENERAL_CLASS)
+						);
+					}
+
 					$fecDataItemPayment = self::getFecLine(
-						eAccount    : $eAccount,
+						eAccount    : $eAccountSelected,
 						date        : $date,
 						eCode       : $eJournalCode,
 						ecritureLib : $document,
@@ -452,7 +464,7 @@ Class AccountingLib {
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
 						number      : NULL,
-						isSummed    : $eAccountBank['id'] !== ($eAccount['id'] ?? NULL),
+						isSummed    : ($isCounterpart === FALSE),
 						origin      : 'invoice',
 						sortDate    : $eInvoice['date'],
 					);

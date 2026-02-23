@@ -21,6 +21,14 @@ new Page(function($data) {
 
 	}
 
+	if(mb_strlen($from) !== 10 or \util\DateLib::isValid($from) === FALSE) {
+		$from = $data->eFarm['eFinancialYear']['startDate'];
+	}
+
+	if(mb_strlen($to) !== 10 or \util\DateLib::isValid($to) === FALSE) {
+		$to = $data->eFarm['eFinancialYear']['endDate'];
+	}
+
 	if($from > $to) {
 		$fromOld = $from;
 		$from = $to;
@@ -37,11 +45,11 @@ new Page(function($data) {
 
 		$from = $data->search->get('from');
 		$to = $data->search->get('to');
-		if(mb_strlen($from) !== 10 or \util\DateLib::isValid($from) === FALSE or $from < $data->eFarm['eFinancialYear']['startDate'] or $from > $data->eFarm['eFinancialYear']['endDate']) {
+		if($from < $data->eFarm['eFinancialYear']['startDate'] or $from > $data->eFarm['eFinancialYear']['endDate']) {
 			$from = $data->eFarm['eFinancialYear']['startDate'];
 		}
 
-		if(mb_strlen($to) !== 10 or \util\DateLib::isValid($to) === FALSE or $to < $data->eFarm['eFinancialYear']['startDate'] or $to > $data->eFarm['eFinancialYear']['endDate']) {
+		if($to < $data->eFarm['eFinancialYear']['startDate'] or $to > $data->eFarm['eFinancialYear']['endDate']) {
 			$to = $data->eFarm['eFinancialYear']['endDate'];
 		}
 		$data->search->set('from', $from);
@@ -280,7 +288,7 @@ new Page(function($data) {
 				if($data->search->get('filter') === NULL or $hasInvoice === TRUE) {
 
 					$cInvoice = \preaccounting\InvoiceLib::getForExport($data->eFarm, $data->search);
-					[$fecInvoice, $data->nInvoice] = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $cAccount, $data->search->get('account'));
+					[$fecInvoice, $data->nInvoice] = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $cAccount, $data->search->get('account'), new \selling\Payment(), $data->search->get('counterpart'));
 
 					$documents = array_unique(array_column($fecInvoice, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT));
 
