@@ -1136,6 +1136,7 @@ class CsvLib {
 					}
 
 					if(
+						$ignore === FALSE and
 						$cultivation['varieties'] and
 						$cultivation['varieties_unit'] === Cultivation::PERCENT and
 						$varietyTotal !== 100
