@@ -1,7 +1,7 @@
 <?php
 new Page()
 	->cli('index', function($data) {
-
+dd('si réutilisé, mettre à jour avec les nouvelles unités uniquement au lieu de duplicateForFarm');
 		$c = \farm\Farm::model()
 			->select('id')
 			->getCollection();
