@@ -1356,6 +1356,9 @@ class ItemUi {
 
 			if($eItem['sale']['hasVat']) {
 				$h .= $form->dynamicGroup($eItem, 'vatRate');
+				$h .= $form->dynamicGroup($eItem, 'vatCode', function($d) {
+					$d->attributes['mandatory'] = TRUE;
+				});
 			}
 
 			if($eItem['farm']->hasAccounting()) {
@@ -1479,6 +1482,7 @@ class ItemUi {
 			'number' => s("Quantité vendue"),
 			'vatRate' => s("Taux de TVA"),
 			'account' => s("Numéro de compte"),
+			'vatCode' => s("Code de TVA"),
 		]);
 
 		switch($property) {
@@ -1606,6 +1610,19 @@ class ItemUi {
 
 			case 'vatRate' :
 				$d->append = s("%");
+				break;
+
+			case 'vatCode' :
+				$d->field = 'select';
+				$d->values = [
+					Item::STANDARD => s("Standard"),
+					Item::ZERO => s("Taux de TVA à 0"),
+					Item::EXEMPT => s("Exempté de TVA"),
+					Item::AUTOLIQUIDATION => s("Auto liquidation de TVA"),
+					Item::INTRACOM_DELIVERY => s("Exonération pour livraison intracommunautaire"),
+					Item::EXPORTATION => s("Exempté de TVA pour Export hors UE"),
+					Item::OUT_OF_VAT => s("Hors du périmètre d'application de la TVA"),
+				];
 				break;
 
 			case 'price' :

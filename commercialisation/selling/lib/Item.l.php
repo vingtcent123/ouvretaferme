@@ -22,6 +22,8 @@ class ItemLib extends ItemCrud {
 				$properties[] = 'vatRate';
 			}
 
+			$properties[] = 'vatCode';
+
 			if($e['farm']->hasAccounting()) {
 				$properties[] = 'account';
 			}
@@ -702,6 +704,7 @@ class ItemLib extends ItemCrud {
 
 		if($eSale['hasVat'] === FALSE) {
 			$e['vatRate'] = 0.0;
+			$e['vatCode'] = Item::EXEMPT;
 		}
 
 		self::preparePricing($e);

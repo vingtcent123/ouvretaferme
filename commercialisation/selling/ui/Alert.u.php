@@ -121,6 +121,8 @@ class AlertUi {
 			'Item::createDuplicateNameMarket' => fn($name) => s("Vous avez déjà ajouté un article sans référence de produit portant le nom {value} à votre vente !", $name),
 			'Item::createDuplicateProductMarket' => fn($name) => s("Vous avez déjà ajouté le produit {value} à votre vente !", $name),
 			'Item::canNotDelete' => s("Impossible de supprimer cet article"),
+			'Item::vatCode.zero' => s("Le code de TVA doit être zéro si le taux est à zéro."),
+			'Item::vatCode.notZero' => s("Le code de TVA ne peut pas être zéro si le taux est différent de zéro."),
 
 			'Item::createCollectionError' => s("Il y a des erreurs à vérifier sur un ou plusieurs produits que vous souhaitez ajouter à la vente."),
 

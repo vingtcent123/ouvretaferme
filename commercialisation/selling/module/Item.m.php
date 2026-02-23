@@ -27,6 +27,14 @@ abstract class ItemElement extends \Element {
 	const NUMBER = 'number';
 	const PRICE = 'price';
 
+	const STANDARD = 'standard';
+	const ZERO = 'zero';
+	const EXEMPT = 'exempt';
+	const AUTOLIQUIDATION = 'autoliquidation';
+	const INTRACOM_DELIVERY = 'intracom-delivery';
+	const EXPORTATION = 'exportation';
+	const OUT_OF_VAT = 'out-of-vat';
+
 	public static function getSelection(): array {
 		return Item::model()->getProperties();
 	}
@@ -90,6 +98,7 @@ class ItemModel extends \ModuleModel {
 			'priceStats' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'locked' => ['enum', [\selling\Item::UNIT_PRICE, \selling\Item::NUMBER, \selling\Item::PRICE], 'cast' => 'enum'],
 			'vatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'min' => 0.0, 'max' => 99.99, 'null' => TRUE, 'cast' => 'float'],
+			'vatCode' => ['enum', [\selling\Item::STANDARD, \selling\Item::ZERO, \selling\Item::EXEMPT, \selling\Item::AUTOLIQUIDATION, \selling\Item::INTRACOM_DELIVERY, \selling\Item::EXPORTATION, \selling\Item::OUT_OF_VAT], 'null' => TRUE, 'cast' => 'enum'],
 			'stats' => ['bool', 'cast' => 'bool'],
 			'prepared' => ['bool', 'cast' => 'bool'],
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
@@ -99,7 +108,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'reference', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceInitial', 'priceStats', 'locked', 'vatRate', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'reference', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceInitial', 'priceStats', 'locked', 'vatRate', 'vatCode', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -144,6 +153,9 @@ class ItemModel extends \ModuleModel {
 			case 'locked' :
 				return Item::PRICE;
 
+			case 'vatCode' :
+				return Item::STANDARD;
+
 			case 'stats' :
 				return TRUE;
 
@@ -177,6 +189,9 @@ class ItemModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'locked' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'vatCode' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
@@ -315,6 +330,10 @@ class ItemModel extends \ModuleModel {
 
 	public function whereVatRate(...$data): ItemModel {
 		return $this->where('vatRate', ...$data);
+	}
+
+	public function whereVatCode(...$data): ItemModel {
+		return $this->where('vatCode', ...$data);
 	}
 
 	public function whereStats(...$data): ItemModel {

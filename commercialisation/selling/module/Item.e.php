@@ -320,7 +320,44 @@ class Item extends ItemElement {
 					in_array((int)mb_substr($eAccount['class'], 0, 3), \account\AccountSetting::WAITING_ACCOUNT_CLASSES)
 				);
 
-			});
+			})
+			->setCallback('vatCode.check', function(?string &$vatCode) use ($p): bool {
+
+				if($this['sale']['hasVat'] === FALSE) {
+					$vatCode = Item::EXEMPT;
+					return TRUE;
+				}
+
+				return $vatCode !== NULL;
+
+			})
+			->setCallback('vatCode.zero', function(?string $vatCode) use ($p): bool {
+
+				if($this['sale']['hasVat'] === FALSE or $p->isBuilt('vatRate') === FALSE) {
+					return TRUE;
+				}
+
+				if((float)$this['vatRate'] === 0.0 and $vatCode !== Item::ZERO) {
+					return FALSE;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('vatCode.notZero', function(?string $vatCode) use ($p): bool {
+
+				if($this['sale']['hasVat'] === FALSE or $p->isBuilt('vatRate') === FALSE) {
+					return TRUE;
+				}
+
+				if((float)$this['vatRate'] !== 0.0 and $vatCode === Item::ZERO) {
+					return FALSE;
+				}
+
+				return TRUE;
+
+			})
+		;
 
 		parent::build($properties, $input, $p);
 
