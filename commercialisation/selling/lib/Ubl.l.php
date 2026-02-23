@@ -168,13 +168,6 @@ class UblLib {
         <cac:Price><!--BG-29-->
             <cbc:PriceAmount currencyID="EUR">'.$eItem['unitPrice'].'</cbc:PriceAmount><!--BT-146-->
             <cbc:BaseQuantity unitCode="'.self::getUnitCode($eItem['unit']).'">'.$eItem['number'].'</cbc:BaseQuantity>';
-				if($eItem['unitPriceInitial'] !== NULL) {
-            $xml .= '
-            <cac:AllowanceCharge>
-                <cbc:Amount currencyID="EUR">'.round($eItem['unitPriceInitial'] - $eItem['unitPrice'], 2).'</cbc:Amount>
-                <cbc:BaseAmount currencyID="EUR">'.$eItem['unitPriceInitial'].'</cbc:BaseAmount>
-            </cac:AllowanceCharge>';
-				}
         $xml .= '
         </cac:Price>
     </cac:InvoiceLine>';
