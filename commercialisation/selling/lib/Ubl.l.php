@@ -61,9 +61,6 @@ class UblLib {
 		<cbc:EndDate>'.$dateMax.'</cbc:EndDate><!--BT-74-->
 		<cbc:DescriptionCode>'.self::getVatChargeability($eFarm).'</cbc:DescriptionCode><!--BT-8-->
 	</cac:InvoicePeriod>
-	<cac:OrderReference>
-		<cbc:ID>PO202525478</cbc:ID><!--BT-13 (TODO)-->
-	</cac:OrderReference>
 	<cac:AccountingSupplierParty><!--BG-4-->
 		<cac:Party>
 			<cbc:EndpointID schemeID="0225">'.$sellerAddress.'</cbc:EndpointID><!--BT-34-->
