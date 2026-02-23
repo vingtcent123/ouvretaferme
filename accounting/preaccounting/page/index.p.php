@@ -21,14 +21,6 @@ new Page(function($data) {
 
 	}
 
-	if(mb_strlen($from) !== 10 or \util\DateLib::isValid($from) === FALSE or $from < $data->eFarm['eFinancialYear']['startDate'] or $from > $data->eFarm['eFinancialYear']['endDate']) {
-		$from = $data->eFarm['eFinancialYear']['startDate'];
-	}
-
-	if(mb_strlen($to) !== 10 or \util\DateLib::isValid($to) === FALSE or $to < $data->eFarm['eFinancialYear']['startDate'] or $to > $data->eFarm['eFinancialYear']['endDate']) {
-		$to = $data->eFarm['eFinancialYear']['endDate'];
-	}
-
 	if($from > $to) {
 		$fromOld = $from;
 		$from = $to;
@@ -42,6 +34,18 @@ new Page(function($data) {
 
 })
 	->get('/precomptabilite', function($data) {
+
+		$from = $data->search->get('from');
+		$to = $data->search->get('to');
+		if(mb_strlen($from) !== 10 or \util\DateLib::isValid($from) === FALSE or $from < $data->eFarm['eFinancialYear']['startDate'] or $from > $data->eFarm['eFinancialYear']['endDate']) {
+			$from = $data->eFarm['eFinancialYear']['startDate'];
+		}
+
+		if(mb_strlen($to) !== 10 or \util\DateLib::isValid($to) === FALSE or $to < $data->eFarm['eFinancialYear']['startDate'] or $to > $data->eFarm['eFinancialYear']['endDate']) {
+			$to = $data->eFarm['eFinancialYear']['endDate'];
+		}
+		$data->search->set('from', $from);
+		$data->search->set('to', $to);
 
 		$eFinancialYear = $data->eFarm['eFinancialYear'];
 		$data->dates = \preaccounting\PreaccountingLib::extractMonths($eFinancialYear);
@@ -174,6 +178,17 @@ new Page(function($data) {
 
 				if($data->checkType === 'fec') {
 
+					if(
+						GET('counterpart', 'int') === (int)\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS or
+						GET('counterpart', 'int') === (int)\account\AccountSetting::WAITING_ACCOUNT_SUBCLASS
+					) {
+						$counterpart = GET('counterpart');
+					} else {
+						$counterpart = NULL;
+					}
+
+					$data->search->set('counterpart', $counterpart);
+
 					$cAccount = \account\AccountLib::getAll(new Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 					$data->search->set('cMethod', $cMethod);
 					$data->search->set('account', \account\AccountLib::getById(GET('account')));
@@ -222,9 +237,9 @@ new Page(function($data) {
 
 					// Ventes des journaux de caisse
 					if(
-						$eMethod->empty() or
-						$data->search->get('filter') === NULL or
-						($eRegister->notEmpty() and ($eMethod->empty() or $eMethod->is($eRegister['paymentMethod'])))
+						in_array($data->search->get('filter'), ['noInvoice', 'hasInvoice']) === FALSE and
+						($eMethod->empty() or
+						($eRegister->notEmpty() and ($eMethod->empty() or $eMethod->is($eRegister['paymentMethod']))))
 					) {
 
 						$data->cCash = \preaccounting\CashLib::getForAccounting($data->eFarm, $data->search, FALSE);
@@ -252,7 +267,7 @@ new Page(function($data) {
 				if($data->search->get('filter') === NULL or $hasInvoice === FALSE) {
 
 					$data->cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
-					[$fecSale, $data->nSale] = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $cAccount, $data->search->get('account'), new \selling\Payment());
+					[$fecSale, $data->nSale] = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $cAccount, $data->search->get('account'), new \selling\Payment(), counterpart: $data->search->get('counterpart') ?? NULL);
 
 				} else {
 
@@ -487,6 +502,16 @@ new Page(function($data) {
 		$eRegister = (GET('filter', 'int') !== 0) ? $data->search->get('cRegister')->offsetGet(GET('filter', 'int')) : new \cash\Register();
 		$data->search->set('register', $eRegister);
 
+		if(
+			GET('counterpart', 'int') === (int)\account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS or
+			GET('counterpart', 'int') === (int)\account\AccountSetting::WAITING_ACCOUNT_SUBCLASS
+		) {
+			$counterpart = GET('counterpart');
+		} else {
+			$counterpart = NULL;
+		}
+		$data->search->set('counterpart', $counterpart);
+
 		if($data->search->get('cRegister')->notEmpty() and $hasInvoice === NULL) {
 
 			// Ventes des journaux de caisse
@@ -504,7 +529,7 @@ new Page(function($data) {
 		if($data->search->get('filter') === NULL or $hasInvoice === FALSE) {
 
 			$cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
-			[$saleOperations,] = \preaccounting\AccountingLib::generateSalesFec($cSale, $cAccount, $data->search->get('account'));
+			[$saleOperations,] = \preaccounting\AccountingLib::generateSalesFec($cSale, $cAccount, $data->search->get('account'), counterpart: $data->search->get('counterpart') ?? NULL);
 
 		} else {
 			$saleOperations = [];

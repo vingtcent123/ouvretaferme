@@ -266,6 +266,21 @@ Class PreaccountingUi {
 					$h .= $form->select('method', $search->get('cMethod'), $search->get('method'));
 				$h .= '</fieldset>';
 
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Contrepartie").'</legend>';
+					$values = [
+						[
+							'label' => s("Compte client personnalisé {clientAccount} + n° client", ['clientAccount' => \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS]),
+							'value' => \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS,
+						],
+						[
+							'label' => s("Compte d'attente personnalisé {waitingAccount} + n° client", ['waitingAccount' => \account\AccountSetting::WAITING_ACCOUNT_SUBCLASS]),
+							'value' => \account\AccountSetting::WAITING_ACCOUNT_SUBCLASS,
+						],
+					];
+					$h .= $form->select('counterpart', $values, $search->get('counterpart')).\util\FormUi::info(s("S'il n'y a pas déjà une contrepartie, {siteName} utilisera la contrepartie sélectionnée."));
+				$h .= '</fieldset>';
+
 				$h .= '<div>';
 					$h .= $form->submit(s("Valider"));
 					if($search->notEmpty(['from', 'to', 'cMethod'])) {

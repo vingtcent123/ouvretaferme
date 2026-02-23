@@ -54,6 +54,7 @@ class AccountSetting extends \Settings {
 	const LOANS_CLASS = 16;
 
 	const WAITING_ACCOUNT_CLASS = 47; // Comptes d'attente
+	const WAITING_ACCOUNT_SUBCLASS = 471; // Compte d'attente
 	const WAITING_ACCOUNT_CLASSES = [470, 471, 472, 473]; // Comptes d'attente
 
 	// IMMOBILISATIONS

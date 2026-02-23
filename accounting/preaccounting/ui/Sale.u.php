@@ -34,7 +34,7 @@ Class SaleUi {
 				$h .= '<tr>';
 					$h .= '<th>'.s("Code").'</th>';
 					$h .= '<th>'.s("Libellé").'</th>';
-					$h .= '<th class="highlight-stick-right">'.s("Numéro").'</th>';
+					$h .= '<th class="text-end highlight-stick-right">'.s("Numéro").'</th>';
 					$h .= '<th class="highlight-stick-left">'.s("Libellé").'</th>';
 					$h .= '<th>'.s("Référence").'</th>';
 					$h .= '<th>'.s("Date").'</th>';
@@ -56,7 +56,7 @@ Class SaleUi {
 						$h .= '</td>';
 						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_JOURNAL_CODE]).'</td>';
 						$h .= '<td>'.encode($operation[AccountingLib::FEC_COLUMN_JOURNAL_TEXT]).'</td>';
-						$h .= '<td class="highlight-stick-right">';
+						$h .= '<td class="text-end highlight-stick-right">';
 							if($operation[AccountingLib::FEC_COLUMN_ACCOUNT_LABEL] === '') {
 								$h .= '<span class="color-danger" title="'.s("Information manquante").'"><b>'.\Asset::icon('three-dots').'</b></span>';
 							} else {

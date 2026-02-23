@@ -20,6 +20,7 @@ Class AccountingLib {
 	const FEC_COLUMN_OPERATION_NATURE = 20;
 	const EXTRA_FEC_COLUMN_IS_SUMMED = 21; /* Colonne pour savoir si on compte la valeur dans le total (affiché en précompta) */
 	const EXTRA_FEC_COLUMN_ORIGIN = 22; /* Colonne pour savoir d'où vient l'écriture */
+	const EXTRA_FEC_COLUMN_SORT_DATE = 23; /* Colonne pour trier les écritures */
 
 	public static function generateCashFec(\Collection $cCash, \Collection $cAccount, \Search $search): array {
 
@@ -226,6 +227,7 @@ Class AccountingLib {
 			compAuxLib  : $compAuxLib,
 			isSummed    : TRUE,
 			origin      : 'register',
+			sortDate    : $eCash['date'],
 		);
 
 		if($eCash['vat'] > 0) {
@@ -244,6 +246,7 @@ Class AccountingLib {
 				compAuxLib  : $compAuxLib,
 				isSummed    : TRUE,
 				origin      : 'register',
+				sortDate    : $eCash['date'],
 			);
 
 		}
@@ -267,13 +270,16 @@ Class AccountingLib {
 			compAuxLib  : $compAuxLib,
 			isSummed    : FALSE,
 			origin      : 'register',
+			sortDate    : $eCash['date'],
 		);
 
 		return $lines;
 
 	}
 
-	public static function generateSalesFec(\Collection $cSale, \Collection $cAccount, \account\Account $eAccountFilter, \selling\Payment $ePaymentFilter = new \selling\Payment(), \cash\Cash $eCash = new \cash\Cash()): array {
+	public static function generateSalesFec(\Collection $cSale, \Collection $cAccount, \account\Account $eAccountFilter, \selling\Payment $ePaymentFilter = new \selling\Payment(), \cash\Cash $eCash = new \cash\Cash(), ?string $counterpart = NULL): array {
+
+		$eJournalCode = \journal\JournalCodeLib::askByCode('VEN');
 
 		$fecData = [];
 		$nSale = 0;
@@ -297,7 +303,7 @@ Class AccountingLib {
 
 			$items = [];
 
-			$ratios = self::computeRatios($eSale, $cAccount, $ePaymentFilter);
+			$ratios = self::computeRatios($eSale, $cAccount, $ePaymentFilter, $counterpart);
 			$allEntries = array_merge(...array_values($ratios));
 
 			// Exclure les ventes réglées dans les journaux de caisse
@@ -334,10 +340,21 @@ Class AccountingLib {
 						$payment = '';
 					}
 
-					$fecDataItemPayment = self::getFecLine(
-						eAccount    : $eAccount,
+					if($counterpart !== NULL and $eAccount->notEmpty() and $eAccount['class'] === $counterpart) {
+						$isCounterpart = TRUE;
+						$eAccountSelected = clone($eAccount);
+						$eAccountSelected['class'] = $counterpart.str_pad($eSale['customer']['id'], 5, '0');
+					} else {
+						$eAccountSelected = clone($eAccount);
+						$isCounterpart = (
+							\account\AccountLabelLib::isFromClass($eAccountSelected['class'] ?? '', \account\AccountSetting::FINANCIAL_GENERAL_CLASS) or
+							\account\AccountLabelLib::isFromClass($eAccountSelected['class'] ?? '', \account\AccountSetting::THIRD_PARTY_GENERAL_CLASS)
+						);
+					}
+					$fecDataItem = self::getFecLine(
+						eAccount    : $eAccountSelected,
 						date        : $date,
-						eCode       : $eAccount['journalCode'] ?? new \journal\JournalCode(),
+						eCode       : $eJournalCode,
 						ecritureLib : $description,
 						document    : $document,
 						documentDate: $documentDate,
@@ -346,11 +363,12 @@ Class AccountingLib {
 						payment     : $payment,
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
-						isSummed    : \account\AccountLabelLib::isFromClass($eAccount['class'] ?? '', \account\AccountSetting::FINANCIAL_GENERAL_CLASS) === FALSE,
+						isSummed    : ($isCounterpart === FALSE),
 						origin      : $eCash->notEmpty() ? 'register' : 'sale',
+						sortDate    : $eSale['deliveredAt'],
 					);
 
-					self::mergeFecLineIntoItemData($items, $fecDataItemPayment);
+					self::mergeFecLineIntoItemData($items, $fecDataItem);
 
 				}
 
@@ -371,6 +389,7 @@ Class AccountingLib {
 	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cAccount, \account\Account $eAccountFilter = new \account\Account(), \selling\Payment $ePaymentFilter = new \selling\Payment()): array {
 
 		$eAccountBank = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
+		$eJournalCode = \journal\JournalCodeLib::askByCode('VEN');
 
 		$fecData = [];
 		$nInvoices = 0;
@@ -415,7 +434,7 @@ Class AccountingLib {
 					$fecDataItemPayment = self::getFecLine(
 						eAccount    : $eAccount,
 						date        : $date,
-						eCode       : $eAccount['journalCode'] ?? new \journal\JournalCode(),
+						eCode       : $eJournalCode,
 						ecritureLib : $document,
 						document    : $document,
 						documentDate: $documentDate,
@@ -427,6 +446,7 @@ Class AccountingLib {
 						number      : NULL,
 						isSummed    : $eAccountBank['id'] !== ($eAccount['id'] ?? NULL),
 						origin      : 'invoice',
+						sortDate    : $eInvoice['date'],
 					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataItemPayment);
@@ -620,13 +640,13 @@ Class AccountingLib {
 	public static function sortOperations(array $operations): array {
 
 		usort($operations, function($entry1, $entry2) {
-			if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DATE] === $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DATE]) {
+			if($entry1[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_SORT_DATE] === $entry2[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_SORT_DATE]) {
 				if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT] === $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT]) {
 					return 0;
 				}
 				return strcmp($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT], $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT]);
 			}
-			if($entry1[\preaccounting\AccountingLib::FEC_COLUMN_DATE] < $entry2[\preaccounting\AccountingLib::FEC_COLUMN_DATE]) {
+			if($entry1[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_SORT_DATE] < $entry2[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_SORT_DATE]) {
 				return -1;
 			}
 			return 1;
@@ -801,7 +821,7 @@ Class AccountingLib {
 		return $items;
 	}
 
-	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount, \selling\Payment $ePaymentFilter): array {
+	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount, \selling\Payment $ePaymentFilter, ?string $counterpart = NULL): array {
 
 		$eElement->expects(['hasVat', 'cItem', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat']);
 
@@ -1013,16 +1033,35 @@ Class AccountingLib {
 
 			// Ajout de l'écriture de banque
 			if($ePayment['status'] === \selling\Payment::PAID and $ePayment['cashflow']->notEmpty()) {
+				
 				$items[] = [
 					'account' => $ePayment['cashflow']['account']['account']['id'] ?? '',
 					'accountReference' => NULL,
 					'vatRate' => NULL,
-					'isBank' => TRUE,
+					'isCounterpart' => TRUE,
 					'amount' => round($ePayment['cashflow']['amount'] * -1, 2),
 					'type' => 'payment',
 					'method' => $ePayment['method']['id'],
 					'payment' => $ePayment['id'],
 				];
+
+			} else if($counterpart !== NULL) {
+
+				$eAccountCounterpart = $cAccount->find(fn($e) => $e['class'] === $counterpart)->first();
+
+				if($eAccountCounterpart->notEmpty()) {
+
+					$items[] = [
+						'account' => $eAccountCounterpart['id'],
+						'accountReference' => NULL,
+						'vatRate' => NULL,
+						'isCounterpart' => TRUE,
+						'amount' => round($eElement['priceIncludingVat'] * -1, 2),
+						'type' => 'payment',
+						'method' => '',
+						'payment' => '',
+					];
+				}
 
 			}
 		}
@@ -1031,14 +1070,14 @@ Class AccountingLib {
 		$ratios = [
 			'amountsExcludingVat' => [],
 			'amountsVat' => [],
-			'bank' => [],
+			'counterpart' => [],
 		];
 
 		foreach($items as $item) {
 			if($item['accountReference'] !== NULL) {
 				$key = 'amountsVat';
-			} else if($item['isBank'] ?? FALSE) {
-				$key = 'bank';
+			} else if($item['isCounterpart'] ?? FALSE) {
+				$key = 'counterpart';
 			} else {
 				$key = 'amountsExcludingVat';
 			}
@@ -1124,7 +1163,7 @@ Class AccountingLib {
 	private static function getFecLine(
 		\account\Account $eAccount, string $date, \journal\JournalCode $eCode, string $ecritureLib,
 		string $document, string $documentDate, float $amount, string $type, string $payment, string $compAuxNum, string $compAuxLib,
-		?int $number = NULL, ?string $for = NULL, bool $isSummed = TRUE, string $origin = '',
+		?int $number = NULL, ?string $for = NULL, bool $isSummed = TRUE, string $origin = '', string $sortDate = ''
 	): array {
 
 		return [
@@ -1150,7 +1189,8 @@ Class AccountingLib {
 			$payment,
 			$for,
 			(int)$isSummed,
-			$origin
+			$origin,
+			$sortDate,
 		];
 	}
 
