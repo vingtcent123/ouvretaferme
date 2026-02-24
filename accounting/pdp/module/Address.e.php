@@ -26,7 +26,7 @@ class Address extends AddressElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('identifier.prepare', function(?string $identifier): bool {
+			->setCallback('identifier.prepare', function(?string &$identifier): bool {
 
 				if($identifier === NULL) {
 					return FALSE;
@@ -39,6 +39,11 @@ class Address extends AddressElement {
 				preg_match('/([0-9]{0, 9})(\_[a-zA-Z0-9]+)?(\_[a-zA-Z0-9]+)?/m', $identifier, $matches);
 
 				$parts = str_contains($identifier, '_') + 1;
+
+				if(LIME_ENV === 'dev') {
+					$identifier = '315143296_103_'.uniqid();
+					return TRUE;
+				}
 
 				if($parts === 1) {
 					return $matches[1] === $siren;
