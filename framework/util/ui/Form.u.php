@@ -714,17 +714,17 @@ class FormUi {
 
 	}
 
-	public function electronicAddressGroup(string $label, \Element $e, array $attributes = [], string $before = ''): string {
+	public function electronicAddressGroup(string $label, \Element $e): string {
 
 		return $this->group(
 			$label,
-			$before.'<div class="form-control-block form-control-address">'.$this->electronicAddress($e, $attributes).'</div>',
+			'<div class="form-control-block form-control-address">'.$this->electronicAddress($e).'</div>',
 			['wrapper' => 'electronicScheme electronicAddress fullElectronicAddress']
 		);
 
 	}
 
-	public function electronicAddress(\Element $e, array $attributes = []) {
+	public function electronicAddress(\Element $e) {
 
 		$h = '<div class="form-e-invoicing-identifier-address">';
 
