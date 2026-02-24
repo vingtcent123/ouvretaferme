@@ -324,7 +324,7 @@ class Item extends ItemElement {
 			->setCallback('vatCode.check', function(?string &$vatCode) use ($p): bool {
 
 				if($this['sale']['hasVat'] === FALSE) {
-					$vatCode = Item::EXEMPT;
+					$vatCode = Item::ZERO;
 					return TRUE;
 				}
 

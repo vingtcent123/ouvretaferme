@@ -380,7 +380,7 @@ class UblLib {
 		return match($vatCode) {
 			Item::STANDARD => 'S',
 			Item::ZERO => 'Z',
-			Item::EXEMPT => 'Z', // Utilisé uniquement pour les fermes en franchise de base => BR-FR-MAP-08
+			Item::EXEMPT => 'E',
 			Item::AUTOLIQUIDATION => 'AE',
 			Item::INTRACOM_DELIVERY => 'K',
 			Item::EXPORTATION => 'G',
