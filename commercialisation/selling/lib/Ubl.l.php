@@ -293,8 +293,30 @@ class UblLib {
 
 	}
 
-	private static function getUnitCode(Unit $eUnit): string { // TODO
-		return 'C62'; // ONE
+	private static function getUnitCode(Unit $eUnit): string {
+
+		return match($eUnit['fqn']) {
+			'tray' => 'XPU',
+			'box' => 'BB',
+			'bunch' => 'XBH',
+			'bottle' => 'XBO',
+			'centiliter' => 'CLT',
+			'parcel' => 'XPC',
+			'package' => 'XPK',
+			'gram' => 'GRM',
+			'hour' => 'HUR',
+			'kg' => 'KGM',
+			'liter' => 'LTR',
+			'milliliter' => 'MLT',
+			'unit' => 'C62',
+			'pot' => 'XPT',
+			'bag' => 'XBG',
+			'ton' => 'TNE',
+			'gram-100' => 'CTG',
+			'gram-250' => 'CTG',
+			'gram-500' => 'CTG',
+			default => 'C62', // ONE
+		};
 	}
 
 	private static function getDiscountSales(Invoice $eInvoice): float {
