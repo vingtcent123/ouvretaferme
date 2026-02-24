@@ -1013,7 +1013,7 @@ class DateUi {
 						$hide[] = 'deliveredAt';
 					}
 
-					if($eDate['eFarmSelected']->empty()) {
+					if($eShop->isShared() and $eDate['eFarmSelected']->empty()) {
 						$hide[] = 'customer';
 						$group = 'customer';
 					} else {
