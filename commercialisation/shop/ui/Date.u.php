@@ -1007,13 +1007,26 @@ class DateUi {
 					$h .= '<div class="util-empty">'.s("Aucune vente n'a encore été enregistrée !").'</div>';
 				} else {
 
+					$hide = ['documents', 'items'];
+
+					if($eDate['deliveryDate'] !== NULL) {
+						$hide[] = 'deliveredAt';
+					}
+
+					if($eDate['eFarmSelected']->empty()) {
+						$hide[] = 'customer';
+						$group = 'customer';
+					} else {
+						$group = NULL;
+					}
+
 					$h .= new \selling\SaleUi()->getList(
 						$eFarm,
 						$cSale,
-						hide: ($eDate['deliveryDate'] === NULL) ? ['documents', 'items'] : ['deliveredAt', 'documents', 'items'],
+						hide: $hide,
 						dynamicHide: ['paymentMethod' => ''],
 						show: ['point'],
-						hasSubtitles: FALSE,
+						group: $group,
 						segment: ($eDate['deliveryDate'] !== NULL and $eDate['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0) > 1) ? 'point' : NULL,
 						cPaymentMethod: $cPaymentMethod,
 					);

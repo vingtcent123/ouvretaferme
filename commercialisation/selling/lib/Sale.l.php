@@ -467,9 +467,12 @@ class SaleLib extends SaleCrud {
 
 		return Sale::model()
 			->join(Customer::model(), 'm1.customer = m2.id')
-			->select(\selling\Sale::getSelection() + [
-				'shopPoint' => \shop\PointElement::getSelection()
-			])
+			->select([
+				'shopPoint' => \shop\PointElement::getSelection(),
+				'customer' => CustomerElement::getSelection() + [
+					'user' => \user\User::getSelection()
+				],
+			] + \selling\Sale::getSelection())
 			->whereShopDate($eDate)
 			->where('m1.farm', $eFarm, if: $eFarm->notEmpty())
 			->sort(

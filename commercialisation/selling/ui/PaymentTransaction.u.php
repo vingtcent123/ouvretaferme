@@ -90,20 +90,25 @@ class PaymentTransactionUi {
 
 		$h = '';
 
+		$updatable = (
+			$e->canUpdate() and
+			$e->acceptUpdatePayment()
+		);
+
 		if($e['paymentStatus'] === Sale::NEVER_PAID) {
 
 			$h .= PaymentTransactionUi::getPaymentStatusBadge($e);
 
 		} else if($e['cPayment']->empty()) {
 
-			if($e->acceptUpdatePayment()) {
+			if($updatable) {
 				$h .= '<a href="'.self::getPrefix($e).':updatePayment?id='.$e['id'].'" class="btn btn-sm btn-outline-primary">'.s("Choisir").'</a>';
 				$h .= $late;
 			}
 
 		} else {
 
-			if($e->acceptUpdatePayment() and $e['paymentStatus'] !== Sale::PAID) {
+			if($updatable and $e['paymentStatus'] !== Sale::PAID) {
 				$h .= '<a href="'.self::getPrefix($e).':updatePayment?id='.$e['id'].'" class="btn btn-sm btn-outline-primary sale-button">';
 			}
 
@@ -126,7 +131,7 @@ class PaymentTransactionUi {
 
 				}
 
-			if($e->acceptUpdatePayment() and $e['paymentStatus'] !== Sale::PAID) {
+			if($updatable and $e['paymentStatus'] !== Sale::PAID) {
 				$h .= '</a>';
 			}
 

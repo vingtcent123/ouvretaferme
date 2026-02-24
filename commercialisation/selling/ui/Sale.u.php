@@ -189,7 +189,7 @@ class SaleUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, ?bool $hasSubtitles = NULL, ?string $segment = NULL, ?\Collection $cPaymentMethod = NULL): string {
+	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, ?string $group = 'date', ?string $segment = NULL, ?\Collection $cPaymentMethod = NULL): string {
 
 		if($cSale->empty()) {
 			return '';
@@ -201,18 +201,20 @@ class SaleUi {
 
 		$columns = 5;
 
-		if($hasSubtitles === NULL) {
-			$hasSubtitles = (
+		if($group === 'date') {
+			$hasGroup = (
 				$cSale->count() > 10 and
 				($search !== NULL and str_starts_with($search->getSort(), 'preparationStatus'))
 			);
+		} else {
+			$hasGroup = ($group !== NULL);
 		}
 
 		$hasFarm = count(array_count_values($cSale->getColumnCollection('farm')->getIds())) > 1;
 		$hasAverage = (in_array('average', $show) and $cSale->contains(fn($eSale) => $eSale->isMarket()));
 		$hasDocuments = $cSale->contains(fn($eSale) => $eSale->isMarket() === FALSE);
 
-		$previousSubtitle = NULL;
+		$previousGroup = NULL;
 		$previousSegment = NULL;
 
 		$h .= '<table class="tr-even" data-batch="#batch-sale">';
@@ -222,7 +224,7 @@ class SaleUi {
 				$h .= '<tr>';
 
 					$h .= '<th class="td-min-content">';
-						if($hasSubtitles === FALSE) {
+						if($hasGroup === FALSE) {
 							$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
 								$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleSelection(this)"/>';
 							$h .= '</label>';
@@ -296,13 +298,24 @@ class SaleUi {
 
 				foreach($cSale as $eSale) {
 
-					if($hasSubtitles) {
+					if($hasGroup) {
 
-						$currentSubtitle = ($eSale['preparationStatus'] === Sale::DRAFT) ? Sale::DRAFT : $eSale['deliveredAt'];
+						switch($group) {
 
-						if($currentSubtitle !== $previousSubtitle) {
+							case 'date' :
+								$currentGroup = ($eSale['preparationStatus'] === Sale::DRAFT) ? Sale::DRAFT : $eSale['deliveredAt'];
+								break;
 
-							if($previousSubtitle !== NULL) {
+							case 'customer' :
+								$currentGroup = $eSale['customer']['user']->empty() ? NULL : $eSale['customer']['user']['id'];
+								break;
+
+						}
+
+
+						if($currentGroup !== $previousGroup) {
+
+							if($previousGroup !== NULL) {
 								$h .= '</tbody>';
 								$h .= '<tbody>';
 							}
@@ -314,17 +327,34 @@ class SaleUi {
 											$h .= '</label>';
 										$h .= '</th>';
 										$h .= '<td colspan="'.$columns.'">';
-											$h .= match($currentSubtitle) {
-												Sale::DRAFT => s("Brouillon"),
-												currentDate() => s("Aujourd'hui"),
-												default => \util\DateUi::textual($currentSubtitle)
-											};
+
+											switch($group) {
+
+												case 'date' :
+
+													$h .= match($currentGroup) {
+														Sale::DRAFT => s("Brouillon"),
+														currentDate() => s("Aujourd'hui"),
+														default => \util\DateUi::textual($currentGroup)
+													};
+													break;
+
+												case 'customer' :
+													if($currentGroup === NULL) {
+														$h .= s("Client sans compte client");
+													} else {
+														$h .= $eSale['customer']['user']->getName();
+													}
+													break;
+
+											}
+
 										$h .= '</td>';
 									$h .= '</tr>';
 								$h .= '</tbody>';
 								$h .= '<tbody>';
 
-							$previousSubtitle = $currentSubtitle;
+							$previousGroup = $currentGroup;
 
 						}
 
@@ -464,8 +494,23 @@ class SaleUi {
 						}
 
 						if($hasFarm) {
-							$h .= '<td class="font-sm color-muted">';
+							$h .= '<td>';
+
 								$h .= encode($eSale['farm']['name']);
+
+								if(
+									$eSale['customer']['user']->empty() and
+									in_array('customer', $hide)
+								) {
+									$h .= '<div class="font-sm color-muted">';
+									if($eSale->canRead()) {
+										$h .= CustomerUi::link($eSale['customer']);
+									} else {
+										$h .= encode($eSale['customer']->getName());
+									}
+									$h .= '</div>';
+								}
+
 							$h .= '</td>';
 						}
 
@@ -1559,16 +1604,18 @@ class SaleUi {
 
 	public function getUpdate(Sale $eSale, string $btn): string {
 
+		if($eSale->canUpdate() === FALSE) {
+			return '';
+		}
+
 		$primaryList = '';
 
-		if($eSale->canUpdate()) {
-			$primaryList .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="dropdown-item">';
-				$primaryList .= match($eSale->isComposition()) {
-					TRUE => s("Modifier la composition"),
-					FALSE => $eSale['closed'] ? s("Commenter la vente") : s("Modifier la vente"),
-				};
-			$primaryList .= '</a>';
-		}
+		$primaryList .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="dropdown-item">';
+			$primaryList .= match($eSale->isComposition()) {
+				TRUE => s("Modifier la composition"),
+				FALSE => $eSale['closed'] ? s("Commenter la vente") : s("Modifier la vente"),
+			};
+		$primaryList .= '</a>';
 
 		if($eSale->acceptUpdatePayment()) {
 			$primaryList .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="dropdown-item">';
