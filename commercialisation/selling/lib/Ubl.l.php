@@ -186,7 +186,7 @@ class UblLib {
 			<cbc:TaxableAmount currencyID="EUR">'.$vatByRate['amount'].'</cbc:TaxableAmount><!--BT-116-->
 			<cbc:TaxAmount currencyID="EUR">'.$vatByRate['vat'].'</cbc:TaxAmount><!--BT-117-->
 			<cac:TaxCategory>
-				<cbc:ID>'.self::getVatCode($vatByRate).'</cbc:ID><!--BT-118-->
+				<cbc:ID>'.self::getInvoiceVatCode($eInvoice, $vatByRate['vatRate']).'</cbc:ID><!--BT-118-->
 				<cbc:Percent>'.$vatByRate['vatRate'].'</cbc:Percent><!--BT-119-->
 				<cac:TaxScheme>
 					<cbc:ID>VAT</cbc:ID>
@@ -233,7 +233,7 @@ class UblLib {
 		<cac:Item>
 			<cbc:Name>'.$eItem['name'].'</cbc:Name><!--BT-153-->
 			<cac:ClassifiedTaxCategory><!--BG-30-->
-				<cbc:ID>'.self::getVatCode($eItem['vatRate']).'</cbc:ID><!--BT-151-->
+				<cbc:ID>'.self::getVatCode($eItem['vatCode']).'</cbc:ID><!--BT-151-->
 				<cbc:Percent>'.$eItem['vatRate'].'</cbc:Percent><!--BT-152-->
 				<cac:TaxScheme><!--BT-151-1-->
 					<cbc:ID>VAT</cbc:ID><!--BT-151-2-->
@@ -248,6 +248,35 @@ class UblLib {
 	</cac:InvoiceLine>';
 				$lineNumber++;
 			}
+		if($eSale['shipping'] !== NULL) {
+      $xml .= '
+	<cac:InvoiceLine><!--BG-25-->
+		<cbc:ID>'.$lineNumber.'</cbc:ID><!--BT-126-->
+		<cbc:InvoicedQuantity unitCode="C62">1</cbc:InvoicedQuantity><!--BT-129--><!--BT-130-->
+		<cbc:LineExtensionAmount currencyID="EUR">'.$eSale['shippingExcludingVat'].'</cbc:LineExtensionAmount><!--BT-131 (prix non remisé)-->
+		<cac:InvoicePeriod><!--BG-26-->
+			<cbc:StartDate>'.$eSale['deliveredAt'].'</cbc:StartDate><!--BT-134-->
+			<cbc:EndDate>'.$eSale['deliveredAt'].'</cbc:EndDate><!--BT-135-->
+		</cac:InvoicePeriod>
+		<cac:Item>
+			<cbc:Name>'.s("Frais de livraison").'</cbc:Name><!--BT-153-->
+			<cac:ClassifiedTaxCategory><!--BG-30-->
+				<cbc:ID>'.self::getVatCode().'</cbc:ID><!--BT-151-->
+				<cbc:Percent>'.$eSale['shippingVatRate'].'</cbc:Percent><!--BT-152-->
+				<cac:TaxScheme><!--BT-151-1-->
+					<cbc:ID>VAT</cbc:ID><!--BT-151-2-->
+				</cac:TaxScheme>
+			</cac:ClassifiedTaxCategory>
+		</cac:Item>
+		<cac:Price><!--BG-29-->
+		<cbc:PriceAmount currencyID="EUR">'.$eSale['shippingExcludingVat'].'</cbc:PriceAmount><!--BT-146-->
+		<cbc:BaseQuantity unitCode="C62">1</cbc:BaseQuantity>';
+		$xml .= '
+		</cac:Price>
+	</cac:InvoiceLine>';
+				$lineNumber++;
+
+		}
 		}
     $xml .= '
 </Invoice>
@@ -326,22 +355,53 @@ class UblLib {
 				};
 
 			}
+			if($eSale['shipping']) {
+				$sum += $eSale['shippingExcludingVat'];
+			}
 		}
 
 		return $sum;
 
 	}
 
-	private static function getVatCode(array|float $vatByRate): string { // TODO
+	private static function getVatCode(?string $vatCode = NULL): string {
 
-		if(
-			(is_array($vatByRate) and $vatByRate['vatRate'] === 0) or
-			(is_float($vatByRate) and $vatByRate === 0.0)
-		){
-			return 'Z';
+		if($vatCode === NULL) {
+			return 'S'; // Cas standard par défaut
 		}
 
+		return match($vatCode) {
+			Item::STANDARD => 'S',
+			Item::ZERO => 'Z',
+			Item::EXEMPT => 'E',
+			Item::AUTOLIQUIDATION => 'AE',
+			Item::INTRACOM_DELIVERY => 'K',
+			Item::EXPORTATION => 'G',
+			Item::OUT_OF_VAT => 'O',
+		};
+
 		return 'S';
+
+	}
+
+	private static function getInvoiceVatCode(Invoice $eInvoice, float $vatRate): string {
+
+		$vatCodes = [];
+		foreach($eInvoice['cSale'] as $eSale) {
+			foreach($eSale['cItem'] as $eItem) {
+				if($eItem['vatRate'] !== $vatRate) {
+					continue;
+				}
+				$vatCode = self::getVatCode($eItem['vatCode']);
+				if(isset($vatCodes[$vatCode]) === FALSE) {
+					$vatCodes[$vatCode] = 0;
+				}
+				$vatCodes[$vatCode]++;
+			}
+		}
+
+		arsort($vatCodes);
+		return first(array_keys($vatCodes));
 
 	}
 
