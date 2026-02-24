@@ -1,6 +1,6 @@
 Address:
   id: serial32
-  identifier: text8(0, null)
+  electronicAddress: text8(0, null)
   company: pdp\Company
   status: enum(SENDING, PENDING, CREATED, ERROR) = SENDING
   statusMessage : ?text(0, null)

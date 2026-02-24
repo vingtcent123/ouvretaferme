@@ -29,6 +29,7 @@ class AlertUi {
 			'User::deliveryAddressMandatory.check' => s("Merci de saisir votre adresse !"),
 			'User::invalidHash' => s("Désolé, ce code de confirmation n'est pas valide."),
 			'User::internal' => s("Une erreur interne est survenue."),
+			'User::fullElectronicAddress.check' => s("L'adresse de facturation électronique comprend un identifiant sur 4 chiffres et une adresse de facturation. Les informations fournies ne respectent pas la norme"),
 
 			'UserAuth::password.match' => s("Vous avez entré deux mots de passe différents"),
 			'UserAuth::password.check' => p("Votre mot de passe doit contenir au minimum {value} caractère", "Votre mot de passe doit contenir au minimum {value} caractères", UserSetting::PASSWORD_SIZE_MIN),

@@ -4,6 +4,7 @@ namespace user;
 class CountryLib extends CountryCrud {
 
 	use \ModuleDeferred;
+	use \Notifiable;
 
 	private static array|\Collection|null $countries = NULL;
 
@@ -60,6 +61,20 @@ class CountryLib extends CountryCrud {
 		}
 
 		return self::$countries;
+
+	}
+
+	public static function getElectronicSchemes(Country $eCountry): array {
+
+		foreach(self::notify('getCountrySchemes', $eCountry) as $result) {
+
+			if($result) {
+				return $result;
+			}
+
+		}
+
+		return [];
 
 	}
 

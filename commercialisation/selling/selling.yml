@@ -17,6 +17,8 @@ Customer:
   legalName: ?text8
   document: ?int32(1, null)
   number: ?text8
+  electronicScheme: ?text8(4, 4)
+  electronicAddress: ?text8
   email: ?email
   phone: ?text8
   contactName: ?text8

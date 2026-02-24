@@ -26,6 +26,7 @@ new Page(function($data) {
 
 			\pdp\CompanyLib::synchronize();
 			$data->eCompany = \pdp\CompanyLib::getWithAddresses();
+			$data->nAddress = \pdp\AddressLib::countValidAddresses();
 
 		} else {
 

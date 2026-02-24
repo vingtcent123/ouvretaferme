@@ -53,6 +53,18 @@ class UserObserverLib {
 			}
 
 		}
+		
+		$eInvoicingProperty = ['electronicScheme', 'electronicAddress'];
+
+		if(array_intersect($eInvoicingProperty, $properties)) {
+
+			$eUser->expects($eInvoicingProperty);
+
+			foreach($eInvoicingProperty as $property) {
+					$values[$property] = $eUser[$property];
+			}
+
+		}
 
 		if($values === []) {
 			return;

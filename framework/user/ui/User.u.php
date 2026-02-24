@@ -191,6 +191,9 @@ Vous recevrez alors un e-mail contenant un lien vous permettant d'en choisir un 
 
 		if($eUser['type'] === User::PRO) {
 			$h .= $form->dynamicGroup($eUser, 'siret');
+			if(\pdp\PdpLib::isActive(new \farm\Farm())) {
+				$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique"), $eUser);
+			}
 			$h .= $form->dynamicGroup($eUser, 'legalName');
 		}
 

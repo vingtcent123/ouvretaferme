@@ -12,7 +12,7 @@ class UserLib extends UserCrud {
 		return function(User $e) {
 			return match($e['type']) {
 				User::PRIVATE => ['firstName', 'lastName', 'phone', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry'],
-				User::PRO => ['firstName', 'lastName', 'legalName', 'phone', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret']
+				User::PRO => array_merge(['firstName', 'lastName', 'legalName', 'phone', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret'], (\pdp\PdpLib::isActive(new \farm\Farm()) ? ['electronicScheme', 'electronicAddress'] : [])),
 			};
 		};
 	}
@@ -392,5 +392,17 @@ class UserLib extends UserCrud {
 
 	}
 
+	public static function checkElectronicAddress(string $eAddress, string $siret): bool {
+
+		foreach(self::notify('checkElectronicAddress', $eAddress, $siret) as $result) {
+
+			if($result) {
+				return $result;
+			}
+
+		}
+
+		return FALSE;
+	}
 }
 ?>

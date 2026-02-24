@@ -75,6 +75,22 @@ class User extends UserElement {
 		throw new \DisabledPage('customer');
 	}
 
+	public static function checkElectronicScheme(string $electronicScheme, \user\Country $eCountry): bool {
+
+		return in_array($electronicScheme, CountryLib::getElectronicSchemes($eCountry));
+
+	}
+
+	public static function checkElectronicAddress(?string $eAddress, string $siret): bool {
+
+		if($eAddress === NULL) {
+			return FALSE;
+		}
+
+		return UserLib::checkElectronicAddress($eAddress, $siret);
+
+	}
+
 	public function active(): bool {
 		return ($this['status'] === User::ACTIVE);
 	}
@@ -186,6 +202,10 @@ class User extends UserElement {
 		self::propertyAddress('delivery', $properties);
 		self::propertyAddress('invoice', $properties);
 
+		if(array_intersect(['electronicScheme', 'electronicAddress'], $properties)) {
+			$properties[] = 'fullElectronicAddress';
+		}
+
 		$p
 			->setCallback('siret.prepare', function(?string &$siret) use($p): void {
 
@@ -276,7 +296,39 @@ class User extends UserElement {
 					$this['deliveryCity'] !== NULL
 				);
 
-			});
+			})
+			->setCallback('electronicScheme.check', function(?string $electronicScheme): bool {
+
+				$this->expects(['invoiceCountry']);
+
+				return User::checkElectronicScheme($electronicScheme, $this['invoiceCountry']);
+
+			})
+			->setCallback('electronicAddress.check', function(?string $electronicAddress) use($p): bool {
+
+				$this->expects(['siret']);
+
+				if($p->isBuilt('electronicScheme') === FALSE) {
+					return TRUE;
+				}
+
+				if($electronicAddress === NULL) {
+					return $this['electronicScheme'] === NULL;
+				}
+
+				return User::checkElectronicAddress($electronicAddress, $this['siret']);
+
+			})
+			->setCallback('fullElectronicAddress.check', function() use($p) {
+
+				if($p->isBuilt('electronicScheme') === FALSE and $p->isBuilt(('electronicAddress')) === FALSE) {
+					return TRUE;
+				}
+
+				return $p->isBuilt('electronicScheme') and $p->isBuilt(('electronicAddress')) ;
+
+			})
+		;
 
 		parent::build($properties, $input, $p);
 

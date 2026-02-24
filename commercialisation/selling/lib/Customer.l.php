@@ -33,7 +33,7 @@ class CustomerLib extends CustomerCrud {
 
 		return match($category) {
 
-			Customer::PRO => array_merge(['category'], $properties, $propertiesAddress, ['siret', 'vatNumber', 'email', 'defaultPaymentMethod', 'phone', 'contactName']),
+			Customer::PRO => array_merge(['category'], $properties, $propertiesAddress, ['siret',  'vatNumber', 'email', 'defaultPaymentMethod', 'phone', 'contactName'], \pdp\PdpLib::isActive(new \farm\Farm()) ? ['electronicScheme', 'electronicAddress'] : []),
 			Customer::PRIVATE => array_merge(['category'], $properties, $propertiesAddress, ['email', 'defaultPaymentMethod', 'phone']),
 			Customer::COLLECTIVE => match($for) {
 				'create' => array_merge(['category'], $properties),

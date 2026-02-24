@@ -283,6 +283,17 @@ div.form-postcode-city {
 	column-gap: 1rem;
 }
 
+
+@media (min-width: 767px) {
+
+	div.form-e-invoicing-identifier-address {
+		display: grid;
+		grid-template-columns: auto 8rem 1fr;
+		align-items: center;
+		column-gap: 1rem;
+	}
+
+}
 .form-dropdown-toggle:hover {
 	text-decoration: none;
 }

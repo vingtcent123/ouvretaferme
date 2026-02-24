@@ -714,6 +714,45 @@ class FormUi {
 
 	}
 
+	public function electronicAddressGroup(string $label, \Element $e, array $attributes = [], string $before = ''): string {
+
+		return $this->group(
+			$label,
+			$before.'<div class="form-control-block form-control-address">'.$this->electronicAddress($e, $attributes).'</div>',
+			['wrapper' => 'electronicScheme electronicAddress fullElectronicAddress']
+		);
+
+	}
+
+	public function electronicAddress(\Element $e, array $attributes = []) {
+
+		$h = '<div class="form-e-invoicing-identifier-address">';
+
+			$h .= \Asset::image('main', 'facturation-electronique.png', ['style' => 'height: 4rem;']);
+
+			$h .= $this->group(
+				s("Identifiant"),
+				$this->dynamicField($e, 'electronicScheme', function(\PropertyDescriber $d) {
+					$d->attributes['placeholder'] = s("Ex: 0225");
+				}),
+				nested: TRUE
+			);
+
+			$h .= $this->group(
+				s("Adresse"),
+				$this->dynamicField($e, 'electronicAddress', function(\PropertyDescriber $d) {
+					$d->attributes['placeholder'] = s("Ex: SIREN_SIRET_DEPARTEMENT");
+				}),
+				nested: TRUE
+			);
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+
 	public function addressGroup(string $label, string $prefix, \Element $e, array $attributes = [], string $before = ''): string {
 
 		$field = fn($name) => ($prefix === NULL) ? $name : $prefix.ucfirst($name);

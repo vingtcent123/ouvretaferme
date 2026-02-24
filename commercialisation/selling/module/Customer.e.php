@@ -27,6 +27,16 @@ class Customer extends CustomerElement {
 
 	}
 
+	public function getFullEAddress(): ?string {
+
+		if($this['electronicScheme'] and $this['electronicAddress']) {
+			return $this['electronicScheme'].':'.$this['electronicAddress'];
+		}
+
+		return NULL;
+
+	}
+
 	public function calculateNumber(): ?string {
 
 		return SellingSetting::CUSTOMER.$this['document'];
@@ -240,6 +250,10 @@ class Customer extends CustomerElement {
 		\user\User::propertyAddress('delivery', $properties);
 		\user\User::propertyAddress('invoice', $properties);
 
+		if(array_intersect(['electronicScheme', 'electronicAddress'], $properties)) {
+			$properties[] = 'fullElectronicAddress';
+		}
+
 		$p
 			->setCallback('firstName.empty', function(?string &$firstName): bool {
 
@@ -407,9 +421,36 @@ class Customer extends CustomerElement {
 					default :
 						return FALSE;
 
-				};
+				}
 
-			});
+			})
+			->setCallback('electronicScheme.check', function(?string $electronicScheme): bool {
+
+				return \pdp\Address::checkScheme($electronicScheme, $this['invoiceCountry']);
+
+			})
+			->setCallback('electronicAddress.check', function(?string $electronicAddress) use ($p): bool {
+
+				if($p->isBuilt('electronicScheme') === FALSE) {
+					return TRUE;
+				}
+
+				if($electronicAddress === NULL) {
+					return FALSE;
+				}
+				return \pdp\Address::checkElectronicAddress($electronicAddress, $this['siret']);
+
+			})
+			->setCallback('fullElectronicAddress.check', function() use($p) {
+
+				if($p->isBuilt('electronicScheme') === FALSE and $p->isBuilt(('electronicAddress')) === FALSE) {
+					return TRUE;
+				}
+
+				return $p->isBuilt('electronicScheme') and $p->isBuilt(('electronicAddress')) ;
+
+			})
+		;
 
 		parent::build($properties, $input, $p);
 

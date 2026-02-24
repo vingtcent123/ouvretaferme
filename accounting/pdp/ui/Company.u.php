@@ -9,7 +9,7 @@ Class CompanyUi {
 
 			$h .= '<dl class="util-presentation util-presentation-1">';
 
-				$h .= '<dt>'.s("Identifiant").'</dt>';
+				$h .= '<dt>'.s("Numéro d'entreprise").'</dt>';
 				$h .= '<dd>'.encode($eCompany['id']).'</dd>';
 
 				$h .= '<dt>'.s("Siren").'</dt>';

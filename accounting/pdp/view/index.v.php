@@ -64,7 +64,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 		} else {
 
-			echo new \pdp\AddressUi()->list($data->eFarm, $data->eCompany['cAddress']);
+			echo new \pdp\AddressUi()->list($data->eFarm, $data->eCompany['cAddress'], $data->nAddress);
 
 			echo '<a class="btn btn-primary" href="'.\farm\FarmUi::urlConnected($data->eFarm).'/pdp/address:create">';
 				echo Asset::icon('plus-circle').' '.s("Ajouter une adresse électronique");

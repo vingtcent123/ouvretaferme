@@ -57,6 +57,8 @@ class UserModel extends \ModuleModel {
 			'email' => ['email', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'phone' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'siret' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
+			'electronicScheme' => ['text8', 'min' => 4, 'max' => 4, 'null' => TRUE, 'cast' => 'string'],
+			'electronicAddress' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoiceCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'invoiceStreet1' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceStreet2' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -84,7 +86,7 @@ class UserModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'type', 'firstName', 'lastName', 'legalName', 'email', 'phone', 'siret', 'invoiceCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryCountry', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'verified', 'visibility', 'status', 'referer', 'seen', 'seniority', 'role', 'vignette', 'onlineToday', 'loggedAt', 'createdAt', 'ping', 'deletedAt', 'bounce'
+			'id', 'type', 'firstName', 'lastName', 'legalName', 'email', 'phone', 'siret', 'electronicScheme', 'electronicAddress', 'invoiceCountry', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'deliveryCountry', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'verified', 'visibility', 'status', 'referer', 'seen', 'seniority', 'role', 'vignette', 'onlineToday', 'loggedAt', 'createdAt', 'ping', 'deletedAt', 'bounce'
 		]);
 
 		$this->propertiesToModule += [
@@ -206,6 +208,14 @@ class UserModel extends \ModuleModel {
 
 	public function whereSiret(...$data): UserModel {
 		return $this->where('siret', ...$data);
+	}
+
+	public function whereElectronicScheme(...$data): UserModel {
+		return $this->where('electronicScheme', ...$data);
+	}
+
+	public function whereElectronicAddress(...$data): UserModel {
+		return $this->where('electronicAddress', ...$data);
 	}
 
 	public function whereInvoiceCountry(...$data): UserModel {

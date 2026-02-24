@@ -57,6 +57,8 @@ class CustomerModel extends \ModuleModel {
 			'legalName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'document' => ['int32', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'number' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'electronicScheme' => ['text8', 'min' => 4, 'max' => 4, 'null' => TRUE, 'cast' => 'string'],
+			'electronicAddress' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'email' => ['email', 'null' => TRUE, 'cast' => 'string'],
 			'phone' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'contactName' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -88,7 +90,7 @@ class CustomerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'document', 'number', 'email', 'phone', 'contactName', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'color', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'document', 'number', 'electronicScheme', 'electronicAddress', 'email', 'phone', 'contactName', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'color', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -208,6 +210,14 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereNumber(...$data): CustomerModel {
 		return $this->where('number', ...$data);
+	}
+
+	public function whereElectronicScheme(...$data): CustomerModel {
+		return $this->where('electronicScheme', ...$data);
+	}
+
+	public function whereElectronicAddress(...$data): CustomerModel {
+		return $this->where('electronicAddress', ...$data);
 	}
 
 	public function whereEmail(...$data): CustomerModel {

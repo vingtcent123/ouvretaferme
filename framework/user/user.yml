@@ -53,6 +53,8 @@ User:
   email: ?email(1, 100)
   phone: ?text8(1, null)
   siret: ?text8(1, null)
+  electronicScheme: ?text8(4, 4)
+  electronicAddress: ?text8
   invoiceCountry: ?user\Country
   invoiceStreet1: ?text8(1, null)
   invoiceStreet2: ?text8(1, null)

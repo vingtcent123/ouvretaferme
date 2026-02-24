@@ -7,64 +7,75 @@ class Address extends AddressElement {
 
 		$this->expects(['isReplyTo']);
 
-		return $this['isReplyTo'] === FALSE;
+		return ($this['isReplyTo'] === FALSE and AddressLib::countValidAddresses() > 1);
 
 	}
 
-	public function getIdentifier(bool $withScheme): string {
+	public static function checkScheme(string $identifier, \user\Country $eCountry): bool {
 
-		$this->expects(['identifier']);
+		return in_array($identifier, AddressLib::getSchemesByCountry($eCountry));
 
-		if($withScheme) {
-			return $this['identifier'];
+	}
+
+	public static function checkElectronicAddress(string $address, string $siret): bool {
+
+		$siren = mb_substr($siret, 0, 9);
+
+		preg_match('/([0-9]{0, 9})(\_[a-zA-Z0-9]+)?(\_[a-zA-Z0-9]+)?/m', $address, $matches);
+
+		$parts = str_contains($address, '_') + 1;
+
+		if($parts === 1) {
+			return $matches[1] === $siren and $matches[1] === $address;
 		}
 
-		return last(explode(':', $this['identifier']));
+		if($parts === 2) {
+			return $matches[1] === $siren;
+		}
+
+		if($parts === 3) {
+			return $matches[1] === $siren and $matches[2] === $siret;
+		}
+		return FALSE;
+
+	}
+
+	public function formatElectronicAddress(bool $withScheme): string {
+
+		$this->expects(['electronicAddress']);
+
+		if($withScheme) {
+			return $this['electronicAddress'];
+		}
+
+		return last(explode(':', $this['electronicAddress']));
 
 	}
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('identifier.prepare', function(?string &$identifier): bool {
+			->setCallback('electronicAddress.prepare', function(?string &$electronicAddress): bool {
 
-				if($identifier === NULL) {
+				if($electronicAddress === NULL) {
 					return FALSE;
 				}
 
 				$eFarm = \farm\Farm::getConnected();
-				$siret = $eFarm['siret'];
-				$siren = mb_substr($eFarm['siret'], 0, 9);
-
-				preg_match('/([0-9]{0, 9})(\_[a-zA-Z0-9]+)?(\_[a-zA-Z0-9]+)?/m', $identifier, $matches);
-
-				$parts = str_contains($identifier, '_') + 1;
 
 				if(LIME_ENV === 'dev') {
-					$identifier = '315143296_103_'.uniqid();
+					$electronicAddress = '315143296_103_'.uniqid();
 					return TRUE;
 				}
 
-				if($parts === 1) {
-					return $matches[1] === $siren;
-				}
-
-				if($parts === 2) {
-					return $matches[1] === $siren;
-				}
-
-				if($parts === 3) {
-					return $matches[1] === $siren and $matches[2] === $siret;
-				}
-
-				return FALSE;
+				return Address::checkElectronicAddress($electronicAddress, $eFarm['siret']);
 
 			})
-			->setCallback('identifier.check', function(?string &$identifier) use($p): bool {
+			->setCallback('electronicAddress.check', function(?string &$electronicAddress) use($p): bool {
 
-				$identifier = AddressLib::formatIdentifier($identifier);
+				$electronicAddress = AddressLib::formatElectronicAddress($electronicAddress);
 
-				return Address::model()->whereIdentifier($identifier)->count() === 0;
+				return Address::model()->whereElectronicAddress($electronicAddress)->count() === 0;
 
 			});
 

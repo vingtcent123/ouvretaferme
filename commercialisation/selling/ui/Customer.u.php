@@ -882,6 +882,9 @@ class CustomerUi {
 				$h .= '<div class="customer-form-category customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, 'siret');
 					$h .= $form->dynamicGroup($eCustomer, 'legalName');
+					if(\pdp\PdpLib::isActive($eCustomer['farm'])) {
+						$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique"), $eCustomer);
+					}
 				$h .= '</div>';
 
 				$h .= '<div class="customer-form-category '.($eCustomer->exists() ? 'customer-form-private' : '').' customer-form-pro">';
@@ -1072,6 +1075,8 @@ class CustomerUi {
 			'color' => s("Couleur de représentation"),
 			'siret' => s("Numéro d'immatriculation SIRET"),
 			'vatNumber' => s("Numéro de TVA intracommunautaire"),
+			'electronicScheme' => s("Identifiant"),
+			'eAddress' => s("Adresse de facturation électronique"),
 		]);
 
 		switch($property) {

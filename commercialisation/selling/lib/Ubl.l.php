@@ -10,8 +10,11 @@ class UblLib {
 		/* vraies valeurs de production */
 		$sellerSiret = $eFarm['siret'];
 		$sellerSiren = $eFarm->siren();
+		$sellerAddress = \pdp\AddressLib::get();
+
 		$buyerSiren = mb_substr($eInvoice['customer']['siret'], 0, 9);
 		$buyerSiret = $eInvoice['customer']['siret'];
+		$buyerAddress = $eInvoice['customer']->getFullEAddress();
 
 		// adresses électroniques
 		if(LIME_ENV === 'dev') {
@@ -407,9 +410,8 @@ class UblLib {
 			Item::INTRACOM_DELIVERY => 'K',
 			Item::EXPORTATION => 'G',
 			Item::OUT_OF_VAT => 'O',
+			default => 'S',
 		};
-
-		return 'S';
 
 	}
 

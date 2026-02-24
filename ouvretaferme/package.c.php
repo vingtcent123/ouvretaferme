@@ -53,6 +53,8 @@ Package::setObservers([
 			'sendVerifyEmail' => ['main'],
 			'signUpCreate' => ['main', 'selling'],
 			'close' => ['main'],
+			'checkElectronicAddress' => ['pdp'],
+			'getCountrySchemes' => ['pdp'],
 			'update' => ['selling'],
 			'logOut' => ['session'],
 		],

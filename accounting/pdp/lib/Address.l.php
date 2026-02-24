@@ -4,11 +4,12 @@ namespace pdp;
 class AddressLib extends AddressCrud {
 
 	const FR_SCHEME_ID = '0225';
+	const FR_PUBLIC_SCHEME_ID = '0224';
 	const BE_VAT_SCHEME_ID = '9925';
 	const BE_SCHEME_ID = '0208';
 
 	public static function getPropertiesCreate(): array {
-		return ['identifier'];
+		return ['electronicAddress'];
 	}
 
 	public static function create(Address $e): void {
@@ -31,7 +32,7 @@ class AddressLib extends AddressCrud {
 			}
 
 			if(($result['http_status_code'] ?? NULL) === 400) {
-				\Fail::log('Address::identifier.check');
+				\Fail::log('Address::electronicAddress.check');
 				Address::model()->rollBack();
 				return;
 			}
@@ -85,9 +86,44 @@ class AddressLib extends AddressCrud {
 
 	}
 
-	public static function formatIdentifier(string $identifier): string {
+	public static function formatElectronicAddress(string $address): string {
 
-		return self::getSchemeIdentifier().':'.$identifier;
+		return self::getSchemeIdentifier().':'.$address;
+
+	}
+
+	public static function getSchemesByCountry(\user\Country $eCountry): array {
+
+		if($eCountry->isFR()) {
+
+			return [AddressLib::FR_SCHEME_ID, AddressLib::FR_PUBLIC_SCHEME_ID];
+
+		}
+
+		if($eCountry->isBE()) {
+
+			return [AddressLib::BE_SCHEME_ID, AddressLib::BE_VAT_SCHEME_ID];
+
+		}
+
+		return [];
+	}
+
+	public static function get(): string {
+
+		return Address::model()
+			->select(Address::getSelection())
+			->whereIsReplyTo(FALSE)
+			->sort(['createdAt' => SORT_DESC])
+			->get();
+
+	}
+
+	public static function countValidAddresses(): int {
+
+		return Address::model()
+			->whereIsReplyTo(FALSE)
+			->count();
 
 	}
 
@@ -114,7 +150,7 @@ class AddressLib extends AddressCrud {
 				$cAddress->append(new Address([
 					'id' => $directory['id'],
 					'company' => $eCompany,
-					'identifier' => $directory['identifier'],
+					'electronicAddress' => $directory['identifier'],
 					'isReplyTo' => $directory['is_replyto'] ?? FALSE,
 					'createdAt' => date('Y-m-d H:i:s', strtotime($directory['created_at'])),
 					'type' => $directory['directory'],
@@ -152,7 +188,7 @@ class AddressLib extends AddressCrud {
 		$url = PdpSetting::SUPER_PDP_API_URL.'directory_entries';
 		$params = [
 			'directory' => 'peppol',
-			'identifier' => $eAddress['identifier'],
+			'identifier' => $eAddress['electronicAddress'],
 		];
 
 		return CurlLib::send($accessToken, $url, json_encode($params), 'POST');

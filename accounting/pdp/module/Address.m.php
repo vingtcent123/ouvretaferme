@@ -49,7 +49,7 @@ class AddressModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'identifier' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
+			'electronicAddress' => ['text8', 'min' => 0, 'max' => NULL, 'cast' => 'string'],
 			'company' => ['element32', 'pdp\Company', 'cast' => 'element'],
 			'status' => ['enum', [\pdp\Address::SENDING, \pdp\Address::PENDING, \pdp\Address::CREATED, \pdp\Address::ERROR], 'cast' => 'enum'],
 			'statusMessage' => ['text24', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
@@ -59,7 +59,7 @@ class AddressModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'identifier', 'company', 'status', 'statusMessage', 'type', 'isReplyTo', 'createdAt'
+			'id', 'electronicAddress', 'company', 'status', 'statusMessage', 'type', 'isReplyTo', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -114,8 +114,8 @@ class AddressModel extends \ModuleModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereIdentifier(...$data): AddressModel {
-		return $this->where('identifier', ...$data);
+	public function whereElectronicAddress(...$data): AddressModel {
+		return $this->where('electronicAddress', ...$data);
 	}
 
 	public function whereCompany(...$data): AddressModel {

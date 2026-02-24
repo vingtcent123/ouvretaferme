@@ -21,6 +21,7 @@ class AlertUi {
 			'Customer::deliveryAddress.empty' => s("L'adresse de livraison est incomplète (la première ligne, le code postal et la ville sont requis)"),
 			'Customer::email.check' => s("L'adresse e-mail est incorrecte"),
 			'Customer::contactName.check' => s("Le contact est incorrect"),
+			'Customer::fullElectronicAddress.check' => s("L'adresse de facturation électronique comprend un identifiant sur 4 chiffres et une adresse de facturation. Les informations fournies ne respectent pas la norme"),
 
 			'CustomerGroup::name.comma' => s("Le nom du groupe ne peut pas contenir de virgule."),
 			'CustomerGroup::name.duplicate' => s("Vous avez déjà utilisé ce nom de groupe."),
