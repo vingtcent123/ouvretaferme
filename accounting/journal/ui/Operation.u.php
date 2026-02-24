@@ -278,7 +278,7 @@ class OperationUi {
 
 		}
 
-		$defaultValues['journalCode'] = $cOperation->first()['journalCode']['id'];
+		$defaultValues['journalCode'] = $cOperation->first()['journalCode']['id'] ?? NULL;
 
 		$h .= new OperationUi()->getOperationGeneral($eFinancialYear,  $cPaymentMethod, $cJournalCode, $defaultValues, $form, 'update', $eCashflow->notEmpty());
 
