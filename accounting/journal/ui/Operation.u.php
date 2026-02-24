@@ -162,7 +162,7 @@ class OperationUi {
 			if(
 				$eCashflow->notEmpty() and
 				abs($eOperation['amount']) === abs($eCashflow['amount']) and
-				\account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)
+				$eOperation['account']->is($eCashflow['account']['account'])
 			) {
 				$linkedOperationIds[] = $eOperation['id'];
 				continue;
