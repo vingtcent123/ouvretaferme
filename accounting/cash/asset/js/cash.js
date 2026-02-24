@@ -1,3 +1,12 @@
+
+document.delegateEventListener('autocompleteSelect', '#panel-cash-create [data-wrapper="account"] [data-autocomplete-field="account"]', function(e) {
+
+	if(e.detail.value) {
+		qs('[name="vatRate"]').value = e.detail.vatRate;
+	}
+
+});
+
 class Cash {
 
 	static recalculateAmount(target) {

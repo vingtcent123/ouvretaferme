@@ -961,7 +961,7 @@ class CashUi {
 				$d->group += ['wrapper' => 'account'];
 				new \account\AccountUi()->query($d, \farm\Farm::getConnected(), query: function(Cash $e) {
 
-					return match($e['source']) {
+					return ['withVat' => TRUE] + match($e['source']) {
 						Cash::BANK_MANUAL => ['classPrefix' => \account\AccountSetting::BANK_ACCOUNT_CLASS],
 						Cash::BUY_MANUAL => ['classPrefixes[0]' => '2', 'classPrefixes[1]' => '6'],
 						Cash::SELL_MANUAL => ['classPrefixes[0]' => '7'],
