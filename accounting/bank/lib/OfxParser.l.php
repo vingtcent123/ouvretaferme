@@ -83,13 +83,20 @@ class OfxParserLib {
 			$date = new \DateTime(mb_substr($node->getElementsByTagName('dtposted')->item(0)->nodeValue, 0, 8))->format('Y-m-d');
 			$fitid = $node->getElementsByTagName('fitid')->item(0)->nodeValue;
 			$amount = floatval(str_replace(',', '.', $node->getElementsByTagName('trnamt')->item(0)->nodeValue));
-			$name = $node->getElementsByTagName('name')->item(0)->nodeValue;
+			if(is_null($node->getElementsByTagName('name')->item(0))) {
+				$name = '';
+			} else {
+				$name = $node->getElementsByTagName('name')->item(0)->nodeValue;
+			}
 			if(is_null($node->getElementsByTagName('memo')->item(0))) {
 				$memo = $name;
 			} else {
 				$memo = $node->getElementsByTagName('memo')->item(0)->nodeValue;
 			}
 			$memo = ucfirst(strtolower($memo));
+			if($name === '') {
+				$name = $memo;
+			}
 
 			if($amount >= 0) {
 				$type = Cashflow::CREDIT;
