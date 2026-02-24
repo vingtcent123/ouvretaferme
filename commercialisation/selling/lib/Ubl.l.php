@@ -181,13 +181,20 @@ class UblLib {
 	<cac:TaxTotal><!--BT-110-00-->
 		<cbc:TaxAmount currencyID="EUR">'.$eInvoice['vat'].'</cbc:TaxAmount><!--BT-110-->';
 			foreach($eInvoice['vatByRate'] as $vatByRate) {
+				$vatCode = self::getInvoiceVatCode($eInvoice, $vatByRate['vatRate']);
         $xml .= '
 		<cac:TaxSubtotal><!--BG-23-->
 			<cbc:TaxableAmount currencyID="EUR">'.$vatByRate['amount'].'</cbc:TaxableAmount><!--BT-116-->
 			<cbc:TaxAmount currencyID="EUR">'.$vatByRate['vat'].'</cbc:TaxAmount><!--BT-117-->
 			<cac:TaxCategory>
-				<cbc:ID>'.self::getInvoiceVatCode($eInvoice, $vatByRate['vatRate']).'</cbc:ID><!--BT-118-->
-				<cbc:Percent>'.$vatByRate['vatRate'].'</cbc:Percent><!--BT-119-->
+				<cbc:ID>'.$vatCode.'</cbc:ID><!--BT-118-->
+				<cbc:Percent>'.$vatByRate['vatRate'].'</cbc:Percent><!--BT-119-->';
+				if($vatCode === 'G') { // Exportation
+					$xml .= '
+				<cbc:TaxExemptionReasonCode>VATEX-EU-151</cbc:TaxExemptionReasonCode><!--BT-121-->
+				<cbc:TaxExemptionReason>'.s("Export hors UE").'</cbc:TaxExemptionReason><!--BT-120-->';
+				}
+			$xml .= '
 				<cac:TaxScheme>
 					<cbc:ID>VAT</cbc:ID>
 				</cac:TaxScheme>
@@ -373,7 +380,7 @@ class UblLib {
 		return match($vatCode) {
 			Item::STANDARD => 'S',
 			Item::ZERO => 'Z',
-			Item::EXEMPT => 'E',
+			Item::EXEMPT => 'Z', // Utilisé uniquement pour les fermes en franchise de base => BR-FR-MAP-08
 			Item::AUTOLIQUIDATION => 'AE',
 			Item::INTRACOM_DELIVERY => 'K',
 			Item::EXPORTATION => 'G',
