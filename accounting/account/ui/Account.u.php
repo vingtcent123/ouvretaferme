@@ -302,6 +302,7 @@ class AccountUi {
 
 								$h .= '</td>';
 
+								$nFinancialYearCurrent++;
 							}
 
 						}
