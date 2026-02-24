@@ -62,7 +62,7 @@ Class SaleLib {
 	public static function getForAccounting(\farm\Farm $eFarm, \Search $search): \Collection {
 
 		$selectSale = [
-			'id', 'customer' => ['name', 'type', 'destination', 'user'], 'preparationStatus',
+			'id', 'customer' => ['name', 'type', 'destination', 'user', 'document'], 'preparationStatus',
 			'deliveredAt', 'document', 'farm', 'profile', 'createdAt', 'taxes',
 			'hasVat', 'priceExcludingVat', 'priceIncludingVat', 'vat', 'vatByRate',
 			'shipping', 'shippingExcludingVat', 'shippingVatRate',
