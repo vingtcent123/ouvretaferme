@@ -984,7 +984,7 @@ Lime.Alert = class {
 			case 1 :
 				return messages[0];
 
-			case 2 :
+			default :
 
 				let h = '<ul>';
 
