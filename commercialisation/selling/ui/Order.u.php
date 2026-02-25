@@ -412,7 +412,7 @@ class OrderUi {
 		$withPackaging = $cItem->reduce(fn($eItem, $n) => $n + (int)($eItem['packaging'] !== NULL), 0);
 		$columns = 0;
 
-		$h = '<table class="stick-xs table-transparent tr-bordered">';
+		$h = '<table class="stick-xs tr-bordered">';
 
 			$h .= '<thead>';
 				$h .= '<tr>';

@@ -1725,7 +1725,7 @@ class SaleUi {
 
 	public function getSummary(Sale $eSale): string {
 
-		$h = '<table class="table-transparent tr-bordered sale-summary">';
+		$h = '<table class="tr-bordered sale-summary">';
 
 			if($eSale['discount'] > 0) {
 

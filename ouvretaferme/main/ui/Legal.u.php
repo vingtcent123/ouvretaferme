@@ -218,7 +218,7 @@ class LegalUi {
 	public function friends(bool $isDiscount) : string {
 
 		$h = '<div class="util-block util-overflow-sm">';
-		$h .= '<table style="font-size: 1.2rem" class="table-transparent tr-bordered">';
+		$h .= '<table style="font-size: 1.2rem" class="tr-bordered">';
 			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th></th>';
@@ -365,7 +365,7 @@ class LegalUi {
 		$h .= '<p class="util-info">'.s("{siteName} est un écosystème unique qui couvrira bientôt la plupart des besoins logiciels de producteurs et productrices. Nous l'avons conçu pour que chaque fonctionnalité puisse être utilisée indépendamment des autres. Un producteur ou une productrice qui s'investit à 100 % dans le logiciel profite de la synergie entre chaque fonctionnalité et d'une efficacité décuplée sur la gestion de la ferme !").'</p>';
 
 		$h .= '<div class="util-block util-overflow-sm">';
-		$h .= '<table style="font-size: 1.2rem" class="table-transparent tr-bordered">';
+		$h .= '<table style="font-size: 1.2rem" class="tr-bordered">';
 			$h .= '<tbody>';
 				$h .= '<tr>';
 					$h .= '<td rowspan="4">';

@@ -196,7 +196,7 @@ class BasketUi {
 
 		$h .= '<div id="shop-basket-summary-list" class="mb-2">';
 
-			$h .= '<table class="stick-xs table-transparent tr-bordered">';
+			$h .= '<table class="stick-xs tr-bordered">';
 
 				$columns = 6;
 
