@@ -68,7 +68,7 @@ Class VatUi {
 			$h .= '<table class="td-vertical-top tbody-hover table-'.$for.' no-background">';
 
 				$h .= '<thead '.($for === 'web' ? 'class="thead-sticky"' : '').'>';
-					$h .= '<tr '.($for === 'pdf' ? 'class="tr-header tr-upper"' : '').'>';
+					$h .= '<tr '.($for === 'pdf' ? 'class="tr-upper"' : '').'>';
 						$h .= '<th>';
 							$label = s("Date");
 							$h .= (($search and $for !== 'pdf') ? $search->linkSort('date', $label) : $label);
@@ -85,11 +85,11 @@ Class VatUi {
 
 						if($showInitialColumns) {
 							$h .= '<th class="td-min-content text-end rowspaned-center">'.s("Taux TVA").'</th>';
-							$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center">'.s("Montant TTC").'</th>';
-							$h .= '<th class="text-end td-min-content highlight-stick-left rowspaned-center">'.s("Montant HT").'</th>';
+							$h .= '<th class="text-end td-min-content t-highlight rowspaned-center">'.s("Montant TTC").'</th>';
+							$h .= '<th class="text-end td-min-content t-highlight rowspaned-center">'.s("Montant HT").'</th>';
 						}
 
-						$h .= '<th class="text-end td-min-content highlight-stick-right rowspaned-center">'.s("TVA").'</th>';
+						$h .= '<th class="text-end td-min-content t-highlight rowspaned-center">'.s("TVA").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -155,15 +155,15 @@ Class VatUi {
 											$h .= $eOperationInitial['vatRate'];
 									$h .= '</td>';
 
-									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+									$h .= '<td class="text-end td-min-content t-highlight td-vertical-align-top">';
 											$h .= \util\TextUi::money(round($eOperationInitial['amount'] + $eOperation['amount'], 2));
 									$h .= '</td>';
 
-									$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
+									$h .= '<td class="text-end td-min-content t-highlight td-vertical-align-top">';
 											$h .= \util\TextUi::money($eOperationInitial['amount']);
 									$h .= '</td>';
 
-									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+									$h .= '<td class="text-end td-min-content t-highlight td-vertical-align-top">';
 											$h .= \util\TextUi::money($eOperation['amount']);
 									$h .= '</td>';
 
@@ -200,12 +200,12 @@ Class VatUi {
 									if($showInitialColumns) {
 
 										$h .= '<td></td>'; // Taux TVA
-										$h .= '<td class="highlight-stick-right"></td>'; // Montant TTC
-										$h .= '<td class="highlight-stick-left"></td>'; // Montant HT
+										$h .= '<td class="t-highlight"></td>'; // Montant TTC
+										$h .= '<td class="t-highlight"></td>'; // Montant HT
 
 									}
 
-									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+									$h .= '<td class="text-end td-min-content t-highlight td-vertical-align-top">';
 											$h .= \util\TextUi::money($eOperation['amount']);
 									$h .= '</td>';
 
@@ -255,17 +255,17 @@ Class VatUi {
 				$h .= '<td>';
 				$h .= '</td>';
 
-				$h .= '<td class="text-end highlight-stick-right">';
+				$h .= '<td class="text-end t-highlight">';
 				$h .= \util\TextUi::money($totals['withVat']);
 				$h .= '</td>';
 
-				$h .= '<td class="text-end highlight-stick-left">';
+				$h .= '<td class="text-end t-highlight">';
 					$h .= \util\TextUi::money($totals['withoutVat']);
 				$h .= '</td>';
 
 			}
 
-			$h .= '<td class="text-end highlight-stick-right">';
+			$h .= '<td class="text-end t-highlight">';
 				$h .= \util\TextUi::money($totals['vat']);
 			$h .= '</td>';
 

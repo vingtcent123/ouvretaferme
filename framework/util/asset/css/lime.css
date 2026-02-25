@@ -94,6 +94,13 @@ hr {
 table {
 	width: 100%;
 	margin-bottom: 1rem;
+	border-radius: var(--radius);
+	background-color: white;
+	border-spacing: 1px;
+}
+
+table.table-transparent {
+	background-color: transparent;
 	border-collapse: collapse;
 }
 
@@ -101,6 +108,15 @@ table th {
 	padding: 0.75rem 0.5rem;
 	text-align: left;
 	vertical-align: bottom;
+	background-color: var(--background);
+}
+
+table thead > *:first-child > *:first-child {
+	border-top-left-radius: var(--radius);
+}
+
+table thead > *:first-child > *:last-child {
+	border-top-right-radius: var(--radius);
 }
 
 table td {
@@ -156,7 +172,7 @@ table.tbody-hover tbody:hover tr {
 	background-color: rgba(0, 0, 0, 0.03) !important;
 }
 
-table.tr-even tbody tr:nth-of-type(even) {
+table.tr-even tbody tr:nth-of-type(even):not(tr.tr-title) {
 	background-color: var(--background-even);
 }
 
@@ -186,18 +202,19 @@ tr.tr-light > td {
 	opacity: 0.5;
 }
 
-tr.tr-header,
-tr.tr-header td,
-tr.tr-header th
-{
-	background-color: var(--background-dark) !important;
+tr.tr-title {
 	font-weight: bold;
+	background: repeating-linear-gradient(135deg, var(--background) 0, var(--background) 3px, var(--background-light) 2px, var(--background-light) 6px);
 }
 
-tr.tr-title {
-	background-color: transparent !important;
-	text-transform: uppercase;
-	font-weight: bold;
+tr.tr-title:has(h3, h4) {
+	background: repeating-linear-gradient(135deg, var(--info) 0, var(--info) 3px, var(--background) 2px, var(--background) 6px);
+}
+
+tr.tr-title h3,
+tr.tr-title h4 {
+	text-transform: none;
+	margin: 0.5rem 0;
 }
 
 tr.tr-disabled {
@@ -212,82 +229,8 @@ div.div-even > *:nth-of-type(odd) {
 	background-color: var(--background-odd);
 }
 
-@media (min-width: 768px) {
-
-	td.highlight,
-	th.highlight {
-		background: linear-gradient(to right, transparent 0, transparent 0.75rem, #8881 0.75rem, #8881 calc(100% - 0.75rem), transparent calc(100% - 0.75rem), transparent 100%);
-		padding-left: 1.5rem;
-		padding-right: 1.5rem;
-	}
-
-	td.highlight-stick-right,
-	th.highlight-stick-right {
-		background: linear-gradient(to right, transparent 0, transparent 0.75rem, #8881 0.75rem, #8881 100%);
-		padding-left: 1.5rem;
-		padding-right: 0.75rem;
-	}
-
-	td.highlight-stick-left,
-	th.highlight-stick-left {
-		background: linear-gradient(to right, #8881 0, #8881 calc(100% - 0.75rem), transparent calc(100% - 0.75rem), transparent 100%);
-		padding-left: 0.75rem;
-		padding-right: 1.5rem;
-	}
-
-	td.highlight-stick-both,
-	th.highlight-stick-both {
-		background: #8881;
-		padding-left: 0.75rem;
-		padding-right: 0.75rem;
-	}
-
-	td.highlight-stick-alone,
-	th.highlight-stick-alone {
-		background: linear-gradient(to right, transparent 0, transparent 0.75rem, #8881 0.75rem, #8881 calc(100% - 0.75rem), transparent calc(100% - 0.75rem), transparent 100%);
-		padding-left: 0.75rem;
-		padding-right: 0.75rem;
-	}
-
-}
-
-@media (max-width: 767px) {
-
-	td.highlight,
-	th.highlight {
-		background: linear-gradient(to right, transparent 0, transparent 0.5rem, rgba(127, 127, 127, 0.05) 0.5rem, rgba(127, 127, 127, 0.05) calc(100% - 0.5rem), transparent calc(100% - 0.5rem), transparent 100%);
-		padding-left: 1rem;
-		padding-right: 1rem;
-	}
-
-	td.highlight-stick-right,
-	th.highlight-stick-right {
-		background: linear-gradient(to right, transparent 0, transparent 0.5rem, rgba(127, 127, 127, 0.05) 0.5rem, rgba(127, 127, 127, 0.05) 100%);
-		padding-left: 1rem;
-		padding-right: 0.5rem;
-	}
-
-	td.highlight-stick-left,
-	th.highlight-stick-left {
-		background: linear-gradient(to right, rgba(127, 127, 127, 0.05) 0, rgba(127, 127, 127, 0.05) calc(100% - 0.5rem), transparent calc(100% - 0.5rem), transparent 100%);
-		padding-left: 0.5rem;
-		padding-right: 1rem;
-	}
-
-	td.highlight-stick-both,
-	th.highlight-stick-both {
-		background: rgba(127, 127, 127, 0.05);
-		padding-left: 0.5rem;
-		padding-right: 0.5rem;
-	}
-
-	td.highlight-stick-alone,
-	th.highlight-stick-alone {
-		background: linear-gradient(to right, transparent 0, transparent 0.5rem, #8881 0.5rem, #8881 calc(100% - 0.5rem), transparent calc(100% - 0.5rem), transparent 100%);
-		padding-left: 0.5rem;
-		padding-right: 0.5rem;
-	}
-
+td.t-highlight {
+	background: #00000308;
 }
 
 @media (max-width: 1399px) {
@@ -1023,10 +966,6 @@ tr:not(:last-child):has(> .td-border) .td-border {
 	padding-right: 0.5rem;
 }
 
-thead .td-checkbox {
-	background-color: transparent;
-}
-
 thead .td-checkbox > label {
 	padding-top: 0.5rem;
 	padding-bottom: 0.5rem;
@@ -1264,6 +1203,7 @@ div.util-subtitle {
 
 .util-annotation {
 	font-size: 90%;
+	font-weight: normal;
 	line-height: 1.2;
 	color: var(--muted);
 }
@@ -1606,8 +1546,7 @@ ul.util-summarize li > a:not(.btn) {
 	margin: -1rem;
 	padding: 1rem;
 	border-radius: var(--radius);
-	background: linear-gradient(to top, transparent 0%, var(--background) 100%);
-	border: 0px solid var(--secondary);
+	background: linear-gradient(to top, transparent 0%, var(--background-light) 100%);
 	transition: background 0.5s;
 }
 

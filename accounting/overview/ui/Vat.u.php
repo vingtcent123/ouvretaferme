@@ -386,19 +386,19 @@ Class VatUi {
 										$h .= $calculatedVatRate;
 									$h .= '</td>';
 
-									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+									$h .= '<td class="text-end td-min-content t-highlight td-vertical-align-top">';
 										if($eOperationInitial->notEmpty()) {
 											$h .= \util\TextUi::money($eOperationInitial['amount'] + $eOperation['amount']);
 										}
 									$h .= '</td>';
 
-									$h .= '<td class="text-end td-min-content highlight-stick-left td-vertical-align-top">';
+									$h .= '<td class="text-end td-min-content t-highlight td-vertical-align-top">';
 										if($eOperationInitial->notEmpty()) {
 											$h .= \util\TextUi::money($eOperationInitial['amount']);
 										}
 									$h .= '</td>';
 
-									$h .= '<td class="text-end td-min-content highlight-stick-right td-vertical-align-top">';
+									$h .= '<td class="text-end td-min-content t-highlight td-vertical-align-top">';
 										$h .= \util\TextUi::money($eOperation['amount']);
 									$h .= '</td>';
 
@@ -451,9 +451,9 @@ Class VatUi {
 
 				$h .= '<thead>';
 					$h .= '<th class="text-center td-min-content">'.s("Taux").'</th>';
-					$h .= '<th class="text-end highlight-stick-right">'.s("Montant (HT)").'</th>';
-					$h .= '<th class="text-end highlight-stick-right">'.s("Montant de TVA<br />(calculé)").'</th>';
-					$h .= '<th class="text-end highlight-stick-right">'.s("TVA collectée<br />(compte {value})", \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT).'</th>';
+					$h .= '<th class="text-end t-highlight">'.s("Montant (HT)").'</th>';
+					$h .= '<th class="text-end t-highlight">'.s("Montant de TVA<br />(calculé)").'</th>';
+					$h .= '<th class="text-end t-highlight">'.s("TVA collectée<br />(compte {value})", \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT).'</th>';
 					$h .= '<th class="text-center td-min-content">'.s("Contrôle").'</th>';
 				$h .= '</thead>';
 
@@ -467,9 +467,9 @@ Class VatUi {
 
 						$h .= '<tr>';
 							$h .= '<th class="text-center td-min-content text-end">'.round($sale['vatRate'], 1).'</th>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($sale['amount'], precision: 0).'</td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($sale['tax'], precision: 0).'</td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($collectedVat, precision: 0).'</td>';
+							$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($sale['amount'], precision: 0).'</td>';
+							$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($sale['tax'], precision: 0).'</td>';
+							$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($collectedVat, precision: 0).'</td>';
 							$h .= '<td class="text-center td-min-content">';
 
 								if(round($collectedVat) === round($sale['tax'])) {
@@ -496,9 +496,9 @@ Class VatUi {
 
 					$h .= '<tr class="tr-bold">';
 						$h .= '<th class="text-center td-min-content text-end">'.s("Totaux").'</th>';
-						$h .= '<td class="text-end highlight-stick-right"></td>';
-						$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalCalculated, precision: 0).'</td>';
-						$h .= '<td class="text-end highlight-stick-right">'.\Asset::icon('1-circle').' '.\util\TextUi::money($totalCollected, precision: 0).'</td>';
+						$h .= '<td class="text-end t-highlight"></td>';
+						$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($totalCalculated, precision: 0).'</td>';
+						$h .= '<td class="text-end t-highlight">'.\Asset::icon('1-circle').' '.\util\TextUi::money($totalCollected, precision: 0).'</td>';
 						$h .= '<td class="text-center">';
 							if(round($totalCollected) === round($totalCalculated)) {
 
@@ -576,7 +576,7 @@ Class VatUi {
 					$h .= '<tr>';
 						$h .= '<th></th>';
 						$h .= '<th class="text-center">'.s("Compte ou calcul").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Montant").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Montant").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -584,21 +584,21 @@ Class VatUi {
 				$h .= '<tr>';
 					$h .= '<th>'.s("TVA déductible sur biens et services").'</th>';
 					$h .= '<td class="text-center">'.\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT.'</td>';
-					$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money(round($abs44566), precision: 0).'</td>';
+					$h .= '<td class="text-end t-highlight">'.\util\TextUi::money(round($abs44566), precision: 0).'</td>';
 					$h .= '<td>'.\Asset::icon('2-circle').'</td>';
 				$h .= '</tr>';
 
 				$h .= '<tr>';
 					$h .= '<th>'.s("TVA sur immobilisations").'</th>';
 					$h .= '<td class="text-center">'.\account\AccountSetting::VAT_ASSET_CLASS.'</td>';
-					$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money(round($immo44562), precision: 0).'</td>';
+					$h .= '<td class="text-end t-highlight">'.\util\TextUi::money(round($immo44562), precision: 0).'</td>';
 					$h .= '<td>'.\Asset::icon('3-circle').'</td>';
 				$h .= '</tr>';
 
 				$h .= '<tr>';
 					$h .= '<th>'.s("Crédit de TVA à reporter").'</th>';
 					$h .= '<td class="text-center">'.\account\AccountSetting::VAT_CREDIT_CLASS.'</td>';
-					$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money(round($vatCredit), precision: 0).'</td>';
+					$h .= '<td class="text-end t-highlight">'.\util\TextUi::money(round($vatCredit), precision: 0).'</td>';
 					$h .= '<td>'.\Asset::icon('4-circle').'</td>';
 				$h .= '</tr>';
 
@@ -613,14 +613,14 @@ Class VatUi {
 					$h .= '<td class="text-center">';
 						$h .= '+ '.\Asset::icon('1-circle').' - '.\Asset::icon('2-circle').' - '.\Asset::icon('3-circle').' - '.\Asset::icon('4-circle');
 					$h .= '</td>';
-					$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money(round($vatBalance), precision: 0).'</td>';
+					$h .= '<td class="text-end t-highlight">'.\util\TextUi::money(round($vatBalance), precision: 0).'</td>';
 					$h .= '<td>'.\Asset::icon('5-circle').'</td>';
 				$h .= '</tr>';
 
 				$h .= '<tr>';
 					$h .= '<th>'.s("Acomptes de TVA").'</th>';
 					$h .= '<td class="text-center">'.\account\AccountSetting::VAT_DEPOSIT_CLASS.'</td>';
-					$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money(round($vatDeposit), precision: 0).'</td>';
+					$h .= '<td class="text-end t-highlight">'.\util\TextUi::money(round($vatDeposit), precision: 0).'</td>';
 					$h .= '<td>'.\Asset::icon('6-circle').'</td>';
 				$h .= '</tr>';
 
@@ -633,7 +633,7 @@ Class VatUi {
 					}
 					$h .= '</th>';
 					$h .= '<td class="text-center">+ '.\Asset::icon('5-circle').' -  '.\Asset::icon('6-circle').'</td>';
-					$h .= '<th class="text-end highlight-stick-right">'.\util\TextUi::money(round($vatBalance) - round($vatDeposit), precision: 0).'</th>';
+					$h .= '<th class="text-end t-highlight">'.\util\TextUi::money(round($vatBalance) - round($vatDeposit), precision: 0).'</th>';
 				$h .= '<td></td>';
 				$h .= '</tr>';
 			$h .= '</table>';
@@ -5271,8 +5271,8 @@ Class VatUi {
 					$h .= '<th>'.s("Numéro de compte").'</th>';
 					$h .= '<th>'.s("Libellé").'</th>';
 					$h .= '<th>'.s("Tiers").'</th>';
-					$h .= '<th class="text-end highlight-stick-right">'.s("Débit (D)").'</th>';
-					$h .= '<th class="text-end highlight-stick-left">'.s("Crédit (C)").'</th>';
+					$h .= '<th class="text-end t-highlight">'.s("Débit (D)").'</th>';
+					$h .= '<th class="text-end t-highlight">'.s("Crédit (C)").'</th>';
 				$h .= '</tr>';
 			$h .= '</thead>';
 			$h .= '<tbody>';
@@ -5284,8 +5284,8 @@ Class VatUi {
 						$h .= '</td>';
 						$h .= '<td><div class="description"><span class="'.($eOperation['type'] === \journal\Operation::CREDIT ? 'ml-3' : '').'">'.encode($eOperation['description']).'</span></div></td>';
 						$h .= '<td>'.encode($eOperation['thirdParty']['name'] ?? '').'</td>';
-						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">'.($eOperation['type'] === \journal\Operation::DEBIT ? \util\TextUi::money($eOperation['amount']) : '').'</td>';
-						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">'.($eOperation['type'] === \journal\Operation::CREDIT ? \util\TextUi::money($eOperation['amount']) : '').'</td>';
+						$h .= '<td class="text-end t-highlight td-vertical-align-top">'.($eOperation['type'] === \journal\Operation::DEBIT ? \util\TextUi::money($eOperation['amount']) : '').'</td>';
+						$h .= '<td class="text-end t-highlight td-vertical-align-top">'.($eOperation['type'] === \journal\Operation::CREDIT ? \util\TextUi::money($eOperation['amount']) : '').'</td>';
 					$h .= '</tr>';
 				}
 			$h .= '</tbody>';

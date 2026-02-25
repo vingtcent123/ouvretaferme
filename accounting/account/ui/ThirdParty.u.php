@@ -134,7 +134,7 @@ class ThirdPartyUi {
 					$h .= '<tr>';
 						$count = 0;
 						foreach($financialYears as $financialYear) {
-							$h .= '<th class="text-end '.($count === 0 ? 'highlight-stick-right' : 'highlight-stick-left').'">'.$eFarm['cFinancialYear']->offsetGet($financialYear)->getLabel().'</th>';
+							$h .= '<th class="text-end '.($count === 0 ? 't-highlight' : 't-highlight').'">'.$eFarm['cFinancialYear']->offsetGet($financialYear)->getLabel().'</th>';
 							$count++;
 						}
 					$h .= '</tr>';
@@ -164,7 +164,7 @@ class ThirdPartyUi {
 
 								$eFinancialYear = $eFarm['cFinancialYear']->offsetGet($financialYear);
 
-								$h .= '<td class="text-end '.($financialYear === first($financialYears) ? 'highlight-stick-right ' : 'highlight-stick-left').'">';
+								$h .= '<td class="text-end '.($financialYear === first($financialYears) ? 't-highlight ' : 't-highlight').'">';
 
 									if(($eThirdParty['operations'][$financialYear] ?? 0) > 0) {
 										$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eFinancialYear).'/livre-journal?thirdParty='.$eThirdParty['id'].'"  title="'.s("Filtrer les opérations sur ce tiers").'">'.($eThirdParty['operations'][$financialYear] ?? 0).'</a>';

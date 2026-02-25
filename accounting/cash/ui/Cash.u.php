@@ -214,8 +214,8 @@ class CashUi {
 					$h .= '<tr>';
 						$h .= '<th>'.s("Date").'</th>';
 						$h .= '<th>'.s("Libellé").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
-						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Débit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Crédit").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -239,13 +239,13 @@ class CashUi {
 
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+						$h .= '<td class="text-end t-highlight td-vertical-align-top">';
 							if($eSuggestion['type'] === Cash::DEBIT) {
 								$h .= \util\TextUi::money(abs($eSuggestion['amountIncludingVat']));
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
+						$h .= '<td class="text-end t-highlight td-vertical-align-top">';
 							if($eSuggestion['type'] === Cash::CREDIT) {
 								$h .= \util\TextUi::money(abs($eSuggestion['amountIncludingVat']));
 							}
@@ -406,8 +406,8 @@ class CashUi {
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2"></th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Crédit").'</th>';
-						$h .= '<th class="text-end highlight-stick-left">'.s("Débit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Crédit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Débit").'</th>';
 
 						if($hasVat) {
 							$h .= '<th class="text-center" colspan="2">'.s("TVA").'</th>';
@@ -447,9 +447,9 @@ class CashUi {
 										$h .= '<td colspan="2">';
 											$h .= \util\DateUi::textual($currentSubtitle);
 										$h .= '</td>';
-										$h .= '<td class="text-end highlight-stick-right"></td>';
-										$h .= '<td class="text-end highlight-stick-left"></td>';
-										$h .= '<th colspan="'.($columns - 3).'"></th>';
+										$h .= '<td class="text-end t-highlight"></td>';
+										$h .= '<td class="text-end t-highlight"></td>';
+										$h .= '<td colspan="'.($columns - 3).'"></th>';
 									$h .= '</tr>';
 								$h .= '</tbody>';
 								$h .= '<tbody>';
@@ -491,13 +491,13 @@ class CashUi {
 
 							$h .= '</td>';
 
-							$h .= '<td class="td-min-content highlight-stick-right text-end">';
+							$h .= '<td class="td-min-content t-highlight text-end">';
 								if($eCash['type'] === Cash::CREDIT) {
 									$h .= \util\TextUi::money($eCash['amountIncludingVat']);
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="td-min-content highlight-stick-left text-end">';
+							$h .= '<td class="td-min-content t-highlight text-end">';
 								if($eCash['type'] === Cash::DEBIT) {
 									$h .= \util\TextUi::money($eCash['amountIncludingVat']);
 								}

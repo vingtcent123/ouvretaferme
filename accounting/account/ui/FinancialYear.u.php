@@ -238,8 +238,8 @@ class FinancialYearUi {
 						$h .= '<th>'.s("Date").'</th>';
 						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th>'.s("Libellé du compte").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
-						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Débit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Crédit").'</th>';
 						$h .= '<th>'.s("Libellé écriture").'</th>';
 
 					$h .= '</tr>';
@@ -259,7 +259,7 @@ class FinancialYearUi {
 							$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';
 							$h .= '<td>'.encode($eOperation['account']['description']).'</td>';
 
-							$h .= '<td class="text-end highlight-stick-right">';
+							$h .= '<td class="text-end t-highlight">';
 								if($eOperation['type'] === \journal\Operation::DEBIT) {
 									$h .= \util\TextUi::money(abs($eOperation['amount']));
 									$totalDebit += $eOperation['amount'];
@@ -268,7 +268,7 @@ class FinancialYearUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-left">';
+							$h .= '<td class="text-end t-highlight">';
 								if($eOperation['type'] === \journal\Operation::CREDIT) {
 									$h .= \util\TextUi::money($eOperation['amount']);
 									$totalCredit += $eOperation['amount'];
@@ -290,11 +290,11 @@ class FinancialYearUi {
 
 						$h .= '<td>'.s("Totaux").'</td>';
 
-						$h .= '<td class="text-end highlight-stick-right">';
+						$h .= '<td class="text-end t-highlight">';
 							$h .= \util\TextUi::money(abs($totalDebit));
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-left">';
+						$h .= '<td class="text-end t-highlight">';
 							$h .= \util\TextUi::money($totalCredit);
 						$h .= '</td>';
 
@@ -329,8 +329,8 @@ class FinancialYearUi {
 						$h .= '<th>'.s("Date").'</th>';
 						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th>'.s("Libellé du compte").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
-						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Débit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Crédit").'</th>';
 						$h .= '<th>'.s("Libellé écriture").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -343,14 +343,14 @@ class FinancialYearUi {
 							$h .= '<td>'.\util\DateUi::numeric($eFinancialYear['startDate'], \util\DateUi::DATE).'</td>';
 							$h .= '<td>'.encode($eOperationResult['accountLabel']).'</td>';
 							$h .= '<td>'.encode($eOperationResult['account']['description']).'</td>';
-							$h .= '<td class="text-end highlight-stick-right">';
+							$h .= '<td class="text-end t-highlight">';
 								if($eOperationResult['type'] === \journal\Operation::DEBIT) {
 									$h .= \util\TextUi::money($eOperationResult['amount']);
 								} else {
 									$h .= '';
 								}
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-left">';
+							$h .= '<td class="text-end t-highlight">';
 								if($eOperationResult['type'] === \journal\Operation::CREDIT) {
 									$h .= \util\TextUi::money($eOperationResult['amount']);
 								} else {
@@ -431,8 +431,8 @@ class FinancialYearUi {
 							$h .= '<th>'.s("Date").'</th>';
 							$h .= '<th>'.s("Numéro de compte").'</th>';
 							$h .= '<th>'.s("Libellé du compte").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
-							$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
+							$h .= '<th class="text-end t-highlight">'.s("Débit").'</th>';
+							$h .= '<th class="text-end t-highlight">'.s("Crédit").'</th>';
 							$h .= '<th>'.s("Libellé écriture").'</th>';
 
 						$h .= '</tr>';
@@ -452,7 +452,7 @@ class FinancialYearUi {
 								$h .= '<td>'.encode($eOperation['accountLabel']).'</td>';
 								$h .= '<td>'.encode($eOperation['account']['description']).'</td>';
 
-								$h .= '<td class="text-end highlight-stick-right">';
+								$h .= '<td class="text-end t-highlight">';
 									if($eOperation['type'] === \journal\Operation::DEBIT) {
 										$h .= \util\TextUi::money($eOperation['amount']);
 										$totalDebit += $eOperation['amount'];
@@ -461,7 +461,7 @@ class FinancialYearUi {
 									}
 								$h .= '</td>';
 
-								$h .= '<td class="text-end highlight-stick-left">';
+								$h .= '<td class="text-end t-highlight">';
 									if($eOperation['type'] === \journal\Operation::CREDIT) {
 										$h .= \util\TextUi::money($eOperation['amount']);
 										$totalCredit += $eOperation['amount'];
@@ -483,11 +483,11 @@ class FinancialYearUi {
 
 							$h .= '<td>'.s("Totaux").'</td>';
 
-							$h .= '<td class="text-end highlight-stick-right">';
+							$h .= '<td class="text-end t-highlight">';
 								$h .= \util\TextUi::money($totalDebit);
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-left">';
+							$h .= '<td class="text-end t-highlight">';
 								$h .= \util\TextUi::money($totalCredit);
 							$h .= '</td>';
 

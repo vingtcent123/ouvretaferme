@@ -116,7 +116,7 @@ Class ImportUi {
 						$h .= '<th rowspan="2" class="text-center">'.s("Date").'</th>';
 						$h .= '<th rowspan="2">'.s("Client").'</th>';
 						$h .= '<th rowspan="2">'.s("Référence").'</th>';
-						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Montant").'</th>';
+						$h .= '<th rowspan="2" class="text-end t-highlight">'.s("Montant").'</th>';
 						$h .= '<th colspan="4" class="text-center">'.s("Écritures").'</th>';
 						if($showIgnoreColumn) {
 							$h .= '<th rowspan="2" class="text-center"></th>';
@@ -124,7 +124,7 @@ Class ImportUi {
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th class="text-center">'.s("Numéro de compte").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Montant").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Montant").'</th>';
 						$h .= '<th class="text-center td-min-content">'.s("D/C").'</th>';
 						$h .= '<th>'.s("Paiement").'</th>';
 					$h .= '</tr>';
@@ -263,7 +263,7 @@ Class ImportUi {
 								$h .= $reference;
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top preaccounting-import-td-amount">';
+							$h .= '<td class="text-end t-highlight td-vertical-align-top preaccounting-import-td-amount">';
 								$h .= $amount;
 							$h .= '</td>';
 
@@ -296,7 +296,7 @@ Class ImportUi {
 								}
 								$h .= join ('', $accountLabels);
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-right preaccounting-import-td-operation font-sm td-vertical-align-top">';
+							$h .= '<td class="text-end t-highlight preaccounting-import-td-operation font-sm td-vertical-align-top">';
 								$amounts = [];
 								foreach($operations as $operation) {
 									$amounts[] = \util\TextUi::money(abs($operation[\preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT]));

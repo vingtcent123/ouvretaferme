@@ -203,7 +203,7 @@ class CustomerUi {
 						$h .= $search->linkSort('lastName', $label);
 					$h .= '</th>';
 					if(in_array('sales', $hide) === FALSE) {
-						$h .= '<th colspan="2" class="text-center hide-xs-down highlight">'.s("Ventes").'</th>';
+						$h .= '<th colspan="2" class="text-center hide-xs-down t-highlight">'.s("Ventes").'</th>';
 					}
 					if(in_array('prices', $hide) === FALSE) {
 						$h .= '<th rowspan="2" class="customer-item-grid">'.s("Prixpersonnalisés").'</th>';
@@ -216,8 +216,8 @@ class CustomerUi {
 				$h .= '</tr>';
 				if(in_array('sales', $hide) === FALSE) {
 					$h .= '<tr>';
-						$h .= '<th class="text-end hide-xs-down highlight-stick-right">'.$year.'</th>';
-						$h .= '<th class="text-end hide-xs-down customer-item-year-before highlight-stick-left">'.$yearBefore.'</th>';
+						$h .= '<th class="text-end hide-xs-down t-highlight">'.$year.'</th>';
+						$h .= '<th class="text-end hide-xs-down customer-item-year-before t-highlight">'.$yearBefore.'</th>';
 					$h .= '</tr>';
 				}
 			$h .= '</thead>';
@@ -288,7 +288,7 @@ class CustomerUi {
 
 							$eSaleTotal = $eCustomer['eSaleTotal'];
 
-							$h .= '<td class="text-end hide-xs-down highlight-stick-right">';
+							$h .= '<td class="text-end hide-xs-down t-highlight">';
 								if($eSaleTotal->notEmpty() and $eSaleTotal['year']) {
 									$amount = \util\TextUi::money($eSaleTotal['year'], precision: 0);
 									$h .= $eFarm->canAnalyze() ? '<a href="/selling/customer:analyze?id='.$eCustomer['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
@@ -297,7 +297,7 @@ class CustomerUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end hide-xs-down customer-item-year-before highlight-stick-left">';
+							$h .= '<td class="text-end hide-xs-down customer-item-year-before t-highlight">';
 								if($eSaleTotal->notEmpty() and $eSaleTotal['yearBefore']) {
 									$amount = \util\TextUi::money($eSaleTotal['yearBefore'], precision: 0);
 									$h .= $eFarm->canAnalyze() ? '<a href="/selling/customer:analyze?id='.$eCustomer['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;

@@ -113,9 +113,9 @@ Class BalanceUi {
 
 						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th>'.s("Tiers").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
-						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Solde").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Débit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Crédit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Solde").'</th>';
 						$h .= '<th></th>';
 
 					$h .= '</tr>';
@@ -136,15 +136,15 @@ Class BalanceUi {
 							$h .= encode($eOperation['thirdParty']['name']);
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+						$h .= '<td class="text-end t-highlight td-vertical-align-top">';
 							$h .= \util\TextUi::money($eOperation[Operation::DEBIT]);
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
+						$h .= '<td class="text-end t-highlight td-vertical-align-top">';
 							$h .= \util\TextUi::money($eOperation[Operation::CREDIT]);
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+						$h .= '<td class="text-end t-highlight td-vertical-align-top">';
 							$h .= \util\TextUi::money($eOperation[Operation::DEBIT] - $eOperation[Operation::CREDIT]);
 						$h .= '</td>';
 
@@ -239,15 +239,15 @@ Class BalanceUi {
 				$h .= '</td>';
 				$h .= '<td class="hide-sm-down">'.encode($lineCurrent['accountLabel'] ?? $linePrevious['accountLabel']).'</td>';
 
-				$h .= '<td class="text-end highlight-stick-right">'.($lineCurrent['debit'] !== 0.0 ? \util\TextUi::money($lineCurrent['debit']) : '').'</td>';
-				$h .= '<td class="text-end highlight-stick-left">'.($lineCurrent['credit'] !== 0.0 ? \util\TextUi::money($lineCurrent['credit']) : '').'</td>';
+				$h .= '<td class="text-end t-highlight">'.($lineCurrent['debit'] !== 0.0 ? \util\TextUi::money($lineCurrent['debit']) : '').'</td>';
+				$h .= '<td class="text-end t-highlight">'.($lineCurrent['credit'] !== 0.0 ? \util\TextUi::money($lineCurrent['credit']) : '').'</td>';
 
-				$h .= '<td class="text-end highlight-stick-right">'.($lineCurrent['debit'] > $lineCurrent['credit'] ? \util\TextUi::money($lineCurrent['debit'] - $lineCurrent['credit']) : '').'</td>';
-				$h .= '<td class="text-end highlight-stick-left">'.($lineCurrent['credit'] > $lineCurrent['debit'] ? \util\TextUi::money($lineCurrent['credit'] - $lineCurrent['debit']) : '').'</td>';
+				$h .= '<td class="text-end t-highlight">'.($lineCurrent['debit'] > $lineCurrent['credit'] ? \util\TextUi::money($lineCurrent['debit'] - $lineCurrent['credit']) : '').'</td>';
+				$h .= '<td class="text-end t-highlight">'.($lineCurrent['credit'] > $lineCurrent['debit'] ? \util\TextUi::money($lineCurrent['credit'] - $lineCurrent['debit']) : '').'</td>';
 
 				if($hasPrevious) {
-					$h .= '<td class="text-end highlight-stick-right">'.($linePrevious['debit'] > $linePrevious['credit'] ? \util\TextUi::money($linePrevious['debit'] - $linePrevious['credit']) : '').'</td>';
-					$h .= '<td class="text-end highlight-stick-left">'.($linePrevious['credit'] > $linePrevious['debit'] ? \util\TextUi::money($linePrevious['credit'] - $linePrevious['debit']) : '').'</td>';
+					$h .= '<td class="text-end t-highlight">'.($linePrevious['debit'] > $linePrevious['credit'] ? \util\TextUi::money($linePrevious['debit'] - $linePrevious['credit']) : '').'</td>';
+					$h .= '<td class="text-end t-highlight">'.($linePrevious['credit'] > $linePrevious['debit'] ? \util\TextUi::money($linePrevious['credit'] - $linePrevious['debit']) : '').'</td>';
 				}
 			$h .= '</tr>';
 
@@ -271,13 +271,13 @@ Class BalanceUi {
 			$h .= '<td></td>';
 			$h .= '<td></td>';
 			$h .= '<td class="text-end hide-sm-down">'.s("Totaux").'</td>';
-			$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($totalDebitCurrent).'</td>';
-			$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($totalCreditCurrent).'</td>';
-			$h .= '<td class="text-end highlight-stick-right">'.($totalDebitCurrent > $totalCreditCurrent ? \util\TextUi::money(round($totalDebitCurrent - $totalCreditCurrent, 2)) : '').'</td>';
-			$h .= '<td class="text-end highlight-stick-left">'.($totalCreditCurrent > $totalDebitCurrent ? \util\TextUi::money(round($totalCreditCurrent - $totalDebitCurrent, 2)) : '').'</td>';
+			$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($totalDebitCurrent).'</td>';
+			$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($totalCreditCurrent).'</td>';
+			$h .= '<td class="text-end t-highlight">'.($totalDebitCurrent > $totalCreditCurrent ? \util\TextUi::money(round($totalDebitCurrent - $totalCreditCurrent, 2)) : '').'</td>';
+			$h .= '<td class="text-end t-highlight">'.($totalCreditCurrent > $totalDebitCurrent ? \util\TextUi::money(round($totalCreditCurrent - $totalDebitCurrent, 2)) : '').'</td>';
 			if($hasPrevious) {
-				$h .= '<td class="text-end highlight-stick-right">'.($totalDebitPrevious > $totalCreditPrevious ? \util\TextUi::money(round($totalDebitPrevious - $totalCreditPrevious, 2)) : '').'</td>';
-				$h .= '<td class="text-end highlight-stick-left">'.($totalCreditPrevious > $totalDebitPrevious ? \util\TextUi::money(round($totalCreditPrevious - $totalDebitPrevious, 2)) : '').'</td>';
+				$h .= '<td class="text-end t-highlight">'.($totalDebitPrevious > $totalCreditPrevious ? \util\TextUi::money(round($totalDebitPrevious - $totalCreditPrevious, 2)) : '').'</td>';
+				$h .= '<td class="text-end t-highlight">'.($totalCreditPrevious > $totalDebitPrevious ? \util\TextUi::money(round($totalCreditPrevious - $totalDebitPrevious, 2)) : '').'</td>';
 			}
 		$h .= '</tr>';
 
@@ -467,13 +467,13 @@ Class BalanceUi {
 					}
 				$h .= '</tr>';
 				$h .= '<tr>';
-					$h .= '<th class="text-center highlight-stick-right">'.s("Débit").'</th>';
-					$h .= '<th class="text-center highlight-stick-left">'.s("Crédit").'</th>';
-					$h .= '<th class="text-center highlight-stick-right">'.s("Débit").'</th>';
-					$h .= '<th class="text-center highlight-stick-left">'.s("Crédit").'</th>';
+					$h .= '<th class="text-center t-highlight">'.s("Débit").'</th>';
+					$h .= '<th class="text-center t-highlight">'.s("Crédit").'</th>';
+					$h .= '<th class="text-center t-highlight">'.s("Débit").'</th>';
+					$h .= '<th class="text-center t-highlight">'.s("Crédit").'</th>';
 					if($eFinancialYearPrevious->notEmpty()) {
-						$h .= '<th class="text-center highlight-stick-right">'.s("Débit").'</th>';
-						$h .= '<th class="text-center highlight-stick-left">'.s("Crédit").'</th>';
+						$h .= '<th class="text-center t-highlight">'.s("Débit").'</th>';
+						$h .= '<th class="text-center t-highlight">'.s("Crédit").'</th>';
 					}
 				$h .= '</tr>';
 				$h .= '</thead>';
@@ -508,13 +508,13 @@ Class BalanceUi {
 			7 => s("Comptes de produits"),
 		};
 		$h .= '</td>';
-		$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($classes['totalDebit']).'</td>';
-		$h .= '<td class="text-end highlight-stick-left">'.\util\TextUi::money($classes['totalCredit']).'</td>';
-		$h .= '<td class="text-end highlight-stick-right">'.($classes['balanceDebit'] ? \util\TextUi::money($classes['balanceDebit']) : '').'</td>';
-		$h .= '<td class="text-end highlight-stick-left">'.($classes['balanceCredit'] ? \util\TextUi::money($classes['balanceCredit']) : '').'</td>';
+		$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($classes['totalDebit']).'</td>';
+		$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($classes['totalCredit']).'</td>';
+		$h .= '<td class="text-end t-highlight">'.($classes['balanceDebit'] ? \util\TextUi::money($classes['balanceDebit']) : '').'</td>';
+		$h .= '<td class="text-end t-highlight">'.($classes['balanceCredit'] ? \util\TextUi::money($classes['balanceCredit']) : '').'</td>';
 		if($hasPrevious) {
-			$h .= '<td class="text-end highlight-stick-right">'.($classes['balanceDebitPrevious'] ? \util\TextUi::money($classes['balanceDebitPrevious']) : '').'</td>';
-			$h .= '<td class="text-end highlight-stick-left">'.($classes['balanceCreditPrevious'] ? \util\TextUi::money($classes['balanceCreditPrevious']) : '').'</td>';
+			$h .= '<td class="text-end t-highlight">'.($classes['balanceDebitPrevious'] ? \util\TextUi::money($classes['balanceDebitPrevious']) : '').'</td>';
+			$h .= '<td class="text-end t-highlight">'.($classes['balanceCreditPrevious'] ? \util\TextUi::money($classes['balanceCreditPrevious']) : '').'</td>';
 		}
 		$h .= '</tr>';
 

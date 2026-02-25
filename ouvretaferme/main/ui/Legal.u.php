@@ -468,11 +468,11 @@ class LegalUi {
 				$h .= '<h4>'.s("Les structures qui accompagnent les producteurs auront accès à une interface de gestion centralisée pour le suivi de leurs adhérents / clients.").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
-				$h .= '<h3>Hiver 2026</h3>';
+				$h .= '<h3>Hiver 2026/2027</h3>';
 				$h .= '<h4>'.s("Ouvretaferme proposera aux producteurs de se rassembler en collectifs pour échanger sur leurs pratiques.").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';
-				$h .= '<h3>Hiver 2026</h3>';
+				$h .= '<h3>Hiver 2026/2027</h3>';
 				$h .= '<h4>'.s("Ouvretaferme permettra aux producteurs de gérer leur AMAP.").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-point">';

@@ -586,7 +586,7 @@ class DateUi {
 						$h .= '<th></th>';
 						$h .= '<th></th>';
 						$h .= '<th class="text-end">'.s("Ventes").'</th>';
-						$h .= '<th class="text-end highlight">'.s("Montant").''.($hasSameTaxes ? ' <span class="util-annotation">'.$cDate->first()->getTaxes().'</span>' : '').'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Montant").''.($hasSameTaxes ? ' <span class="util-annotation">'.$cDate->first()->getTaxes().'</span>' : '').'</th>';
 						$h .= '<th class="text-end hide-md-down">'.s("Panier moyen").''.($hasSameTaxes ? ' <span class="util-annotation">'.$cDate->first()->getTaxes().'</span>' : '').'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
@@ -642,7 +642,7 @@ class DateUi {
 								$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?tab=sales">'.$eDate['sales']['countValid'].'</a>';
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight" style="white-space: nowrap">';
+							$h .= '<td class="text-end t-highlight" style="white-space: nowrap">';
 								if($eDate['sales']['countValid'] > 0) {
 
 									if($hasFarmTaxes) {
@@ -871,10 +871,10 @@ class DateUi {
 
 		$eDate->expects([
 			'page', 'number',
-			'cSale', 'nSale'
+			'cxSale', 'nSale'
 		]);
 
-		$cSale = $eDate['cSale'];
+		$cxSale = $eDate['cxSale'];
 		$nSale = $eDate['nSale'];
 
 		$h = '<div class="tabs-h" id="shop-date-tabs" onrender="'.encode('Lime.Tab.restore(this, "sales"'.(get_exists('tab') ? ', "'.GET('tab', ['products', 'sales'], 'sales').'"' : '').')').'">';
@@ -883,9 +883,9 @@ class DateUi {
 
 				$h .= '<a class="tab-item" data-tab="sales" onclick="Lime.Tab.select(this)">';
 					$h .= s("Ventes");
-					if($cSale->notEmpty()) {
-						$h .= '<span class="tab-item-count">'.$cSale
-							->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]))
+					if($cxSale->notEmpty()) {
+						$h .= '<span class="tab-item-count">'.$cxSale
+							->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]), depth: $cxSale->getDepth())
 							->count().'</span>';
 					}
 				$h .= '</a>';
@@ -957,7 +957,7 @@ class DateUi {
 
 						if($eDate->acceptOrder() === FALSE) {
 
-							$cSaleConfirmed = $cSale->find(fn($eSale) => $eSale['preparationStatus'] === \selling\Sale::CONFIRMED);
+							$cSaleConfirmed = $cxSale->find(fn($eSale) => $eSale['preparationStatus'] === \selling\Sale::CONFIRMED, depth: $cxSale->getDepth());
 
 							if($cSaleConfirmed->notEmpty()) {
 								$actions .= '<a href="'.\selling\SaleUi::url($cSaleConfirmed->first()).'?prepare='.implode(',', $cSaleConfirmed->getIds()).'" data-ajax-navigation="never" class="btn sale-preparation-status-prepared-button" data-confirm="'.p("Il y a {value} commande confirmée à préparer. Démarrer la préparation de la commande ?", "Il y a {value} commandes confirmées à préparer. Démarrer la préparation des commandes ?", $cSaleConfirmed->count()).'">'.\Asset::icon('person-workspace').' '.s("Préparer les commandes").'</a> ';
@@ -981,7 +981,7 @@ class DateUi {
 					if(
 						$eDate->acceptDownload() and
 						$eDate->canDownload($eDate['eFarmSelected']) and
-						$cSale->notEmpty()
+						$cxSale->notEmpty()
 					) {
 
 						$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eDate['eFarmSelected']->empty() ? '' : '&farm='.$eDate['eFarmSelected']['id']).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
@@ -1003,31 +1003,14 @@ class DateUi {
 
 				}
 
-				if($cSale->empty()) {
+				if($cxSale->empty()) {
 					$h .= '<div class="util-empty">'.s("Aucune vente n'a encore été enregistrée !").'</div>';
 				} else {
 
-					$hide = ['documents', 'items'];
-
-					if($eDate['deliveryDate'] !== NULL) {
-						$hide[] = 'deliveredAt';
-					}
-
-					if($eShop->isShared() and $eDate['eFarmSelected']->empty()) {
-						$hide[] = 'customer';
-						$group = 'customer';
-					} else {
-						$group = NULL;
-					}
-
-					$h .= new \selling\SaleUi()->getList(
-						$eFarm,
-						$cSale,
-						hide: $hide,
-						dynamicHide: ['paymentMethod' => ''],
-						show: ['point'],
-						group: $group,
-						segment: ($eDate['deliveryDate'] !== NULL and $eDate['ccPoint']->reduce(fn($c, $n) => $n + $c->count(), 0) > 1) ? 'point' : NULL,
+					$h .= new \selling\SaleUi()->getShopList(
+						$eShop,
+						$eDate,
+						$cxSale,
 						cPaymentMethod: $cPaymentMethod,
 					);
 
@@ -1072,13 +1055,13 @@ class DateUi {
 
 					$h .= '<tr>';
 						$h .= '<th>'.s("Producteur").'</th>';
-						$h .= '<th class="highlight-stick-right">'.s("Catalogue").'</th>';
+						$h .= '<th class="t-highlight">'.s("Catalogue").'</th>';
 						if($cDepartment->notEmpty()) {
-							$h .= '<th class="highlight-stick-both">';
+							$h .= '<th class="t-highlight">';
 								$h .= s("Rayon");
 							$h .= '</th>';
 						}
-						$h .= '<th class="highlight-stick-left"></th>';
+						$h .= '<th class="t-highlight"></th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -1137,13 +1120,13 @@ class DateUi {
 				$h .= '  <span class="util-badge bg-primary">'.s("Votre ferme").'</span>';
 			}
 		$h .= '</td>';
-		$h .= '<td class="td-border highlight-stick-right">';
+		$h .= '<td class="td-border t-highlight">';
 			$h .= '<a href="/shop/catalog:show?id='.$eRange['catalog']['id'].'">'.encode($eRange['catalog']['name']).'</a>';
 			$h .= ' <small class="color-muted">/ '.p("{value} produit", "{value} produits", $eRange['catalog']['products']).'</small>';
 		$h .= '</td>';
 
 		if($cDepartment->notEmpty()) {
-			$h .= '<td class="td-border highlight-stick-both">';
+			$h .= '<td class="td-border t-highlight">';
 				if($eRange['department']->notEmpty()) {
 					$h .= DepartmentUi::getVignette($cDepartment[$eRange['department']['id']], '1.75rem').'  '.encode($cDepartment[$eRange['department']['id']]['name']);
 				} else {
@@ -1152,7 +1135,7 @@ class DateUi {
 			$h .= '</td>';
 		}
 
-		$h .= '<td class="td-border highlight-stick-left">';
+		$h .= '<td class="td-border t-highlight">';
 
 			$isRangeSelected = in_array($eRange['catalog']['id'], $eDate['catalogs']);
 			$canUpdateRange = ($eDate->canWrite() or $isFarmSelected);

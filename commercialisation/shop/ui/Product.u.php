@@ -1033,15 +1033,15 @@ class ProductUi {
 						$h .= '<th colspan="2">'.s("Produit").'</th>';
 						if($showFarm) {
 							$columns++;
-							$h .= '<td></td>';
+							$h .= '<th></th>';
 						}
 						if($eDate['type'] === Date::PRO) {
 							$columns++;
-							$h .= '<td></td>';
+							$h .= '<th></th>';
 						}
 						$h .= '<th class="text-end">'.s("Prix").' '.$taxes.'</th>';
 						if($isExpired === FALSE) {
-							$h .= '<th class="highlight">'.s("Disponible").'</th>';
+							$h .= '<th class="t-highlight">'.s("Disponible").'</th>';
 						}
 						if($hasSold) {
 							$h .= '<th class="text-center">'.s("Vendu").'</th>';
@@ -1081,7 +1081,7 @@ class ProductUi {
 								}
 								$h .= '<th class="text-end"></th>';
 								if($isExpired === FALSE) {
-									$h .= '<th class="highlight"></th>';
+									$h .= '<th class="t-highlight"></th>';
 								}
 								if($hasSold) {
 									$h .= '<th></th>';
@@ -1205,7 +1205,7 @@ class ProductUi {
 
 			if($isExpired === FALSE) {
 
-				$h .= '<td class="shop-product-available highlight" '.($eProduct->exists() ? 'id="product-available-'.$eProduct['id'].'"' : '').' '.($hasLimits ? 'rowspan="2"' : '').'>';
+				$h .= '<td class="shop-product-available t-highlight" '.($eProduct->exists() ? 'id="product-available-'.$eProduct['id'].'"' : '').' '.($hasLimits ? 'rowspan="2"' : '').'>';
 					$h .= $this->getStatus($eProduct, $canUpdate);
 				$h .= '</td>';
 
@@ -1276,7 +1276,7 @@ class ProductUi {
 							$h .= '<th>'.s("Colisage").'</th>';
 						}
 						$h .= '<th class="text-end">'.s("Prix").' '.$taxes.'</th>';
-						$h .= '<th class="highlight">'.s("Disponible à la vente").'</th>';
+						$h .= '<th class="t-highlight">'.s("Disponible à la vente").'</th>';
 						$h .= '<th class="text-center">';
 							$h .= s("En vente");
 						$h .= '</th>';
@@ -1312,7 +1312,7 @@ class ProductUi {
 									$h .= '<h4>'.encode($eProduct['parentName']).'</h4>';
 								$h .= '</td>';
 
-								$h .= '<td class="shop-product-available highlight"></td>';
+								$h .= '<td class="shop-product-available t-highlight"></td>';
 
 								$h .= '<td class="text-center"></td>';
 
@@ -1421,7 +1421,7 @@ class ProductUi {
 
 			$h .= '</td>';
 
-			$h .= '<td class="shop-product-available highlight" '.($hasLimits ? 'rowspan="2"' : '').' id="product-available-'.$eProduct['id'].'">';
+			$h .= '<td class="shop-product-available t-highlight" '.($hasLimits ? 'rowspan="2"' : '').' id="product-available-'.$eProduct['id'].'">';
 				$h .= $this->getStatus($eProduct, TRUE);
 			$h .= '</td>';
 

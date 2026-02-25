@@ -99,8 +99,8 @@ class DeferralUi {
 						$h .= '<th>'.s("Type").'</th>';
 						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th>'.s("Libellé du compte").'</th>';
-						$h .= '<th class="text-end highlight-stick-right">'.s("Débit").'</th>';
-						$h .= '<th class="text-end highlight-stick-left">'.s("Crédit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Débit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Crédit").'</th>';
 
 					$h .= '</tr>';
 
@@ -122,13 +122,13 @@ class DeferralUi {
 							$h .= '<td>'.encode(self::p('type')->values[$eDeferral['type']]).'</td>';
 							$h .= '<td>'.encode($eDeferral['operation']['accountLabel']).'</td>';
 							$h .= '<td>'.encode($eDeferral['operation']['description']).'</td>';
-							$h .= '<td class="text-end highlight-stick-right">';
+							$h .= '<td class="text-end t-highlight">';
 							$h .= match($eDeferral['operation']['type']) {
 								\journal\Operation::CREDIT => '',
 								\journal\Operation::DEBIT => \util\TextUi::money($eDeferral['amount']),
 							};
 							$h .='</td>';
-							$h .= '<td class="text-end highlight-stick-left">';
+							$h .= '<td class="text-end t-highlight">';
 							$h .= match($eDeferral['operation']['type']) {
 								\journal\Operation::DEBIT => '',
 								\journal\Operation::CREDIT => \util\TextUi::money($eDeferral['amount']),
@@ -213,9 +213,9 @@ class DeferralUi {
 							$h .= '<th>'.s("Date").'</th>';
 							$h .= '<th>'.s("Numéro de compte").'</th>';
 							$h .= '<th>'.s("Libellé").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.s("Montant HT").'</th>';
+							$h .= '<th class="text-end t-highlight">'.s("Montant HT").'</th>';
 							$h .= '<th>'.s("Période de<br />consommation").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.s("Montant à reporter").'</th>';
+							$h .= '<th class="text-end t-highlight">'.s("Montant à reporter").'</th>';
 							$h .= '<th></th>';
 
 						$h .= '</tr>';
@@ -274,9 +274,9 @@ class DeferralUi {
 								$h .= '</div>';
 								$h .= '</td>';
 								$h .= '<td>'.encode($eOperation['description']).'</td>';
-								$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($eOperation['amount']).'</td>';
+								$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($eOperation['amount']).'</td>';
 								$h .= '<td class="deferral-td-period">'.$period.'</td>';
-								$h .= '<td class="text-end highlight-stick-right">'.$amount.'</td>';
+								$h .= '<td class="text-end t-highlight">'.$amount.'</td>';
 								$h .= '<td class="td-min-content">'.$action.'</td>';
 
 							$h .= '</tr>';

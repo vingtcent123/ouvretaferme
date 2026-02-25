@@ -39,13 +39,13 @@ class CsvUi {
 					$h .= '<tr>';
 						$h .= '<th rowspan="2">'.s("Nom").'</th>';
 						$h .= '<th rowspan="2">'.s("Unité").'</th>';
-						$h .= '<th colspan="2" class="text-center highlight">'.s("Prix").'</th>';
+						$h .= '<th colspan="2" class="text-center t-highlight">'.s("Prix").'</th>';
 						$h .= '<th rowspan="2" class="text-end">'.s("TVA").'</th>';
 						$h .= '<th rowspan="2">'.s("Autres données").'</th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
-						$h .= '<th class="highlight-stick-right text-end">'.s("Particulier").'</th>';
-						$h .= '<th class="highlight-stick-left text-end">'.s("Pro").'</th>';
+						$h .= '<th class="t-highlight text-end">'.s("Particulier").'</th>';
+						$h .= '<th class="t-highlight text-end">'.s("Pro").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -91,13 +91,13 @@ class CsvUi {
 								$h .= '<span class="color-danger">'.\Asset::icon('exclamation-triangle').' '.encode($product['unit']).'</span>';
 							}
 						$h .= '</td>';
-						$h .= '<td class="highlight-stick-right text-end">';
+						$h .= '<td class="t-highlight text-end">';
 							if($product['price_private'] !== NULL) {
 								$h .= \util\TextUi::money($product['price_private']);
 								$h .= $eFarm->getConf('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRIVATE).'</span>' : '';
 							}
 						$h .= '</td>';
-						$h .= '<td class="highlight-stick-left text-end">';
+						$h .= '<td class="t-highlight text-end">';
 							if($product['price_pro'] !== NULL) {
 								$h .= \util\TextUi::money($product['price_pro']);
 								$h .= $eFarm->getConf('hasVat') ? ' <span class="util-annotation">'.CustomerUi::getTaxes(Customer::PRO).'</span>' : '';

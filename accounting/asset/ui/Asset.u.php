@@ -79,7 +79,7 @@ Class AssetUi {
 						$h .= '<th class="text-center">'.s("Date d'acquisition").'</th>';
 						$h .= '<th class="text-center">'.s("Date de de mise en service").'</th>';
 						$h .= '<th>'.s("Libellé").'</th>';
-						$h .= '<th class="highlight-stick-right text-end">'.s("Valeur d'acquisition (HT)").'</th>';
+						$h .= '<th class="t-highlight text-end">'.s("Valeur d'acquisition (HT)").'</th>';
 						$h .= '<th class="text-center">'.s("Durée éco").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
@@ -94,7 +94,7 @@ Class AssetUi {
 							$h .= '<td class="text-center">'.\util\DateUi::numeric($eAsset['acquisitionDate']).'</td>';
 							$h .= '<td class="text-center">'.\util\DateUi::numeric($eAsset['startDate']).'</td>';
 							$h .= '<td>'.encode($eAsset['description']).'</td>';
-							$h .= '<td class="highlight-stick-right text-end">'.\util\TextUi::money($eAsset['value']).'</td>';
+							$h .= '<td class="t-highlight text-end">'.\util\TextUi::money($eAsset['value']).'</td>';
 							$h .= '<td class="text-center">';
 								if($eAsset['economicDuration'] !== NULL) {
 									$h .= p("{value} mois", "{value} mois", $eAsset['economicDuration']);
@@ -396,8 +396,8 @@ Class AssetUi {
 			$h .= '<th class="text-center" rowspan="2">'.s("Durée (en mois)").'</th>';
 			$h .= '<th class="text-center" rowspan="2">'.s("Date d'acquisition").'</th>';
 			$h .= '<th class="text-center" rowspan="2">'.s("Date de mise en service").'</th>';
-			$h .= '<th class="text-end '.($type === NULL ? 'highlight-stick-left' : '').'" rowspan="2">'.s("Valeur d'acquisition").'</th>';
-			$h .= '<th class="text-end '.($type === NULL ? 'highlight-stick-left' : '').'" rowspan="2">'.s("Base amortissable").'</th>';
+			$h .= '<th class="text-end '.($type === NULL ? 't-highlight' : '').'" rowspan="2">'.s("Valeur d'acquisition").'</th>';
+			$h .= '<th class="text-end '.($type === NULL ? 't-highlight' : '').'" rowspan="2">'.s("Base amortissable").'</th>';
 		$h .= '</tr>';
 		$h .= '<tr>';
 			$h .= '<th class="text-center" style="border-left: 0;">'.s("Eco").'</th>';
@@ -575,8 +575,8 @@ Class AssetUi {
 									$h .= s("n/a");
 								}
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-left">'.$this->number($eAsset['value'], '', 2).'</td>';
-							$h .= '<td class="text-end highlight-stick-left">'.$this->number($amortizableBase, '', 2).'</td>';
+							$h .= '<td class="text-end t-highlight">'.$this->number($eAsset['value'], '', 2).'</td>';
+							$h .= '<td class="text-end t-highlight">'.$this->number($amortizableBase, '', 2).'</td>';
 
 						$h .= '</tr>';
 						$total += $eAsset['value'];
@@ -597,8 +597,8 @@ Class AssetUi {
 						$h .= '<td></td>';
 						$h .= '<td></td>';
 						$h .= '<td></td>';
-						$h .= '<td class="text-end highlight-stick-left">'.$this->number($total, '', 2).'</td>';
-						$h .= '<td class="text-end highlight-stick-left">'.$this->number($totalAmortizable, '', 2).'</td>';
+						$h .= '<td class="text-end t-highlight">'.$this->number($total, '', 2).'</td>';
+						$h .= '<td class="text-end t-highlight">'.$this->number($totalAmortizable, '', 2).'</td>';
 					$h .= '</tr>';
 
 				$h .= '</tbody>';
@@ -931,7 +931,7 @@ Class AssetUi {
 					$h .= '<thead>';
 						$h .= '<tr>';
 							$h .= '<th class="text-center">'.s("Exercice").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.self::p('amortizableBase')->label.'</th>';
+							$h .= '<th class="text-end t-highlight">'.self::p('amortizableBase')->label.'</th>';
 
 								if($eAsset['economicMode'] === Asset::DEGRESSIVE) {
 
@@ -944,19 +944,19 @@ Class AssetUi {
 									$h .= '<th class="text-center">'.s("Taux").'</th>';
 								}
 
-							$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement éco").'</th>';
-							$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement éco").'</th>';
+							$h .= '<th class="text-end t-highlight">'.s("Amortissement éco").'</th>';
+							$h .= '<th class="text-end t-highlight">'.s("Cumul d'amortissement éco").'</th>';
 
 							if($eAsset['isExcess']) {
 
-								$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement fiscal").'</th>';
-								$h .= '<th class="text-end highlight-stick-right">'.s("Cumul d'amortissement fiscal").'</th>';
-								$h .= '<th class="text-end highlight-stick-right">'.s("Amortissement dérogatoire").'</th>';
-								$h .= '<th class="text-end highlight-stick-right">'.s("Reprise dérogatoire").'</th>';
+								$h .= '<th class="text-end t-highlight">'.s("Amortissement fiscal").'</th>';
+								$h .= '<th class="text-end t-highlight">'.s("Cumul d'amortissement fiscal").'</th>';
+								$h .= '<th class="text-end t-highlight">'.s("Amortissement dérogatoire").'</th>';
+								$h .= '<th class="text-end t-highlight">'.s("Reprise dérogatoire").'</th>';
 
 							}
 
-							$h .= '<th class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
+							$h .= '<th class="text-end t-highlight">'.s("VNC fin").'</th>';
 						$h .= '</tr>';
 					$h .= '</thead>';
 
@@ -974,7 +974,7 @@ Class AssetUi {
 								$h .= '<td class="text-center">';
 									$h .= $period['financialYear']->getLabel();
 								$h .= '</td>';
-								$h .= '<td class="text-end highlight-stick-right">';
+								$h .= '<td class="text-end t-highlight">';
 									$h .= \util\TextUi::money($period['base']);
 								$h .= '</td>';
 
@@ -1001,31 +1001,31 @@ Class AssetUi {
 									$h .= '</td>';
 
 								}
-								$h .= '<td class="text-end highlight-stick-right">';
+								$h .= '<td class="text-end t-highlight">';
 									$h .= \util\TextUi::money($period['amortizationValue']);
 								$h .= '</td>';
-								$h .= '<td class="text-end highlight-stick-right">';
+								$h .= '<td class="text-end t-highlight">';
 									$h .= \util\TextUi::money($period['amortizationValueCumulated']);
 								$h .= '</td>';
 
 								if($eAsset['isExcess']) {
 
-									$h .= '<td class="text-end highlight-stick-right">';
+									$h .= '<td class="text-end t-highlight">';
 										$h .= \util\TextUi::money($period['fiscalAmortizationValue']);
 									$h .= '</td>';
-									$h .= '<td class="text-end highlight-stick-right">';
+									$h .= '<td class="text-end t-highlight">';
 										$h .= \util\TextUi::money($period['fiscalAmortizationValueCumulated']);
 									$h .= '</td>';
-										$h .= '<td class="text-end highlight-stick-right">';
+										$h .= '<td class="text-end t-highlight">';
 											$h .= \util\TextUi::money($period['excessDotation'] ?? 0);
 										$h .= '</td>';
-										$h .= '<td class="text-end highlight-stick-right">';
+										$h .= '<td class="text-end t-highlight">';
 											$h .= \util\TextUi::money($period['excessRecovery'] ?? 0);
 										$h .= '</td>';
 
 								}
 
-								$h .= '<td class="text-end highlight-stick-right">';
+								$h .= '<td class="text-end t-highlight">';
 									$h .= \util\TextUi::money($period['endValue']);
 								$h .= '</td>';
 							$h .= '</tr>';
@@ -1087,9 +1087,9 @@ Class AssetUi {
 					$tableContent .= '</div>';
 				$tableContent .= '</td>';
 				$tableContent .= '<td><a href="'.\farm\FarmUi::urlConnected($eFarm).'/immobilisation/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
-				$tableContent .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['base']).'</td>';
-				$tableContent .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['amortizationValue']).'</td>';
-				$tableContent .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['endValue']).'</td>';
+				$tableContent .= '<td class="text-end t-highlight">'.\util\TextUi::money($period['base']).'</td>';
+				$tableContent .= '<td class="text-end t-highlight">'.\util\TextUi::money($period['amortizationValue']).'</td>';
+				$tableContent .= '<td class="text-end t-highlight">'.\util\TextUi::money($period['endValue']).'</td>';
 				$tableContent .= '<td class="text-center">';
 					foreach($eAsset['operations'] as $eOperation) {
 						if($eOperation['type'] === \journal\Operation::DEBIT) {
@@ -1129,9 +1129,9 @@ Class AssetUi {
 
 						$h .= '<th rowspan="2">'.s("Numéro de compte").'</th>';
 						$h .= '<th rowspan="2">'.s("Immobilisation").'</th>';
-						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Base amortissable").'</th>';
-						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Amortissement économique").'</th>';
-						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
+						$h .= '<th rowspan="2" class="text-end t-highlight">'.s("Base amortissable").'</th>';
+						$h .= '<th rowspan="2" class="text-end t-highlight">'.s("Amortissement économique").'</th>';
+						$h .= '<th rowspan="2" class="text-end t-highlight">'.s("VNC fin").'</th>';
 						$h .= '<th colspan="2" class="text-center">'.s("Écritures proposées").'</th>';
 
 					$h .= '</tr>';
@@ -1171,9 +1171,9 @@ Class AssetUi {
 
 						$h .= '<th rowspan="2">'.s("Numéro compte").'</th>';
 						$h .= '<th rowspan="2">'.s("Immobilisation").'</th>';
-						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Base amortissable").'</th>';
-						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("Amortissement économique").'</th>';
-						$h .= '<th rowspan="2" class="text-end highlight-stick-right">'.s("VNC fin").'</th>';
+						$h .= '<th rowspan="2" class="text-end t-highlight">'.s("Base amortissable").'</th>';
+						$h .= '<th rowspan="2" class="text-end t-highlight">'.s("Amortissement économique").'</th>';
+						$h .= '<th rowspan="2" class="text-end t-highlight">'.s("VNC fin").'</th>';
 						$h .= '<th colspan="2" class="text-center">'.s("Écritures").'</th>';
 
 					$h .= '</tr>';
@@ -1216,9 +1216,9 @@ Class AssetUi {
 								$h .= '</div>';
 							$h .= '</td>';
 							$h .= '<td><a href="'.\company\CompanyUi::urlAsset($eFarm).'/'.$eAsset['id'].'/">'.encode($eAsset['description']).'</a></td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['base']).'</td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['amortizationValue']).'</td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($period['endValue']).'</td>';
+							$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($period['base']).'</td>';
+							$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($period['amortizationValue']).'</td>';
+							$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($period['endValue']).'</td>';
 							$h .= '<td class="text-center">';
 								foreach($eAsset['operations'] as $eOperation) {
 									if($eOperation['type'] === \journal\Operation::DEBIT) {

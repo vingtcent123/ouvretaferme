@@ -17,7 +17,7 @@ Class AmortizationUi {
 
 		if($isTotalLine === TRUE) {
 
-			$class = 'tr-header';
+			$class = '';
 			$default = '0.00';
 
 		} else {

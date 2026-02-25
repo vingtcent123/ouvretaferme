@@ -66,7 +66,7 @@ class StockUi {
 						$h .= '<th class="text-center hide-sm-down">'.s("Vendu hier").'</th>';
 					}
 					if($cItemFuture->notEmpty()) {
-						$h .= '<th class="text-center highlight hide-sm-down">'.s("Ventes à venir").'</th>';
+						$h .= '<th class="text-center t-highlight hide-sm-down">'.s("Ventes à venir").'</th>';
 					}
 					$h .= '<th></th>';
 				$h .= '</tr>';
@@ -198,7 +198,7 @@ class StockUi {
 
 					if($cItemFuture->notEmpty()) {
 
-						$h .= '<td class="highlight text-center hide-sm-down">';
+						$h .= '<td class="t-highlight text-center hide-sm-down">';
 
 							$h .= $this->getProductQuantity($cItemFuture[$eProduct['id']] ?? new Item(), $eProduct, 'main');
 

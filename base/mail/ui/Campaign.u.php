@@ -427,10 +427,10 @@ class CampaignUi {
 					$h .= '</tr>';
 
 					$h .= '<tr>';
-						$h .= '<th class="text-center highlight-stick-right"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::SENT).'</div>'.s("Envoyés").'</th>';
-						$h .= '<th class="text-center highlight-stick-both"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::DELIVERED).'</div>'.s("Reçus").'</th>';
-						$h .= '<th class="text-center highlight-stick-both"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::OPENED).'</div>'.s("Lus").'</th>';
-						$h .= '<th class="text-center highlight-stick-left"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::ERROR_BLOCKED).'</div>'.s("Bloqués").'</th>';
+						$h .= '<th class="text-center t-highlight"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::SENT).'</div>'.s("Envoyés").'</th>';
+						$h .= '<th class="text-center t-highlight"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::DELIVERED).'</div>'.s("Reçus").'</th>';
+						$h .= '<th class="text-center t-highlight"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::OPENED).'</div>'.s("Lus").'</th>';
+						$h .= '<th class="text-center t-highlight"><div class="font-xl" style="margin-bottom: .25rem">'.self::getIcon(Email::ERROR_BLOCKED).'</div>'.s("Bloqués").'</th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -482,34 +482,34 @@ class CampaignUi {
 						switch($eCampaign['status']) {
 
 							case Campaign::CONFIRMED :
-								$h .= '<td class="campaign-item-stat highlight-stick-right">';
+								$h .= '<td class="campaign-item-stat t-highlight">';
 									$h .= $scheduled;
 								$h .= '</td>';
-								$h .= '<td colspan="3" class="text-center highlight-stick-left color-warning">';
+								$h .= '<td colspan="3" class="text-center t-highlight color-warning">';
 									$h .= \Asset::icon('alarm').' '.s("Envoi programmé le {date}", ['date' => \util\DateUi::numeric($eCampaign['scheduledAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
 								$h .= '</td>';
 								break;
 
 							case Campaign::SENT :
-								$h .= '<td class="campaign-item-stat highlight-stick-right">';
+								$h .= '<td class="campaign-item-stat t-highlight">';
 									$h .= $scheduled;
 								$h .= '</td>';
 
-								$h .= '<td class="campaign-item-stat highlight-stick-both">';
+								$h .= '<td class="campaign-item-stat t-highlight">';
 									if($eCampaign['scheduled'] > 0) {
 										$h .= '<span>'.$eCampaign['delivered'].'</span>';
 										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($eCampaign['delivered'] / $eCampaign['scheduled'] * 100)).'</div>';
 									}
 								$h .= '</td>';
 
-								$h .= '<td class="campaign-item-stat highlight-stick-both">';
+								$h .= '<td class="campaign-item-stat t-highlight">';
 									if($eCampaign['delivered'] > 0) {
 										$h .= '<span>'.$eCampaign['opened'].'</span>';
 										$h .= '<div class="campaign-item-stat-percent">'.s("{value} %", round($eCampaign['opened'] / $eCampaign['delivered'] * 100)).'</div>';
 									}
 								$h .= '</td>';
 
-								$h .= '<td class="campaign-item-stat highlight-stick-left">';
+								$h .= '<td class="campaign-item-stat t-highlight">';
 									if($eCampaign['scheduled'] > 0) {
 										$blocked = $eCampaign['failed'] + $eCampaign['spam'];
 										$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';

@@ -44,17 +44,17 @@ class BankAccountUi {
 
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<th colspan="3"class="text-center highlight-stick-left">'.s("Compte bancaire").'</th>';
-						$h .= '<th colspan="2" class="text-center highlight-stick-both">'.s("Compte comptable").'</th>';
+						$h .= '<th colspan="3"class="text-center t-highlight">'.s("Compte bancaire").'</th>';
+						$h .= '<th colspan="2" class="text-center t-highlight">'.s("Compte comptable").'</th>';
 						$h .= '<th class="text-center" rowspan="2">'.s("Opérations bancaires").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 					$h .= '<tr>';
-						$h .= '<th class="highlight-stick-both">'.s("Identifiant de la banque").'</th>';
-						$h .= '<th class="highlight-stick-both">'.s("Identifiant du compte").'</th>';
-						$h .= '<th class="highlight-stick-left">'.s("Nom du compte").'</th>';
-						$h .= '<th class="highlight-stick-both">'.s("Numéro de compte").'</th>';
-						$h .= '<th class="highlight-stick-both">'.s("Libellé de compte").'</th>';
+						$h .= '<th class="t-highlight">'.s("Identifiant de la banque").'</th>';
+						$h .= '<th class="t-highlight">'.s("Identifiant du compte").'</th>';
+						$h .= '<th class="t-highlight">'.s("Nom du compte").'</th>';
+						$h .= '<th class="t-highlight">'.s("Numéro de compte").'</th>';
+						$h .= '<th class="t-highlight">'.s("Libellé de compte").'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
@@ -65,9 +65,9 @@ class BankAccountUi {
 
 					$h .= '<tr>';
 
-						$h .= '<td class="highlight-stick-both">'.encode($eBankAccount['bankId']).'</td>';
-						$h .= '<td class="highlight-stick-both">'.encode($eBankAccount['accountId']).'</td>';
-						$h .= '<td class="highlight-stick-left">';
+						$h .= '<td class="t-highlight">'.encode($eBankAccount['bankId']).'</td>';
+						$h .= '<td class="t-highlight">'.encode($eBankAccount['accountId']).'</td>';
+						$h .= '<td class="t-highlight">';
 							if($canUpdate === TRUE) {
 								$eBankAccount->setQuickAttribute('farm', $eFarm['id']);
 								$h .= $eBankAccount->quick('description', $eBankAccount['description'] ? encode($eBankAccount['description']) : '<i>'.s("Non défini").'</i>');
@@ -75,7 +75,7 @@ class BankAccountUi {
 								$h .= encode($eBankAccount['description']);
 							}
 						$h .= '</td>';
-						$h .= '<td class="highlight-stick-both">';
+						$h .= '<td class="t-highlight">';
 							if($eBankAccount['account']->notEmpty()) {
 
 								if($eBankAccount['account']->acceptQuickUpdate('class')) {
@@ -90,7 +90,7 @@ class BankAccountUi {
 								$h .= '-';
 							}
 						$h .= '</td>';
-						$h .= '<td class="highlight-stick-both">';
+						$h .= '<td class="t-highlight">';
 							if($eBankAccount['account']->notEmpty()) {
 
 								if($eBankAccount['account']->acceptQuickUpdate('description')) {

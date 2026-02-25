@@ -79,7 +79,7 @@ new AdaptativeView('/vente/{id}/marche/ventes', function($data, MarketTemplate $
 
 		echo '<h2>'.s("Liste des ventes").'</h2>';
 
-		echo new \selling\SaleUi()->getList($data->e['farm'], $data->cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], link: fn($eSale) => \selling\SaleUi::urlMarket($data->e).'/vente/'.$eSale['id'], cPaymentMethod: $data->cPaymentMethod);
+		echo new \selling\SaleUi()->getList($data->e['farm'], $data->cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], cPaymentMethod: $data->cPaymentMethod);
 
 	}
 

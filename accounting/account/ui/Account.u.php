@@ -119,7 +119,7 @@ class AccountUi {
 						if($displayThirdParty) {
 							$h .= '<th rowspan="2">'.s("Tiers").'</th>';
 						}
-						$h .= '<th colspan="2" class="text-center highlight-stick-alone">';
+						$h .= '<th colspan="2" class="text-center t-highlight">';
 							$h .= s("TVA");
 						$h .= '</th>';
 
@@ -129,13 +129,13 @@ class AccountUi {
 							} else {
 								$colspan = 1;
 							}
-							$h .= '<th colspan="'.$colspan.'" class="text-center highlight-stick-alone">';
+							$h .= '<th colspan="'.$colspan.'" class="text-center t-highlight">';
 								$h .= s("Opérations");
 							$h .= '</th>';
 						}
 
 						if($displayProductsCount) {
-							$h .= '<th colspan="2" class="text-center highlight-stick-alone">';
+							$h .= '<th colspan="2" class="text-center t-highlight">';
 								$h .= s("Produits");
 							$h .= '</th>';
 						}
@@ -150,10 +150,10 @@ class AccountUi {
 					$h .= '</tr>';
 
 					$h .= '<tr>';
-						$h .= '<th class="highlight-stick-right">';
+						$h .= '<th class="t-highlight">';
 							$h .= s("Compte");
 						$h .= '</th>';
-						$h .= '<th class="highlight-stick-left">';
+						$h .= '<th class="t-highlight">';
 							$h .= s("Taux");
 						$h .= '</th>';
 						$financialYears = [];
@@ -166,12 +166,12 @@ class AccountUi {
 								}
 								if($eFarm['cFinancialYear']->count() >= 2) {
 									if($nFinancialYear === 0) {
-										$class = 'text-end highlight-stick-right';
+										$class = 'text-end t-highlight';
 									} else {
-										$class = 'text-end highlight-stick-left';
+										$class = 'text-end t-highlight';
 									}
 								} else {
-									$class = 'text-center highlight-stick-alone';
+									$class = 'text-center t-highlight';
 								}
 								$nFinancialYear++;
 								$financialYears[] = $eFinancialYear['id'];
@@ -179,10 +179,10 @@ class AccountUi {
 							}
 						}
 						if($displayProductsCount) {
-							$h .= '<th class="text-center highlight-stick-right">';
+							$h .= '<th class="text-center t-highlight">';
 								$h .= s("Particulier");
 							$h .= '</th>';
-							$h .= '<th class="text-center highlight-stick-left">';
+							$h .= '<th class="text-center t-highlight">';
 								$h .= s("Pro");
 							$h .= '</th>';
 						}
@@ -247,13 +247,13 @@ class AccountUi {
 							$h .= '</td>';
 						}
 
-						$h .= '<td class="highlight-stick-right">';
+						$h .= '<td class="t-highlight">';
 							if($eAccount['vatAccount']->notEmpty()) {
 								$h .= '<a '.attr('onclick', 'AccountSettings.scrollTo('.$eAccount['vatAccount']['id'].');').'>'.encode($eAccount['vatAccount']['class']).'</a>';
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="text-center td-min-content highlight-stick-left">';
+						$h .= '<td class="text-center td-min-content t-highlight">';
 
 							if(strlen($eAccount['class']) >= 3) {
 
@@ -288,11 +288,11 @@ class AccountUi {
 								$eFinancialYear = $eFarm['cFinancialYear']->offsetGet($financialYear);
 
 								if($nFinancialYear === 1) {
-									$class = 'highlight-stick-alone';
+									$class = 't-highlight';
 								} else if($nFinancialYearCurrent === 0) {
-									$class = 'highlight-stick-right';
+									$class = 't-highlight';
 								} else {
-									$class = 'highlight-stick-left';
+									$class = 't-highlight';
 								}
 								$h .= '<td class="text-end '.$class.'">';
 
@@ -308,8 +308,8 @@ class AccountUi {
 						}
 
 						if($displayProductsCount) {
-							$h .= '<td class="text-center highlight-stick-right"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?proAccount='.$eAccount['id'].'">'.(($eAccount['nProductPro'] ?? 0) > 0 ? $eAccount['nProductPro'] : '').'</a></td>';
-							$h .= '<td class="text-center highlight-stick-left"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?privateAccount='.$eAccount['id'].'">'.(($eAccount['nProductPrivate'] ?? 0) > 0 ? $eAccount['nProductPrivate'] : '').'</td>';
+							$h .= '<td class="text-center t-highlight"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?proAccount='.$eAccount['id'].'">'.(($eAccount['nProductPro'] ?? 0) > 0 ? $eAccount['nProductPro'] : '').'</a></td>';
+							$h .= '<td class="text-center t-highlight"><a href="'.new \farm\FarmUi()->urlSellingProductsAll($eFarm).'?privateAccount='.$eAccount['id'].'">'.(($eAccount['nProductPrivate'] ?? 0) > 0 ? $eAccount['nProductPrivate'] : '').'</td>';
 						}
 
 						if($displayActive) {

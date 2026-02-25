@@ -63,9 +63,9 @@ class BookUi {
 			$h .= '<th>'.s("Date").'</th>';
 			$h .= '<th class="hide-sm-down">'.s("Pièce").'</th>';
 			$h .= '<th>'.s("Description").'</th>';
-			$h .= '<td class="text-end highlight-stick-right hide-md-up">'.s("Montant").'</td>';
-			$h .= '<th class="text-end highlight-stick-right hide-sm-down">'.s("Débit (D)").'</th>';
-			$h .= '<th class="text-end highlight-stick-left hide-sm-down">'.s("Crédit (C)").'</th>';
+			$h .= '<td class="text-end t-highlight hide-md-up">'.s("Montant").'</td>';
+			$h .= '<th class="text-end t-highlight hide-sm-down">'.s("Débit (D)").'</th>';
+			$h .= '<th class="text-end t-highlight hide-sm-down">'.s("Crédit (C)").'</th>';
 		$h .= '</tr>';
 
 		return $h;
@@ -107,7 +107,7 @@ class BookUi {
 				$currentClass = $eOperation['class'];
 				$currentAccountLabel = $eOperation['accountLabel'];
 
-				$h .= '<tr class="tr-header">';
+				$h .= '<tr>';
 					$h .= '<td class="hide-sm-down"></td>';
 					$h .= '<td colspan="2">';
 					$h .= s("{class} - {description}", [
@@ -115,9 +115,9 @@ class BookUi {
 							'description' => $eOperation['account']['description'],
 						]);
 					$h .= '</td>';
-					$h .= '<td class="highlight-stick-right hide-md-up"></td>';
-					$h .= '<td class="highlight-stick-right hide-sm-down"></td>';
-					$h .= '<td class="highlight-stick-left hide-sm-down"></td>';
+					$h .= '<td class="t-highlight hide-md-up"></td>';
+					$h .= '<td class="t-highlight hide-sm-down"></td>';
+					$h .= '<td class="t-highlight hide-sm-down"></td>';
 				$h .= '</tr>';
 
 				$trClass = 'tr-border-bottom';
@@ -146,7 +146,7 @@ class BookUi {
 					$h .= encode($eOperation['description']);
 				$h .= '</td>';
 
-				$h .= '<td class="text-end highlight-stick-right hide-md-up">';
+				$h .= '<td class="text-end t-highlight hide-md-up">';
 					if($eOperation['type'] === Operation::DEBIT) {
 						$h .= \util\TextUi::money($eOperation['amount']);
 					} else {
@@ -154,14 +154,14 @@ class BookUi {
 					}
 				$h .= '</td>';
 
-				$h .= '<td class="text-end highlight-stick-right hide-sm-down">';
+				$h .= '<td class="text-end t-highlight hide-sm-down">';
 					$h .= match($eOperation['type']) {
 						Operation::DEBIT => \util\TextUi::money($eOperation['amount']),
 						default => '',
 					};
 				$h .= '</td>';
 
-				$h .= '<td class="text-end highlight-stick-left hide-sm-down">';
+				$h .= '<td class="text-end t-highlight hide-sm-down">';
 					$h .= match($eOperation['type']) {
 						Operation::CREDIT => \util\TextUi::money($eOperation['amount']),
 						default => '',
@@ -191,13 +191,13 @@ class BookUi {
 				$h .= '<td colspan="2" class="text-end">';
 					$h .= '<strong>'.s("Solde").'</strong>';
 				$h .= '</td>';
-				$h .= '<td class="text-end highlight-stick-right hide-md-up">';
+				$h .= '<td class="text-end t-highlight hide-md-up">';
 					$h .= '<strong>'.\util\TextUi::money($totalDebit - $totalCredit).'</strong>';
 				$h .= '</td>';
-				$h .= '<td class="text-end highlight-stick-right hide-sm-down">';
+				$h .= '<td class="text-end t-highlight hide-sm-down">';
 					$h .= '<strong>'.($totalDebit > $totalCredit ? \util\TextUi::money($balance) : '').'</strong>';
 				$h .= '</td>';
-					$h .= '<td class="text-end highlight-stick-lefthide-sm-down">';
+					$h .= '<td class="text-end t-highlighthide-sm-down">';
 					$h .= '<strong>'.($totalDebit <= $totalCredit ? \util\TextUi::money($balance) : '').'</strong>';
 				$h .= '</td>';
 			$h .= '</tr>';
@@ -250,13 +250,13 @@ class BookUi {
 				]).'</strong>';
 			$h .= '</td>';
 
-			$h .= '<td class="text-end highlight-stick-right hide-md-up">';
+			$h .= '<td class="text-end t-highlight hide-md-up">';
 				$h .= '<strong>'.\util\TextUi::money($debit - $credit).'</strong>';
 			$h .= '</td>';
-			$h .= '<td class="text-end highlight-stick-right hide-sm-down">';
+			$h .= '<td class="text-end t-highlight hide-sm-down">';
 				$h .= '<strong>'.\util\TextUi::money($debit).'</strong>';
 			$h .= '</td>';
-			$h .= '<td class="text-end highlight-stick-left hide-sm-down">';
+			$h .= '<td class="text-end t-highlight hide-sm-down">';
 				$h .= '<strong>'.\util\TextUi::money($credit).'</strong>';
 			$h .= '</td>';
 		$h .= '</tr>';
@@ -286,14 +286,14 @@ class BookUi {
 			}
 			$h .= '</td>';
 
-			$h .= '<td class="text-end highlight-stick-right hide-md-up">';
+			$h .= '<td class="text-end t-highlight hide-md-up">';
 			$h .= '</td>';
-			$h .= '<td class="text-end highlight-stick-right hide-sm-down">';
+			$h .= '<td class="text-end t-highlight hide-sm-down">';
 				if($debit - $credit < 0) {
 					$h .= '<strong>'.\util\TextUi::money(abs($debit - $credit)).'</strong>';
 				}
 			$h .= '</td>';
-			$h .= '<td class="text-end highlight-stick-left hide-sm-down">';
+			$h .= '<td class="text-end t-highlight hide-sm-down">';
 				if($debit - $credit > 0) {
 				$h .= '<strong>'.\util\TextUi::money($debit - $credit).'</strong>';
 				}

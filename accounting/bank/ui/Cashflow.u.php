@@ -184,9 +184,9 @@ class CashflowUi {
 						if($showReconciliate) {
 							$h .= '<th class="text-center td-min-content">'.s("Rapproché ?").'</th>';
 						}
-						$h .= '<th class="text-end highlight-stick-right td-vertical-align-top hide-md-up td-min-content">'.s("Montant").'</th>';
-						$h .= '<th class="text-end highlight-stick-right td-vertical-align-top hide-sm-down td-min-content">'.s("Débit (D)").'</th>';
-						$h .= '<th class="text-end highlight-stick-left td-vertical-align-top hide-sm-down td-min-content">'.s("Crédit (C)").'</th>';
+						$h .= '<th class="text-end t-highlight td-vertical-align-top hide-md-up td-min-content">'.s("Montant").'</th>';
+						$h .= '<th class="text-end t-highlight td-vertical-align-top hide-sm-down td-min-content">'.s("Débit (D)").'</th>';
+						$h .= '<th class="text-end t-highlight td-vertical-align-top hide-sm-down td-min-content">'.s("Crédit (C)").'</th>';
 						if($eFarm->usesAccounting()) {
 							$h .= '<th>'.s("Écritures comptables").'</th>';
 						}
@@ -244,17 +244,17 @@ class CashflowUi {
 							$h .= '</td>';
 						}
 
-						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
+						$h .= '<td class="text-end t-highlight td-vertical-align-top hide-md-up">';
 							$h .= \util\TextUi::money($eCashflow['amount']);
 						$h .= '</td>';
-						$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-sm-down">';
+						$h .= '<td class="text-end t-highlight td-vertical-align-top hide-sm-down">';
 							$h .= match($eCashflow['type']) {
 								CashflowElement::DEBIT => \util\TextUi::money(abs($eCashflow['amount'])),
 								default => '',
 							};
 						$h .= '</td>';
 
-						$h .= '<td class="text-end highlight-stick-left td-vertical-align-top hide-sm-down">';
+						$h .= '<td class="text-end t-highlight td-vertical-align-top hide-sm-down">';
 							$h .= match($eCashflow['type']) {
 								CashflowElement::CREDIT => \util\TextUi::money(abs($eCashflow['amount'])),
 								default => '',
@@ -990,7 +990,7 @@ class CashflowUi {
 		$h = '<table id="cashflow-operations" class="tr-even mt-2 tr-hover '.($cOperation->empty() ? 'hide' : '').'">';
 
 			$h .= '<thead>';
-				$h .= '<tr class="tr-header">';
+				$h .= '<tr>';
 					$h .= '<th>';
 						$h .= s("Date");
 					$h .= '</th>';

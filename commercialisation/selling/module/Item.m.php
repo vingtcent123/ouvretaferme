@@ -131,6 +131,7 @@ class ItemModel extends \ModuleModel {
 			['farm', 'deliveredAt'],
 			['product'],
 			['sale'],
+			['shopDate'],
 			['ingredientOf'],
 			['parent']
 		]);

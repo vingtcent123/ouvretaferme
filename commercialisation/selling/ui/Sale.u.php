@@ -189,13 +189,11 @@ class SaleUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?\Search $search = NULL, array $hide = [], array $dynamicHide = [], array $show = [], ?int $page = NULL, ?\Closure $link = NULL, ?string $group = 'date', ?string $segment = NULL, ?\Collection $cPaymentMethod = NULL): string {
+	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?\Search $search = NULL, array $hide = [], array $show = [], ?int $page = NULL, ?string $group = 'date', ?\Collection $cPaymentMethod = NULL): string {
 
 		if($cSale->empty()) {
 			return '';
 		}
-
-		$link ??= fn($eSale) => '/vente/'.$eSale['id'];
 
 		$h = '<div class="util-overflow-md stick-xs">';
 
@@ -210,12 +208,10 @@ class SaleUi {
 			$hasGroup = ($group !== NULL);
 		}
 
-		$hasFarm = count(array_count_values($cSale->getColumnCollection('farm')->getIds())) > 1;
 		$hasAverage = (in_array('average', $show) and $cSale->contains(fn($eSale) => $eSale->isMarket()));
 		$hasDocuments = $cSale->contains(fn($eSale) => $eSale->isMarket() === FALSE);
 
-		$previousGroup = NULL;
-		$previousSegment = NULL;
+		$previousGroup = -1;
 
 		$h .= '<table class="tr-even" data-batch="#batch-sale">';
 
@@ -243,10 +239,6 @@ class SaleUi {
 						$h .= '</th>';
 						$columns++;
 					}
-					if($hasFarm) {
-						$h .= '<th>'.s("Producteur").'</th>';
-						$columns++;
-					}
 					if(in_array('preparationStatus', $hide) === FALSE) {
 						$label = s("État");
 						$h .= '<th>'.($search ? $search->linkSort('preparationStatus', $label) : $label).'</th>';
@@ -264,7 +256,7 @@ class SaleUi {
 					}
 					if(in_array('items', $hide) === FALSE) {
 						$label = s("Articles");
-						$h .= '<th class="text-center '.($dynamicHide['items'] ?? 'hide-sm-down').'">'.($search ? $search->linkSort('items', $label, SORT_DESC) : $label).'</th>';
+						$h .= '<th class="text-center hide-sm-down">'.($search ? $search->linkSort('items', $label, SORT_DESC) : $label).'</th>';
 						$columns++;
 					}
 					$label = s("Montant");
@@ -281,7 +273,7 @@ class SaleUi {
 						$columns++;
 					}
 					if($hasDocuments and in_array('paymentMethod', $hide) === FALSE) {
-						$h .= '<th class="'.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">'.s("Règlement").'</th>';
+						$h .= '<th class="hide-md-down">'.s("Règlement").'</th>';
 						$columns++;
 					}
 					if(in_array('actions', $hide) === FALSE) {
@@ -292,10 +284,6 @@ class SaleUi {
 			$h .= '</thead>';
 			$h .= '<tbody>';
 
-				if($segment === 'point') {
-					$previousSegment = new \shop\Point();
-				}
-
 				foreach($cSale as $eSale) {
 
 					if($hasGroup) {
@@ -304,10 +292,6 @@ class SaleUi {
 
 							case 'date' :
 								$currentGroup = ($eSale['preparationStatus'] === Sale::DRAFT) ? Sale::DRAFT : $eSale['deliveredAt'];
-								break;
-
-							case 'customer' :
-								$currentGroup = $eSale['customer']['user']->empty() ? NULL : $eSale['customer']['user']['id'];
 								break;
 
 						}
@@ -339,14 +323,6 @@ class SaleUi {
 													};
 													break;
 
-												case 'customer' :
-													if($currentGroup === NULL) {
-														$h .= s("Client sans compte client");
-													} else {
-														$h .= $eSale['customer']['user']->getName();
-													}
-													break;
-
 											}
 
 										$h .= '</td>';
@@ -360,118 +336,19 @@ class SaleUi {
 
 					}
 
-					switch($segment) {
-
-						case 'point' :
-
-							$currentSegment = $eSale['shopPoint'];
-
-							if($currentSegment->is($previousSegment) === FALSE) {
-
-								if($previousSegment !== NULL) {
-									$h .= '</tbody>';
-									$h .= '<tbody>';
-								}
-
-									$h .= '<tr class="tr-title">';
-										$h .= '<th class="td-checkbox">';
-											$h .= '<label title="'.s("Cocher ces ventes / Décocher ces ventes").'">';
-												$h .= '<input type="checkbox" class="batch-all batch-all-group" onclick="Sale.toggleGroupSelection(this)"/>';
-											$h .= '</label>';
-										$h .= '</th>';
-										$h .= '<td colspan="'.$columns.'">';
-											if($eSale['shopPoint']->empty()) {
-												$h .= s("Aucun mode de livraison");
-											} else if($eSale['shopPoint']['type'] === \shop\Point::HOME) {
-												$h .= s("Livraison à domicile");
-											} else if($eSale['shopPoint']['type'] === \shop\Point::PLACE) {
-												$h .= encode($eSale['shopPoint']['name']);
-											}
-										$h .= '</td>';
-									$h .= '</tr>';
-								$h .= '</tbody>';
-								$h .= '<tbody>';
-
-							}
-
-							$previousSegment = $currentSegment;
-
-							break;
-
-					}
-
-					$batch = [];
-
-					if(
-						$eSale->canWrite() === FALSE or
-						$eSale['preparationStatus'] !== Sale::CONFIRMED
-					) {
-						$batch[] = 'not-prepare';
-					}
-
-					if($eSale->canWrite()) {
-
-						if($eSale->acceptStatusConfirmed()) {
-							$batch[] = 'accept-confirmed';
-						}
-
-						if($eSale->acceptStatusCanceled()) {
-							$batch[] = 'accept-canceled';
-						}
-
-						if($eSale->acceptStatusDelivered()) {
-							$batch[] = 'accept-delivered';
-						}
-
-						if($eSale->acceptStatusPrepared()) {
-							$batch[] = 'accept-prepared';
-						}
-
-						if(
-							$eSale->acceptStatusConfirmed() or
-							$eSale->acceptStatusCanceled() or
-							$eSale->acceptStatusDelivered() or
-							$eSale->acceptStatusPrepared()
-						) {
-							$batch[] = 'accept-status';
-						}
-
-						if($eSale->acceptDelete()) {
-							$batch[] = 'accept-delete';
-						}
-
-						if($eSale->acceptReplacePayment()) {
-							$batch[] = 'accept-replace-payment';
-						}
-
-						if($eSale->acceptPayPayment()) {
-							$batch[] = 'accept-pay-payment';
-						}
-
-					}
-
 					$h .= '<tr';
 						if(in_array($eSale['preparationStatus'], [Sale::CANCELED, Sale::EXPIRED])) {
 							$h .= ' style="opacity: 0.5"';
 						}
 					$h .= '>';
 
-						$h .= '<td class="td-checkbox">';
-							if($eSale->canRead()) {
-								$h .= '<label>';
-									$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" oninput="Sale.changeSelection()" data-batch-amount-excluding="'.($eSale['priceExcludingVat'] ?? 0.0).'" data-batch-amount-including="'.($eSale['priceIncludingVat'] ?? 0.0).'" data-batch-taxes="'.($eSale['hasVat'] ? $eSale['taxes'] : '').'" data-batch="'.implode(' ', $batch).'"/>';
-								$h .= '</label>';
-							}
-						$h .= '</td>';
+						$h .= $this->getBatchList($eSale);
 
 						$h .= '<td class="td-min-content text-center">';
-							if(
-								$eSale->canRead() === FALSE or
-								$eSale->isMarketSale()
-							) {
+							if($eSale->canRead() === FALSE) {
 								$h .= '<span class="btn btn-sm disabled">'.$eSale['document'].'</span>';
 							} else {
-								$h .= '<a href="'.$link($eSale).'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale['document'].'</a>';
+								$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale['document'].'</a>';
 							}
 						$h .= '</td>';
 
@@ -490,27 +367,6 @@ class SaleUi {
 										$h .= CustomerUi::getCategory($eSale['customer']);
 									$h .= '</div>';
 								}
-							$h .= '</td>';
-						}
-
-						if($hasFarm) {
-							$h .= '<td>';
-
-								$h .= encode($eSale['farm']['name']);
-
-								if(
-									$eSale['customer']['user']->empty() and
-									in_array('customer', $hide)
-								) {
-									$h .= '<div class="font-sm color-muted">';
-									if($eSale->canRead()) {
-										$h .= CustomerUi::link($eSale['customer']);
-									} else {
-										$h .= encode($eSale['customer']->getName());
-									}
-									$h .= '</div>';
-								}
-
 							$h .= '</td>';
 						}
 
@@ -563,7 +419,7 @@ class SaleUi {
 						}
 
 						if(in_array('items', $hide) === FALSE) {
-							$h .= '<td class="text-center '.($dynamicHide['items'] ?? 'hide-sm-down').'">';
+							$h .= '<td class="text-center hide-sm-down">';
 								$h .= $eSale['items'];
 							$h .= '</td>';
 						}
@@ -603,32 +459,12 @@ class SaleUi {
 						}
 
 						if(in_array('point', $show)) {
-
-							$h .= '<td class="sale-item-point">';
-
-								if($eSale['shopPoint']->notEmpty()) {
-
-									$eSale['shopPoint']->expects(['type', 'name']);
-
-									$h .= [
-										\shop\Point::HOME => s("Domicile"),
-										\shop\Point::PLACE => s("Point de retrait")
-									][$eSale['shopPoint']['type']];
-									$h .= '<div class="util-annotation">';
-										$h .= match($eSale['shopPoint']['type']) {
-											\shop\Point::HOME => '<a href="'.$eSale->getDeliveryAddressLink().'" target="_blank" class="color-muted">'.$eSale->getDeliveryAddress('html', $eFarm).'</a>',
-											\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
-										};
-									$h .= '</div>';
-
-								}
-							$h .= '</td>';
-
+							$h .= $this->getPointList($eSale);
 						}
 
 						if($hasDocuments and in_array('paymentMethod', $hide) === FALSE) {
 
-							$h .= '<td class="sale-item-payment-type '.($dynamicHide['paymentMethod'] ?? 'hide-md-down').'">';
+							$h .= '<td class="sale-item-payment-type hide-md-down">';
 								if($eSale['invoice']->empty()) {
 									$h .= PaymentTransactionUi::getPaymentBox($eSale);
 								} else {
@@ -638,13 +474,7 @@ class SaleUi {
 
 						}
 
-						if(in_array('actions', $hide) === FALSE) {
-
-							$h .= '<td class="sale-item-actions">';
-								$h .= $this->getUpdate($eSale, 'btn-outline-secondary');
-							$h .= '</td>';
-
-						}
+						$h .= $this->getEndList($eSale, $hide, $show);
 
 					$h .= '</tr>';
 
@@ -660,6 +490,376 @@ class SaleUi {
 		}
 
 		$h .= $this->getBatch($eFarm, $cPaymentMethod);
+
+		return $h;
+
+	}
+
+	public function getShopList(\shop\Shop $eShop, \shop\Date $eDate, \Collection $cxSale, ?int $page = NULL, ?\Collection $cPaymentMethod = NULL): string {
+
+		$eDate->expects(['groupBy']);
+
+		$h = '<div class="util-overflow-md stick-xs">';
+
+		$columns = 9;
+
+		$h .= '<table class="tr-even" data-batch="#batch-sale">';
+
+			$h .= '<thead>';
+
+				$h .= '<tr>';
+
+					$h .= '<th class="td-min-content">';
+						$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
+							$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleSelection(this)"/>';
+						$h .= '</label>';
+					$h .= '</th>';
+
+					$h .= '<th class="text-center td-min-content">'.s("Vente").'</th>';
+
+					if($eShop->isShared()) {
+						$h .= '<th>'.s("Producteur").'</th>';
+					} else {
+						$h .= '<th>'.s("Client").'</th>';
+					}
+					$h .= '<th>'.s("État").'</th>';
+					if($eDate['deliveryDate'] === NULL) {
+						$h .= '<th>'.s("Vente").'</th>';
+						$columns++;
+					}
+					$h .= '<th class="text-end">'.s("Montant").'</th>';
+					if($eDate['points']) {
+						$h .= '<th>'.s("Mode de livraison").'</th>';
+						$columns++;
+					}
+					$h .= '<th class="hide-md-down">'.s("Règlement").'</th>';
+					$h .= '<th></th>';
+				$h .= '</tr>';
+
+			$h .= '</thead>';
+			$h .= '<tbody data-level="1">';
+
+				$h .= $this->getGroupForList($eShop, $eDate, $cxSale, $eDate['groupBy'], $columns);
+
+			$h .= '</tbody>';
+		$h .= '</table>';
+
+		$h .= '</div>';
+
+		if($eDate['nSale'] !== NULL and $page !== NULL) {
+			$h .= \util\TextUi::pagination($page, $eDate['nSale'] / 100);
+		}
+
+		$h .= $this->getBatch($eShop['farm'], $cPaymentMethod);
+
+		return $h;
+
+	}
+
+	protected function getGroupForList(\shop\Shop $eShop, \shop\Date $eDate, \Collection $cxSale, array $groupBy, int $columns, int $level = 1): string {
+
+		if($groupBy === []) {
+			return $this->getSalesForList($eShop, $eDate, $cxSale);
+		}
+
+		$group = array_shift($groupBy);
+		$previous = NULL;
+
+		$h = '';
+
+		foreach($cxSale as $current => $cSale) {
+
+			if($current !== $previous) {
+
+				if($previous !== NULL) {
+					$h .= '</tbody>';
+					$h .= '<tbody data-level="'.$level.'">';
+				}
+
+					$h .= '<tr class="tr-title '.($level === 1 ? 'util-stick-main' : '').'">';
+						$h .= '<td class="td-checkbox">';
+							$h .= '<label title="'.s("Cocher ces ventes / Décocher ces ventes").'">';
+								$h .= '<input type="checkbox" class="batch-all batch-all-group" onclick="Sale.toggleLevelSelection(this, '.$level.')"/>';
+							$h .= '</label>';
+						$h .= '</td>';
+						$h .= '<td colspan="'.$columns.'">';
+
+							switch($group) {
+
+								case 'point' :
+
+									$eSaleFirst = $cSale->find(fn() => TRUE, limit: 1, depth: $cSale->getDepth());
+
+									if($eSaleFirst['shopPoint']->empty()) {
+										$h .= '<h4>'.s("Aucun mode de livraison").'</h4>';
+									} else if($eSaleFirst['shopPoint']['type'] === \shop\Point::HOME) {
+										$h .= '<h4>'.s("Livraison à domicile").'</h4>';
+									} else if($eSaleFirst['shopPoint']['type'] === \shop\Point::PLACE) {
+										$h .= '<h4>'.encode($eSaleFirst['shopPoint']['name']).'</h4>';
+									}
+									break;
+
+								case 'date' :
+									$h .= match($current) {
+										currentDate() => s("Aujourd'hui"),
+										default => \util\DateUi::textual($current)
+									};
+									break;
+
+								case 'customer' :
+									if($current === NULL) {
+										$h .= s("Client sans compte client");
+									} else {
+
+										$eSaleFirst = $cSale->find(fn() => TRUE, limit: 1, depth: $cSale->getDepth());
+
+
+										if($eSaleFirst['shopSharedCustomer']->notEmpty()) {
+											$h .= $eSaleFirst['shopSharedCustomer']->getName();
+											$h .= '<span class="util-annotation"> / 	'.CustomerUi::getCategory($eSaleFirst['shopSharedCustomer']).'</span>';
+										} else {
+											$h .= \Asset::icon('exclamation-circle').'  '.s("Non client sur le groupe");
+										}
+
+									}
+									break;
+
+							}
+
+						$h .= '</td>';
+					$h .= '</tr>';
+				$h .= '</tbody>';
+				$h .= '<tbody data-level="'.($level + 1).'">';
+
+				$previous = $current;
+
+			}
+
+			if($groupBy) {
+				$h .= $this->getGroupForList($eShop, $eDate, $cSale, $groupBy, $columns, $level + 1);
+			} else {
+				$h .= $this->getSalesForList($eShop, $eDate, $cSale);
+			}
+
+		}
+
+		return $h;
+
+	}
+
+	protected function getSalesForList(\shop\Shop $eShop, \shop\Date $eDate, \Collection $cSale): string {
+
+		$h = '';
+
+		foreach($cSale as $eSale) {
+
+			$h .= '<tr';
+				if(in_array($eSale['preparationStatus'], [Sale::CANCELED, Sale::EXPIRED])) {
+					$h .= ' style="opacity: 0.5"';
+				}
+			$h .= '>';
+
+				$h .= $this->getBatchList($eSale);
+
+				$h .= '<td class="td-min-content text-center">';
+					if($eSale->canRead() === FALSE) {
+						$h .= '<span class="btn btn-sm disabled">'.$eSale['document'].'</span>';
+					} else {
+						$h .= '<a href="'.self::url($eSale).'" class="btn btn-sm '.($eSale['deliveredAt'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eSale['document'].'</a>';
+					}
+				$h .= '</td>';
+
+				if($eShop->isShared()) {
+					$h .= '<td>';
+						$h .= encode($eSale['farm']['name']);
+
+						if($eSale['shopSharedCustomer']->empty()) {
+							$h .= '<span class="util-annotation ml-1">'.encode($eSale['customer']->getName()).'</span>';
+						} else {
+							if($eSale['customer']->canRead()) {
+								$h .= '<a href="/client/'.$eSale['customer']['id'].'" class="util-annotation ml-1">'.encode($eSale['customer']['number']).'</a>';
+							}
+						}
+
+					$h .= '</td>';
+				} else {
+					$h .= '<td class="sale-item-name">';
+						if($eSale->canRead()) {
+							$h .= CustomerUi::link($eSale['customer']);
+						} else {
+							$h .= encode($eSale['customer']->getName());
+						}
+						if($eSale['customer']->notEmpty()) {
+							$h .= '<div class="util-annotation">';
+								$h .= CustomerUi::getCategory($eSale['customer']);
+							$h .= '</div>';
+						}
+					$h .= '</td>';
+				}
+
+				$h .= '<td class="sale-item-status">';
+					$h .= $this->getPreparationStatusForUpdate($eSale, 'btn-xs');
+				$h .= '</td>';
+
+				if($eDate['deliveryDate'] === NULL) {
+
+					$h .= '<td class="sale-item-delivery">';
+						$h .= '<div>';
+							if($eSale->acceptUpdateDeliveredAt() === FALSE) {
+								$h .= $eSale['deliveredAt'] ? \util\DateUi::numeric($eSale['deliveredAt']) : s("Non planifiée");
+							} else {
+								if($eSale['deliveredAt'] !== NULL) {
+									$h .= $eSale->quick('deliveredAt', \util\DateUi::numeric($eSale['deliveredAt']));
+								} else {
+									$h .= $eSale->quick('deliveredAt', s("Non planifiée"));
+								}
+							}
+						$h .= '</div>';
+						$h .= '<div class="sale-item-delivery-source util-annotation">';
+							if($eSale['shop']->notEmpty()) {
+								$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
+								if($eSale['shopShared']) {
+									$h .= '  <span class="util-badge bg-secondary">'.\Asset::icon('people-fill').'</span>';
+								}
+							} else if($eSale->isMarketSale()) {
+								$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']->getName()).'</a>';;
+							} else if($eSale->isMarket()) {
+								if($eSale['marketSales'] > 0) {
+									$h .= \Asset::icon('cart4').' '.p("{value} vente", "{value} ventes", $eSale['marketSales']);
+								}
+							}
+						$h .= '</div>';
+					$h .= '</td>';
+
+				}
+
+				$h .= '<td class="sale-item-price text-end">';
+					$h .= SaleUi::getTotal($eSale);
+				$h .= '</td>';
+
+				if($eDate['points']) {
+					$h .= $this->getPointList($eSale);
+				}
+
+				$h .= '<td class="sale-item-payment-type hide-md-down">';
+					if($eSale['invoice']->empty()) {
+						$h .= PaymentTransactionUi::getPaymentBox($eSale);
+					} else {
+						$h .= PaymentTransactionUi::getPaymentBox($eSale['invoice']);
+					}
+				$h .= '</td>';
+
+				$h .= $this->getEndList($eSale);
+
+			$h .= '</tr>';
+
+		}
+
+		return $h;
+
+	}
+
+	protected function getBatchList(Sale $eSale): string {
+
+		$batch = [];
+
+		if(
+			$eSale->canWrite() === FALSE or
+			$eSale['preparationStatus'] !== Sale::CONFIRMED
+		) {
+			$batch[] = 'not-prepare';
+		}
+
+		if($eSale->canWrite()) {
+
+			if($eSale->acceptStatusConfirmed()) {
+				$batch[] = 'accept-confirmed';
+			}
+
+			if($eSale->acceptStatusCanceled()) {
+				$batch[] = 'accept-canceled';
+			}
+
+			if($eSale->acceptStatusDelivered()) {
+				$batch[] = 'accept-delivered';
+			}
+
+			if($eSale->acceptStatusPrepared()) {
+				$batch[] = 'accept-prepared';
+			}
+
+			if(
+				$eSale->acceptStatusConfirmed() or
+				$eSale->acceptStatusCanceled() or
+				$eSale->acceptStatusDelivered() or
+				$eSale->acceptStatusPrepared()
+			) {
+				$batch[] = 'accept-status';
+			}
+
+			if($eSale->acceptDelete()) {
+				$batch[] = 'accept-delete';
+			}
+
+			if($eSale->acceptReplacePayment()) {
+				$batch[] = 'accept-replace-payment';
+			}
+
+			if($eSale->acceptPayPayment()) {
+				$batch[] = 'accept-pay-payment';
+			}
+
+		}
+
+		$h = '<td class="td-checkbox">';
+			if($eSale->canRead()) {
+				$h .= '<label>';
+					$h .= '<input type="checkbox" name="batch[]" value="'.$eSale['id'].'" oninput="Sale.changeSelection()" data-batch-amount-excluding="'.($eSale['priceExcludingVat'] ?? 0.0).'" data-batch-amount-including="'.($eSale['priceIncludingVat'] ?? 0.0).'" data-batch-taxes="'.($eSale['hasVat'] ? $eSale['taxes'] : '').'" data-batch="'.implode(' ', $batch).'"/>';
+				$h .= '</label>';
+			}
+		$h .= '</td>';
+
+		return $h;
+
+	}
+
+	protected function getPointList(Sale $eSale): string {
+
+		$h = '<td class="sale-item-point">';
+
+			if($eSale['shopPoint']->notEmpty()) {
+
+				$eSale['shopPoint']->expects(['type', 'name']);
+
+				$h .= [
+					\shop\Point::HOME => s("Domicile"),
+					\shop\Point::PLACE => s("Point de retrait")
+				][$eSale['shopPoint']['type']];
+				$h .= '<div class="util-annotation">';
+					$h .= match($eSale['shopPoint']['type']) {
+						\shop\Point::HOME => '<a href="'.$eSale->getDeliveryAddressLink().'" target="_blank" class="color-muted">'.$eSale->getDeliveryAddress('html', $eSale['farm']).'</a>',
+						\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
+					};
+				$h .= '</div>';
+
+			}
+		$h .= '</td>';
+
+		return $h;
+
+	}
+
+	protected function getEndList(Sale $eSale, array $hide = []): string {
+
+		$h = '';
+
+		if(in_array('actions', $hide) === FALSE) {
+
+			$h .= '<td class="sale-item-actions">';
+				$h .= $this->getUpdate($eSale, 'btn-outline-secondary');
+			$h .= '</td>';
+
+		}
 
 		return $h;
 
@@ -1525,7 +1725,7 @@ class SaleUi {
 
 	public function getSummary(Sale $eSale): string {
 
-		$h = '<table class="tr-bordered sale-summary">';
+		$h = '<table class="table-transparent tr-bordered sale-summary">';
 
 			if($eSale['discount'] > 0) {
 

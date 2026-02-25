@@ -256,7 +256,7 @@ new \selling\SalePage()
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		if($data->e->isMarketSale()) {
-			throw new NotExpectedAction('Market sale');
+			throw new RedirectAction('/vente/'.$data->e['marketParent']['id'].'/marche/vente/'.$data->e['id']);
 		}
 
 		$data->cItem = \selling\SaleLib::getItems($data->e, withIngredients: TRUE);

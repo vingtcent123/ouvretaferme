@@ -8,14 +8,15 @@
 	--muted-light: #d5d5d5;
 	--selling: #722583;
 	--basket: #b17e2f;
-	--background-body: #e4e4e8;
-	--background: #ededf1;
-	--background-dark: #e9ece9;
+	--background-body: #e8e8eb;
+	--background: #ececef;
+	--background-dark: #e9e9eb;
 	--background-highlight: #c49f1033;
 	--background-light: #f5f5f7;
-	--background-odd: #fafafc;
-	--background-even: #ededf1;
+	--background-odd: #fcfcfe;
+	--background-even: #f6f6f8;
 	--background-game: #f7ecda;
+	--info: #e1eaff;
 	--primary: #373737;
 	--secondary: #4a4a70;
 	--secondary-rgb: 74, 74, 112;
@@ -54,7 +55,7 @@
 
 :root:has(body[data-template~="farm-production"]) {
 	--secondary: var(--production);
-	--info: #c9fdd7;
+	--info: #e1ffe4;
 }
 
 :root:has(body[data-template~="farm-commercialisation"]) {
@@ -62,7 +63,7 @@
 
 :root:has(body[data-template~="farm-accounting"]) {
 	--secondary: var(--accounting);
-	--info: #c9ecfd;
+	--info: #e1fbff;
 }
 
 ::selection {
@@ -367,6 +368,16 @@ header h1:only-child {
 	margin: 0;
 }
 
+@media (min-width: 768px) {
+
+	.util-stick-main {
+		position: sticky;
+		top: calc(var(--mainSticky) - 1px);
+		z-index: 1;
+	}
+
+}
+
 body {
 	overflow-y: scroll;
 }
@@ -381,7 +392,6 @@ body > nav {
 body > nav a {
 	color: white;
 }
-
 
 div.nav-wrapper {
 	display: flex;

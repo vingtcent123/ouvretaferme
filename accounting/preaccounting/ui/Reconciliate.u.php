@@ -70,7 +70,7 @@ Class ReconciliateUi {
 						$h .= '<th>'.\Asset::icon('calendar-range').' '.s("Date").'</th>';
 						$h .= '<th>'.s("Rapprochement").'</th>';
 						$h .= '<th># '.s("Référence").'</th>';
-						$h .= '<th class="td-min-content text-end highlight-stick-right">'.\Asset::icon('currency-euro').'&nbsp;'.s("Montant").'</th>';
+						$h .= '<th class="td-min-content text-end t-highlight">'.\Asset::icon('currency-euro').'&nbsp;'.s("Montant").'</th>';
 						$h .= '<th class="text-center">'.s("Confiance").'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance entre les dates ?").'">'.\Asset::icon('calendar-range').'</th>';
 						$h .= '<th class="td-min-content" title="'.s("Correspondance avec le tiers ?").'">'.\Asset::icon('person').'</th>';
@@ -88,14 +88,14 @@ Class ReconciliateUi {
 						$currentConfidence = $element['confidence'];
 						$h .= '<tbody data-confidence="'.$currentConfidence[0].'">';
 
-							$h .= '<tr class="tr-title tr-header">';
+							$h .= '<tr class="tr-title">';
 								$h .= '<td class="td-checkbox">';
 									$h .= '<label>';
 										$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="reconciliate" data-confidence="'.$currentConfidence[0].'" onclick="Reconciliate.toggleGroupSelection(this)"/>';
 									$h .= '</label>';
 								$h .= '</td>';
 								$h .= '<td colspan="3">'.s("Indice de confiance {value}", '<span class="color-'.$currentConfidence[1].'" style="font-size: 1.5rem;">'.\Asset::icon($currentConfidence[0].'-circle-fill').'</span>').'</td>';
-								$h .= '<td class="text-end highlight-stick-right"></td>';
+								$h .= '<td class="text-end t-highlight"></td>';
 								$h .= '<td></td>';
 								$h .= '<td></td>';
 								$h .= '<td></td>';
@@ -125,7 +125,7 @@ Class ReconciliateUi {
 								$h .= '<div class="reconciliate-badge-container"><div class="reconciliate-badge util-badge bg-'.($element['customerType'] ?? '').'">'.\Asset::icon('person').'</div> <div>'.encode($element['customer']).'</div></div>';
 							$h .= '</td>';
 							$h .= '<td>'.$element['reference'].'</td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($element['amount']).'</td>';
+							$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($element['amount']).'</td>';
 							$h .= '<td></td>';
 							$h .= '<td></td>';
 							$h .= '<td></td>';
@@ -144,7 +144,7 @@ Class ReconciliateUi {
 							$h .= '<td colspan="2">';
 								$h .= '<div class="reconciliate-badge-container"><div class="reconciliate-badge util-badge bg-accounting">'.\Asset::icon('bank').'</div> <div>'.encode($eCashflow->getMemo()).'</div></div>';
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-right">'.\util\TextUi::money($eCashflow['amount']).'</td>';
+							$h .= '<td class="text-end t-highlight">'.\util\TextUi::money($eCashflow['amount']).'</td>';
 							$h .= '<td class="text-center td-vertical-align-top" rowspan="2">'.$this->confidence($eSuggestion).'</td>';
 							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2">'.$this->reason($eSuggestion,  $element, \preaccounting\Suggestion::DATE).'</td>';
 							$h .= '<td class="td-min-content td-vertical-align-top" rowspan="2">'.$this->reason($eSuggestion,  $element,\preaccounting\Suggestion::THIRD_PARTY).'</td>';
@@ -200,7 +200,7 @@ Class ReconciliateUi {
 								$h .= '</a>';
 
 							$h .= '</td>';
-							$h .= '<td class="text-end highlight-stick-right"></td>';
+							$h .= '<td class="text-end t-highlight"></td>';
 
 						$h .= '</tr>';
 

@@ -71,7 +71,7 @@ Class InvoiceUi {
 						$h .= '<th>'.s("État").'</th>';
 						$h .= '<th>'.s("Date de facture").'</th>';
 						$h .= '<th>'.s("Date de paiement").'</th>';
-						$h .= '<th class="highlight-stick-alone text-center">'.s("Montant").'</th>';
+						$h .= '<th class="t-highlight text-center">'.s("Montant").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -90,7 +90,7 @@ Class InvoiceUi {
 							$h .= '<td></td>';
 							$h .= '<td>'.\util\DateUi::numeric($eInvoice['issuedAt']).'</td>';
 							$h .= '<td>'.($eInvoice['paymentDueAt'] ? \util\DateUi::numeric($eInvoice['paymentDueAt']) : '').'</td>';
-							$h .= '<td class="highlight-stick-alone text-center">';
+							$h .= '<td class="t-highlight text-center">';
 								if($eInvoice['amountIncludingVat'] !== NULL) {
 									$h .= \util\TextUi::money($eInvoice['amountIncludingVat']).' <small class="color-muted">'.s("TTC").'</small>';
 								} else if($eInvoice['amountExcludingVat'] !== NULL) {

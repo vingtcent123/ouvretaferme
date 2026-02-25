@@ -387,10 +387,10 @@ class JournalUi {
 						$h .= '<th>'.s("Libellé").'</th>';
 						$h .= '<th>'.s("Tiers").'</th>';
 
-						$h .= '<th class="text-end highlight-stick-right hide-md-up">'.s("Montant").'</th>';
+						$h .= '<th class="text-end t-highlight hide-md-up">'.s("Montant").'</th>';
 
-						$h .= '<th class="text-end highlight-stick-right hide-sm-down">'.s("Débit (D)").'</th>';
-						$h .= '<th class="text-end highlight-stick-left hide-sm-down">'.s("Crédit (C)").'</th>';
+						$h .= '<th class="text-end t-highlight hide-sm-down">'.s("Débit (D)").'</th>';
+						$h .= '<th class="text-end t-highlight hide-sm-down">'.s("Crédit (C)").'</th>';
 
 						if($readonly === FALSE) {
 							$h .= '<th></th>';
@@ -440,9 +440,9 @@ class JournalUi {
 										$h .= $dateDisplay;
 									}
 								$h .= '</td>';
-								$h .= '<td class="text-end highlight-stick-right hide-sm-down">';
+								$h .= '<td class="text-end t-highlight hide-sm-down">';
 								$h .= '</td>';
-								$h .= '<td class="text-end highlight-stick-left hide-sm-down">';
+								$h .= '<td class="text-end t-highlight hide-sm-down">';
 								$h .= '</td>';
 								if($readonly === FALSE) {
 									$h .= '<td></td>';
@@ -555,7 +555,7 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
+							$h .= '<td class="text-end t-highlight td-vertical-align-top hide-md-up">';
 								if($eOperation['type'] === Operation::DEBIT) {
 									$h .= '<span class="journal-margin-debit">'.\util\TextUi::money($eOperation['amount']).'</span>';
 								} else {
@@ -563,13 +563,13 @@ class JournalUi {
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-sm-down">';
+							$h .= '<td class="text-end t-highlight td-vertical-align-top hide-sm-down">';
 								if($eOperation['type'] === Operation::DEBIT) {
 									$h .= \util\TextUi::money($eOperation['amount']);
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top hide-sm-down">';
+							$h .= '<td class="text-end t-highlight td-vertical-align-top hide-sm-down">';
 								if($eOperation['type'] === Operation::CREDIT) {
 									$h .= \util\TextUi::money($eOperation['amount']);
 								}
@@ -711,15 +711,15 @@ class JournalUi {
 							}
 							$h .= '<td colspan="'.$colspan.'">'.s("Totaux").'</td>';
 
-							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
+							$h .= '<td class="text-end t-highlight td-vertical-align-top hide-md-up">';
 								$h .= \util\TextUi::money($totalDebit - $totalCredit);
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-sm-down">';
+							$h .= '<td class="text-end t-highlight td-vertical-align-top hide-sm-down">';
 								$h .= \util\TextUi::money($totalDebit);
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top hide-sm-down">';
+							$h .= '<td class="text-end t-highlight td-vertical-align-top hide-sm-down">';
 								$h .= \util\TextUi::money($totalCredit);
 							$h .= '</td>';
 
@@ -747,17 +747,17 @@ class JournalUi {
 							}
 							$h .= '<td colspan="'.$colspan.'">'.$text.'</td>';
 
-							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top hide-md-up">';
+							$h .= '<td class="text-end t-highlight td-vertical-align-top hide-md-up">';
 								$h .= \util\TextUi::money(round($totalDebit - $totalCredit, 2));
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-right td-vertical-align-top">';
+							$h .= '<td class="text-end t-highlight td-vertical-align-top">';
 								if($totalDebit > $totalCredit) {
 									$h .= \util\TextUi::money(round($totalDebit - $totalCredit, 2));
 								}
 							$h .= '</td>';
 
-							$h .= '<td class="text-end highlight-stick-left td-vertical-align-top">';
+							$h .= '<td class="text-end t-highlight td-vertical-align-top">';
 								if($totalDebit <= $totalCredit) {
 									$h .= \util\TextUi::money(round($totalCredit - $totalDebit, 2));
 								}

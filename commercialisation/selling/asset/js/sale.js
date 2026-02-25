@@ -78,6 +78,26 @@ class Sale {
 
 	}
 
+	static toggleLevelSelection(target, level) {
+
+		let iterate = target.firstParent('tbody');
+
+		while(
+			iterate.nextSibling &&
+			parseInt(iterate.nextSibling.dataset.level) > level
+		) {
+
+			CheckboxField.all(iterate.nextSibling, target.checked, '.td-checkbox [type="checkbox"]');
+
+			iterate = iterate.nextSibling;
+
+
+		}
+
+		this.changeSelection(target);
+
+	}
+
 	static toggleGroupSelection(target) {
 
 		CheckboxField.all(target.firstParent('tbody').nextSibling, target.checked, '[name^="batch[]"]');

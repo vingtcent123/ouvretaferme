@@ -843,6 +843,26 @@ class Collection extends ArrayIterator {
 	}
 
 	/**
+	 * Count value by depth
+	 *
+	 */
+	public function countByDepth(?int $depth = NULL): int {
+
+		$depth ??= $this->getDepth();
+
+		$n = 0;
+
+		if($depth > 1) {
+			foreach($this as $c) {
+				return $n + $c->countByDepth($depth - 1);
+			}
+		} else {
+			return $this->count();
+		}
+
+	}
+
+	/**
 	 * Returns TRUE if at least one $number matches the callback
 	 *
 	 */
@@ -976,7 +996,21 @@ class Collection extends ArrayIterator {
 	/*
 	 * Sort the collection using a property
 	 */
-	public function sort(Closure|array|string $properties, bool $binary = FALSE, bool $natural = FALSE): Collection {
+	public function sort(Closure|array|string $properties, bool $binary = FALSE, bool $natural = FALSE, int $depth = 1): Collection {
+
+		if($depth > 1) {
+			foreach($this as $c) {
+				$c->sort($properties, $binary, $natural, $depth - 1);
+			}
+		} else {
+			$this->applySorting($properties, $binary, $natural);
+		}
+
+		return $this;
+
+	}
+
+	private function applySorting(Closure|array|string $properties, bool $binary = FALSE, bool $natural = FALSE): void {
 
 		if(is_closure($properties) === FALSE) {
 
@@ -1121,8 +1155,6 @@ class Collection extends ArrayIterator {
 		}
 
 		$this->uasort($callback);
-
-		return $this;
 
 	}
 

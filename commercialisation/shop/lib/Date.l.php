@@ -291,10 +291,11 @@ class DateLib extends DateCrud {
 		$eDate['page'] = $page;
 		$eDate['number'] = 200;
 
-		$eDate['cSale'] = \selling\SaleLib::getByDate($eDate, $eDate['eFarmSelected'], $eDate['page'], $eDate['number']);
+		$eDate['cxSale'] = \selling\SaleLib::getByDate($eShop, $eDate, $eDate['eFarmSelected'], $eDate['page'], $eDate['number']);
+		$sales = $eDate['cxSale']->countByDepth();
 
-		if($eDate['cSale']->count() < $eDate['number']) {
-			$eDate['nSale'] = $eDate['cSale']->count() + $eDate['page'] * $eDate['number'];
+		if($sales < $eDate['number']) {
+			$eDate['nSale'] = $sales + $eDate['page'] * $eDate['number'];
 		} else {
 			$eDate['nSale'] = \selling\SaleLib::countByDate($eDate, $eDate['eFarmSelected']);
 		}
@@ -312,7 +313,7 @@ class DateLib extends DateCrud {
 
 		// Uniquement les boutiques avec un seul producteur et des dates de livraison
 		if($eShop['opening'] === \shop\Shop::FREQUENCY) {
-			$cProduct->mergeCollection(\shop\ProductLib::aggregateBySales($eDate['cSale'], $cProduct));
+			$cProduct->mergeCollection(\shop\ProductLib::aggregateBySales($eDate['cxSale'], $cProduct));
 		}
 
 		$cProduct->sort(['product' => ['name']], natural: TRUE);

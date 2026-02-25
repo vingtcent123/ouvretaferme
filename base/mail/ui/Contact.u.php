@@ -217,18 +217,18 @@ class ContactUi {
 						$h .= '<th rowspan="2">'.$search->linkSort('email', s("Adresse e-mail")).'</th>';
 						$h .= '<th rowspan="2" class="text-center hide-sm-down">'.$search->linkSort('createdAt', s("Depuis"), SORT_DESC).'</th>';
 						$h .= '<th rowspan="2" class="text-center">'.s("Consentement<br/>pour recevoir<br/>des e-mails").'</th>';
-						$h .= '<th rowspan="2" class="text-center highlight-stick-right">'.s("Envoyer<br/>des e-mails").'</th>';
-						$h .= '<th rowspan="2" class="text-center highlight-stick-left">'.s("Newsletter").'</th>';
+						$h .= '<th rowspan="2" class="text-center t-highlight">'.s("Envoyer<br/>des e-mails").'</th>';
+						$h .= '<th rowspan="2" class="text-center t-highlight">'.s("Newsletter").'</th>';
 						$h .= '<th rowspan="2" class="hide-xl-down">'.$search->linkSort('lastSent', s("Dernier<br/>e-mail<br/>envoyé"), SORT_DESC).'</th>';
 						$h .= '<th colspan="4" class="text-center hide-md-down">'.s("Statistiques depuis le 14 juin 2025 *").'</th>';
 						$h .= '<th rowspan="2"></th>';
 					$h .= '</tr>';
 
 					$h .= '<tr>';
-						$h .= '<th class="text-center highlight-stick-right hide-md-down">'.$search->linkSort('sent', s("Envoyés"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.$search->linkSort('delivered', s("Reçus"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center highlight-stick-both hide-md-down">'.$search->linkSort('opened', s("Lus"), SORT_DESC).'</th>';
-						$h .= '<th class="text-center highlight-stick-left hide-md-down">'.$search->linkSort('blocked', s("Bloqués"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center t-highlight hide-md-down">'.$search->linkSort('sent', s("Envoyés"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center t-highlight hide-md-down">'.$search->linkSort('delivered', s("Reçus"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center t-highlight hide-md-down">'.$search->linkSort('opened', s("Lus"), SORT_DESC).'</th>';
+						$h .= '<th class="text-center t-highlight hide-md-down">'.$search->linkSort('blocked', s("Bloqués"), SORT_DESC).'</th>';
 					$h .= '</tr>';
 
 				$h .= '</thead>';
@@ -276,19 +276,19 @@ class ContactUi {
 						$h .= '</td>';
 
 						if($eContact['optIn'] === FALSE) {
-							$h .= '<td class="text-center highlight-stick-alone" colspan="2">';
+							$h .= '<td class="text-center t-highlight" colspan="2">';
 								$h .= '<div class="color-muted">'.s("Impossible").' <small>'.s("(refus du client)").'</small></div>';
 							$h .= '</td>';
 						} else if($eContact['activeCustomer'] === FALSE) {
-							$h .= '<td class="text-center highlight-stick-alone" colspan="2">';
+							$h .= '<td class="text-center t-highlight" colspan="2">';
 								$h .= '<div class="color-muted">'.s("Impossible").' <small>'.s("(client désactivé)").'</small></div>';
 							$h .= '</td>';
 						} else {
 
-							$h .= '<td class="text-center highlight-stick-right">';
+							$h .= '<td class="text-center t-highlight">';
 								$h .= $this->toggleActive($eContact);
 							$h .= '</td>';
-							$h .= '<td class="text-center highlight-stick-left">';
+							$h .= '<td class="text-center t-highlight">';
 								$h .= $this->toggleNewsletter($eContact);
 							$h .= '</td>';
 
@@ -334,25 +334,25 @@ class ContactUi {
 
 	public function getStats(Campaign|Contact $e): string {
 
-		$h = '<td class="contact-item-stat highlight-stick-right hide-md-down">';
+		$h = '<td class="contact-item-stat t-highlight hide-md-down">';
 			$h .= '<span style="font-size: 1.25rem">'.$e['sent'].'</span>';
 		$h .= '</td>';
 
-		$h .= '<td class="contact-item-stat highlight-stick-both hide-md-down">';
+		$h .= '<td class="contact-item-stat t-highlight hide-md-down">';
 			if($e['sent'] > 0) {
 				$h .= '<span>'.$e['delivered'].'</span>';
 				$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($e['delivered'] / $e['sent'] * 100)).'</div>';
 			}
 		$h .= '</td>';
 
-		$h .= '<td class="contact-item-stat highlight-stick-both hide-md-down">';
+		$h .= '<td class="contact-item-stat t-highlight hide-md-down">';
 			if($e['delivered'] > 0) {
 				$h .= '<span>'.$e['opened'].'</span>';
 				$h .= '<div class="contact-item-stat-percent">'.s("{value} %", round($e['opened'] / $e['delivered'] * 100)).'</div>';
 			}
 		$h .= '</td>';
 
-		$h .= '<td class="contact-item-stat highlight-stick-left hide-md-down">';
+		$h .= '<td class="contact-item-stat t-highlight hide-md-down">';
 			if($e['sent'] > 0) {
 				$blocked = $e['failed'] + $e['spam'];
 				$h .= '<span '.($blocked > 0 ? 'class="color-danger"' : '').'>'.$blocked.'</span>';

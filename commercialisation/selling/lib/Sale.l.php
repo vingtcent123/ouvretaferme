@@ -459,28 +459,64 @@ class SaleLib extends SaleCrud {
 	}
 
 	public static function getByDate(
+		\shop\Shop $eShop,
 		\shop\Date $eDate,
 		\farm\Farm $eFarm,
 		int $page,
 		int $number
 	): \Collection {
 
-		return Sale::model()
+		$groupBy = [];
+		$indexBy = [];
+
+		if($eDate['deliveryDate'] === NULL) {
+			$groupBy[] = 'date';
+			$indexBy[] = 'createdDate';
+		}
+
+		if($eDate['deliveryDate'] !== NULL and $eDate['points']) {
+			$groupBy[] = 'point';
+			$indexBy[] = 'shopPoint';
+		}
+
+		if($eShop->isShared()) {
+			$groupBy[] = 'customer';
+			$indexBy[] = 'shopSharedCustomer';
+		}
+
+		$indexBy[] = 'id';
+
+		$cxSale = Sale::model()
 			->join(Customer::model(), 'm1.customer = m2.id')
 			->select([
 				'shopPoint' => \shop\PointElement::getSelection(),
-				'customer' => CustomerElement::getSelection() + [
-					'user' => \user\User::getSelection()
-				],
+				'shopSharedCustomer' => CustomerElement::getSelection(),
+				'createdDate' => new \Sql('DATE(m1.createdAt)')
 			] + \selling\Sale::getSelection())
 			->whereShopDate($eDate)
 			->where('m1.farm', $eFarm, if: $eFarm->notEmpty())
-			->sort(
-				$eDate['deliveryDate'] === NULL ?
-					['m1.id' => SORT_DESC] :
-					new \Sql('shopPoint ASC, IF(lastName IS NULL, name, lastName), firstName, m1.id')
-			)
-			->getCollection($page * $number, $number, 'id');
+			->getCollection($page * $number, $number, $indexBy);
+
+		$eDate['groupBy'] = $groupBy;
+
+		$sort = $eShop->isShared() ? 'shopSharedCustomer' : 'customer';
+
+		$cxSale->sort(function(Sale $e1, Sale $e2) use ($sort) {
+
+			if($e1[$sort]->empty()) {
+				return -1;
+			} else if($e2[$sort]->empty()) {
+				return 1;
+			}
+
+			return \L::getCollator()->compare(
+				$e1[$sort]->getName(),
+				$e2[$sort]->getName()
+			);
+
+		}, depth: $cxSale->getDepth());
+
+		return $cxSale;
 
 	}
 

@@ -495,6 +495,9 @@ class CustomerLib extends CustomerCrud {
 			Invoice::model()
 				->whereFarm($e['farm'])
 				->whereCustomer($e)
+				->exists() or
+			Sale::model()
+				->whereShopSharedCustomer($e)
 				->exists()
 		) {
 			Customer::fail('deletedUsed');

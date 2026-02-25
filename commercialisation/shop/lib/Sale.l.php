@@ -156,7 +156,12 @@ class SaleLib {
 
 		// Création du client sur la ferme à l'origine de la boutique partagée
 		if($eShop->isShared()) {
-			$eSaleReference['customer'] = \selling\CustomerLib::getByUserAndFarm($eUser, $eShop['farm'], autoCreate: TRUE);
+
+			$eCustomer = \selling\CustomerLib::getByUserAndFarm($eUser, $eShop['farm'], autoCreate: TRUE);
+
+			$eSaleReference['customer'] = $eCustomer;
+			$eSaleReference['shopSharedCustomer'] = $eCustomer;
+
 		}
 
 		$cSale = new \Collection();

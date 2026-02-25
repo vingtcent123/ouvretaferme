@@ -795,10 +795,13 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 
 			if($data->nInvoiceReminder > 0) {
 
-				echo \Asset::icon('exclamation-circle-fill', ['class' => 'color-secondary']).' ';
-				echo '<a class="color-secondary" href="'.\farm\FarmUi::urlSellingInvoices($data->eFarm).'?reminder">';
-					echo p("Actuellement {value} facture impayée {days} après la date d'échéance", "Actuellement {value} factures impayées {days} après la date d'échéance", $data->nInvoiceReminder, ['days' => p("{value} jour", "{value} jours", $data->eFarm->getConf('invoiceReminder'))]);
-				echo '</a>';
+				echo '<div class="mb-1">';
+					echo \Asset::icon('exclamation-circle-fill', ['class' => 'color-secondary']).' ';
+					echo '<a class="color-secondary" href="'.\farm\FarmUi::urlSellingInvoices($data->eFarm).'?reminder">';
+						echo p("Actuellement {value} facture impayée {days} après la date d'échéance", "Actuellement {value} factures impayées {days} après la date d'échéance", $data->nInvoiceReminder, ['days' => p("{value} jour", "{value} jours", $data->eFarm->getConf('invoiceReminder'))]);
+					echo '</a>';
+				echo '</div>';
+
 			}
 
 		} else {

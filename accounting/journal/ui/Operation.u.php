@@ -1366,8 +1366,8 @@ class OperationUi {
 						$cashflow .= '<th class="td-checkbox"></th>';
 						$cashflow .= '<th>'.s("Date").'</th>';
 						$cashflow .= '<th>'.s("Libellé").'</th>';
-						$cashflow .= '<th class="text-end highlight-stick-right td-min-content">'.s("Débit").'</th>';
-						$cashflow .= '<th class="text-end highlight-stick-left td-min-content">'.s("Crédit").'</th>';
+						$cashflow .= '<th class="text-end t-highlight td-min-content">'.s("Débit").'</th>';
+						$cashflow .= '<th class="text-end t-highlight td-min-content">'.s("Crédit").'</th>';
 					$cashflow .= '</tr>';
 				$cashflow .= '</thead>';
 
@@ -1385,12 +1385,12 @@ class OperationUi {
 							$cashflow .= '<td>';
 								$cashflow .= encode($eCashflow->getMemo());
 							$cashflow .= '</td>';
-							$cashflow .= '<td class="text-end highlight-stick-right td-min-content">';
+							$cashflow .= '<td class="text-end t-highlight td-min-content">';
 								if($eCashflow['amount'] < 0) {
 									$cashflow .= \util\TextUi::money($eCashflow['amount']);
 								}
 							$cashflow .= '</td>';
-							$cashflow .= '<td class="text-end highlight-stick-left td-min-content">';
+							$cashflow .= '<td class="text-end t-highlight td-min-content">';
 								if($eCashflow['amount'] >= 0) {
 									$cashflow .= \util\TextUi::money($eCashflow['amount']);
 								}

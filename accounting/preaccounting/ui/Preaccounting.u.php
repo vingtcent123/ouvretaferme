@@ -324,7 +324,7 @@ Class PreaccountingUi {
 					$h .= '<th class="td-min-content">#</th>';
 					$h .= '<th>'.s("Date").'</th>';
 					$h .= '<th>'.s("Client").'</th>';
-					$h .= '<th class="highlight-stick-right text-end">'.s("Montant").'</th>';
+					$h .= '<th class="t-highlight text-end">'.s("Montant").'</th>';
 					$h .= '<th>'.s("Moyen de paiement").'</th>';
 					$h .= '<th>'.s("État").'</th>';
 				$h .= '</tr>';
@@ -358,7 +358,7 @@ Class PreaccountingUi {
 							}
 						$h .= '</td>';
 
-						$h .= '<td class="highlight-stick-right sale-item-price text-end">';
+						$h .= '<td class="t-highlight sale-item-price text-end">';
 							$h .= \selling\SaleUi::getTotal($eInvoice);
 						$h .= '</td>';
 

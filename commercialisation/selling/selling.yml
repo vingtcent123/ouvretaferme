@@ -191,6 +191,7 @@ Item:
     ["farm", "deliveredAt"],
     ["product"],
     ["sale"],
+    ["shopDate"],
     ["ingredientOf"],
     ["parent"]
   ]
@@ -344,6 +345,7 @@ Sale:
   shopDate: ?shop\Date
   shopLocked: bool = FALSE
   shopShared: bool = FALSE
+  shopSharedCustomer: ?selling\Customer
   shopUpdated: bool = FALSE
   shopPoint: ?shop\Point
   shopComment: ?text8(1, 150)
@@ -364,6 +366,7 @@ Sale:
   statusBy: ?user\User = SPECIAL(user)
   INDEX: [
     ["farm", "deliveredAt"],
+    ["shopSharedCustomer"],
     ["customer"],
     ["shopDate"],
     ["shop"]
