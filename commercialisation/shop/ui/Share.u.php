@@ -47,7 +47,7 @@ class ShareUi {
 
 		$h = '<div class="util-overflow-md">';
 
-			$h .= '<table class="shop-share-list">';
+			$h .= '<table class="table-transparent shop-share-list">';
 
 				foreach($cShare as $eShare) {
 
@@ -119,7 +119,7 @@ class ShareUi {
 
 								if($cRange->notEmpty()) {
 
-									$h .= '<table class="util-block">';
+									$h .= '<table>';
 										$h .= '<thead>';
 
 											$h .= '<tr>';

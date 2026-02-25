@@ -29,7 +29,7 @@ class AnalyzeUi {
 
 		$h .= '<div class="util-overflow-md mb-2">';
 
-			$h .= '<table class="util-block tr-even">';
+			$h .= '<table class="tr-even">';
 
 				$h .= '<thead>';
 					$h .= '<tr>';
@@ -75,7 +75,7 @@ class AnalyzeUi {
 
 		$h .= '<div class="util-overflow-md stick-xs">';
 
-			$h .= '<table class="tr-even util-block analyze-plant-area">';
+			$h .= '<table class="tr-even analyze-plant-area">';
 				$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th></th>';
@@ -169,7 +169,7 @@ class AnalyzeUi {
 			$h .= '</table>';
 			$h .= '<br/>';
 			$h .= '<h4>'.s("Pour les espèces annuelles").'</h4>';
-			$h .= '<table class="tr-even util-block analyze-plant-area">';
+			$h .= '<table class="tr-even analyze-plant-area">';
 				$h .= '<thead class="analyze-plant-area-developed">';
 					$h .= '<tr>';
 						$h .= '<th></th>';
@@ -218,7 +218,7 @@ class AnalyzeUi {
 
 		$h .= '<div class="util-overflow-md stick-xs">';
 
-			$h .= '<table class="tr-even util-block analyze-plant-area">';
+			$h .= '<table class="tr-even analyze-plant-area">';
 				$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th></th>';
