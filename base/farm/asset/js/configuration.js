@@ -1,5 +1,23 @@
 class Configuration {
 
+	static changeInvoiceMandatoryTexts() {
+
+		const checked = !!parseInt(qs('[name="invoiceMandatoryTexts"]:checked').value);
+
+		if(checked) {
+			qs('[data-wrapper="invoiceCollection"]').removeHide();
+			qs('[data-wrapper="invoiceLateFees"]').removeHide();
+			qs('[data-wrapper="invoiceDiscount"]').removeHide();
+			qs('[data-wrapper="invoiceMandatoryTexts"] .form-info').hide();
+		} else {
+			qs('[data-wrapper="invoiceCollection"]').hide();
+			qs('[data-wrapper="invoiceLateFees"]').hide();
+			qs('[data-wrapper="invoiceDiscount"]').hide();
+			qs('[data-wrapper="invoiceMandatoryTexts"] .form-info').removeHide();
+		}
+
+	}
+
 	static changeHasVat(target) {
 
 		const hasVat = !!parseInt(target.value);

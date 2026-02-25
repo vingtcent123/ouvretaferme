@@ -86,6 +86,10 @@ class ConfigurationModel extends \ModuleModel {
 			'invoicePaymentCondition' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceHeader' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
+			'invoiceMandatoryTexts' => ['bool', 'cast' => 'bool'],
+			'invoiceCollection' => ['text16', 'cast' => 'string'],
+			'invoiceLateFees' => ['text16', 'cast' => 'string'],
+			'invoiceDiscount' => ['text16', 'cast' => 'string'],
 			'marketSalePaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'marketSaleDefaultDecimal' => ['enum', [\farm\Configuration::NUMBER, \farm\Configuration::PRICE], 'cast' => 'enum'],
 			'pdfNaturalOrder' => ['bool', 'cast' => 'bool'],
@@ -93,7 +97,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'hasVatAccounting', 'vatFrequency', 'vatChargeability', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'hasVatAccounting', 'vatFrequency', 'vatChargeability', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -146,6 +150,18 @@ class ConfigurationModel extends \ModuleModel {
 
 			case 'invoicePrefix' :
 				return \selling\SellingSetting::INVOICE;
+
+			case 'invoiceMandatoryTexts' :
+				return FALSE;
+
+			case 'invoiceCollection' :
+				return new \farm\ConfigurationUi()->getInvoiceMention('collection');
+
+			case 'invoiceLateFees' :
+				return new \farm\ConfigurationUi()->getInvoiceMention('lateFees');
+
+			case 'invoiceDiscount' :
+				return new \farm\ConfigurationUi()->getInvoiceMention('discount');
 
 			case 'marketSaleDefaultDecimal' :
 				return Configuration::PRICE;
@@ -333,6 +349,22 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereInvoiceFooter(...$data): ConfigurationModel {
 		return $this->where('invoiceFooter', ...$data);
+	}
+
+	public function whereInvoiceMandatoryTexts(...$data): ConfigurationModel {
+		return $this->where('invoiceMandatoryTexts', ...$data);
+	}
+
+	public function whereInvoiceCollection(...$data): ConfigurationModel {
+		return $this->where('invoiceCollection', ...$data);
+	}
+
+	public function whereInvoiceLateFees(...$data): ConfigurationModel {
+		return $this->where('invoiceLateFees', ...$data);
+	}
+
+	public function whereInvoiceDiscount(...$data): ConfigurationModel {
+		return $this->where('invoiceDiscount', ...$data);
 	}
 
 	public function whereMarketSalePaymentMethod(...$data): ConfigurationModel {

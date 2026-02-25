@@ -286,11 +286,16 @@ div.pdf-document-vat-rates > *:nth-child(3n + 3) {
 
 
 .pdf-document-custom-bottom,
+.pdf-document-mentions,
 .pdf-document-payment {
 	margin-top: .5cm;
 	padding-top: .5cm;
 	border-top: 1px solid var(--border);
 	break-inside: avoid;
+}
+
+.pdf-document-mentions {
+	font-style: italic;
 }
 
 .pdf-document-payment h4 {

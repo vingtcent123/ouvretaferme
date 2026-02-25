@@ -191,11 +191,48 @@ class ConfigurationUi {
 				$h .= $form->hidden('id', $eConfiguration['id']);
 
 				$h .= $form->group(
+					'',
+					'<h3>'.s("Mentions obligatoires").'</h3>',
+				);
+				$h .= $form->dynamicGroups($eConfiguration, ['invoiceMandatoryTexts*', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount'], [
+					'invoiceMandatoryTexts*' => function($d) use($eConfiguration) {
+						$d->attributes['onchange'] = 'Configuration.changeInvoiceMandatoryTexts();';
+					},
+					'invoiceCollection' => function($d) use($eConfiguration) {
+						if($eConfiguration['invoiceMandatoryTexts'] === FALSE) {
+							$d->group += ['class' => 'hide'];
+						}
+					},
+					'invoiceLateFees' => function($d) use($eConfiguration) {
+						if($eConfiguration['invoiceMandatoryTexts'] === FALSE) {
+							$d->group += ['class' => 'hide'];
+						}
+					},
+					'invoiceDiscount' => function($d) use($eConfiguration) {
+						if($eConfiguration['invoiceMandatoryTexts'] === FALSE) {
+							$d->group += ['class' => 'hide'];
+						}
+					},
+				]);
+
+				$h .= $form->group(
+					'',
+				'<h3>'.s("Paiements").'</h3>',
+				);
+
+				$h .= $form->group(
 					self::p('invoiceDue')->label,
 					$this->getInvoiceDueField($form, $eConfiguration),
 					['wrapper' => 'invoiceDue invoiceDueDays invoiceDueMonth']
 				);
-				$h .= $form->dynamicGroups($eConfiguration, ['invoiceReminder', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter']);
+				$h .= $form->dynamicGroups($eConfiguration, ['invoiceReminder', 'invoicePaymentCondition']);
+
+				$h .= $form->group(
+					'',
+				'<h3>'.s("Textes supplémentaires").'</h3>',
+				);
+
+				$h .= $form->dynamicGroups($eConfiguration, ['invoiceHeader', 'invoiceFooter']);
 
 				$eConfiguration['documentInvoices']++;
 
@@ -501,6 +538,17 @@ class ConfigurationUi {
 
 	}
 
+	public function getInvoiceMention(string $type): string {
+
+		return match($type) {
+			'collection' => s("Indemnité forfaitaire pour frais de recouvrement en cas de retard de paiement : 40 €"),
+			'lateFees' => s("Tout retard de paiement engendre une pénalité exigible à compter de la date d'échéance, calculée sur la base de trois fois le taux d'intérêt légal"),
+			'discount' => s("Les règlements reçus avant la date d'échéance ne donneront pas lieu à escompte"),
+			default => throw new \Exception('unknown type'),
+		};
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Configuration::model()->describer($property, [
@@ -527,6 +575,10 @@ class ConfigurationUi {
 			'invoicePaymentCondition' => s("Conditions de paiement affichées sur les factures"),
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
+			'invoiceMandatoryTexts' => s("Indiquer les mentions obligatoires"),
+			'invoiceCollection' => s("Mention relative aux frais de recouvrement"),
+			'invoiceLateFees' => s("Mention relative aux pénalités de retard"),
+			'invoiceDiscount' => s("Mention relative à l’escompte ou à son absence"),
 			'documentCopy' => s("Recevoir une copie sur l'adresse e-mail de la ferme des devis, bons de livraisons et factures que vous envoyez aux clients"),
 			'saleClosing' => s("Clôture des ventes du logiciel de caisse"),
 			'pdfNaturalOrder' => s("Trier les commandes et les étiquettes exportées en PDF pour faciliter la découpe"),
@@ -661,6 +713,11 @@ class ConfigurationUi {
 			case 'invoicePaymentCondition' :
 				$d->placeholder = s("Ex. : Paiement à réception de facture.");
 				$d->labelAfter = \util\FormUi::info(s("Indiquez ici les conditions de paiement données à vos clients pour régler vos factures."));
+				break;
+
+			case 'invoiceMandatoryTexts':
+				$d->field = 'yesNo';
+				$d->after = fn(\util\FormUi $form, Configuration $e) => \util\FormUi::info(s("Vos factures ne seront pas conformes sans ces mentions !"), $e['invoiceMandatoryTexts'] ? 'hide' : '');
 				break;
 
 			case 'vatFrequency' :

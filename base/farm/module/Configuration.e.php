@@ -105,6 +105,15 @@ class Configuration extends ConfigurationElement {
 
 				return in_array($vatChargeability, Configuration::model()->getPropertyEnum('vatChargeability'));
 			})
+			->setCallback('invoiceCollection.check', function(?string $invoiceCollection) {
+				return $invoiceCollection !== NULL;
+			})
+			->setCallback('invoiceLateFees.check', function(?string $invoiceLateFees) {
+				return $invoiceLateFees !== NULL;
+			})
+			->setCallback('invoiceDiscount.check', function(?string $invoiceDiscount) {
+				return $invoiceDiscount !== NULL;
+			})
 		;
 	
 		parent::build($properties, $input, $p);

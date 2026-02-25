@@ -27,7 +27,7 @@ class Customer extends CustomerElement {
 
 	}
 
-	public function getFullEAddress(): ?string {
+	public function getFullElectronicAddress(): ?string {
 
 		if($this['electronicScheme'] and $this['electronicAddress']) {
 			return $this['electronicScheme'].':'.$this['electronicAddress'];

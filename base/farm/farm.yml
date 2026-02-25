@@ -57,6 +57,10 @@ Configuration:
   invoicePaymentCondition: ?editor16(1, 500)
   invoiceHeader: ?editor16(1, 500)
   invoiceFooter: ?editor16(1, 500)
+  invoiceMandatoryTexts: bool = FALSE
+  invoiceCollection: text16 = PHP(new \farm\ConfigurationUi()->getInvoiceMention('collection'))
+  invoiceLateFees: text16 = PHP(new \farm\ConfigurationUi()->getInvoiceMention('lateFees'))
+  invoiceDiscount: text16 = PHP(new \farm\ConfigurationUi()->getInvoiceMention('discount'))
   marketSalePaymentMethod: ?payment\Method
   marketSaleDefaultDecimal: enum(NUMBER, PRICE) = PRICE
   pdfNaturalOrder: bool = FALSE

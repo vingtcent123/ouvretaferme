@@ -822,6 +822,20 @@ class PdfUi {
 			$h .= '<div class="pdf-document-custom-bottom">'.new \editor\EditorUi()->value($footer).'</div>';
 		}
 
+		$invoiceMentionCollection = $eFarm->getConf('invoiceCollection');
+		$invoiceMentionLateFees = $eFarm->getConf('invoiceLateFees');
+		$invoiceMentionDiscount = $eFarm->getConf('invoiceDiscount');
+
+		if(
+			$eFarm->getConf('invoiceMandatoryTexts') and
+			($invoiceMentionCollection or $invoiceMentionLateFees or $invoiceMentionDiscount)
+		) {
+			$h .= '<div class="pdf-document-mentions">';
+				$h .= $invoiceMentionCollection ? '<div>'.encode($invoiceMentionCollection).'</div>' : '';
+				$h .= $invoiceMentionLateFees ? '<div>'.encode($invoiceMentionLateFees).'</div>' : '';
+				$h .= $invoiceMentionDiscount ? '<div>'.encode($invoiceMentionDiscount).'</div>' : '';
+			$h .= '</div>';
+		}
 		if($paymentCondition) {
 
 			$h .= '<div class="pdf-document-payment">';

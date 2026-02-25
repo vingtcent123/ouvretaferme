@@ -14,7 +14,7 @@ class UblLib {
 
 		$buyerSiren = mb_substr($eInvoice['customer']['siret'], 0, 9);
 		$buyerSiret = $eInvoice['customer']['siret'];
-		$buyerAddress = $eInvoice['customer']->getFullEAddress();
+		$buyerAddress = $eInvoice['customer']->getFullElectronicAddress();
 
 		// adresses électroniques
 		if(LIME_ENV === 'dev') {
@@ -55,9 +55,9 @@ class UblLib {
 	<cbc:IssueDate>'.$eInvoice['date'].'</cbc:IssueDate><!--BT-2-->
 	<cbc:DueDate>'.$eInvoice['dueDate'].'</cbc:DueDate><!--BT-9-->
 	<cbc:InvoiceTypeCode>'.self::getInvoiceTypeCode($eInvoice).'</cbc:InvoiceTypeCode><!--BT-3-->
-	<cbc:Note>#PMD#Tout retard de paiement engendre une pénalité exigible à compter de la date d\'échéance, calculée sur la base de trois fois le taux d\'intérêt légal.</cbc:Note><!--BT-21 PMD (TODO)-->
-	<cbc:Note>#PMT#Indemnité forfaitaire pour frais de recouvrement en cas de retard de paiement : 40 €.</cbc:Note><!--BT-21 PMT (TODO)-->
-	<cbc:Note>#AAB#Les règlements reçus avant la date d\'échéance ne donneront pas lieu à escompte.</cbc:Note><!--BT-21 AAB (TODO)-->
+	<cbc:Note>#PMD#'.$eFarm->getConf('invoiceLateFees').'</cbc:Note><!--BT-21 PMD-->
+	<cbc:Note>#PMT#'.$eFarm->getConf('invoiceCollection').'</cbc:Note><!--BT-21 PMT-->
+	<cbc:Note>#AAB#'.$eFarm->getConf('invoiceDiscount').'</cbc:Note><!--BT-21 AAB-->
 	<cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode><!--BT-5-->
 	<cac:InvoicePeriod><!--BG-14-->
 		<cbc:StartDate>'.$dateMin.'</cbc:StartDate><!--BT-73-->

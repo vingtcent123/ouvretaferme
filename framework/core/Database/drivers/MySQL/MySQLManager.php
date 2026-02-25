@@ -220,7 +220,7 @@ class MySQLManager extends DatabaseManager {
 			} else if($default instanceof Set) {
 				$default_column = "DEFAULT ".$default->get();
 			} else {
-				$default_column = "DEFAULT ".$this->db->quote($default)."";
+				$default_column = "DEFAULT (".$this->db->quote($default).")";
 			}
 
 			$column[] = $this->db->api->field($name)." ".$typeColumn." ".$null_column." ".$default_column." ".$plus;
