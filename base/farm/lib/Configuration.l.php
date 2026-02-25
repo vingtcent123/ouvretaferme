@@ -17,9 +17,10 @@ class ConfigurationLib extends ConfigurationCrud {
 			$e = new Configuration([
 				'farm' => $eFarm,
 				'defaultVat' => \selling\SellingSetting::getStartVat($eFarm['legalCountry']),
-				'invoiceCollection' => new \farm\ConfigurationUi()->getInvoiceMention('collection'),
-				'invoiceLateFees' => new \farm\ConfigurationUi()->getInvoiceMention('lateFees'),
-				'invoiceDiscount' => new \farm\ConfigurationUi()->getInvoiceMention('discount'),
+				'invoiceMandatoryTexts' => $eFarm->isFR(),
+				'invoiceCollection' => $eFarm->isFR() ? new \farm\ConfigurationUi()->getInvoiceMention('collection') : NULL,
+				'invoiceLateFees' => $eFarm->isFR() ? new \farm\ConfigurationUi()->getInvoiceMention('lateFees') : NULL,
+				'invoiceDiscount' => $eFarm->isFR() ? new \farm\ConfigurationUi()->getInvoiceMention('discount') : NULL,
 			]);
 
 			parent::create($e);
