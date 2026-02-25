@@ -47,7 +47,7 @@ class ShareUi {
 
 		$h = '<div class="util-overflow-md">';
 
-			$h .= '<table class="shop-share-list">';
+			$h .= '<table class="util-block shop-share-list">';
 
 				foreach($cShare as $eShare) {
 

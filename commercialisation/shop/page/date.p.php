@@ -19,7 +19,7 @@ new \farm\FarmPage()
 
 		}
 
-		\shop\DateLib::applyManagement($data->e, $data->eShop, $data->eDate, GET('page', 'int'));
+		\shop\DateLib::applyManagement($data->e, $data->eShop, $data->eDate, GET('sort'), GET('page', 'int'));
 
 		$data->eFarm = $data->e;
 

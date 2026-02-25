@@ -462,6 +462,7 @@ class SaleLib extends SaleCrud {
 		\shop\Shop $eShop,
 		\shop\Date $eDate,
 		\farm\Farm $eFarm,
+		string $sort,
 		int $page,
 		int $number
 	): \Collection {
@@ -474,7 +475,10 @@ class SaleLib extends SaleCrud {
 			$indexBy[] = 'createdDate';
 		}
 
-		if($eDate['deliveryDate'] !== NULL and $eDate['points']) {
+		if(
+			$sort === 'point' and
+			$eDate->acceptSearchPoints()
+		) {
 			$groupBy[] = 'point';
 			$indexBy[] = 'shopPoint';
 		}

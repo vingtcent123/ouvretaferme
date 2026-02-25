@@ -943,10 +943,11 @@ class DateUi {
 
 				$eDate['shop'] = $eShop;
 
-				$actions .= '<div>';
+				$actions .= '<div class="data-actions-filter">';
 					if($eShop['shared']) {
 						$actions .= self::getSearchFarm($eFarm, $eShop, $eDate);
 					}
+					$actions .= self::getSearchSort($eFarm, $eShop, $eDate);
 				$actions .= '</div>';
 				$actions .= '<div>';
 
@@ -1011,12 +1012,10 @@ class DateUi {
 						$eShop,
 						$eDate,
 						$cxSale,
-						cPaymentMethod: $cPaymentMethod,
+						$cPaymentMethod,
+						$eFarm->getView('viewShopSort'),
+						$eDate['page'],
 					);
-
-					if($nSale !== NULL and $eDate['page'] !== NULL) {
-						$h .= \util\TextUi::pagination($eDate['page'], $nSale / $eDate['number']);
-					}
 
 				}
 			$h .= '</div>';
@@ -1207,6 +1206,39 @@ class DateUi {
 			foreach($cShare as $eShare) {
 				$h .= '<a href="'.ShopUi::adminDateUrl($eFarm, $eDate).'?farm='.$eShare['farm']['id'].'" class="dropdown-item '.($eShare['farm']->is($eDate['eFarmSelected']) ? 'selected' : '').'">'.encode($eShare['farm']['name']).'</a>';
 			}
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	private static function getSearchSort(\farm\Farm $eFarm, Shop $eShop, Date $eDate): string {
+
+		if(
+			$eDate->acceptSearchPoints() === FALSE
+		) {
+			return '';
+		}
+
+		$actions = [
+			\farm\Farmer::CUSTOMER => s("Grouper par client"),
+			\farm\Farmer::POINT => s("Grouper par mode de livraison"),
+		];
+
+		$h = '<a data-dropdown="bottom-start" class="btn btn-outline-primary dropdown-toggle">';
+			$h .= \Asset::icon('funnel').'  ';
+			$h .= $actions[$eFarm->getView('viewShopSort')];
+		$h .= '</a>';
+		$h .= '<div class="dropdown-list">';
+
+			foreach([\farm\Farmer::CUSTOMER, \farm\Farmer::POINT] as $sort) {
+
+				$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'sort', $sort).'" class="dropdown-item '.($eFarm->getView('viewShopSort') === $sort ? 'selected' : '').'">';
+					$h .= $actions[$sort];
+				$h .= '</a>';
+
+			}
+
 		$h .= '</div>';
 
 		return $h;

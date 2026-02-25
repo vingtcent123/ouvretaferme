@@ -60,6 +60,15 @@ class Date extends DateElement {
 
 	}
 
+	public function acceptSearchPoints(): bool {
+
+		return (
+			$this['deliveryDate'] !== NULL and
+			$this['points']
+		);
+
+	}
+
 	public function acceptCreateSale(): bool {
 
 		return (

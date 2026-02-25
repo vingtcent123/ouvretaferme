@@ -495,13 +495,16 @@ class SaleUi {
 
 	}
 
-	public function getShopList(\shop\Shop $eShop, \shop\Date $eDate, \Collection $cxSale, ?int $page = NULL, ?\Collection $cPaymentMethod = NULL): string {
+	public function getShopList(\shop\Shop $eShop, \shop\Date $eDate, \Collection $cxSale, \Collection $cPaymentMethod, string $sort, ?int $page): string {
 
-		$eDate->expects(['groupBy']);
+		$eDate->expects([
+			'nSale',
+			'groupBy'
+		]);
 
 		$h = '<div class="util-overflow-md stick-xs">';
 
-		$columns = 9;
+		$columns = 7;
 
 		$h .= '<table class="tr-even" data-batch="#batch-sale">';
 
@@ -517,11 +520,8 @@ class SaleUi {
 
 					$h .= '<th class="text-center td-min-content">'.s("Vente").'</th>';
 
-					if($eShop->isShared()) {
-						$h .= '<th>'.s("Producteur").'</th>';
-					} else {
-						$h .= '<th>'.s("Client").'</th>';
-					}
+					$h .= '<th>'.s("Client").'</th>';
+
 					$h .= '<th>'.s("État").'</th>';
 					if($eDate['deliveryDate'] === NULL) {
 						$h .= '<th>'.s("Vente").'</th>';
@@ -529,11 +529,17 @@ class SaleUi {
 					}
 					$h .= '<th class="text-end">'.s("Montant").'</th>';
 					if($eDate['points']) {
+
 						$h .= '<th>'.s("Mode de livraison").'</th>';
+
 						$columns++;
+
 					}
-					$h .= '<th class="hide-md-down">'.s("Règlement").'</th>';
+
+					$h .= '<th>'.s("Règlement").'</th>';
+
 					$h .= '<th></th>';
+
 				$h .= '</tr>';
 
 			$h .= '</thead>';
@@ -547,7 +553,7 @@ class SaleUi {
 		$h .= '</div>';
 
 		if($eDate['nSale'] !== NULL and $page !== NULL) {
-			$h .= \util\TextUi::pagination($page, $eDate['nSale'] / 100);
+			$h .= \util\TextUi::pagination($page, $eDate['nSale'] / $eDate['number']);
 		}
 
 		$h .= $this->getBatch($eShop['farm'], $cPaymentMethod);
@@ -741,7 +747,7 @@ class SaleUi {
 					$h .= $this->getPointList($eSale);
 				}
 
-				$h .= '<td class="sale-item-payment-type hide-md-down">';
+				$h .= '<td class="sale-item-payment-type">';
 					if($eSale['invoice']->empty()) {
 						$h .= PaymentTransactionUi::getPaymentBox($eSale);
 					} else {

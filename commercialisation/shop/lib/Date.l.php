@@ -263,7 +263,13 @@ class DateLib extends DateCrud {
 
 	}
 
-	public static function applyManagement(\farm\Farm $eFarm, Shop $eShop, Date $eDate, int $page): void {
+	public static function applyManagement(\farm\Farm $eFarm, Shop $eShop, Date $eDate, string $sort, int $page): void {
+
+		if(in_array($sort, ['customer', 'point', 'payment'])) {
+			\farm\FarmerLib::setView('viewShopSort', $eFarm, $sort);
+		} else {
+			$sort = $eFarm->getView('viewShopSort');
+		}
 
 		if($eShop['shared']) {
 
@@ -291,7 +297,7 @@ class DateLib extends DateCrud {
 		$eDate['page'] = $page;
 		$eDate['number'] = 200;
 
-		$eDate['cxSale'] = \selling\SaleLib::getByDate($eShop, $eDate, $eDate['eFarmSelected'], $eDate['page'], $eDate['number']);
+		$eDate['cxSale'] = \selling\SaleLib::getByDate($eShop, $eDate, $eDate['eFarmSelected'], $sort, $eDate['page'], $eDate['number']);
 		$sales = $eDate['cxSale']->countByDepth();
 
 		if($sales < $eDate['number']) {

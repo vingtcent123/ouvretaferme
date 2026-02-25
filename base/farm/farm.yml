@@ -160,6 +160,7 @@ Farmer:
   viewSellingPreparing: ?json
   viewMailingCategory: enum(CAMPAIGN, CONTACT) = CAMPAIGN
   viewShopCatalogCurrent: ?shop\Catalog
+  viewShopSort: enum(CUSTOMER, POINT) = CUSTOMER
   viewAnalyzeChart: enum(TURNOVER, QUANTITY) = TURNOVER
   viewAnalyzeComposition: enum(COMPOSITION, INGREDIENT) = COMPOSITION
   viewAnalyzeYear: ?int16(0, null)
