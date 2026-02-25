@@ -109,6 +109,7 @@ new \shop\DatePage()
 		if($data->eFarm->notEmpty()) {
 			$url .= '&farm='.$data->eFarm['id'];
 		}
+		$url .= '&template='.urlencode(GET('template'));
 
 		$content = \selling\PdfLib::build($url, $filename);
 
@@ -196,6 +197,8 @@ new Page()
 
 		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->eFarm, $data->e, selectItems: TRUE, selectPoint: TRUE);
 		$data->cItem = \selling\ItemLib::getSummaryByDate($data->eFarm, $data->e);
+
+		$data->template = GET('template', ['grid', 'line'], fn() => throw new NotExpectedAction());
 
 		\selling\ItemLib::fillSummaryDistribution($data->cSale, $data->cItem);
 

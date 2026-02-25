@@ -938,7 +938,7 @@ class SaleUi {
 			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-confirm="'.s("Les ventes seront marqués payées au {value}. Voulez-vous continuer ?", currentDate()).'" data-batch-test="accept-pay-payment" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::PAID.'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûre de vouloir passer ces ventes à l'état payé ? Vous ne pourrez pas facilement revenir en arrière.").'">'.PaymentTransactionUi::getPaymentStatusBadge(new Sale(['paymentStatus' => Sale::PAID, 'paidAt' => NULL])).'</a>';
 		$menu .= '</div>';
 
-		$menu .= '<a data-ajax-submit="/selling/sale:doExportCollection" data-ajax-navigation="never" class="batch-item">';
+		$menu .= '<a data-ajax-submit="/selling/sale:doExportCollection?template=grid" data-ajax-navigation="never" class="batch-item">';
 			$menu .= \Asset::icon('file-pdf');
 			$menu .= '<span>'.s("Exporter").'</span>';
 		$menu .= '</a>';

@@ -521,7 +521,7 @@ new Page(function($data) {
 		$data->c->validate('canRead');
 
 		$filename = 'sales.pdf';
-		$content = \selling\PdfLib::build('/selling/sale:getExport?ids[]='.implode('&ids[]=', $data->c->getIds()), $filename);
+		$content = \selling\PdfLib::build('/selling/sale:getExport?ids[]='.implode('&ids[]=', $data->c->getIds()).'&template='.urlencode(GET('template')), $filename);
 
 		throw new PdfAction($content, $filename);
 
@@ -531,6 +531,8 @@ new Page(function($data) {
 		\selling\SaleLib::fillForExport($data->c);
 
 		$data->cItem = \selling\ItemLib::extractSummaryBySales($data->c);
+
+		$data->template = GET('template', ['grid', 'line'], fn() => throw new NotExpectedAction());
 
 		\selling\ItemLib::fillSummaryDistribution($data->c, $data->cItem);
 

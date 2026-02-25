@@ -1119,57 +1119,116 @@ class PdfUi {
 
 	}
 
-	public function getSalesByDate(\shop\Date $eDate, \Collection $cSale, \Collection $cItem): string {
+	public function getSalesByDate(\shop\Date $eDate, \Collection $cSale, \Collection $cItem, string $template): string {
 
-		$h = '<style>@page {	size: A4 landscape; margin: 0.5cm; }</style>';
+		$h = '<style>'.$this->getSalesFormat($template).'</style>';
 
 		$h .= $this->getWatermark();
 
-		$h .= '<div class="pdf-sales-summary-wrapper">';
+		$h .= '<div class="pdf-sales-template-'.$template.'">';
 
-			$h .= '<h1>'.encode($eDate['shop']['name']).'</h1>';
-			$h .= '<h2>'.s("Livraison du {value}", \util\DateUi::numeric($eDate['deliveryDate'])).' | '.p("{value} commande", "{value} commandes", $cSale->count()).'</h2>';
+			$h .= '<div class="pdf-sales-summary-wrapper">';
 
-			$h .= $this->getSalesSummary($cItem);
+				$h .= '<h1>'.encode($eDate['shop']['name']).'</h1>';
+				$h .= '<h2>'.s("Livraison du {value}", \util\DateUi::numeric($eDate['deliveryDate'])).' | '.p("{value} commande", "{value} commandes", $cSale->count()).'</h2>';
+
+				$h .= $this->getSalesSummary($cItem);
+
+			$h .= '</div>';
+
+			$h .= $this->getSalesContent($eDate['farm'], $cSale, $template);
 
 		$h .= '</div>';
-
-		$h .= $this->getSalesContent($eDate['farm'], $cSale);
 
 		return $h;
 
 	}
 
-	public function getSales(\farm\Farm $eFarm, \Collection $cSale, \Collection $cItem): string {
+	public function getSales(\farm\Farm $eFarm, \Collection $cSale, \Collection $cItem, string $template): string {
 
-		$h = '<style>@page {	size: A4 landscape; margin: 0.5cm; }</style>';
+		$h = '<style>'.$this->getSalesFormat($template).'</style>';
 
 		$h .= $this->getWatermark();
 
-		$h .= '<div class="pdf-sales-summary-wrapper">';
+		$h .= '<div class="pdf-sales-template-'.$template.'">';
 
-			$h .= '<h1>'.p("{value} vente", "{value} ventes", $cSale->count()).'</h1>';
+			$h .= '<div class="pdf-sales-summary-wrapper">';
 
-			$h .= $this->getSalesSummary($cItem);
+				$h .= '<h1>'.p("{value} vente", "{value} ventes", $cSale->count()).'</h1>';
+
+				$h .= $this->getSalesSummary($cItem);
+
+			$h .= '</div>';
+
+			$h .= $this->getSalesContent($eFarm, $cSale, $template);
 
 		$h .= '</div>';
-
-		$h .= $this->getSalesContent($eFarm, $cSale);
 
 		return $h;
 
 	}
 
-	protected function getSalesContent(\farm\Farm $eFarm, \Collection $cSale): string {
+	protected function getSalesFormat(string $template): string {
 
-		$eConfiguration = $eFarm->conf();
+		return match($template) {
+
+			'grid' => '@page {	size: A4 landscape; margin: 0.5cm; }',
+			'line' => '@page {	size: A4 portrait; margin: 0.5cm; }',
+
+		};
+
+	}
+
+	protected function getSalesContent(\farm\Farm $eFarm, \Collection $cSale, string $template): string {
 
 		$items = [];
 		$farms = array_count_values($cSale->getColumnCollection('farm')->getIds());
 
 		foreach($cSale as $eSale) {
-			$items = array_merge($items, $this->getSaleLabel($eSale, $farms));
+
+			$items = array_merge(
+				$items,
+				$this->getSaleLabel(
+					$eSale, $farms,
+					match($template) {
+						'grid' => TRUE,
+						'line' => FALSE
+					}
+				)
+			);
+
 		}
+
+		switch($template) {
+
+			case 'grid' :
+				$itemsChunk = $this->getSalesGridChunk($eFarm, $items);
+				break;
+
+			case 'line' :
+				$itemsChunk = [$items];
+				break;
+
+		}
+
+		$h = '';
+
+		foreach($itemsChunk as $itemsByN) {
+
+			$h .= '<div class="pdf-sales-label-wrapper">';
+				$h .= implode('', $itemsByN);
+			$h .= '</div>';
+
+		}
+
+
+		return $h;
+
+	}
+
+	protected function getSalesGridChunk(\farm\Farm $eFarm, array $items): array {
+
+		$eConfiguration = $eFarm->conf();
 
 		$itemsPerPage = 4;
 
@@ -1200,17 +1259,7 @@ class PdfUi {
 			$itemsChunk[] = [];
 		}
 
-		$h = '';
-
-		foreach($itemsChunk as $itemsByN) {
-
-			$h .= '<div class="pdf-sales-label-wrapper">';
-				$h .= implode('', $itemsByN);
-			$h .= '</div>';
-
-		}
-
-		return $h;
+		return $itemsChunk;
 
 	}
 
@@ -1359,7 +1408,7 @@ class PdfUi {
 
 	}
 
-	public function getSaleLabel(\selling\Sale $eSale, array $farms): array {
+	public function getSaleLabel(\selling\Sale $eSale, array $farms, bool $split): array {
 
 		if($eSale['ccItem']->empty()) {
 			return [];
@@ -1440,7 +1489,7 @@ class PdfUi {
 
 		}
 
-		$itemsChunk = array_chunk($itemsList, 15);
+		$itemsChunk = $split ? array_chunk($itemsList, 15) : [$itemsList];
 		$pages = count($itemsChunk);
 
 		$entries = [];
@@ -1452,13 +1501,10 @@ class PdfUi {
 			$entry = '<div class="pdf-sales-label-item">';
 
 				$entry .= '<div class="pdf-sales-label-customer">';
-					$entry .= '<div>';
-						$entry .= '<div '.(mb_strlen($eCustomer->getName()) > 50 ? 'pdf-sales-label-customer-large' : '').'>'.encode($eCustomer->getName()).'</div>';
-						if($showComment) {
-							$entry .= '<div class="pdf-sales-label-comment">&laquo; '.encode($eSale['shopComment']).' &raquo;</div>';
-						}
-					$entry .= '</div>';
-
+					$entry .= '<div '.(mb_strlen($eCustomer->getName()) > 50 ? 'pdf-sales-label-customer-large' : '').'>'.encode($eCustomer->getName()).'</div>';
+					if($showComment) {
+						$entry .= '<div class="pdf-sales-label-comment">&laquo; '.encode($eSale['shopComment']).' &raquo;</div>';
+					}
 				$entry.= '</div>';
 
 				$entry .= '<div class="pdf-sales-label-details '.($position > 0 ? 'pdf-sales-label-details-next' : '').'">';

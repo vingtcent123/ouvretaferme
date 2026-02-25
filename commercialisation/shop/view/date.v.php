@@ -73,7 +73,7 @@ new AdaptativeView('/ferme/{id}/date/{date}', function($data, FarmTemplate $t) {
 
 new HtmlView('getSales', function($data, PdfTemplate $t) {
 
-	echo new \selling\PdfUi()->getSalesByDate($data->e, $data->cSale, $data->cItem);
+	echo new \selling\PdfUi()->getSalesByDate($data->e, $data->cSale, $data->cItem, $data->template);
 
 });
 
