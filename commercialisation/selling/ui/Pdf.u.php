@@ -1458,28 +1458,27 @@ class PdfUi {
 							$entry .= '<div class="pdf-sales-label-comment">&laquo; '.encode($eSale['shopComment']).' &raquo;</div>';
 						}
 					$entry .= '</div>';
-					$entry .= '<div>';
-						$entry .= '<div class="pdf-sales-label-products"><span>'.s("Articles").'</span></div>';
-						$entry .= '<div class="pdf-sales-label-count">'.$nItem.'</div>';
-					$entry .= '</div>';
 
 				$entry.= '</div>';
 
 				$entry .= '<div class="pdf-sales-label-details '.($position > 0 ? 'pdf-sales-label-details-next' : '').'">';
 
+					if(count($itemsChunk) > 1) {
+						$entry .= '<div class="pdf-sales-label-detail">';
+							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Page").'</div>';
+							$entry .= '<div class="pdf-sales-label-detail-value"><span class="pdf-sales-label-page">'.($position + 1).' / '.$pages.'</span></div>';
+						$entry .= '</div>';
+					}
+
 					$entry .= '<div class="pdf-sales-label-detail">';
 						$entry .= '<div class="pdf-sales-label-detail-title">'.s("Commande").'</div>';
-						$entry .= '<div class="pdf-sales-label-detail-value">'.$eSale['document'].'</div>';
+						$entry .= '<div class="pdf-sales-label-detail-value"><span class="pdf-sales-label-detail-document">'.$eSale['document'].'</span></div>';
 					$entry .= '</div>';
 
-					if(count($farms) > 1) {
-
-						$entry .= '<div class="pdf-sales-label-detail">';
-							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Producteur").'</div>';
-							$entry .= '<div class="pdf-sales-label-detail-value">'.encode($eSale['farm']['name']).'</div>';
-						$entry .= '</div>';
-
-					}
+					$entry .= '<div class="pdf-sales-label-detail">';
+						$entry .= '<div class="pdf-sales-label-detail-title">'.s("Articles").'</div>';
+						$entry .= '<div class="pdf-sales-label-detail-value">'.$nItem.'</div>';
+					$entry .= '</div>';
 
 					if(in_array($eSale['preparationStatus'], [Sale::DRAFT, Sale::CANCELED, Sale::BASKET])) {
 
@@ -1544,8 +1543,10 @@ class PdfUi {
 
 				$entry .= '<div class="pdf-sales-label-content pdf-sales-label-content-'.count($items).'">';
 
-					if(count($itemsChunk) > 1) {
-						$entry .= '<div class="pdf-sales-label-page"><span>'.s("Page {value}", ($position + 1).' / '.$pages).'</span></div>';
+					if(count($farms) > 1) {
+
+						$entry .= '<div class="pdf-sales-label-content-farm">'.encode($eSale['farm']['name']).'</div>';
+
 					}
 
 					$entry .= implode('', $items);

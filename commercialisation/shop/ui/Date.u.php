@@ -985,7 +985,12 @@ class DateUi {
 						$cxSale->notEmpty()
 					) {
 
-						$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eDate['eFarmSelected']->empty() ? '' : '&farm='.$eDate['eFarmSelected']['id']).'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('file-pdf').' '.s("Télécharger en PDF").'</a>';
+						$actions .= '<a data-dropdown="bottom-end" class="btn btn-primary dropdown-toggle">'.\Asset::icon('download').' '.s("Exporter les ventes").'</a>';
+						$actions .= '<div class="dropdown-list">';
+							$actions .= '<a href="/shop/date:downloadSales?id='.$eDate['id'].($eDate['eFarmSelected']->empty() ? '' : '&farm='.$eDate['eFarmSelected']['id']).'" data-ajax-navigation="never" class="dropdown-item">'.\Asset::icon('grid').'  '.s("Format carré en PDF").'</a>';/*
+							$actions .= '<a href="" class="dropdown-item">'.\Asset::icon('layout-three-columns', ['class' => 'asset-icon-rotate-90']).'  '.s("Format horizontal en PDF").'</a>';
+							$actions .= '<a class="dropdown-item">'.\Asset::icon('filetype-csv').'  '.s("Fichier CSV").'</a>';*/
+						$actions .= '</div>';
 
 
 					}

@@ -556,16 +556,13 @@ table.pdf-sales-summary {
 }
 
 .pdf-sales-label-page {
-	grid-column: span 4;
-	margin-bottom: 0.2cm;
-}
-
-.pdf-sales-label-page span {
-	padding: 0.25rem 0.5rem;
+	display: inline-block;
+	text-align: center;
+	padding: 0.1cm;
 	border-radius: var(--radius);
 	background-color: black;
 	color: white;
-	font-size: 1rem;
+	line-height: 1;
 }
 
 .pdf-sales-label-detail {
@@ -588,6 +585,14 @@ table.pdf-sales-summary {
 .pdf-sales-label-detail-value {
 	font-weight: bold;
 	text-align: center;
+}
+
+.pdf-sales-label-detail-document {
+	border: 1px solid var(--primary);
+	border-radius: var(--radius);
+	padding: 0.1cm;
+	display: inline-block;
+	font-weight: normal;
 }
 
 .pdf-sales-label-products {
@@ -645,6 +650,13 @@ table.pdf-sales-summary {
 	transform: translate(0, -3px);
 }
 
+.pdf-sales-label-content-farm {
+	grid-column: span 4;
+	font-weight: bold;
+	margin-bottom: 0.15cm;
+	text-transform: uppercase;
+}
+
 .pdf-sales-label-content-value {
 	display: inline-block;
 	background-color: white;
@@ -670,7 +682,6 @@ table.pdf-sales-summary {
 	font-weight: bold;
 	padding-left: 0.1cm;
 }
-
 
 .pdf-sales-label-content-price {
 	text-align: right;

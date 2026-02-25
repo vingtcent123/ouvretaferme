@@ -714,6 +714,7 @@ a.planning-filters-favorite:hover {
 	padding-top: 0;
 	padding-bottom: 0.125rem;
 	color: var(--muted);
+	background-color: transparent;
 }
 
 .planning-plant-list tbody td {
