@@ -105,13 +105,27 @@ class Configuration extends ConfigurationElement {
 
 				return in_array($vatChargeability, Configuration::model()->getPropertyEnum('vatChargeability'));
 			})
-			->setCallback('invoiceCollection.check', function(?string $invoiceCollection) {
+			->setCallback('invoiceCollection.check', function(?string $invoiceCollection) use($p) {
+
+				if($p->isBuilt('invoiceMandatoryTexts') === FALSE or $this['invoiceMandatoryTexts'] === FALSE) {
+					return TRUE;
+				}
 				return $invoiceCollection !== NULL;
 			})
-			->setCallback('invoiceLateFees.check', function(?string $invoiceLateFees) {
+			->setCallback('invoiceLateFees.check', function(?string $invoiceLateFees) use($p) {
+
+				if($p->isBuilt('invoiceMandatoryTexts') === FALSE or $this['invoiceMandatoryTexts'] === FALSE) {
+					return TRUE;
+				}
+
 				return $invoiceLateFees !== NULL;
 			})
-			->setCallback('invoiceDiscount.check', function(?string $invoiceDiscount) {
+			->setCallback('invoiceDiscount.check', function(?string $invoiceDiscount) use($p) {
+
+				if($p->isBuilt('invoiceMandatoryTexts') === FALSE or $this['invoiceMandatoryTexts'] === FALSE) {
+					return TRUE;
+				}
+
 				return $invoiceDiscount !== NULL;
 			})
 		;
