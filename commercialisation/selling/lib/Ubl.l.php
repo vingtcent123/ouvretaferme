@@ -15,6 +15,11 @@ class UblLib {
 		$buyerSiren = mb_substr($eInvoice['customer']['siret'], 0, 9);
 		$buyerSiret = $eInvoice['customer']['siret'];
 		$buyerAddress = $eInvoice['customer']->getFullElectronicAddress();
+		if($eInvoice['customer']->hasInvoiceAddress()) {
+			$buyerAddressType = 'invoice';
+		} else {
+			$buyerAddressType = 'delivery';
+		}
 
 		// adresses électroniques
 		if(LIME_ENV === 'dev') {
@@ -101,12 +106,12 @@ class UblLib {
 				<cbc:ID schemeID="0088">'.$buyerSiret.'</cbc:ID><!--BT-46-->
 			</cac:PartyIdentification>
 			<cac:PostalAddress><!--BG-8-->
-				<cbc:StreetName>'.$eInvoice['customer']['invoiceStreet1'].'</cbc:StreetName>
-				<cbc:AdditionalStreetName>'.$eInvoice['customer']['invoiceStreet2'].'</cbc:AdditionalStreetName>
-				<cbc:CityName>'.$eInvoice['customer']['invoiceCity'].'</cbc:CityName>
-				<cbc:PostalZone>'.$eInvoice['customer']['invoicePostcode'].'</cbc:PostalZone>
+				<cbc:StreetName>'.$eInvoice['customer'][$buyerAddressType.'Street1'].'</cbc:StreetName>
+				<cbc:AdditionalStreetName>'.$eInvoice['customer'][$buyerAddressType.'Street2'].'</cbc:AdditionalStreetName>
+				<cbc:CityName>'.$eInvoice['customer'][$buyerAddressType.'City'].'</cbc:CityName>
+				<cbc:PostalZone>'.$eInvoice['customer'][$buyerAddressType.'Postcode'].'</cbc:PostalZone>
 				<cac:Country>
-					<cbc:IdentificationCode>'.$eInvoice['customer']['invoiceCountry']['code'].'</cbc:IdentificationCode>
+					<cbc:IdentificationCode>'.$eInvoice['customer'][$buyerAddressType.'Country']['code'].'</cbc:IdentificationCode>
 				</cac:Country>
 			</cac:PostalAddress>
 			<cac:PartyTaxScheme>
