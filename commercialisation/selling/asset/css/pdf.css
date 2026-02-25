@@ -472,7 +472,6 @@ table.pdf-sales-summary {
 .pdf-sales-summary-quantity {
 	font-size: 1.3rem;
 	font-weight: lighter;
-	padding-right: 0;
 }
 
 .pdf-sales-summary-distribution {

@@ -983,7 +983,7 @@ class SaleLib extends SaleCrud {
 
 		$e->build(['shopDate'], [], new \Properties('update'));
 
-		$properties = ['shop', 'shopDate', 'shopShared'];
+		$properties = ['shop', 'shopDate', 'shopShared', 'shopSharedCustomer'];
 
 		if($e['preparationStatus'] === Sale::BASKET) {
 

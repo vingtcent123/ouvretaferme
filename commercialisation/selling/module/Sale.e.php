@@ -1086,6 +1086,16 @@ class Sale extends SaleElement {
 						$this['shop'] = $eDate['shop'];
 						$this['shopShared'] = $eDate['shop']['shared'];
 
+						if($this['shopShared']) {
+							$this['shopSharedCustomer'] = \selling\Customer::model()
+								->select('id')
+								->whereFarm($this['shop']['farm'])
+								->whereUser($this['customer']['user'])
+								->get();
+						} else {
+							$this['shopSharedCustomer'] = new Customer();
+						}
+
 						return $eDate->canCreateSale($this['farm']);
 
 					}
@@ -1093,6 +1103,7 @@ class Sale extends SaleElement {
 				} else {
 					$this['shop'] = new \shop\Shop();
 					$this['shopShared'] = FALSE;
+					$this['shopSharedCustomer'] = new Customer();
 					$this['shopDate'] = new \shop\Date();
 					return TRUE;
 				}

@@ -297,7 +297,7 @@ class ShopLib extends ShopCrud {
 				'id', 'name',
 				'cDate' => Date::model()
 					->select(Date::getSelection())
-					->where('deliveryDate IS NULL OR deliveryDate BETWEEN NOW() - INTERVAL '.$period.' AND NOW() + INTERVAL '.$period)
+					->where('deliveryDate IS NULL OR deliveryDate > NOW() - INTERVAL '.$period)
 					->whereType($type)
 					->sort(['deliveryDate' => SORT_ASC])
 					->delegateCollection('shop')
