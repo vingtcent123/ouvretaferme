@@ -536,7 +536,7 @@ class JournalUi {
 									}
 
 								$h .= encode($eOperation['description']);
-								if($eOperation['cashflow']->notEmpty() and \account\AccountLabelLib::isFromClass($eOperation['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS)) {
+								if($eOperation['cashflow']->notEmpty() and $eOperation['account']->is($eOperation['cashflow']['account']['account'])) {
 									$h .= ' <a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations?id='.$eOperation['cashflow']['id'].'&bankAccount='.$eOperation['cashflow']['account']['id'].'" class="btn btn-xs btn-secondary" title="'.("Voir l'opération bancaire liée").'">';
 										$h .= \Asset::icon('bank');
 									$h .= '</a>';
