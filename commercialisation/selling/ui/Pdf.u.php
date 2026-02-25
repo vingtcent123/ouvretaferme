@@ -831,9 +831,9 @@ class PdfUi {
 			($invoiceMentionCollection or $invoiceMentionLateFees or $invoiceMentionDiscount)
 		) {
 			$h .= '<div class="pdf-document-mentions">';
-				$h .= $invoiceMentionCollection ? '<div>'.encode($invoiceMentionCollection).'</div>' : '';
-				$h .= $invoiceMentionLateFees ? '<div>'.encode($invoiceMentionLateFees).'</div>' : '';
-				$h .= $invoiceMentionDiscount ? '<div>'.encode($invoiceMentionDiscount).'</div>' : '';
+				$h .= $invoiceMentionCollection ? encode($invoiceMentionCollection).' ' : '';
+				$h .= $invoiceMentionLateFees ? encode($invoiceMentionLateFees).' ' : '';
+				$h .= $invoiceMentionDiscount ? encode($invoiceMentionDiscount) : '';
 			$h .= '</div>';
 		}
 		if($paymentCondition) {
