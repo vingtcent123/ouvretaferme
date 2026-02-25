@@ -109,7 +109,7 @@ table th {
 	padding: 0.75rem 0.5rem;
 	text-align: left;
 	vertical-align: bottom;
-	background-color: var(--background-light);
+	background-color: var(--background);
 }
 
 table thead > *:first-child > *:first-child {
