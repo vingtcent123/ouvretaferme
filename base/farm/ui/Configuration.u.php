@@ -575,7 +575,7 @@ class ConfigurationUi {
 			'invoicePaymentCondition' => s("Conditions de paiement affichées sur les factures"),
 			'invoiceHeader' => s("Ajouter un texte personnalisé affiché en haut des factures"),
 			'invoiceFooter' => s("Ajouter un texte personnalisé affiché en bas des factures"),
-			'invoiceMandatoryTexts' => s("Indiquer les mentions obligatoires"),
+			'invoiceMandatoryTexts' => s("Indiquer les mentions obligatoires sur les factures"),
 			'invoiceCollection' => s("Mention relative aux frais de recouvrement"),
 			'invoiceLateFees' => s("Mention relative aux pénalités de retard"),
 			'invoiceDiscount' => s("Mention relative à l’escompte ou à son absence"),
