@@ -87,9 +87,9 @@ class ConfigurationModel extends \ModuleModel {
 			'invoiceHeader' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'invoiceMandatoryTexts' => ['bool', 'cast' => 'bool'],
-			'invoiceCollection' => ['text16', 'cast' => 'string'],
-			'invoiceLateFees' => ['text16', 'cast' => 'string'],
-			'invoiceDiscount' => ['text16', 'cast' => 'string'],
+			'invoiceCollection' => ['text16', 'null' => TRUE, 'cast' => 'string'],
+			'invoiceLateFees' => ['text16', 'null' => TRUE, 'cast' => 'string'],
+			'invoiceDiscount' => ['text16', 'null' => TRUE, 'cast' => 'string'],
 			'marketSalePaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'marketSaleDefaultDecimal' => ['enum', [\farm\Configuration::NUMBER, \farm\Configuration::PRICE], 'cast' => 'enum'],
 			'pdfNaturalOrder' => ['bool', 'cast' => 'bool'],
@@ -152,16 +152,7 @@ class ConfigurationModel extends \ModuleModel {
 				return \selling\SellingSetting::INVOICE;
 
 			case 'invoiceMandatoryTexts' :
-				return FALSE;
-
-			case 'invoiceCollection' :
-				return new \farm\ConfigurationUi()->getInvoiceMention('collection');
-
-			case 'invoiceLateFees' :
-				return new \farm\ConfigurationUi()->getInvoiceMention('lateFees');
-
-			case 'invoiceDiscount' :
-				return new \farm\ConfigurationUi()->getInvoiceMention('discount');
+				return TRUE;
 
 			case 'marketSaleDefaultDecimal' :
 				return Configuration::PRICE;
