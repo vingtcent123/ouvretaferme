@@ -541,9 +541,9 @@ class ConfigurationUi {
 	public function getInvoiceMention(string $type): string {
 
 		return match($type) {
-			'collection' => s("Indemnité forfaitaire pour frais de recouvrement en cas de retard de paiement : 40 €"),
-			'lateFees' => s("Tout retard de paiement engendre une pénalité exigible à compter de la date d'échéance, calculée sur la base de trois fois le taux d'intérêt légal"),
-			'discount' => s("Les règlements reçus avant la date d'échéance ne donneront pas lieu à escompte"),
+			'collection' => s("En cas de retard, une indemnité forfaitaire pour frais de recouvrement de 40 € sera exigée."),
+			'lateFees' => s("Tout retard de paiement engendre une pénalité exigible à compter de la date d'échéance, calculée sur la base de trois fois le taux d'intérêt légal."),
+			'discount' => s("Les règlements reçus avant la date d'échéance ne donneront pas lieu à escompte."),
 			default => throw new \Exception('unknown type'),
 		};
 

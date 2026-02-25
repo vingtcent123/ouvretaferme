@@ -23,5 +23,19 @@ new Page()
 				'invoiceDiscount' => new \farm\ConfigurationUi()->getInvoiceMention('discount'),
 			]);
 
+		$cFarm = \farm\Farm::model()
+			->select('id')
+			->whereLegalCountry('!=', \user\UserSetting::FR)
+			->getCollection();
+
+		\farm\Configuration::model()
+			->whereFarm('IN', $cFarm->getIds())
+			->update([
+				'invoiceMandatoryTexts' => FALSE,
+				'invoiceCollection' => NULL,
+				'invoiceLateFees' => NULL,
+				'invoiceDiscount' => NULL,
+			]);
+
 	});
 ?>
