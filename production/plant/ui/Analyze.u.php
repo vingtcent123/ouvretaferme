@@ -33,7 +33,7 @@ class AnalyzeUi {
 
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<td></td>';
+						$h .= '<th></th>';
 						foreach($seasons as $season) {
 							$h .= '<th class="text-end">'.s("Saison {value}", $season).'</th>';
 						}

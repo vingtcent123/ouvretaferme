@@ -191,7 +191,7 @@ class HomeUi {
 
 			$h = '<h2>'.s("Du nouveau sur {siteName}").'</h2>';
 
-				$h .= '<table class="tr-bordered">';
+				$h .= '<table class="table-transparent tr-bordered">';
 					$h .= '<tbody>';
 
 						foreach($cNews as $position => $eNews) {

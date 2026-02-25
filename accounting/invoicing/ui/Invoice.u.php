@@ -32,7 +32,7 @@ Class InvoiceUi {
 
 		$h .= '</div>';
 
-		$h .= '<table class="tr-bordered invoice-summary">';
+		$h .= '<table class="table-transparent tr-bordered invoice-summary">';
 			$h .= '<tbody>';
 				$h .= '<tr>';
 					$h .= '<td>'.s("Montant total TTC").'</td>';
