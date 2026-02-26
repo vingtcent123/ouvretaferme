@@ -806,7 +806,7 @@ class InvoiceUi {
 				$eFarm = $eInvoice['farm'];
 				$eCustomer = $eInvoice['customer'];
 
-				if(\pdp\PdpLib::isActive($eFarm)) {
+				if(\pdp\PdpLib::isActive($eFarm) and $eCustomer['type'] === Customer::PRO) {
 
 					if($eFarm->hasLegalAddress() === FALSE) {
 
@@ -835,7 +835,7 @@ class InvoiceUi {
 					}
 
 					if($warning !== NULL) {
-						$h .= $form->group('', '<div class="util-danger">'.$warning.'</div>');
+						$h .= $form->group('', '<div class="util-block">'.$warning.'</div>');
 					}
 
 				}
