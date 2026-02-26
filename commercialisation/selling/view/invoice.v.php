@@ -7,7 +7,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 	$eSaleFirst = $data->cSale->first();
 	if(
-		\pdp\PdpLib::isActive($eSaleFirst['farm']) and
+		\pdp\PdpLib::isActive($eSaleFirst['farm'] ?? new \farm\Farm()) and
 		$eSaleFirst['customer']['type'] === \selling\Customer::PRO and
 		$eSaleFirst['farm']->acceptElectronicInvoicing() === FALSE
 	) {
