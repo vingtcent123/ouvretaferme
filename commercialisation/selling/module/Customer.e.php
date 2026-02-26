@@ -471,11 +471,11 @@ class Customer extends CustomerElement {
 					return TRUE;
 				}
 
-				if($electronicAddress === NULL) {
-					return FALSE;
+				if($p->isBuilt('siret') === FALSE) {
+					return TRUE;
 				}
 
-				if($p->isBuilt('siret') === FALSE or $this['siret'] === NULL) {
+				if($electronicAddress === NULL) {
 					return FALSE;
 				}
 				return \pdp\Address::checkElectronicAddress($electronicAddress, $this['siret']);
