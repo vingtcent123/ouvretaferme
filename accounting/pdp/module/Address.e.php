@@ -21,7 +21,7 @@ class Address extends AddressElement {
 
 		$siren = mb_substr($siret, 0, 9);
 
-		preg_match('/([0-9]{0, 9})(\_[a-zA-Z0-9]+)?(\_[a-zA-Z0-9]+)?/m', $address, $matches);
+		preg_match('/([0-9]{9})(\_[a-zA-Z0-9]+)?(\_[a-zA-Z0-9]+)?/m', $address, $matches);
 
 		$parts = str_contains($address, '_') + 1;
 
