@@ -79,7 +79,7 @@ class Configuration extends ConfigurationElement {
 			->setCallback('invoicePrefix.fqn', function(string $prefix): bool {
 				return preg_match('/^[a-z0-9\-\_]*[a-z\-\_]$/si', rtrim($prefix, '#')) > 0;
 			})
-			->setCallback('vatNumber.check', fn(?string &$vat) => \farm\Farm::checkVatNumber('farm\Configuration', $this['farm'], $vat))
+			->setCallback('vatNumber.check', fn(?string &$vat) => \farm\Farm::checkVatNumber('farm\Configuration', $this['farm'], $vat, \pdp\PdpLib::isActive($this)))
 			->setCallback('defaultVat.check', function(int $vat): bool {
 				return array_key_exists($vat, \selling\SellingSetting::getVatRates($this['farm']));
 			})

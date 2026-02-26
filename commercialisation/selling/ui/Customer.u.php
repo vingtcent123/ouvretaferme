@@ -906,7 +906,7 @@ class CustomerUi {
 					}
 
 					if(\pdp\PdpLib::isActive($eCustomer['farm'])) {
-						$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique"), $eCustomer);
+						$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique").\util\FormUi::asterisk(), $eCustomer);
 					}
 
 				$h .= '</div>';

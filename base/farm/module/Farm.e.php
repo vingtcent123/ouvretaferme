@@ -657,15 +657,20 @@ class Farm extends FarmElement {
 
 	}
 
-	public static function checkVatNumber(string $element, Farm|\selling\Customer $e, ?string &$vat): bool {
+	public static function checkVatNumber(string $element, Farm|\selling\Customer $e, ?string &$vat, bool $isNullable): bool {
 
 		if($e->isFR()) {
 
 			if($vat === NULL) {
-				return TRUE;
+				if($isNullable) {
+					return TRUE;
+				} else {
+					\Fail::log($element.'::vatNumber.check', ['FR']);
+					return TRUE;
+				}
 			}
 			
-			$vat = preg_replace('/\s+/i', '', $vat);
+			$vat = preg_replace('/\s+/i', '', $vat ?? '');
 			$vat = strtoupper($vat);
 
 			if(preg_match('/^FR[0-9]{11}$/', $vat) === 0) {
@@ -677,7 +682,12 @@ class Farm extends FarmElement {
 		} else if($e->isBE()) {
 
 			if($vat === NULL) {
-				return TRUE;
+				if($isNullable) {
+					return TRUE;
+				} else {
+					\Fail::log($element.'::vatNumber.check', ['BE']);
+					return TRUE;
+				}
 			}
 
 			$vat = preg_replace('/\s+/i', '', $vat);
