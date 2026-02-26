@@ -65,7 +65,7 @@ new \selling\CustomerPage()
 
 		$data->isFromInvoicing = (
 			\pdp\PdpLib::isActive($data->e['farm']) and
-			str_contains(SERVER('HTTP_REFERER') ?? '', '/invoice:create')
+			(str_contains(SERVER('HTTP_REFERER') ?? '', '/invoice:create') or GET('for') === 'e-invoicing')
 		);
 
 		$data->e['nGroup'] = \selling\CustomerGroupLib::countByFarm($data->e['farm']);

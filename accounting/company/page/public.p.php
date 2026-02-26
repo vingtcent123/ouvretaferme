@@ -50,18 +50,24 @@ new Page()
 
 	});
 
-
+/**
+ * Webhook superpdp
+ */
 new Page()
 	->get('superpdp', function($data) {
-
-		if(\pdp\PdpLib::isActive(new \farm\Farm()) === FALSE) {
-			throw new NotExistsAction();
-		}
 
 		$code = GET('code');
 		$state = GET('state');
 
+		if(!$code or !$state) {
+			throw new NotExistsAction();
+		}
+
 		$eFarm = \pdp\ConnectionLib::retrieveToken($code, $state);
+
+		if($eFarm->empty()) {
+			throw new NotExistsAction();
+		}
 
 		throw new RedirectAction(Lime::getUrl().\farm\FarmUi::urlConnected($eFarm).'/pdp/?success=account\\Pdp::connected');
 

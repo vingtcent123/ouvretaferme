@@ -801,12 +801,54 @@ class InvoiceUi {
 
 			if($sales !== NULL) {
 
-				$h .= $form->group(
-					s("Ventes à inclure dans la facture").
-					\util\FormUi::info(s("Notez qu'une facture d'avoir est générée lorsque le montant total à facturer est négatif.")),
-					$sales($form)
-				);
+				$canCreateInvoice = TRUE;
 
+				$eFarm = $eInvoice['farm'];
+				$eCustomer = $eInvoice['customer'];
+
+				if(\pdp\PdpLib::isActive($eFarm)) {
+
+					if($eFarm->hasLegalAddress() === FALSE) {
+
+						$warning = s("Votre adresse n'est pas renseignée et elle est nécessaire pour établir une facture.<br /><btn>Compléter mon adresse</btn>", ['btn' => '<a href="/farm/farm:updateLegal?id='.$eFarm['id'].'" class="btn btn-primary" style="margin: 0.5rem 0;">']);
+						$canCreateInvoice = FALSE;
+
+					} else if($eFarm->getConf('vatNumber') === NULL) {
+
+						$warning = s("Le numéro de TVA intracommunautaire de la ferme n'est pas renseigné et il est nécessaire pour établir une facture.<br /><btn>Indiquer mon numéro de TVA intracommunautaire</btn>", ['btn' => '<a href="/farm/configuration:updateVatNumber?id='.$eFarm['id'].'" class="btn btn-primary" style="margin: 0.5rem 0;">']);
+						$canCreateInvoice = FALSE;
+
+					} else if($eFarm->acceptElectronicInvoicing() === FALSE) {
+
+						$warning = s("Certaines informations de facturation de votre ferme non renseignées sont nécessaires pour établir une facture.<br /><btn>Compléter les informations</btn>", ['btn' => '<a href="/farm/farm:updateForElectronicInvoicing?id='.$eFarm['id'].'" class="btn btn-primary" style="margin: 0.5rem 0;">']);
+						$canCreateInvoice = FALSE;
+
+					} else if($eCustomer->acceptCreateElectronicInvoice() === FALSE) {
+
+						$warning = s("Certaines informations de votre client sont nécessaires pour établir une facture.<br /><btn>Compléter ces informations</btn>", ['btn' => '<a href="/selling/customer:update?id='.$eCustomer['id'].'" class="btn btn-primary" style="margin: 0.5rem 0;">']);
+						$canCreateInvoice = FALSE;
+
+					} else {
+
+						$warning = NULL;
+
+					}
+
+					if($warning !== NULL) {
+						$h .= $form->group('', '<div class="util-danger">'.$warning.'</div>');
+					}
+
+				}
+
+				if($canCreateInvoice) {
+
+					$h .= $form->group(
+						s("Ventes à inclure dans la facture").
+						\util\FormUi::info(s("Notez qu'une facture d'avoir est générée lorsque le montant total à facturer est négatif.")),
+						$sales($form)
+					);
+
+				}
 			}
 
 			$h .= '<div id="invoice-sales-required">';

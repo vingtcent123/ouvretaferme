@@ -514,9 +514,6 @@ class FarmUi {
 
 				if($eFarm->isFR()) {
 					$h .= $form->dynamicGroup($eFarm, 'siret*');
-					if(\pdp\PdpLib::isActive($eFarm)) {
-						$h .= $form->electronicAddressGroup(s("Adresse électronique de facturation"), $eFarm);
-					}
 				}
 
 				$eFarm['legalName'] ??= $eFarm['name'];
@@ -639,6 +636,58 @@ class FarmUi {
 		return new \Panel(
 			id: 'panel-farm-update',
 			title: s("Paramétrer la ferme"),
+			body: $h
+		);
+
+	}
+
+	public function updateForElectronicInvoicing(Farm $eFarm): \Panel {
+
+		$form = new \util\FormUi();
+
+		$h = '<div class="util-info">';
+			$h .= s("Nous vous demandons ici certaines informations qui sont indispensables pour pouvoir générer une facture.");
+		$h .= '</div>';
+
+		$h .= $form->openAjax('/farm/farm:doUpdateForElectronicInvoicing', ['id' => 'farm-update', 'autocomplete' => 'off']);
+
+			$h .= $form->hidden('id', $eFarm['id']);
+
+			if($eFarm->isVerified()) {
+
+				$h .= $form->group(
+					s("Pays du siège social de la ferme"),
+					'<b>'.\user\Country::ask($eFarm['legalCountry'])['name'].'</b>'
+				);
+
+				if($eFarm->isLegal()) {
+
+					if($eFarm->isFR()) {
+						$h .= $form->dynamicGroup($eFarm, 'siret');
+						if(\pdp\PdpLib::isActive($eFarm)) {
+							$h .= $form->electronicAddressGroup(s("Adresse électronique de facturation"), $eFarm);
+						}
+					}
+
+					$h .= $form->dynamicGroup($eFarm, 'legalName');
+					$h .= $form->addressGroup(s("Adresse du siège social de la ferme"), 'legal', $eFarm, ['country' => FALSE]);
+
+				}
+
+			} else {
+				$h .= $form->dynamicGroup($eFarm, 'legalCountry');
+			}
+
+
+			$h .= $form->group(
+				content: $form->submit(s("Enregistrer"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-farm-update-for-electronic-invoicing',
+			title: s("Paramétrer la ferme pour la facturation"),
 			body: $h
 		);
 

@@ -1012,7 +1012,16 @@ class SaleUi {
 				$eSale->canDocument(Pdf::INVOICE)
 			) {
 
-				$document = '<a href="/selling/invoice:create?customer='.$eSale['customer']['id'].'&sales[]='.$eSale['id'].'&origin=sales" class="btn btn-sm sale-document sale-document-new" title="'.s("Créer une facture").'">';
+				if(\pdp\PdpLib::isActive($eSale['farm']) and $eSale['customer']->acceptCreateElectronicInvoice() === FALSE) {
+					$link = '/selling/customer:update?id='.$eSale['customer']['id'].'&for=e-invoicing';
+				} else if(\pdp\PdpLib::isActive($eSale['farm']) and $eSale['farm']->hasLegalAddress() === FALSE) {
+					$link = '/farm/farm:updateLegal?id='.$eSale['farm']['id'];
+				} else if(\pdp\PdpLib::isActive($eSale['farm']) and $eSale['farm']->hasInvoicingMentions() === FALSE) {
+					$link = '/farm/configuration:updateInvoiceMentions?id='.$eSale['farm']['id'];
+				} else {
+					$link = '/selling/invoice:create?customer='.$eSale['customer']['id'].'&sales[]='.$eSale['id'].'&origin=sales';
+				}
+				$document = '<a href="'.$link.'" class="btn btn-sm sale-document sale-document-new" title="'.s("Créer une facture").'">';
 					$document .= '<div class="sale-document-name">'.\selling\SellingSetting::INVOICE.'</div>';
 					$document .= '<div class="sale-document-status">';
 						$document .= \Asset::icon('plus');

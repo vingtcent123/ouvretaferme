@@ -41,6 +41,38 @@ class ConfigurationUi {
 
 	}
 
+	public function updateVatNumberPanel(\farm\Farm $eFarm): \Panel {
+
+		$eConfiguration = $eFarm->conf();
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/farm/configuration:doUpdateVatNumber', ['autocomplete' => 'off', 'class' => 'farm-vat-number-form']);
+
+			$h .= '<div class="util-info">';
+				$h .= s("Votre numéro de TVA intracommunautaire est nécessaire pour accéder à cette page.");
+			$h .= '</div>';
+
+			$h .= $form->hidden('id', $eConfiguration['id']);
+			$h .= $form->hidden('isFromInvoicing', '1');
+
+			$h .= $form->dynamicGroup($eConfiguration, 'vatNumber');
+
+			$h .= $form->group(
+				content: $form->submit(s("Valider"))
+			);
+
+		$h .= $form->close();
+
+
+		return new \Panel(
+			id: 'panel-vat-number-update',
+			title: s("Paramétrer le numéro de TVA intracommunautaire"),
+			body: $h
+		);
+
+	}
+
 	public function updateSettings(\farm\Farm $eFarm): string {
 
 		$eConfiguration = $eFarm->conf();
@@ -606,7 +638,7 @@ class ConfigurationUi {
 
 			case 'vatNumber' :
 				$d->palceholder = s("Ex. : {value}", 'FR01234567890');
-				$d->after = \util\FormUi::info(s("Indiquez ici un numéro de TVA intracommunautaire si vous souhaitez le voir apparaître sur les factures."));
+				$d->after = fn(\util\FormUi $form, Configuration $e) => ($e->exists() === FALSE or \pdp\PdpLib::isActive($e['farm']) === FALSE) ? \util\FormUi::info(s("Indiquez ici un numéro de TVA intracommunautaire si vous souhaitez le voir apparaître sur les factures.")) : NULL;
 				break;
 
 			case 'hasVat' :
@@ -734,7 +766,14 @@ class ConfigurationUi {
 
 			case 'invoiceMandatoryTexts':
 				$d->field = 'yesNo';
+				$d->attributes['onchange'] = 'Configuration.changeInvoiceMandatoryTexts();';
 				$d->after = fn(\util\FormUi $form, Configuration $e) => \util\FormUi::info(s("Vos factures ne seront pas conformes sans ces mentions !"), $e['invoiceMandatoryTexts'] ? 'hide' : '');
+				break;
+
+			case  'invoiceCollection':
+			case  'invoiceLateFees':
+			case  'invoiceDiscount':
+				$d->group = fn(Configuration $e) => ($e['invoiceMandatoryTexts']) ? [] : ['class' => 'hide'];
 				break;
 
 			case 'vatFrequency' :
@@ -766,17 +805,6 @@ class ConfigurationUi {
 				];
 				$d->attributes['mandatory'] = TRUE;
 				$d->group = fn(Configuration $e) => ($e['hasVatAccounting'] ?? NULL) ? [] : ['class' => 'hide'];
-				break;
-
-
-			case 'invoiceMandatoryTexts*':
-				$d->attributes['onchange'] = 'Configuration.changeInvoiceMandatoryTexts();';
-				break;
-
-			case  'invoiceCollection':
-			case  'invoiceLateFees':
-			case  'invoiceDiscount':
-				$d->group = fn(Configuration $e) => ($e['invoiceMandatoryTexts']) ? [] : ['class' => 'hide'];
 				break;
 
 		}

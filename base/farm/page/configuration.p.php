@@ -57,7 +57,21 @@ new \farm\FarmPage()
 
 		throw new ViewAction($data);
 
-	}, page: 'updateVat');
+	}, page: 'updateVat')
+	->update(function($data) {
+
+		$data->eFarm = $data->e;
+
+		throw new ViewAction($data);
+
+	}, page: 'updateInvoiceMentions')
+	->update(function($data) {
+
+		$data->eFarm = $data->e;
+
+		throw new ViewAction($data);
+
+	}, page: 'updateVatNumber');
 
 new \farm\ConfigurationPage()
 	->applyElement(function($data, \farm\Configuration $eConfiguration) {
@@ -67,6 +81,7 @@ new \farm\ConfigurationPage()
 
 	})
 	->doUpdateProperties('doUpdateDeliveryNote', ['documentTarget', 'deliveryNoteHeader', 'deliveryNoteFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateVatNumber', ['vatNumber'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateOrderForm', ['documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateInvoiceMention', ['invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))

@@ -804,6 +804,7 @@ class CustomerUi {
 		$h .= $form->openAjax('/selling/customer:doUpdate', ['class' => $formClass]);
 
 			$h .= $form->hidden('id', $eCustomer['id']);
+			$h .= $form->hidden('isFromInvoicing', (int)$isFromInvoicing);
 
 			if($eCustomer['destination'] !== Customer::COLLECTIVE) {
 				$h .= $form->dynamicGroup($eCustomer, 'category');
@@ -839,7 +840,7 @@ class CustomerUi {
 	protected function write(string $action, \util\FormUi $form, Customer $eCustomer, bool $isFromInvoicing = FALSE) {
 
 		$eCustomer->expects(['user', 'nGroup']);
-		$areElectronicInvoicingFieldMandatory = \pdp\PdpLib::isActive($eCustomer['farm']);
+		$areElectronicInvoicingFieldMandatory = (\pdp\PdpLib::isActive($eCustomer['farm']) and $isFromInvoicing);
 
 		$h = '';
 
@@ -853,7 +854,7 @@ class CustomerUi {
 
 		if($isFromInvoicing) {
 			$h .= '<div class="util-info">';
-				$h .= s("Les informations suivantes sont indispensables pour pouvoir générer une facture, veuillez les compléter :");
+				$h .= s("Nous vous demandons ici certaines informations qui sont indispensables pour pouvoir générer une facture.");
 			$h .= '</div>';
 		}
 
@@ -906,7 +907,7 @@ class CustomerUi {
 					}
 
 					if(\pdp\PdpLib::isActive($eCustomer['farm'])) {
-						$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique").\util\FormUi::asterisk(), $eCustomer);
+						$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique").($areElectronicInvoicingFieldMandatory ? \util\FormUi::asterisk() : ''), $eCustomer);
 					}
 
 				$h .= '</div>';
@@ -928,7 +929,7 @@ class CustomerUi {
 						$before = '';
 					}
 
-					$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer, before: $before);
+					$h .= $form->addressGroup(s("Adresse de facturation").($areElectronicInvoicingFieldMandatory ? \util\FormUi::asterisk() : ''), 'invoice', $eCustomer, before: $before);
 
 					$h .= '</div>';
 

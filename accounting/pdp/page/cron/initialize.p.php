@@ -1,10 +1,10 @@
 <?php
+/**
+ * Synchronise les factures et les événements des factures des fermes qui ont activé la PA
+ *
+ */
 new Page()
 	->cron('index', function($data) {
-
-		if(\pdp\PdpLib::isActive(new \farm\Farm()) === FALSE) {
-			return;
-		}
 
 		$cCompanyCron = \company\CompanyCron::model()
 			->select(\company\CompanyCron::getSelection() + ['farm' => ['id', 'legalCountry']])
@@ -49,7 +49,7 @@ new Page()
 					->wherePartner(\account\PartnerSetting::SUPER_PDP)
 					->update(['synchronization' => \account\Partner::FAIL]);
 
-				trigger_error('Error while synchronizing farm 1 '.$eCompanyCron['farm']['id'].' : '.$e->getMessage());
+				trigger_error('Error while synchronizing farm #'.$eCompanyCron['farm']['id'].' : '.$e->getMessage());
 
 			}
 

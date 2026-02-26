@@ -56,6 +56,14 @@ new \farm\FarmPage()
 
 		throw new ViewAction($data);
 
+	}, page: 'updateForElectronicInvoicing')
+	->doUpdateProperties('doUpdateForElectronicInvoicing', ['siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'electronicScheme', 'electronicAddress'], fn() => throw new ReloadAction('farm', 'Farm::updated'))
+	->update(function($data) {
+
+		$data->eFarm = $data->e;
+
+		throw new ViewAction($data);
+
 	}, page: 'updatePlace')
 	->doUpdateProperties('doUpdatePlace', ['cultivationPlace', 'cultivationLngLat'], fn() => throw new ReloadAction('farm', 'Farm::updatedPlace'))
 	->update(function($data) {

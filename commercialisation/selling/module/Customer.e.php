@@ -355,7 +355,7 @@ class Customer extends CustomerElement {
 				return ($name !== NULL);
 
 			})
-			->setCallback('invoiceAddress.empty', fn() => \user\User::buildAddress('invoice', $this))
+			->setCallback('invoiceAddress.empty', fn() => \user\User::buildAddress('invoice', $this, POST('isFromInvoicing', 'bool', FALSE) === FALSE))
 			->setCallback('deliveryAddress.empty', fn() => \user\User::buildAddress('delivery', $this))
 			->setCallback('invoiceCountry.check', function(\user\Country $eCountry): bool {
 
@@ -389,13 +389,13 @@ class Customer extends CustomerElement {
 				);
 
 			})
-			->setCallback('siret.check', function(?string &$siret) {
-				if(\pdp\PdpLib::isActive($this['farm'])) {
+			->setCallback('siret.check', function(?string &$siret) use($p) {
+				if($p->for === 'update' and \pdp\PdpLib::isActive($this['farm'])) {
 					return $siret !== NULL and \farm\Farm::checkSiret($siret);
 				}
 				return \farm\Farm::checkSiret($siret);
 			})
-			->setCallback('vatNumber.check', fn(?string &$vat) => \farm\Farm::checkVatNumber('selling\Customer', $this, $vat, \pdp\PdpLib::isActive($this['farm']) === FALSE))
+			->setCallback('vatNumber.check', fn(?string &$vat) => \farm\Farm::checkVatNumber('selling\Customer', $this, $vat, ($p->for === 'create' or \pdp\PdpLib::isActive($this['farm']) === FALSE)))
 			->setCallback('defaultPaymentMethod.check', function(\payment\Method $eMethod): bool {
 
 				if($eMethod->empty()) {
@@ -454,7 +454,10 @@ class Customer extends CustomerElement {
 				}
 
 				if($electronicScheme === NULL) {
-					return FALSE;
+					if($p->for === 'update') {
+						return FALSE;
+					}
+					return TRUE;
 				}
 
 				return \pdp\Address::checkScheme($electronicScheme, $this['invoiceCountry']);
@@ -471,8 +474,12 @@ class Customer extends CustomerElement {
 				}
 
 				if($electronicAddress === NULL) {
-					return FALSE;
+					if($p->for === 'update') {
+						return FALSE;
+					}
+					return TRUE;
 				}
+
 				return \pdp\Address::checkElectronicAddress($electronicAddress, $this['siret']);
 
 			})

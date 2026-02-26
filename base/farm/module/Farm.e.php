@@ -331,7 +331,6 @@ class Farm extends FarmElement {
 		}
 
 		$this->expects(['electronicScheme', 'electronicAddress', 'siret']);
-
 		return (
 			$this['electronicScheme'] !== NULL and
 			$this['electronicAddress'] !== NULL and

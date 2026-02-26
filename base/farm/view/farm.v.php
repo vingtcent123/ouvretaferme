@@ -116,6 +116,12 @@ new AdaptativeView('update', function($data, PanelTemplate $t) {
 
 });
 
+new AdaptativeView('updateForElectronicInvoicing', function($data, PanelTemplate $t) {
+
+	return new \farm\FarmUi()->updateForElectronicInvoicing($data->e);
+
+});
+
 new AdaptativeView('updatePlace', function($data, PanelTemplate $t) {
 
 	return new \farm\FarmUi()->updatePlace($data->e);

@@ -297,7 +297,12 @@ class User extends UserElement {
 				);
 
 			})
-			->setCallback('electronicScheme.check', function(?string $electronicScheme): bool {
+			->setCallback('electronicScheme.check', function(?string &$electronicScheme): bool {
+
+				if(\pdp\PdpLib::isActive(new \farm\Farm()) === FALSE or $electronicScheme === NULL) {
+					$electronicScheme = NULL;
+					return TRUE;
+				}
 
 				$this->expects(['invoiceCountry']);
 
@@ -394,9 +399,9 @@ class User extends UserElement {
 
 	}
 
-	public static function buildAddress(string $type, \Element $e): bool {
+	public static function buildAddress(string $type, \Element $e, bool $acceptNullable = TRUE): bool {
 
-		if($e[$type.'Street1'] === NULL and $e[$type.'Street2'] === NULL and $e[$type.'Postcode'] === NULL and $e[$type.'City'] === NULL) {
+		if($acceptNullable and $e[$type.'Street1'] === NULL and $e[$type.'Street2'] === NULL and $e[$type.'Postcode'] === NULL and $e[$type.'City'] === NULL) {
 			return TRUE;
 		}
 

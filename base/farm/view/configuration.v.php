@@ -82,4 +82,16 @@ new AdaptativeView('updateVat', function($data, FarmTemplate $t) {
 	echo new \farm\ConfigurationUi()->updateVat($data->e);
 
 });
+
+new AdaptativeView('updateVatNumber', function($data, PanelTemplate $t) {
+
+	return new \farm\ConfigurationUi()->updateVatNumberPanel($data->eFarm);
+
+});
+
+new AdaptativeView('updateInvoiceMentions', function($data, PanelTemplate $t) {
+
+	return new \farm\ConfigurationUi()->updateInvoiceMention($data->eFarm);
+
+});
 ?>

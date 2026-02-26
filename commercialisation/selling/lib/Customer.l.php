@@ -14,7 +14,8 @@ class CustomerLib extends CustomerCrud {
 		return fn(Customer $e) => array_merge(
 			CustomerLib::getPropertiesDefault(
 				'update',
-				POST('category', default: ($e['destination'] === Customer::COLLECTIVE ? Customer::COLLECTIVE : $e['type']))
+				POST('category', default: ($e['destination'] === Customer::COLLECTIVE ? Customer::COLLECTIVE : $e['type'])),
+				$e['farm']
 			),
 			match($e->getCategory()) {
 				Customer::PRO => ['discount', 'color', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'groups'],
@@ -25,7 +26,7 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getPropertiesDefault(string $for, string $category): array {
+	public static function getPropertiesDefault(string $for, string $category, \farm\Farm $eFarm = new \farm\Farm()): array {
 
 		// Conserver cet ordre est indispensable : 'firstName', 'lastName', 'commercialName', 'name'
 		$properties = ['firstName', 'lastName', 'commercialName', 'name', 'legalName'];
@@ -33,7 +34,7 @@ class CustomerLib extends CustomerCrud {
 
 		return match($category) {
 
-			Customer::PRO => array_merge(['category'], $properties, $propertiesAddress, ['siret',  'vatNumber', 'email', 'defaultPaymentMethod', 'phone', 'contactName'], \pdp\PdpLib::isActive(new \farm\Farm()) ? ['electronicScheme', 'electronicAddress'] : []),
+			Customer::PRO => array_merge(['category'], $properties, $propertiesAddress, ['siret',  'vatNumber', 'email', 'defaultPaymentMethod', 'phone', 'contactName'], ($for === 'update' and \pdp\PdpLib::isActive($eFarm)) ? ['electronicScheme', 'electronicAddress'] : []),
 			Customer::PRIVATE => array_merge(['category'], $properties, $propertiesAddress, ['email', 'defaultPaymentMethod', 'phone']),
 			Customer::COLLECTIVE => match($for) {
 				'create' => array_merge(['category'], $properties),
