@@ -210,6 +210,45 @@ class ConfigurationUi {
 		return $h;
 
 	}
+	public function updateElectronicInvoicing(Farm $eFarm): \Panel {
+
+		return new \Panel(
+			id: 'panel-farm-update-electronic-invoicing',
+			title: s("Informations requises pour continuer"),
+			body: $this->getElectronicInvoicingForm($eFarm)
+		);
+
+	}
+
+	public function getElectronicInvoicingForm(Farm $eFarm): string {
+
+		$eConfiguration = $eFarm->conf();
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/farm/configuration:doUpdateForElectronicInvoicing', ['autocomplete' => 'off', 'class' => 'farm-update-electronic-invoicing']);
+
+			$h .= '<div class="util-info">';
+				$h .= s("Nous avons besoin que vous paramétriez les données de facturation de votre ferme pour accéder à cette page.");
+				$h .= '<br/>'.s("La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
+			$h .= '</div>';
+
+			$h .= $form->hidden('id', $eConfiguration['id']);
+			$h .= $form->hidden('isFromInvoicing', 1);
+			$h .= $form->asteriskInfo();
+
+			$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique").\util\FormUi::asterisk(), $eConfiguration);
+			$h .= $form->dynamicGroups($eConfiguration, ['vatNumber*']);
+
+			$h .= $form->group(
+				content: $form->submit(s("Valider"))
+			);
+
+		$h .= $form->close();
+
+		return $h;
+
+	}
+
 	public function updateInvoiceMention(Farm $eFarm): \Panel {
 
 		return new \Panel(
@@ -257,6 +296,16 @@ class ConfigurationUi {
 			$h .= $form->openAjax('/farm/configuration:doUpdateInvoice', ['id' => 'farm-update', 'autocomplete' => 'off']);
 
 				$h .= $form->hidden('id', $eConfiguration['id']);
+
+				if(\pdp\PdpLib::isActive($eFarm)) {
+
+					$h .= $form->group(
+						'',
+						'<h3>'.s("Facturation électronique").'</h3>',
+					);
+					$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique"), $eConfiguration);
+
+				}
 
 				$h .= $form->group(
 					'',

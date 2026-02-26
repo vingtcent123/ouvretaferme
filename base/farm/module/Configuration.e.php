@@ -25,6 +25,10 @@ class Configuration extends ConfigurationElement {
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
+		if(array_intersect(['electronicScheme', 'electronicAddress'], $properties)) {
+			$properties[] = 'fullElectronicAddress';
+		}
+
 		$p
 			->setCallback('documentInvoices.set', function(int &$value): void {
 				$this['documentInvoices'] = $value - 1;
@@ -127,6 +131,50 @@ class Configuration extends ConfigurationElement {
 				}
 
 				return $invoiceDiscount !== NULL;
+			})
+			->setCallback('electronicScheme.check', function(?string $electronicScheme) use ($p): bool {
+
+				if(\pdp\PdpLib::isActive($this['farm']) === FALSE) {
+					return TRUE;
+				}
+
+				if($electronicScheme === NULL) {
+					return (POST('isFromInvoicing', 'bool', FALSE) === FALSE);
+				}
+
+				$this['farm']->expects('legalCountry');
+
+				return \pdp\Address::checkScheme($electronicScheme, $this['farm']['legalCountry']);
+
+			})
+			->setCallback('electronicAddress.check', function(?string $electronicAddress) use ($p): bool {
+
+				if(\pdp\PdpLib::isActive($this['farm']) === FALSE or $p->isBuilt('electronicScheme') === FALSE) {
+					return TRUE;
+				}
+
+				if($electronicAddress === NULL) {
+					return ($this['electronicScheme'] === NULL or $this['farm']['siret'] === NULL);
+				}
+
+				if($this['farm']['siret'] === NULL) {
+					return FALSE;
+				}
+				return \pdp\Address::checkElectronicAddress($electronicAddress, $this['farm']['siret']);
+
+			})
+			->setCallback('fullElectronicAddress.check', function() use($p) {
+
+				if(
+					$p->isBuilt('electronicScheme') === FALSE and
+					$p->isBuilt(('electronicAddress')) === FALSE and
+					POST('isFromInvoicing', 'bool', FALSE) === FALSE
+				) {
+					return TRUE;
+				}
+
+				return $p->isBuilt('electronicScheme') and $p->isBuilt(('electronicAddress')) ;
+
 			})
 		;
 	

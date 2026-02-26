@@ -49,7 +49,6 @@ new \farm\FarmPage()
 
 	}, page: 'updateProduction')
 	->doUpdateProperties('doUpdateProduction', ['defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'featureTime', 'calendarMonthStart', 'calendarMonthStop', 'rotationYears', 'rotationExclude'], fn() => throw new ReloadAction('farm', 'Farm::updatedProduction'))
-	->doUpdateProperties('doUpdateElectronicInvoicing', ['electronicScheme', 'electronicAddress'], fn() => throw new ReloadAction('farm', 'Farm::updated'))
 	->update(function($data) {
 
 		$data->eFarm = $data->e;
@@ -57,7 +56,7 @@ new \farm\FarmPage()
 		throw new ViewAction($data);
 
 	}, page: 'updateForElectronicInvoicing')
-	->doUpdateProperties('doUpdateForElectronicInvoicing', ['siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'electronicScheme', 'electronicAddress'], fn() => throw new ReloadAction('farm', 'Farm::updated'))
+	->doUpdateProperties('doUpdateForElectronicInvoicing', ['siret', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'], fn() => throw new ReloadAction('farm', 'Farm::updated'))
 	->update(function($data) {
 
 		$data->eFarm = $data->e;

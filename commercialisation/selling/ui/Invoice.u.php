@@ -808,24 +808,56 @@ class InvoiceUi {
 
 				if(\pdp\PdpLib::isActive($eFarm) and $eCustomer['type'] === Customer::PRO) {
 
-					if($eFarm->hasLegalAddress() === FALSE) {
+					if($eFarm->hasLegalAddress() === FALSE or $eFarm['siret'] === NULL) {
 
-						$warning = s("Votre adresse n'est pas renseignée et elle est nécessaire pour établir une facture.<br /><btn>Compléter mon adresse</btn>", ['btn' => '<a href="/farm/farm:updateLegal?id='.$eFarm['id'].'" class="btn btn-primary" style="margin: 0.5rem 0;">']);
-						$canCreateInvoice = FALSE;
+						$list = [];
+						if($eFarm->hasLegalAddress() === FALSE) {
+							$list[] = s("Adresse du siège social");
+						}
+						if($eFarm['siret'] === NULL) {
+							$list[] = s("Numéro d'immatriculation SIRET");
+						}
 
-					} else if($eFarm->getConf('vatNumber') === NULL) {
-
-						$warning = s("Le numéro de TVA intracommunautaire de la ferme n'est pas renseigné et il est nécessaire pour établir une facture.<br /><btn>Indiquer mon numéro de TVA intracommunautaire</btn>", ['btn' => '<a href="/farm/configuration:updateVatNumber?id='.$eFarm['id'].'" class="btn btn-primary" style="margin: 0.5rem 0;">']);
+						$warning = '<h5>'.s("Certaines informations légales de votre ferme sont nécessaires pour établir une facture").'</h5>';
+						$warning .= '<ul><li>'.join('</li><li>', $list).'</li></ul>';
+						$warning .= '<a href="/farm/farm:updateForElectronicInvoicing?id='.$eFarm['id'].'" class="btn btn-primary">'.s("Compléter ces informations").'</a>';
 						$canCreateInvoice = FALSE;
 
 					} else if($eFarm->acceptElectronicInvoicing() === FALSE) {
 
-						$warning = s("Certaines informations de facturation de votre ferme non renseignées sont nécessaires pour établir une facture.<br /><btn>Compléter les informations</btn>", ['btn' => '<a href="/farm/farm:updateForElectronicInvoicing?id='.$eFarm['id'].'" class="btn btn-primary" style="margin: 0.5rem 0;">']);
+						$list = [];
+						if($eFarm->getConf('vatNumber') === NULL) {
+							$list[] = s("Numéro de TVA intracommunautaire");
+						}
+						if($eFarm->getConf('electronicScheme') === NULL or $eFarm->getConf('electronicAddress') === NULL) {
+							$list[] = s("Adresse de facturation électronique");
+						}
+
+						$warning = '<h5>'.s("Certaines informations de facturation de votre ferme sont nécessaires pour établir une facture").'</h5>';
+						$warning .= '<ul><li>'.join('</li><li>', $list).'</li></ul>';
+						$warning .= '<a href="/farm/configuration:updateForElectronicInvoicing?id='.$eFarm['id'].'" class="btn btn-primary">'.s("Compléter ces informations").'</a>';
 						$canCreateInvoice = FALSE;
 
 					} else if($eCustomer->acceptCreateElectronicInvoice() === FALSE) {
 
-						$warning = s("Certaines informations de votre client sont nécessaires pour établir une facture.<br /><btn>Compléter ces informations</btn>", ['btn' => '<a href="/selling/customer:update?id='.$eCustomer['id'].'" class="btn btn-primary" style="margin: 0.5rem 0;">']);
+						$list = [];
+						if($eCustomer->hasInvoiceAddress() === FALSE) {
+							$list[] = s("Adresse de livraison");
+						}
+						foreach([
+							'vatNumber' => s("Numéro de TVA intracommunautaire"),
+							'siret' => s("Numéro d'immatriculation SIRET"),
+							'electronicAddress' => s("Adresse de facturation électronique"),
+						] as $key => $label
+						) {
+							if($eCustomer[$key] === NULL) {
+								$list[] = $label;
+							}
+						}
+
+						$warning = '<h5>'.s("Certaines informations de votre client sont nécessaires pour établir une facture").'</h5>';
+						$warning .= '<ul><li>'.join('</li><li>', $list).'</li></ul>';
+						$warning .= '<a href="/selling/customer:update?id='.$eCustomer['id'].'" class="btn btn-primary">'.s("Compléter ces informations").'</a>';
 						$canCreateInvoice = FALSE;
 
 					} else {
@@ -835,7 +867,7 @@ class InvoiceUi {
 					}
 
 					if($warning !== NULL) {
-						$h .= $form->group('', '<div class="util-block-gradient">'.$warning.'</div>');
+						$h .= $form->group('', '<div class="util-block-optional">'.$warning.'</div>');
 					}
 
 				}

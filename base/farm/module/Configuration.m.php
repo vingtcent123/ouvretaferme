@@ -78,6 +78,8 @@ class ConfigurationModel extends \ModuleModel {
 			'orderFormFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'deliveryNoteHeader' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
 			'deliveryNoteFooter' => ['editor16', 'min' => 1, 'max' => 500, 'null' => TRUE, 'cast' => 'string'],
+			'electronicScheme' => ['text8', 'min' => 4, 'max' => 4, 'null' => TRUE, 'cast' => 'string'],
+			'electronicAddress' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'invoiceDue' => ['bool', 'cast' => 'bool'],
 			'invoiceDueDays' => ['int16', 'min' => 0, 'max' => 360, 'null' => TRUE, 'cast' => 'int'],
 			'invoiceDueMonth' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
@@ -97,7 +99,7 @@ class ConfigurationModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'hasVatAccounting', 'vatFrequency', 'vatChargeability', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'hasVatAccounting', 'vatFrequency', 'vatChargeability', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'electronicScheme', 'electronicAddress', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -308,6 +310,14 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function whereDeliveryNoteFooter(...$data): ConfigurationModel {
 		return $this->where('deliveryNoteFooter', ...$data);
+	}
+
+	public function whereElectronicScheme(...$data): ConfigurationModel {
+		return $this->where('electronicScheme', ...$data);
+	}
+
+	public function whereElectronicAddress(...$data): ConfigurationModel {
+		return $this->where('electronicAddress', ...$data);
 	}
 
 	public function whereInvoiceDue(...$data): ConfigurationModel {

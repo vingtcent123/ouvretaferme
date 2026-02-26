@@ -839,12 +839,15 @@ class CustomerUi {
 
 	protected function write(string $action, \util\FormUi $form, Customer $eCustomer, bool $isFromInvoicing = FALSE) {
 
-		$eCustomer->expects(['user', 'nGroup']);
+		if($isFromInvoicing === FALSE) {
+			$eCustomer->expects(['user', 'nGroup']);
+		}
+
 		$areElectronicInvoicingFieldMandatory = (\pdp\PdpLib::isActive($eCustomer['farm']) and $isFromInvoicing);
 
 		$h = '';
 
-		if($action === 'update' and $eCustomer['nGroup'] > 0) {
+		if($isFromInvoicing === FALSE and $action === 'update' and $eCustomer['nGroup'] > 0) {
 
 			$h = '<div class="customer-form-category customer-form-pro customer-form-private">';
 				$h .= $this->getGroupField($form, $eCustomer);

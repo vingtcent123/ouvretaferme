@@ -14,6 +14,7 @@ class AlertUi {
 			'Configuration::saleClosing.check' => s("La clôture automatique peut être configurée entre 7 et 90 jours"),
 			'Configuration::vatNumber.check' => fn() => \farm\AlertUi::getErrorVatNumber($options[0]),
 			'Configuration::vatNumber.country' => s("Vous ne pouvez pas saisir de numéro de TVA intracommunautaire si votre ferme n'est ni en France, ni en Belgique."),
+			'Configuration::fullElectronicAddress.check' => s("L'adresse de facturation électronique saisie ne respecte pas la norme. Elle doit comprendre un identifiant sur 4 chiffres et une adresse de facturation qui commence par les 9 premiers chiffres du SIRET."),
 
 			'Farm::disabled' => s("Vous avez désactivé cette fonctionnalité sur votre ferme."),
 			'Farm::demo.delete' => s("Vous ne pouvez pas supprimer la démo !"),
@@ -23,7 +24,6 @@ class AlertUi {
 			'Farm::siret.check' => self::getErrorSiret(),
 			'Farm::cultivationPlace.check' => s("Veuillez sélectionner une ville dans le menu déroulant."),
 			'Farm::defaultBedWidth.size' => s("La largeur de planche par défaut ne peut pas être inférieure à 5 cm."),
-			'Farm::fullElectronicAddress.check' => s("L'adresse de facturation électronique saisie ne respecte pas la norme. Elle doit comprendre un identifiant sur 4 chiffres et une adresse de facturation qui commence par les premiers 9 chiffres du SIRET."),
 
 			'Farmer::demo.write' => s("Vous ne pouvez pas modifier l'équipe sur la démo !"),
 			'Farmer::user.check' => s("Vous n'avez pas sélectionné d'utilisateur."),

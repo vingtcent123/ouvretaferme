@@ -726,7 +726,13 @@ class FormUi {
 
 	public function electronicAddress(\Element $e) {
 
-		$h = '<div class="form-e-invoicing-identifier-address">';
+		$h = '';
+
+		if($e instanceof \farm\Configuration) {
+			$h .= FormUi::info(s("Pour rappel, votre siret est le {value}.", $e['farm']['siret']), 'mb-1');
+		}
+
+		$h .= '<div class="form-e-invoicing-identifier-address">';
 
 			$h .= \Asset::image('main', 'facturation-electronique.png', ['style' => 'height: 4rem;']);
 

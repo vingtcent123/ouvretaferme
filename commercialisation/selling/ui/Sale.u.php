@@ -1014,8 +1014,10 @@ class SaleUi {
 
 				if(\pdp\PdpLib::isActive($eSale['farm']) and $eSale['customer']->acceptCreateElectronicInvoice() === FALSE) {
 					$link = '/selling/customer:update?id='.$eSale['customer']['id'].'&for=e-invoicing';
-				} else if(\pdp\PdpLib::isActive($eSale['farm']) and $eSale['farm']->hasLegalAddress() === FALSE) {
+				} else if(\pdp\PdpLib::isActive($eSale['farm']) and ($eSale['farm']->hasLegalAddress() === FALSE or $eSale['farm']['siret'] === NULL)) {
 					$link = '/farm/farm:updateLegal?id='.$eSale['farm']['id'];
+				} else if(\pdp\PdpLib::isActive($eSale['farm']) and $eSale['farm']->acceptElectronicInvoicing() === FALSE) {
+					$link = '/farm/configuration:updateForElectronicInvoicing?id='.$eSale['farm']['id'];
 				} else if(\pdp\PdpLib::isActive($eSale['farm']) and $eSale['farm']->hasInvoicingMentions() === FALSE) {
 					$link = '/farm/configuration:updateInvoiceMentions?id='.$eSale['farm']['id'];
 				} else {

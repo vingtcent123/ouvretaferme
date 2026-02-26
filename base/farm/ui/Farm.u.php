@@ -535,44 +535,6 @@ class FarmUi {
 
 	}
 
-	public function getElectronicInvoicingPanel(Farm $eFarm): \Panel {
-
-		$body = $this->getElectronicInvoicingForm($eFarm);
-
-		return new \Panel(
-			id: 'panel-electronic-invoicing-create',
-			title: s("Paramétrer la facturation électronique"),
-			body: $body
-		);
-
-	}
-
-	public function getElectronicInvoicingForm(Farm $eFarm): string {
-
-		$form = new \util\FormUi();
-
-		$h = $form->openAjax('/farm/farm:doUpdateElectronicInvoicing', ['autocomplete' => 'off', 'class' => 'farm-e-invoicing-form']);
-
-			$h .= '<div class="util-info">';
-				$h .= s("Nous avons besoin que vous fournissiez votre adresse électronique avant d'accéder à cette page.");
-				$h .= '<br/>'.s("La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
-			$h .= '</div>';
-
-			$h .= $form->hidden('id', $eFarm['id']);
-			$h .= $form->asteriskInfo();
-
-			$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique"), $eFarm);
-
-			$h .= $form->group(
-				content: $form->submit(s("Valider"))
-			);
-
-		$h .= $form->close();
-
-		return $h;
-
-	}
-
 	public function update(Farm $eFarm): \Panel {
 
 		$form = new \util\FormUi();
@@ -598,9 +560,6 @@ class FarmUi {
 
 					if($eFarm->isFR()) {
 						$h .= $form->dynamicGroup($eFarm, 'siret');
-						if(\pdp\PdpLib::isActive($eFarm)) {
-							$h .= $form->electronicAddressGroup(s("Adresse électronique de facturation"), $eFarm);
-						}
 					}
 
 					$h .= $form->dynamicGroup($eFarm, 'legalName');
@@ -663,19 +622,16 @@ class FarmUi {
 				if($eFarm->isLegal()) {
 
 					if($eFarm->isFR()) {
-						$h .= $form->dynamicGroup($eFarm, 'siret');
-						if(\pdp\PdpLib::isActive($eFarm)) {
-							$h .= $form->electronicAddressGroup(s("Adresse électronique de facturation"), $eFarm);
-						}
+						$h .= $form->dynamicGroup($eFarm, 'siret*');
 					}
 
-					$h .= $form->dynamicGroup($eFarm, 'legalName');
-					$h .= $form->addressGroup(s("Adresse du siège social de la ferme"), 'legal', $eFarm, ['country' => FALSE]);
+					$h .= $form->dynamicGroup($eFarm, 'legalName*');
+					$h .= $form->addressGroup(s("Adresse du siège social de la ferme*"), 'legal', $eFarm, ['country' => FALSE]);
 
 				}
 
 			} else {
-				$h .= $form->dynamicGroup($eFarm, 'legalCountry');
+				$h .= $form->dynamicGroup($eFarm, 'legalCountry*');
 			}
 
 

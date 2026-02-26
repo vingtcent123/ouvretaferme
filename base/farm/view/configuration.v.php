@@ -94,4 +94,10 @@ new AdaptativeView('updateInvoiceMentions', function($data, PanelTemplate $t) {
 	return new \farm\ConfigurationUi()->updateInvoiceMention($data->eFarm);
 
 });
+
+new AdaptativeView('updateForElectronicInvoicing', function($data, PanelTemplate $t) {
+
+	return new \farm\ConfigurationUi()->updateElectronicInvoicing($data->eFarm);
+
+});
 ?>

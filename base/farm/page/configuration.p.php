@@ -64,6 +64,13 @@ new \farm\FarmPage()
 
 		throw new ViewAction($data);
 
+	}, page: 'updateForElectronicInvoicing')
+	->update(function($data) {
+
+		$data->eFarm = $data->e;
+
+		throw new ViewAction($data);
+
 	}, page: 'updateInvoiceMentions')
 	->update(function($data) {
 
@@ -83,7 +90,8 @@ new \farm\ConfigurationPage()
 	->doUpdateProperties('doUpdateDeliveryNote', ['documentTarget', 'deliveryNoteHeader', 'deliveryNoteFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateVatNumber', ['vatNumber'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateOrderForm', ['documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
-	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'electronicScheme', 'electronicAddress', 'invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateForElectronicInvoicing', ['electronicScheme', 'electronicAddress', 'vatNumber'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateInvoiceMention', ['invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateVat', ['hasVatAccounting', 'vatFrequency', 'vatChargeability'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdate(fn() => throw new ReloadAction('farm', 'Configuration::updated'), onKo: fn() => \farm\Configuration::fail('error'))

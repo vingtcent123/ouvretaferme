@@ -330,13 +330,12 @@ class Farm extends FarmElement {
 			return TRUE;
 		}
 
-		$this->expects(['electronicScheme', 'electronicAddress', 'siret']);
 		return (
-			$this['electronicScheme'] !== NULL and
-			$this['electronicAddress'] !== NULL and
 			$this->hasLegalAddress() and
-			$this->getConf('vatNumber') !== NULL and
-			$this['siret'] !== NULL
+			$this['siret'] !== NULL and
+			$this->getConf('electronicScheme') !== NULL and
+			$this->getConf('electronicAddress') !== NULL and
+			$this->getConf('vatNumber') !== NULL
 		);
 	}
 	public function hasInvoicingMentions(): bool {
@@ -505,10 +504,6 @@ class Farm extends FarmElement {
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
-		if(array_intersect(['electronicScheme', 'electronicAddress'], $properties)) {
-			$properties[] = 'fullElectronicAddress';
-		}
-
 		$p
 			->setCallback('legalCountry.check', function($eCountry): bool {
 
@@ -597,46 +592,6 @@ class Farm extends FarmElement {
 				}
 
 				return ($defaultBedWidth >= 5);
-
-			})
-			->setCallback('electronicScheme.check', function(?string $electronicScheme) use ($p): bool {
-
-				if($p->isBuilt('siret') === FALSE or \pdp\PdpLib::isActive($this) === FALSE) {
-					return TRUE;
-				}
-
-				if($electronicScheme === NULL) {
-					return FALSE;
-				}
-
-				$this->expects('legalCountry');
-
-				return \pdp\Address::checkScheme($electronicScheme, $this['legalCountry']);
-
-			})
-			->setCallback('electronicAddress.check', function(?string $electronicAddress) use ($p): bool {
-
-				if($p->isBuilt('electronicScheme') === FALSE or \pdp\PdpLib::isActive($this) === FALSE) {
-					return TRUE;
-				}
-
-				if($electronicAddress === NULL) {
-					return FALSE;
-				}
-
-				if($p->isBuilt('siret') === FALSE or $this['siret'] === NULL) {
-					return FALSE;
-				}
-				return \pdp\Address::checkElectronicAddress($electronicAddress, $this['siret']);
-
-			})
-			->setCallback('fullElectronicAddress.check', function() use($p) {
-
-				if($p->isBuilt('electronicScheme') === FALSE and $p->isBuilt(('electronicAddress')) === FALSE) {
-					return TRUE;
-				}
-
-				return $p->isBuilt('electronicScheme') and $p->isBuilt(('electronicAddress')) ;
 
 			})
 		;

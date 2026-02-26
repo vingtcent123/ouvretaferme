@@ -23,11 +23,6 @@ class FarmLib extends FarmCrud {
 
 					if($e->isFR()) {
 						$properties[] = 'siret';
-
-						if(\pdp\PdpLib::isActive($e)) {
-							$properties[] = 'electronicScheme';
-							$properties[] = 'electronicAddress';
-						}
 					}
 
 				}
