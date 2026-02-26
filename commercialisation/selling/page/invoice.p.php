@@ -29,6 +29,14 @@ new \selling\InvoicePage()
 		$data->cSale = \selling\SaleLib::getForInvoice($data->e['customer'], GET('sales', 'array'));
 
 		if(
+			\pdp\PdpLib::isActive($data->e['farm']) and
+			$data->e['farm']->acceptElectronicInvoicing() and
+			$data->e['customer']->acceptCreateElectronicInvoice() === FALSE
+		) {
+			throw new RedirectAction('/selling/customer:update?id='.$data->e['customer']['id']);
+		}
+
+		if(
 			GET('more') or
 			$data->cSale->empty()
 		) {

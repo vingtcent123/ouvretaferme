@@ -10,7 +10,7 @@ class Sale extends SaleElement {
 			'shop' => ['fqn', 'shared', 'name', 'email', 'emailNewSale', 'emailEndDate', 'approximate', 'paymentCard', 'hasPayment', 'paymentOfflineHow', 'paymentTransferHow', 'shipping', 'shippingUntil', 'orderMin', 'embedOnly', 'embedUrl', 'farm' => ['name', 'legalEmail']],
 			'shopDate' => \shop\Date::getSelection(),
 			'shopPoint' => ['type', 'name'],
-			'farm' => ['name', 'siret', 'legalName', 'legalEmail', 'legalCity', 'legalCountry', 'url', 'vignette', 'emailBanner', 'emailFooter', 'hasSales', 'hasAccounting'],
+			'farm' => ['name', 'siret', 'electronicScheme', 'electronicAddress', 'legalName', 'legalEmail', 'legalCity', 'legalCountry', 'url', 'vignette', 'emailBanner', 'emailFooter', 'hasSales', 'hasAccounting'],
 			'price' => fn($e) => $e['type'] === Sale::PRO ? $e['priceExcludingVat'] : $e['priceIncludingVat'],
 			'invoice' => InvoiceElement::getSelection() + [
 				'cPayment' => PaymentTransactionLib::delegateByInvoice(),

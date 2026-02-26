@@ -23,6 +23,11 @@ class FarmLib extends FarmCrud {
 
 					if($e->isFR()) {
 						$properties[] = 'siret';
+
+						if(\pdp\PdpLib::isActive(new Farm())) {
+							$properties[] = 'electronicScheme';
+							$properties[] = 'electronicAddress';
+						}
 					}
 
 				}
@@ -199,6 +204,10 @@ class FarmLib extends FarmCrud {
 		self::connectDatabase($e);
 
 		new \ModuleAdministration('securing\Signature')->init();
+
+		foreach(\company\CompanyLib::PDP_MODULES as $class) {
+			new \ModuleAdministration($class)->init();
+		}
 
 	}
 

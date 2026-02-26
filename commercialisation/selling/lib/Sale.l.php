@@ -596,15 +596,21 @@ class SaleLib extends SaleCrud {
 			$eCustomerGroup = new CustomerGroup();
 		}
 
+		$properties = [
+			'customer' => ['type', 'name'],
+			'hasVat', 'taxes',
+			'priceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
+			'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float'),
+			'number' => new \Sql('COUNT(*)'),
+			'list' => new \Sql('GROUP_CONCAT(m1.id ORDER BY m1.id SEPARATOR ",")')
+		];
+
+		if(\pdp\PdpLib::isActive($eFarm)) {
+			$properties['customer'] = array_merge($properties['customer'], ['vatNumber', 'siret', 'electronicAddress', 'invoiceCity', 'deliveryCity']);
+		}
+
 		$mSale = Sale::model()
-			->select([
-				'customer' => ['type', 'name'],
-				'hasVat', 'taxes',
-				'priceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float'),
-				'number' => new \Sql('COUNT(*)'),
-				'list' => new \Sql('GROUP_CONCAT(m1.id ORDER BY m1.id SEPARATOR ",")')
-			])
+			->select($properties)
 			->where('m1.farm = '.$eFarm['id'])
 			->whereCustomer('IN', fn() => CustomerLib::getByGroup($eCustomerGroup), if: $eCustomerGroup->notEmpty())
 			->whereType($type, if: in_array($type, [Customer::PRIVATE, Customer::PRO]))

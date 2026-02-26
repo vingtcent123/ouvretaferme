@@ -3,6 +3,8 @@ namespace company;
 
 class CompanyLib {
 
+	const PDP_MODULES = ['account\Partner', 'pdp\Address', 'pdp\Company'];
+
 	public static function load(\stdClass $data): void {
 
 		$data->eFarm = \farm\FarmLib::getById(REQUEST('farm'));
@@ -15,7 +17,8 @@ class CompanyLib {
 
 		if(
 			str_starts_with(LIME_REQUEST, '/comptabilite/decouvrir') or
-			str_starts_with(LIME_REQUEST, '/company/public:doInitialize')
+			str_starts_with(LIME_REQUEST, '/company/public:doInitialize') or
+			str_contains(LIME_REQUEST, '/pdp/')
 		) {
 			return;
 		}
@@ -117,6 +120,10 @@ class CompanyLib {
 		$classes = $libModule->getClasses();
 
 		foreach($classes as $class) {
+
+			if(in_array($class, self::PDP_MODULES)) {
+				continue;
+			}
 
 			list($package) = explode('\\', $class);
 			if(in_array($package, \farm\FarmSetting::getAccountingPackages())) {

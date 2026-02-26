@@ -700,12 +700,20 @@ class InvoiceUi {
 
 	protected function getCustomers(\util\FormUi $form, \farm\Farm $eFarm, \Collection $cSale): string {
 
+		$hasNotElectronicInvoicingConfiguredClients = $cSale->find(fn($e) => (
+			\pdp\PdpLib::isActive($eFarm) and
+			$e['customer']->acceptCreateElectronicInvoice() === FALSE
+		))->notEmpty();
+
 		$h = '<table class="tr-even">';
 			$h .= '<tr>';
 				$h .= '<th>';
 					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[name^="sales"]\')').'"/>';
 				$h .= '</th>';
 				$h .= '<th>'.s("Client").'</th>';
+				if($hasNotElectronicInvoicingConfiguredClients) {
+					$h .= '<th class="td-min-content"></th>';
+				}
 				$h .= '<th class="text-end">'.s("Ventes").'</th>';
 				$h .= '<th class="text-end">';
 					$h .= s("Montant");
@@ -714,9 +722,18 @@ class InvoiceUi {
 
 		foreach($cSale as $eSale) {
 
+			$acceptInvoicingForSale = (\pdp\PdpLib::isActive($eFarm) === FALSE or $eSale['customer']->acceptCreateElectronicInvoice());
+
 			$h .= '<tr>';
-				$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['list']).'</td>';
+				$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['list'], attributes: ($acceptInvoicingForSale ? [] : ['disabled' => 'disabled'])).'</td>';
 				$h .= '<td>'.CustomerUi::link($eSale['customer'], newTab: TRUE).'</td>';
+				if($hasNotElectronicInvoicingConfiguredClients) {
+					$h .= '<td class="text-center">';
+						if($acceptInvoicingForSale === FALSE) {
+							$h .= '<a href="/selling/customer:update?id='.$eSale['customer']['id'].'" class="btn btn-outline-danger" title="'.s("Certaines informations requises pour la facturation électronique sont manquantes").'">'.\Asset::icon('exclamation-triangle').'</a>';
+						}
+					$h .= '</td>';
+				}
 				$h .= '<td class="text-end">';
 					$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eFarm, \farm\Farmer::ALL).'?ids='.$eSale['list'].'" class="btn btn-sm btn-outline-secondary" target="_blank">'.$eSale['number'].'</a>';
 				$h .= '</td>';

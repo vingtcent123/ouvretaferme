@@ -18,6 +18,15 @@ new Page(function($data) {
 	}
 
 })
+	->get('onboarding', function($data) {
+
+		if($data->eFarm['hasPdp']) {
+			throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/pdp/');
+		}
+
+		throw new ViewAction($data);
+
+	})
 	->get('index', function($data) {
 
 		$data->token = \pdp\ConnectionLib::getValidToken();

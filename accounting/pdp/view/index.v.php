@@ -1,11 +1,37 @@
 <?php
 
+new AdaptativeView('onboarding', function($data, FarmTemplate $t) {
+
+	$t->nav = 'invoicing';
+
+	$t->title = s("Configurer la plateforme agréée pour {farm}", ['farm' => $data->eFarm['name']]);
+	$t->canonical = \company\CompanyUi::urlAccount($data->eFarm).'/pdp/:onboarding';
+
+	$t->mainTitle = new pdp\PdpUi()->getTitle($data->eFarm);
+
+	echo '<div class="util-block-help">';
+		echo '<h4>'.s("Vous êtes sur la page pour gérer vos factures électroniques").'</h4>';
+		echo '<p>'.s("Avec {siteName}, vous allez gérer facilement et de façon fiable vos factures électroniques :").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("Gérez vos adresses de facturation électronique").'</li>';
+			echo '<li>'.s("Recevez toutes vos factures électroniques").'</li>';
+			echo '<li>'.s("Envoyez vos factures électroniques de ventes en un clic").'</li>';
+			echo '<li>'.s("Intégrez vos factures électroniques dans la comptabilité sur {siteName} ou exportez un fichier FEC de vos factures électroniques (reçues et/ou envoyées) pour l'intégrer dans votre logiciel de comptabilité").'</li>';
+		echo '</ul>';
+	echo '</div>';
+
+	echo '<br/>';
+
+	echo new \pdp\PdpUi()->getConnectionBlock($data->eFarm);
+
+});
+
 new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 	$t->nav = 'settings-accounting';
 
 	$t->title = s("La configuration de la plateforme agréée {farm}", ['farm' => $data->eFarm['name']]);
-	$t->canonical = \company\CompanyUi::urlAccount($data->eFarm).'/superpdp/';
+	$t->canonical = \company\CompanyUi::urlAccount($data->eFarm).'/pdp/';
 
 	$t->mainTitle = new pdp\PdpUi()->getTitle($data->eFarm);
 
@@ -23,14 +49,7 @@ new AdaptativeView('index', function($data, FarmTemplate $t) {
 
 		} else {
 
-			echo '<div class="util-block-info">';
-
-				echo '<p>'.s("{siteName} a choisi d'utiliser la plateforme Super PDP pour l'envoi et la réception de factures électroniques.").'</p>';
-				echo '<p>'.s("Pour utiliser cette plateforme agréée : Cliquez sur le bouton <btn>Utiliser Super PDP</btn> et laissez-vous guider. Si vous avez déjà un compte sur Super PDP, vous pourrez vous connecter dessus pour autoriser {siteName} à déposer et récupérer les factures. Si vous n'avez pas de compte, vous pourrez en créer un et autoriser {siteName} à s'y connecter.", ['btn' => '<span class="btn btn-primary">']).'</p>';
-
-			echo '</div>';
-
-			echo '<a href="'.\farm\FarmUi::urlConnected($data->cFarmUser->first()).'/pdp/:connect" class="btn btn-primary">'.s("Utiliser Super PDP").'</a>';
+			echo new \pdp\PdpUi()->getConnectionBlock($data->cFarmUser->first());
 
 		}
 

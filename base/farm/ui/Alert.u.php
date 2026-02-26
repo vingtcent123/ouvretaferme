@@ -23,6 +23,8 @@ class AlertUi {
 			'Farm::siret.check' => self::getErrorSiret(),
 			'Farm::cultivationPlace.check' => s("Veuillez sélectionner une ville dans le menu déroulant."),
 			'Farm::defaultBedWidth.size' => s("La largeur de planche par défaut ne peut pas être inférieure à 5 cm."),
+			'Farm::fullElectronicAddress.check' => s("L'adresse de facturation électronique comprend un identifiant sur 4 chiffres et une adresse de facturation qui commence par les premiers 9 chiffres du SIRET. Les informations fournies ne respectent pas la norme"),
+
 			'Farmer::demo.write' => s("Vous ne pouvez pas modifier l'équipe sur la démo !"),
 			'Farmer::user.check' => s("Vous n'avez pas sélectionné d'utilisateur."),
 			'Farmer::email.check' => s("Cette adresse e-mail est invalide."),
@@ -71,7 +73,7 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Configuration::updated' => s("La configuration a bien été mis à jour."),
+			'Configuration::updated' => s("La configuration a bien été mise à jour."),
 
 			'Action::created' => s("L'intervention a bien été créée."),
 			'Action::updated' => s("L'intervention a bien été mise à jour."),

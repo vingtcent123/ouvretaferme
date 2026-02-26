@@ -514,6 +514,9 @@ class FarmUi {
 
 				if($eFarm->isFR()) {
 					$h .= $form->dynamicGroup($eFarm, 'siret*');
+					if(\pdp\PdpLib::isActive($eFarm)) {
+						$h .= $form->electronicAddressGroup(s("Adresse électronique de facturation"), $eFarm);
+					}
 				}
 
 				$eFarm['legalName'] ??= $eFarm['name'];
@@ -527,6 +530,44 @@ class FarmUi {
 
 			$h .= $form->group(
 				content: $form->submit(s("Valider"), $confirm)
+			);
+
+		$h .= $form->close();
+
+		return $h;
+
+	}
+
+	public function getElectronicInvoicingPanel(Farm $eFarm): \Panel {
+
+		$body = $this->getElectronicInvoicingForm($eFarm);
+
+		return new \Panel(
+			id: 'panel-electronic-invoicing-create',
+			title: s("Paramétrer la facturation électronique"),
+			body: $body
+		);
+
+	}
+
+	public function getElectronicInvoicingForm(Farm $eFarm): string {
+
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/farm/farm:doUpdateElectronicInvoicing', ['autocomplete' => 'off', 'class' => 'farm-e-invoicing-form']);
+
+			$h .= '<div class="util-info">';
+				$h .= s("Nous avons besoin que vous fournissiez votre adresse électronique avant d'accéder à cette page.");
+				$h .= '<br/>'.s("La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
+			$h .= '</div>';
+
+			$h .= $form->hidden('id', $eFarm['id']);
+			$h .= $form->asteriskInfo();
+
+			$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique"), $eFarm);
+
+			$h .= $form->group(
+				content: $form->submit(s("Valider"))
 			);
 
 		$h .= $form->close();
@@ -560,6 +601,9 @@ class FarmUi {
 
 					if($eFarm->isFR()) {
 						$h .= $form->dynamicGroup($eFarm, 'siret');
+						if(\pdp\PdpLib::isActive($eFarm)) {
+							$h .= $form->electronicAddressGroup(s("Adresse électronique de facturation"), $eFarm);
+						}
 					}
 
 					$h .= $form->dynamicGroup($eFarm, 'legalName');
@@ -1062,6 +1106,7 @@ class FarmUi {
 			'invoicing' => match($name) {
 				'buy' => \farm\FarmUi::urlConnected($eFarm).'/facturation-electronique/achats/',
 				'sell' => \farm\FarmUi::urlConnected($eFarm).'/facturation-electronique/ventes/',
+				default => FarmUi::urlConnected($eFarm).'/pdp/:onboarding'
 			},
 
 		};
@@ -1374,12 +1419,21 @@ class FarmUi {
 
 			$h .= '</div>';
 
-			if(\pdp\PdpLib::isActive($eFarm) and $eFarm['hasPdp']) {
+			if(\pdp\PdpLib::isActive($eFarm)) {
 
 				$h .= '<div class="farm-tab-wrapper farm-nav-invoicing">';
 
-					$h .= $this->getNav('invoicing', $nav);
-					$h .= $this->getInvoicingMenu($eFarm, subNav: $subNav);
+					if($eFarm['hasPdp'] === FALSE) {
+						$link = self::urlConnected($eFarm).'/pdp/:onboarding';
+					} else {
+						$link = NULL;
+					}
+
+					$h .= $this->getNav('invoicing', $nav, link: $link);
+
+					if($eFarm['hasPdp']) {
+						$h .= $this->getInvoicingMenu($eFarm, subNav: $subNav);
+					}
 
 				$h .= '</div>';
 

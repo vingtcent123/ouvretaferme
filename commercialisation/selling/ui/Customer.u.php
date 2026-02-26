@@ -790,7 +790,10 @@ class CustomerUi {
 
 	}
 
-	public function update(Customer $eCustomer): \Panel {
+	public function update(Customer $eCustomer, bool $isFromInvoicing = FALSE): \Panel {
+
+		$title = $isFromInvoicing ? s("Paramétrer la facturation d'un client") : s("Modifier un client");
+		$close = $isFromInvoicing ? 'reloadOnHistory' : 'passthrough';
 
 		$form = new \util\FormUi();
 
@@ -806,7 +809,7 @@ class CustomerUi {
 				$h .= $form->dynamicGroup($eCustomer, 'category');
 			}
 
-			$h .= $this->write('update', $form, $eCustomer);
+			$h .= $this->write('update', $form, $eCustomer, $isFromInvoicing);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -816,8 +819,9 @@ class CustomerUi {
 
 		return new \Panel(
 			id: 'panel-customer-update',
-			title: s("Modifier un client"),
-			body: $h
+			title: $title,
+			body: $h,
+			close: $close
 		);
 
 	}
@@ -832,9 +836,10 @@ class CustomerUi {
 
 	}
 
-	protected function write(string $action, \util\FormUi $form, Customer $eCustomer) {
+	protected function write(string $action, \util\FormUi $form, Customer $eCustomer, bool $isFromInvoicing = FALSE) {
 
 		$eCustomer->expects(['user', 'nGroup']);
+		$areElectronicInvoicingFieldMandatory = \pdp\PdpLib::isActive($eCustomer['farm']);
 
 		$h = '';
 
@@ -846,6 +851,12 @@ class CustomerUi {
 
 		}
 
+		if($isFromInvoicing) {
+			$h .= '<div class="util-info">';
+				$h .= s("Les informations suivantes sont indispensables pour pouvoir générer une facture, veuillez les compléter :");
+			$h .= '</div>';
+		}
+
 		$h .= '<div class="customer-form-type">';
 			$h .= '<div class="customer-form-private customer-form-pro customer-form-category">';
 				$h .= '<h3>'.s("Profil du client").'</h3>';
@@ -855,6 +866,7 @@ class CustomerUi {
 				$h .= '<h3>'.s("Point de vente pour les particuliers").'</h3>';
 			$h .= '</div>';
 			$h .= '<div class="util-block bg-background-light">';
+
 				$h .= '<div class="customer-form-category customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, match($action) {
 						'create' => 'commercialName*',
@@ -873,25 +885,38 @@ class CustomerUi {
 						'update' => ['firstName', 'lastName*']
 					});
 				$h .= '</div>';
-				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
-					$h .= $form->dynamicGroups($eCustomer, ['email', 'phone']);
-				$h .= '</div>';
+
+				if($isFromInvoicing === FALSE) {
+
+					$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
+						$h .= $form->dynamicGroups($eCustomer, ['email', 'phone']);
+					$h .= '</div>';
+					$h .= '<div class="customer-form-category customer-form-pro">';
+						$h .= $form->dynamicGroups($eCustomer, ['contactName']);
+					$h .= '</div>';
+
+				}
+
 				$h .= '<div class="customer-form-category customer-form-pro">';
-					$h .= $form->dynamicGroups($eCustomer, ['contactName']);
-				$h .= '</div>';
-				$h .= '<div class="customer-form-category customer-form-pro">';
-					$h .= $form->dynamicGroup($eCustomer, 'siret');
-					$h .= $form->dynamicGroup($eCustomer, 'legalName');
+
+					$h .= $form->dynamicGroup($eCustomer, 'siret'.($areElectronicInvoicingFieldMandatory ? '*' : ''));
+
+					if($isFromInvoicing === FALSE) {
+						$h .= $form->dynamicGroup($eCustomer, 'legalName');
+					}
+
 					if(\pdp\PdpLib::isActive($eCustomer['farm'])) {
 						$h .= $form->electronicAddressGroup(s("Adresse de facturation électronique"), $eCustomer);
 					}
+
 				$h .= '</div>';
 
 				$h .= '<div class="customer-form-category '.($eCustomer->exists() ? 'customer-form-private' : '').' customer-form-pro">';
 
-					$h .= $form->addressGroup(s("Adresse de livraison"), 'delivery', $eCustomer);
+					if($isFromInvoicing === FALSE) {
+						$h .= $form->addressGroup(s("Adresse de livraison"), 'delivery', $eCustomer);
 
-					$h .= '<div class="customer-form-address">';
+						$h .= '<div class="customer-form-address">';
 
 						$before = $form->checkbox(NULL, '1', [
 							'onclick' => 'Customer.changeAddress(this);',
@@ -899,17 +924,22 @@ class CustomerUi {
 							'callbackLabel' => fn($input) => $input.' '.s("Utiliser la même adresse que la livraison")
 						]);
 
-						$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer, before: $before);
+					} else {
+						$before = '';
+					}
+
+					$h .= $form->addressGroup(s("Adresse de facturation"), 'invoice', $eCustomer, before: $before);
 
 					$h .= '</div>';
 
 				$h .= '</div>';
 
 				$h .= '<div class="customer-form-category customer-form-pro">';
-					$h .= $form->dynamicGroup($eCustomer, 'vatNumber');
+					$h .= $form->dynamicGroup($eCustomer, 'vatNumber'.($areElectronicInvoicingFieldMandatory ? '*' : ''));
 				$h .= '</div>';
 			$h .= '</div>';
-			if($action === 'update') {
+
+			if($action === 'update' and $isFromInvoicing === FALSE) {
 				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
 					$h .= '<h3>'.s("Paramétrage du client").'</h3>';
 				$h .= '</div>';

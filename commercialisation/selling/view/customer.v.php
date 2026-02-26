@@ -31,7 +31,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('update', function($data, PanelTemplate $t) {
-	return new \selling\CustomerUi()->update($data->e);
+	return new \selling\CustomerUi()->update($data->e, $data->isFromInvoicing);
 });
 
 new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {

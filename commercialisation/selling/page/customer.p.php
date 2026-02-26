@@ -63,6 +63,11 @@ new \selling\CustomerPage()
 	})
 	->update(function($data) {
 
+		$data->isFromInvoicing = (
+			\pdp\PdpLib::isActive($data->e['farm']) and
+			str_contains(SERVER('HTTP_REFERER') ?? '', '/invoice:create')
+		);
+
 		$data->e['nGroup'] = \selling\CustomerGroupLib::countByFarm($data->e['farm']);
 		$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], FALSE);
 

@@ -73,6 +73,24 @@ class Customer extends CustomerElement {
 		);
 
 	}
+	public function acceptCreateElectronicInvoice(): bool {
+
+		$this->expects(['type']);
+
+		if($this['type'] !== Customer::PRO) {
+			return TRUE;
+		}
+
+		$this->expects(['vatNumber', 'siret', 'electronicAddress']);
+
+		return (
+			$this->hasInvoiceAddress() and
+			$this['vatNumber'] !== NULL and
+			$this['siret'] !== NULL and
+			$this['electronicAddress'] !== NULL
+		);
+
+	}
 
 	public function canRead(): bool {
 		return $this->canWrite();
@@ -371,8 +389,18 @@ class Customer extends CustomerElement {
 				);
 
 			})
-			->setCallback('siret.check', fn(?string &$siret) => \farm\Farm::checkSiret($siret))
-			->setCallback('vatNumber.check', fn(?string &$vat) => \farm\Farm::checkVatNumber('selling\Customer', $this, $vat))
+			->setCallback('siret.check', function(?string &$siret) {
+				if(\pdp\PdpLib::isActive($this['farm'])) {
+					return $siret !== NULL and \farm\Farm::checkSiret($siret);
+				}
+				return \farm\Farm::checkSiret($siret);
+			})
+			->setCallback('vatNumber.check', function(?string &$vatNumber) {
+				if(\pdp\PdpLib::isActive($this['farm'])) {
+					return $vatNumber !== NULL and \farm\Farm::checkVatNumber('selling\Customer', $this, $vatNumber);
+				}
+				return \farm\Farm::checkVatNumber('selling\Customer', $this, $vatNumber);
+			})
 			->setCallback('defaultPaymentMethod.check', function(\payment\Method $eMethod): bool {
 
 				if($eMethod->empty()) {
@@ -424,18 +452,30 @@ class Customer extends CustomerElement {
 				}
 
 			})
-			->setCallback('electronicScheme.check', function(?string $electronicScheme): bool {
+			->setCallback('electronicScheme.check', function(?string $electronicScheme) use ($p): bool {
+
+				if($p->isBuilt('type') === FALSE or $this['type'] === Customer::PRIVATE or \pdp\PdpLib::isActive($this['farm']) === FALSE) {
+					return TRUE;
+				}
+
+				if($electronicScheme === NULL) {
+					return FALSE;
+				}
 
 				return \pdp\Address::checkScheme($electronicScheme, $this['invoiceCountry']);
 
 			})
 			->setCallback('electronicAddress.check', function(?string $electronicAddress) use ($p): bool {
 
-				if($p->isBuilt('electronicScheme') === FALSE) {
+				if($p->isBuilt('electronicScheme') === FALSE or $this['type'] === Customer::PRIVATE or \pdp\PdpLib::isActive($this['farm']) === FALSE) {
 					return TRUE;
 				}
 
 				if($electronicAddress === NULL) {
+					return FALSE;
+				}
+
+				if($p->isBuilt('siret') === FALSE or $this['siret'] === NULL) {
 					return FALSE;
 				}
 				return \pdp\Address::checkElectronicAddress($electronicAddress, $this['siret']);

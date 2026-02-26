@@ -178,6 +178,42 @@ class ConfigurationUi {
 		return $h;
 
 	}
+	public function updateInvoiceMention(Farm $eFarm): \Panel {
+
+		return new \Panel(
+			id: 'panel-farm-update-invoice-mentions',
+			title: s("Informations requises pour continuer"),
+			body: $this->getInvoiceMentionForm($eFarm)
+		);
+
+	}
+
+	public function getInvoiceMentionForm(Farm $eFarm): string {
+
+		$eConfiguration = $eFarm->conf();
+		$form = new \util\FormUi();
+
+		$h = $form->openAjax('/farm/configuration:doUpdateInvoiceMention', ['autocomplete' => 'off', 'class' => 'farm-update-invoice-mention']);
+
+			$h .= '<div class="util-info">';
+				$h .= s("Nous avons besoin que vous indiquiez les mentions obligatoires de vos factures pour accéder à cette page.");
+				$h .= '<br/>'.s("La conformité réglementaire de Ouvretaferme n'est assurée que pour la FRANCE.");
+			$h .= '</div>';
+
+			$h .= $form->hidden('id', $eConfiguration['id']);
+			$h .= $form->asteriskInfo();
+
+			$h .= $form->dynamicGroups($eConfiguration, ['invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount']);
+
+			$h .= $form->group(
+				content: $form->submit(s("Valider"))
+			);
+
+		$h .= $form->close();
+
+		return $h;
+
+	}
 
 	public function updateInvoice(\farm\Farm $eFarm, \selling\Sale $eSaleExample, \Collection $cCustomize): string {
 
@@ -194,26 +230,7 @@ class ConfigurationUi {
 					'',
 					'<h3>'.s("Mentions obligatoires").'</h3>',
 				);
-				$h .= $form->dynamicGroups($eConfiguration, ['invoiceMandatoryTexts*', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount'], [
-					'invoiceMandatoryTexts*' => function($d) use($eConfiguration) {
-						$d->attributes['onchange'] = 'Configuration.changeInvoiceMandatoryTexts();';
-					},
-					'invoiceCollection' => function($d) use($eConfiguration) {
-						if($eConfiguration['invoiceMandatoryTexts'] === FALSE) {
-							$d->group += ['class' => 'hide'];
-						}
-					},
-					'invoiceLateFees' => function($d) use($eConfiguration) {
-						if($eConfiguration['invoiceMandatoryTexts'] === FALSE) {
-							$d->group += ['class' => 'hide'];
-						}
-					},
-					'invoiceDiscount' => function($d) use($eConfiguration) {
-						if($eConfiguration['invoiceMandatoryTexts'] === FALSE) {
-							$d->group += ['class' => 'hide'];
-						}
-					},
-				]);
+				$h .= $form->dynamicGroups($eConfiguration, ['invoiceMandatoryTexts*', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount']);
 
 				$h .= $form->group(
 					'',
@@ -749,6 +766,17 @@ class ConfigurationUi {
 				];
 				$d->attributes['mandatory'] = TRUE;
 				$d->group = fn(Configuration $e) => ($e['hasVatAccounting'] ?? NULL) ? [] : ['class' => 'hide'];
+				break;
+
+
+			case 'invoiceMandatoryTexts*':
+				$d->attributes['onchange'] = 'Configuration.changeInvoiceMandatoryTexts();';
+				break;
+
+			case  'invoiceCollection':
+			case  'invoiceLateFees':
+			case  'invoiceDiscount':
+				$d->group = fn(Configuration $e) => ($e['invoiceMandatoryTexts']) ? [] : ['class' => 'hide'];
 				break;
 
 		}

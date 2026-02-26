@@ -4,7 +4,25 @@ new AdaptativeView('createCustomer', function($data, PanelTemplate $t) {
 });
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
-	return new \selling\InvoiceUi()->create($data->e, $data->cSale, $data->cSaleMore, $data->search);
+
+	$eSaleFirst = $data->cSale->first();
+	if(
+		\pdp\PdpLib::isActive($eSaleFirst['farm']) and
+		$eSaleFirst['customer']['type'] === \selling\Customer::PRO and
+		$eSaleFirst['farm']->acceptElectronicInvoicing() === FALSE
+	) {
+
+		return new \farm\FarmUi()->getElectronicInvoicingPanel($data->cSale->first()['farm']);
+
+	} else if(\pdp\PdpLib::isActive($eSaleFirst['farm']) and $eSaleFirst['farm']->isFR() and $eSaleFirst['farm']->hasInvoicingMentions() === FALSE) {
+
+		return new \farm\ConfigurationUi()->updateInvoiceMention($data->cSale->first()['farm']);
+
+	} else {
+
+		return new \selling\InvoiceUi()->create($data->e, $data->cSale, $data->cSaleMore, $data->search);
+
+	}
 });
 
 new AdaptativeView('regenerate', function($data, PanelTemplate $t) {
