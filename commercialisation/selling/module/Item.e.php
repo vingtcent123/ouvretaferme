@@ -20,7 +20,11 @@ class Item extends ItemElement {
 	}
 
 	public static function containsApproximate(\Collection $cItem) {
-		return $cItem->contains(fn($eItem) => ($eItem['product']['unit']->notEmpty() and $eItem['product']['unit']['approximate']));
+		return $cItem->contains(fn($eItem) => (
+			$eItem['product']->notEmpty() and
+			$eItem['product']['unit']->notEmpty() and
+			$eItem['product']['unit']['approximate']
+		));
 	}
 
 	public function canRead(): bool {
