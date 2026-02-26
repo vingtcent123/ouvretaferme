@@ -21,7 +21,7 @@ class AlertUi {
 			'Customer::deliveryAddress.empty' => s("L'adresse de livraison est incomplète (la première ligne, le code postal et la ville sont requis)"),
 			'Customer::email.check' => s("L'adresse e-mail est incorrecte"),
 			'Customer::contactName.check' => s("Le contact est incorrect"),
-			'Customer::fullElectronicAddress.check' => s("L'adresse de facturation électronique comprend un identifiant sur 4 chiffres et une adresse de facturation qui commence par les 9 premiers chiffres du SIRET. Les informations fournies ne respectent pas la norme"),
+			'Customer::fullElectronicAddress.check' => s("L'adresse de facturation électronique saisie ne respecte pas la norme. Elle doit comprendre un identifiant sur 4 chiffres et une adresse de facturation qui commence par les premiers 9 chiffres du SIRET."),
 
 			'CustomerGroup::name.comma' => s("Le nom du groupe ne peut pas contenir de virgule."),
 			'CustomerGroup::name.duplicate' => s("Vous avez déjà utilisé ce nom de groupe."),
