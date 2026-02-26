@@ -200,9 +200,11 @@ class Series extends SeriesElement {
 				return TRUE;
 
 			})
-			->setCallback('sequence.check', function(\sequence\Sequence $eSequence): bool {
+			->setCallback('sequence.check', function(\sequence\Sequence $eSequence) use ($p): bool {
 
-				$this['oldSequence'] = $this['sequence'];
+				if($p->for === 'update') {
+					$this['oldSequence'] = $this['sequence'];
+				}
 
 				if($eSequence->empty()) {
 					return TRUE;
