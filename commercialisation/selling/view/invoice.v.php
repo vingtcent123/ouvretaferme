@@ -5,24 +5,26 @@ new AdaptativeView('createCustomer', function($data, PanelTemplate $t) {
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	$eSaleFirst = $data->cSale->first();
-	if(
-		\pdp\PdpLib::isActive($eSaleFirst['farm'] ?? new \farm\Farm()) and
-		$eSaleFirst['customer']['type'] === \selling\Customer::PRO and
-		$eSaleFirst['farm']->acceptElectronicInvoicing() === FALSE
-	) {
+	if($data->cSale->notEmpty()) {
 
-		return new \farm\FarmUi()->getElectronicInvoicingPanel($data->cSale->first()['farm']);
+		$eSaleFirst = $data->cSale->first();
+		if(
+			\pdp\PdpLib::isActive($eSaleFirst['farm']) and
+			$eSaleFirst['customer']['type'] === \selling\Customer::PRO and
+			$eSaleFirst['farm']->acceptElectronicInvoicing() === FALSE
+		) {
 
-	} else if(\pdp\PdpLib::isActive($eSaleFirst['farm'] ?? new \farm\Farm()) and $eSaleFirst['farm']->isFR() and $eSaleFirst['farm']->hasInvoicingMentions() === FALSE) {
+			return new \farm\FarmUi()->getElectronicInvoicingPanel($data->cSale->first()['farm']);
 
-		return new \farm\ConfigurationUi()->updateInvoiceMention($data->cSale->first()['farm']);
+		} else if(\pdp\PdpLib::isActive($eSaleFirst['farm']) and $eSaleFirst['farm']->isFR() and $eSaleFirst['farm']->hasInvoicingMentions() === FALSE) {
 
-	} else {
+			return new \farm\ConfigurationUi()->updateInvoiceMention($data->cSale->first()['farm']);
 
-		return new \selling\InvoiceUi()->create($data->e, $data->cSale, $data->cSaleMore, $data->search);
-
+		}
 	}
+
+	return new \selling\InvoiceUi()->create($data->e, $data->cSale, $data->cSaleMore, $data->search);
+
 });
 
 new AdaptativeView('regenerate', function($data, PanelTemplate $t) {
