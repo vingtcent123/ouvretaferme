@@ -14,7 +14,7 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 		return new \farm\FarmUi()->getElectronicInvoicingPanel($data->cSale->first()['farm']);
 
-	} else if(\pdp\PdpLib::isActive($eSaleFirst['farm']) and $eSaleFirst['farm']->isFR() and $eSaleFirst['farm']->hasInvoicingMentions() === FALSE) {
+	} else if(\pdp\PdpLib::isActive($eSaleFirst['farm'] ?? new \farm\Farm()) and $eSaleFirst['farm']->isFR() and $eSaleFirst['farm']->hasInvoicingMentions() === FALSE) {
 
 		return new \farm\ConfigurationUi()->updateInvoiceMention($data->cSale->first()['farm']);
 
