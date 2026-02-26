@@ -835,7 +835,7 @@ class InvoiceUi {
 					}
 
 					if($warning !== NULL) {
-						$h .= $form->group('', '<div class="util-block">'.$warning.'</div>');
+						$h .= $form->group('', '<div class="util-block-gradient">'.$warning.'</div>');
 					}
 
 				}
