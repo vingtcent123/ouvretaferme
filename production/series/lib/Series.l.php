@@ -1016,6 +1016,32 @@ class SeriesLib extends SeriesCrud {
 
 		}
 
+		if(
+			in_array('sequence', $properties) and
+			$e['oldSequence']->is($e['sequence']) === FALSE
+		) {
+
+			if($e['sequence']->notEmpty()) {
+
+				$cCrop = \sequence\CropLib::getBySequence($e['sequence']);
+
+				foreach($cCrop as $eCrop) {
+
+					Cultivation::model()
+						->whereSeries($e)
+						->wherePlant($eCrop['plant'])
+						->update([
+							'crop' => $eCrop['id']
+						]);
+
+				}
+
+			} else {
+				$updateCultivation['crop'] = new \sequence\Crop();
+			}
+
+		}
+
 
 		if($updateCultivation) {
 

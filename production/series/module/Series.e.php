@@ -202,6 +202,8 @@ class Series extends SeriesElement {
 			})
 			->setCallback('sequence.check', function(\sequence\Sequence $eSequence): bool {
 
+				$this['oldSequence'] = $this['sequence'];
+
 				if($eSequence->empty()) {
 					return TRUE;
 				}
