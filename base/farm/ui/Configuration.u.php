@@ -106,7 +106,7 @@ class ConfigurationUi {
 				$h .= $form->group(content: '<h3>'.s("Certification").'</h3>');
 				$h .= $form->dynamicGroups($eConfiguration, ['organicCertifier']);
 				$h .= $form->group(content: '<h3>'.s("Autres").'</h3>');
-				$h .= $form->dynamicGroups($eConfiguration, ['saleClosing', 'documentCopy', 'paymentMode', 'pdfNaturalOrder', 'marketSaleDefaultDecimal']);
+				$h .= $form->dynamicGroups($eConfiguration, ['saleClosing', 'documentCopy', 'paymentMode', 'pdfGrid', 'pdfNaturalOrder', 'marketSaleDefaultDecimal']);
 
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
@@ -679,6 +679,7 @@ class ConfigurationUi {
 			'invoiceDiscount' => s("Mention relative à l’escompte ou à son absence"),
 			'documentCopy' => s("Recevoir une copie sur l'adresse e-mail de la ferme des devis, bons de livraisons et factures que vous envoyez aux clients"),
 			'saleClosing' => s("Clôture des ventes du logiciel de caisse"),
+			'pdfGrid' => s("Nombre de commandes par page dans les exports PDF"),
 			'pdfNaturalOrder' => s("Trier les commandes et les étiquettes exportées en PDF pour faciliter la découpe"),
 			'marketSaleDefaultDecimal' => s("Quel valeur voulez-vous saisir par défaut dans le logiciel de caisse pour les produits vendus au poids ?"),
 		]);
@@ -749,6 +750,16 @@ class ConfigurationUi {
 			case 'orderFormDelivery' :
 			case 'documentCopy' :
 				$d->field = 'yesNo';
+				break;
+
+			case 'pdfGrid' :
+				$d->field = 'select';
+				$d->attributes['mandatory'] = TRUE;
+				$d->values = [
+					Configuration::GRID_2X2 => s("Grille 2 x 2"),
+					Configuration::GRID_3X2 => s("Grille 3 x 2"),
+					Configuration::GRID_3X3 => s("Grille 3 x 3"),
+				];
 				break;
 
 			case 'pdfNaturalOrder' :

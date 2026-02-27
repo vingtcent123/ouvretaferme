@@ -684,7 +684,7 @@ class DateUi {
 									$eDate['sales']['countValid'] > 0 and $eShop->canShare($eFarm, validateShared: 'canWrite')
 								) {
 
-									$h .= $this->getExportDropdown(new \farm\Farm(), $eDate, 'btn btn-outline-secondary').' ';
+									$h .= $this->getExportDropdown($eFarm, $eDate, 'btn btn-outline-secondary').' ';
 
 								}
 
@@ -1042,11 +1042,17 @@ class DateUi {
 		
 		$urlPdf = '/shop/date:downloadSales?id='.$eDate['id'].($eFarm->empty() ? '' : '&farm='.$eFarm['id']);
 
+		$grid = match($eFarm->conf()['pdfGrid']) {
+			\farm\Configuration::GRID_2X2 => \Asset::icon('grid'),
+			\farm\Configuration::GRID_3X2 => \Asset::icon('grid-3x2'),
+			\farm\Configuration::GRID_3X3 => \Asset::icon('grid-3x3')
+		};
+
 		$h = '<a data-dropdown="bottom-end" class="'.$btn.' dropdown-toggle">'.s("Exporter les ventes").'</a>';
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-subtitle">'.s("PDF").'</div>';
-			$h .= '<a href="'.$urlPdf.'&template=grid" data-ajax-navigation="never" class="dropdown-item">'.\Asset::icon('grid').'  '.s("Format carré").'</a>';
-			$h .= '<a href="'.$urlPdf.'&template=line" data-ajax-navigation="never" class="dropdown-item">'.\Asset::icon('layout-three-columns', ['class' => 'asset-icon-rotate-90']).'  '.s("Format horizontal").'</a>';
+			$h .= '<a href="'.$urlPdf.'&template=grid" data-ajax-navigation="never" class="dropdown-item">'.$grid.'  '.s("Affichage en grille").'</a>';
+			$h .= '<a href="'.$urlPdf.'&template=line" data-ajax-navigation="never" class="dropdown-item">'.\Asset::icon('layout-three-columns', ['class' => 'asset-icon-rotate-90']).'  '.s("Affichage en ligne").'</a>';
 		/*	$h .= '<a class="dropdown-item">'.\Asset::icon('filetype-csv').'  '.s("Fichier CSV").'</a>';*/
 		$h .= '</div>';
 

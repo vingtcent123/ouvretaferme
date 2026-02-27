@@ -66,6 +66,7 @@ Configuration:
   marketSalePaymentMethod: ?payment\Method
   marketSaleDefaultDecimal: enum(NUMBER, PRICE) = PRICE
   pdfNaturalOrder: bool = FALSE
+  pdfGrid: enum(GRID_2X2, GRID_3X2, GRID_3X3) = GRID_2X2
   profileAccount: ?json = PHP([])
   UNIQUE: [
     ["farm"]

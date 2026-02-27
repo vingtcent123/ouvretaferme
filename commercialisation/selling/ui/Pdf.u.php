@@ -1190,6 +1190,7 @@ class PdfUi {
 			$items = array_merge(
 				$items,
 				$this->getSaleLabel(
+					$eFarm,
 					$eSale, $farms,
 					match($template) {
 						'grid' => TRUE,
@@ -1204,10 +1205,12 @@ class PdfUi {
 
 			case 'grid' :
 				$itemsChunk = $this->getSalesGridChunk($eFarm, $items);
+				$class = 'pdf-sales-label-'.$eFarm->conf()['pdfGrid'];
 				break;
 
 			case 'line' :
 				$itemsChunk = [$items];
+				$class = '';
 				break;
 
 		}
@@ -1216,7 +1219,7 @@ class PdfUi {
 
 		foreach($itemsChunk as $itemsByN) {
 
-			$h .= '<div class="pdf-sales-label-wrapper">';
+			$h .= '<div class="pdf-sales-label-wrapper '.$class.'">';
 				$h .= implode('', $itemsByN);
 			$h .= '</div>';
 
@@ -1231,7 +1234,11 @@ class PdfUi {
 
 		$eConfiguration = $eFarm->conf();
 
-		$itemsPerPage = 4;
+		$itemsPerPage = match($eFarm->conf()['pdfGrid']) {
+			\farm\Configuration::GRID_2X2 => 4,
+			\farm\Configuration::GRID_3X2 => 6,
+			\farm\Configuration::GRID_3X3 => 9
+		};
 
 		if($eConfiguration['pdfNaturalOrder']) {
 
@@ -1409,7 +1416,7 @@ class PdfUi {
 
 	}
 
-	public function getSaleLabel(\selling\Sale $eSale, array $farms, bool $split): array {
+	public function getSaleLabel(\farm\Farm $eFarm, \selling\Sale $eSale, array $farms, bool $split): array {
 
 		if($eSale['ccItem']->empty()) {
 			return [];
@@ -1490,7 +1497,12 @@ class PdfUi {
 
 		}
 
-		$itemsChunk = $split ? array_chunk($itemsList, 15) : [$itemsList];
+		$chunkSize = match($eFarm->conf()['pdfGrid']) {
+			\farm\Configuration::GRID_2X2, \farm\Configuration::GRID_3X2 => 15,
+			\farm\Configuration::GRID_3X3 => 12
+		};
+
+		$itemsChunk = $split ? array_chunk($itemsList, $chunkSize) : [$itemsList];
 		$pages = count($itemsChunk);
 
 		$entries = [];
@@ -1540,7 +1552,7 @@ class PdfUi {
 
 					}
 
-					$entry .= '<div class="pdf-sales-label-detail">';
+					$entry .= '<div class="pdf-sales-label-detail pdf-sales-label-detail-date">';
 						$entry .= '<div class="pdf-sales-label-detail-title">'.s("Date de retrait").'</div>';
 						$entry .= '<div class="pdf-sales-label-detail-value">'.\util\DateUi::numeric($eSale['deliveredAt']).'</div>';
 					$entry .= '</div>';
@@ -1558,18 +1570,12 @@ class PdfUi {
 
 					if($eSale['cPayment']->notEmpty()) {
 						$entry .= '<div class="pdf-sales-label-detail">';
-							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Moyen de paiement").'</div>';
-							$entry .= '<div class="pdf-sales-label-detail-value">';
-								$entry .= PaymentTransactionUi::getPaymentMethodName($eSale);
-							$entry .= '</div>';
-						$entry .= '</div>';
-					}
-
-					if($eSale->isPaymentOnline()) {
-						$entry .= '<div class="pdf-sales-label-detail">';
 							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Paiement").'</div>';
 							$entry .= '<div class="pdf-sales-label-detail-value">';
-								$entry .= \selling\SaleUi::getPaymentStatusForCustomer($eSale, withColors: TRUE);
+								$entry .= PaymentTransactionUi::getPaymentMethodName($eSale);
+								if($eSale->isPaymentOnline()) {
+									$entry .= '  '.\selling\SaleUi::getPaymentStatusForCustomer($eSale, withColors: TRUE);
+								}
 							$entry .= '</div>';
 						$entry .= '</div>';
 					}

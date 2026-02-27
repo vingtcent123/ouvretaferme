@@ -500,144 +500,6 @@ table.pdf-sales-summary {
 	min-width: 7cm;
 }
 
-.pdf-sales-template-grid {
-
-	.pdf-sales-label-wrapper {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-template-rows: 1fr 1fr;
-		height: 19.9cm;
-		grid-gap: 0.5cm;
-		page-break-after: always;
-	}
-
-	.pdf-sales-label-item {
-		position: relative;
-		border: 2px solid var(--text);
-		background-color: white;
-		line-height: 1.2;
-		display: grid;
-		grid-template-columns: 8fr 20fr;
-		grid-template-rows: min-content auto;
-	}
-
-	.pdf-sales-label-address {
-		font-size: 0.8rem;
-	}
-
-	.pdf-sales-label-details {
-		border-right: 2px solid var(--text);
-		display: grid;
-		grid-template-columns: 1fr;
-		padding: 0.15cm;
-	}
-
-	.pdf-sales-label-details-next {
-		background-color: var(--background-light);
-	}
-
-	.pdf-sales-label-customer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		grid-column: span 2;
-		height: 1.5cm;
-		font-size: 0.5cm;
-		width: 100%;
-		border-bottom: 2px solid var(--text);
-		padding: 0 1rem;
-	}
-
-	.pdf-sales-label-customer-large {
-		font-size: 1.1rem;
-	}
-
-
-	.pdf-sales-label-content {
-		align-self: start;
-		display: grid;
-		grid-template-columns: min-content auto auto max-content;
-		grid-template-rows: auto;
-		grid-row-gap: 0.125cm;
-		grid-column-gap: 0.25cm;
-		align-items: stretch;
-		width: 100%;
-		font-size: 0.9rem;
-		padding: 0.25cm 0.25cm 0 0.25cm;
-	}
-
-	.pdf-sales-label-detail-value {
-		font-weight: bold;
-		text-align: center;
-		letter-spacing: -0.1px;
-	}
-
-}
-
-.pdf-sales-template-line {
-
-	table.pdf-sales-summary {
-		font-size: 0.9rem;
-	}
-
-	.pdf-sales-label-item {
-		display: grid;
-		column-gap: 0.25cm;
-		grid-template-columns: 4cm 1fr;
-		page-break-inside: avoid;
-		line-height: 1.2;
-		border-bottom: 1px dashed var(--text);
-		padding-bottom: 0.4cm;
-	}
-
-	.pdf-sales-label-item:not(:last-child) {
-		margin-bottom: 0.4cm;
-	}
-
-	.pdf-sales-label-details {
-		display: flex;
-		align-items: start;
-		gap: 0.3cm;
-		margin-bottom: 0.2cm;
-		padding-bottom: 0.2cm;
-		font-size: 0.8rem;
-		border-bottom: 1px dashed var(--border);
-	}
-
-	.pdf-sales-label-details-next {
-		background-color: var(--background-light);
-	}
-
-	.pdf-sales-label-customer {
-		background-color: var(--background-light);
-		grid-row: span 2;
-		font-size: 0.3cm;
-		width: 100%;
-		line-height: 1.2;
-		align-items: center;
-		padding: 0.2cm;
-	}
-
-	.pdf-sales-label-detail-value {
-		text-align: center;
-		letter-spacing: -0.1px;
-	}
-
-	.pdf-sales-label-content {
-		align-self: start;
-		display: grid;
-		grid-template-columns: min-content 1fr 3cm 5cm;
-		grid-template-rows: auto;
-		grid-row-gap: 0.1cm;
-		grid-column-gap: 0.25cm;
-		align-items: stretch;
-		width: 100%;
-		font-size: 0.8rem;
-	}
-
-
-}
-
 .pdf-sales-label-comment {
 	font-style: italic;
 	font-size: 1rem;
@@ -749,4 +611,204 @@ table.pdf-sales-summary {
 .pdf-sales-label-content-price {
 	text-align: right;
 	color: var(--muted);
+}
+
+
+.pdf-sales-template-grid {
+
+	.pdf-sales-label-wrapper {
+		display: grid;
+		height: 19.9cm;
+		page-break-after: always;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-2x2 {
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr 1fr;
+		font-size: 0.9rem;
+		grid-gap: 0.5cm;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x2 {
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: 1fr 1fr;
+		font-size: 0.8rem;
+		grid-gap: 0.25cm;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x3 {
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: 1fr 1fr 1fr;
+		font-size: 0.8rem;
+		grid-gap: 0.25cm;
+	}
+
+	.pdf-sales-label-item {
+		position: relative;
+		border: 1px solid var(--text);
+		background-color: white;
+		line-height: 1.2;
+		display: grid;
+		grid-template-columns: 8fr 20fr;
+		grid-template-rows: min-content auto;
+	}
+
+	.pdf-sales-label-details {
+		border-right: 1px solid var(--text);
+		display: grid;
+		grid-template-columns: 1fr;
+		padding: 0.15cm;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-2x2 .pdf-sales-label-details {
+		font-size: 0.8rem;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x2 .pdf-sales-label-details {
+		font-size: 0.7rem;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x3 .pdf-sales-label-details {
+		font-size: 0.7rem;
+	}
+
+	.pdf-sales-label-details-next {
+		background-color: var(--background-light);
+	}
+
+	.pdf-sales-label-customer {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		grid-column: span 2;
+		height: 1.5cm;
+		font-size: 0.5cm;
+		width: 100%;
+		border-bottom: 1px solid var(--text);
+		padding: 0 1rem;
+	}
+
+	.pdf-sales-label-customer-large {
+		font-size: 1.1rem;
+	}
+
+
+	.pdf-sales-label-content {
+		align-self: start;
+		display: grid;
+		grid-template-columns: min-content auto auto max-content;
+		grid-template-rows: auto;
+		grid-row-gap: 0.125cm;
+		grid-column-gap: 0.25cm;
+		align-items: stretch;
+		width: 100%;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-2x2 .pdf-sales-label-content {
+		padding: 0.25cm 0.25cm 0 0.25cm;
+		grid-column-gap: 0.25cm;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x3 .pdf-sales-label-content,
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x2 .pdf-sales-label-content {
+		padding: 0.125cm 0.125cm 0 0.125cm;
+		grid-column-gap: 0.125cm;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x3 .pdf-sales-label-content {
+		grid-row-gap: 0.1cm;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x3 .pdf-sales-label-detail-date {
+		display: none;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x3 .pdf-sales-label-customer {
+		height: 1.2cm;
+		font-size: 0.35cm;
+	}
+
+	.pdf-sales-label-detail-value {
+		font-weight: bold;
+		text-align: center;
+		letter-spacing: -0.1px;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x3 .pdf-sales-label-detail-title {
+		margin-bottom: 0.1rem;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x3 .pdf-sales-label-detail-value {
+		font-size: 0.7rem;
+	}
+
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x2 .pdf-sales-label-address,
+	.pdf-sales-label-wrapper.pdf-sales-label-grid-3x3 .pdf-sales-label-address {
+		font-size: 0.6rem;
+	}
+
+}
+
+.pdf-sales-template-line {
+
+	table.pdf-sales-summary {
+		font-size: 0.9rem;
+	}
+
+	.pdf-sales-label-item {
+		display: grid;
+		column-gap: 0.25cm;
+		grid-template-columns: 4cm 1fr;
+		page-break-inside: avoid;
+		line-height: 1.2;
+		border-bottom: 1px dashed var(--text);
+		padding-bottom: 0.4cm;
+	}
+
+	.pdf-sales-label-item:not(:last-child) {
+		margin-bottom: 0.4cm;
+	}
+
+	.pdf-sales-label-details {
+		display: flex;
+		align-items: start;
+		gap: 0.3cm;
+		margin-bottom: 0.2cm;
+		padding-bottom: 0.2cm;
+		font-size: 0.8rem;
+		border-bottom: 1px dashed var(--border);
+	}
+
+	.pdf-sales-label-details-next {
+		background-color: var(--background-light);
+	}
+
+	.pdf-sales-label-customer {
+		background-color: var(--background-light);
+		grid-row: span 2;
+		font-size: 0.3cm;
+		width: 100%;
+		line-height: 1.2;
+		align-items: center;
+		padding: 0.2cm;
+	}
+
+	.pdf-sales-label-detail-value {
+		text-align: center;
+		letter-spacing: -0.1px;
+	}
+
+	.pdf-sales-label-content {
+		align-self: start;
+		display: grid;
+		grid-template-columns: min-content 1fr 3cm 5cm;
+		grid-template-rows: auto;
+		grid-row-gap: 0.1cm;
+		grid-column-gap: 0.25cm;
+		align-items: stretch;
+		width: 100%;
+		font-size: 0.8rem;
+	}
+
+
 }

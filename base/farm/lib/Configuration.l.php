@@ -5,7 +5,7 @@ class ConfigurationLib extends ConfigurationCrud {
 
 	public static function getPropertiesUpdate(): array {
 
-		return ['hasVat', 'vatNumber', 'defaultVat', 'saleClosing', 'defaultVatShipping', 'organicCertifier', 'paymentMode', 'documentCopy', 'pdfNaturalOrder', 'marketSaleDefaultDecimal'];
+		return ['hasVat', 'vatNumber', 'defaultVat', 'saleClosing', 'defaultVatShipping', 'organicCertifier', 'paymentMode', 'documentCopy', 'pdfGrid', 'pdfNaturalOrder', 'marketSaleDefaultDecimal'];
 	}
 
 	public static function createForFarm(\farm\Farm $eFarm): void {
