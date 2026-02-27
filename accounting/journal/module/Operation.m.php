@@ -12,6 +12,8 @@ abstract class OperationElement extends \Element {
 
 	const VAT_STD = 'vat-std';
 	const VAT_0 = 'vat-0';
+	const VAT_0_EXPORT = 'vat-0-export';
+	const VAT_0_INTRACOM = 'vat-0-intracom';
 	const VAT_HCA = 'vat-hca';
 	const VAT_HC = 'vat-hc';
 
@@ -69,7 +71,7 @@ class OperationModel extends \ModuleModel {
 			'asset' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
 			'paymentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
-			'vatRule' => ['enum', [\journal\Operation::VAT_STD, \journal\Operation::VAT_0, \journal\Operation::VAT_HCA, \journal\Operation::VAT_HC], 'null' => TRUE, 'cast' => 'enum'],
+			'vatRule' => ['enum', [\journal\Operation::VAT_STD, \journal\Operation::VAT_0, \journal\Operation::VAT_0_EXPORT, \journal\Operation::VAT_0_INTRACOM, \journal\Operation::VAT_HCA, \journal\Operation::VAT_HC], 'null' => TRUE, 'cast' => 'enum'],
 			'isSelfConsumption' => ['bool', 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],

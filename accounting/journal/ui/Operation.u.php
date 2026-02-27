@@ -1743,6 +1743,8 @@ class OperationUi {
 				$d->values = [
 					Operation::VAT_STD => s("Avec TVA"),
 					Operation::VAT_0 => s("Exonéré de TVA"),
+					Operation::VAT_0_EXPORT => s("Exonéré de TVA (export hors UE)"),
+					Operation::VAT_0_INTRACOM => s("Exonéré de TVA (livraison intracommunautaire)"),
 					Operation::VAT_HC => s("Hors champ d'application de la TVA"),
 					Operation::VAT_HCA => s("Hors chiffre d'affaires"),
 				];

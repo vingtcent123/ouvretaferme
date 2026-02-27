@@ -56,7 +56,7 @@ Operation:
   asset: ?asset\Asset
   paymentDate: ?date
   paymentMethod: ?payment\Method
-  vatRule: ?enum(VAT_STD, VAT_0, VAT_HCA, VAT_HC)
+  vatRule: ?enum(VAT_STD, VAT_0, VAT_0_EXPORT, VAT_0_INTRACOM, VAT_HCA, VAT_HC)
   isSelfConsumption: bool = FALSE
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
