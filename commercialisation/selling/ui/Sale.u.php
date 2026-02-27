@@ -871,6 +871,25 @@ class SaleUi {
 
 	}
 
+	public function getExportDropdownList(string $pdfGrid, string $urlPdf): string {
+
+		$grid = match($pdfGrid) {
+			\farm\Configuration::GRID_2X2 => \Asset::icon('grid'),
+			\farm\Configuration::GRID_3X2 => \Asset::icon('grid-3x2'),
+			\farm\Configuration::GRID_3X3 => \Asset::icon('grid-3x3')
+		};
+
+		$h = '<div class="dropdown-list">';
+			$h .= '<div class="dropdown-subtitle">'.s("PDF").'</div>';
+			$h .= '<a href="'.$urlPdf.'&template=grid" data-ajax-navigation="never" class="dropdown-item">'.$grid.'  '.s("Affichage en grille").'</a>';
+			$h .= '<a href="'.$urlPdf.'&template=line" data-ajax-navigation="never" class="dropdown-item">'.\Asset::icon('layout-three-columns', ['class' => 'asset-icon-rotate-90']).'  '.s("Affichage en ligne").'</a>';
+		/*	$h .= '<a class="dropdown-item">'.\Asset::icon('filetype-csv').'  '.s("Fichier CSV").'</a>';*/
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getBatch(\farm\Farm $eFarm, \Collection $cPaymentMethod): string {
 
 		$menu = '<a data-url="/selling/item:summary?farm='.$eFarm['id'].'" class="batch-amount batch-item">';
@@ -939,9 +958,21 @@ class SaleUi {
 		$menu .= '</div>';
 
 		$menu .= '<a data-ajax-submit="/selling/sale:doExportCollection?template=grid" data-ajax-navigation="never" class="batch-item">';
-			$menu .= \Asset::icon('file-pdf');
+			$menu .= \Asset::icon('download');
 			$menu .= '<span>'.s("Exporter").'</span>';
 		$menu .= '</a>';
+
+		$menu .= '<div class="dropdown-list dropdown-list-2 bg-secondary">';
+			$menu .= '<div class="dropdown-title">'.s("Changer de moyen de paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-replace-payment" data-batch-contains="count" data-batch-only="hide"></span></div>';
+			foreach($cPaymentMethod as $ePaymentMethod) {
+				if($ePaymentMethod->acceptManualUpdate()) {
+					$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentNotPaidCollection" data-batch-test="accept-replace-payment" data-batch-contains="post" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+				}
+			}
+			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentNotPaidCollection" data-batch-test="accept-replace-payment" data-batch-contains="post" post-payment-method="" class="dropdown-item" style="grid-column: span 2"><i>'.s("Pas de moyen de paiement").'</i></a>';
+			$menu .= '<div class="dropdown-subtitle">'.s("Changer l'état du paiement").' <span class="batch-item-count util-badge bg-primary" data-batch-test="accept-pay-payment" data-batch-always="count" data-batch-only="hide"></span></div>';
+			$menu .= '<a data-ajax="/selling/sale:doUpdatePaymentStatusCollection" data-confirm="'.s("Les ventes seront marqués payées au {value}. Voulez-vous continuer ?", currentDate()).'" data-batch-test="accept-pay-payment" data-batch-contains="post" data-batch-not-contains="hide" post-payment-status="'.Sale::PAID.'" class="dropdown-item" data-confirm="'.s("Êtes-vous sûre de vouloir passer ces ventes à l'état payé ? Vous ne pourrez pas facilement revenir en arrière.").'">'.PaymentTransactionUi::getPaymentStatusBadge(new Sale(['paymentStatus' => Sale::PAID, 'paidAt' => NULL])).'</a>';
+		$menu .= '</div>';
 
 		$menu .= '<a data-url="/vente/" data-confirm="'.s("Vous allez entrer dans le mode de préparation de commandes. Voulez-vous continuer ?").'" class="batch-prepare batch-item">';
 			$menu .= \Asset::icon('person-workspace');
