@@ -828,7 +828,8 @@ class PdfUi {
 
 		if(
 			$eFarm->getConf('invoiceMandatoryTexts') and
-			($invoiceMentionCollection or $invoiceMentionLateFees or $invoiceMentionDiscount)
+			($invoiceMentionCollection or $invoiceMentionLateFees or $invoiceMentionDiscount) and
+			$type === Pdf::INVOICE
 		) {
 			$h .= '<div class="pdf-document-mentions">';
 				$h .= $invoiceMentionCollection ? encode($invoiceMentionCollection).' ' : '';
