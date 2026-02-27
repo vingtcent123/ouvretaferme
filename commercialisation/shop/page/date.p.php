@@ -90,7 +90,7 @@ new \shop\DatePage()
 		throw new ViewAction($data);
 
 	})
-	->read('downloadSales', function($data) {
+	->read('downloadPdf', function($data) {
 
 		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
 		$data->e['shop'] = \shop\ShopLib::getById($data->e['shop']);
@@ -114,6 +114,24 @@ new \shop\DatePage()
 		$content = \selling\PdfLib::build($url, $filename);
 
 		throw new PdfAction($content, $filename);
+
+	}, validate: ['acceptDownload'])
+		->read('downloadCsv', function($data) {
+
+		$eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->e['shop'] = \shop\ShopLib::getById($data->e['shop']);
+
+		$data->e->canDownload($eFarm) ?: throw new NotAllowedAction();
+
+		$cSale = \selling\SaleLib::getForLabelsByDate($eFarm, $data->e, selectItems: TRUE, selectPoint: TRUE);
+
+		$hasFarm = $data->e['shop']->isShared();
+		$hasVat = $hasFarm ? TRUE : $data->e['farm']->getConf('hasVat');
+
+		$export = \selling\CsvLib::getExportItemsBySales($cSale, $hasVat, $hasFarm);
+		array_unshift($export, new \selling\CsvUi()->getExportItemsBySalesHeader($hasVat, $hasFarm));
+
+		throw new CsvAction($export, 'ventes.csv');
 
 	}, validate: ['acceptDownload'])
 	->doDelete(fn($data) => throw new RedirectAction(\shop\ShopUi::adminUrl($data->e['farm'], $data->e['shop']).'&success=shop\\Date::deleted'));

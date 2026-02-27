@@ -3,6 +3,54 @@ namespace selling;
 
 class CsvLib {
 
+	public static function getExportItemsBySales(\Collection $cSale, bool $hasVat, bool $hasFarm = FALSE): array {
+
+		$export = [];
+
+		foreach($cSale as $eSale) {
+
+			foreach($eSale['ccItem'][NULL] as $eItem) {
+
+				$data = [
+					$eSale['document']
+				];
+
+				if($hasFarm) {
+					$data[] = $eSale['farm']['name'];
+				}
+
+				$data = array_merge($data, [
+					($hasFarm ? $eSale['customer']['user']->getName() : $eSale['customer']->getName()),
+					\util\DateUi::numeric($eItem['deliveredAt']),
+					$eSale['shopPoint']->empty() ? '' : $eSale['shopPoint']['name'],
+					$eItem['name'],
+					$eItem['product']->empty() ? '' : $eItem['product']['reference'],
+					\util\TextUi::csvNumber($eItem['number'] * ($eItem['packaging'] ?? 1)),
+					\selling\UnitUi::getSingular($eItem['unit'], noWrap: FALSE),
+					match($eItem['type']) {
+						Item::PRO => \util\TextUi::csvNumber($eItem['price'], 2),
+						Item::PRIVATE => \util\TextUi::csvNumber(\util\AmountUi::fromIncluding($eItem['price'], $eItem['vatRate'])),
+					},
+				]);
+
+				if($hasVat) {
+					$data[] = \util\TextUi::csvNumber($eItem['vatRate']);
+					$data[] = match($eItem['type']) {
+						Item::PRO => \util\TextUi::csvNumber(\util\AmountUi::fromExcluding($eItem['price'], $eItem['vatRate']), 2),
+						Item::PRIVATE => \util\TextUi::csvNumber($eItem['price']),
+					};
+				}
+
+				$export[] = $data;
+
+			}
+
+		}
+
+		return $export;
+
+	}
+
 	public static function uploadProducts(\farm\Farm $eFarm): bool {
 
 		return \main\CsvLib::upload('import-products-'.$eFarm['id'], function($csv) {

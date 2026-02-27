@@ -1040,12 +1040,18 @@ class DateUi {
 	
 	protected function getExportDropdown(\farm\Farm $eFarm, Date $eDate, string $btn): string {
 		
-		$urlPdf = 'href="/shop/date:downloadSales?id='.$eDate['id'].($eFarm->empty() ? '' : '&farm='.$eFarm['id']).'&template=@template"';
+		$urlPdf = 'href="/shop/date:downloadPdf?id='.$eDate['id'].($eFarm->empty() ? '' : '&farm='.$eFarm['id']).'&template=@template"';
+		$urlCsv = 'href="/shop/date:downloadCsv?id='.$eDate['id'].($eFarm->empty() ? '' : '&farm='.$eFarm['id']).'"';
 
 		$eFarmConf = $eFarm->empty() ? $eDate['farm'] : $eFarm;
 
 		$h = '<a data-dropdown="bottom-end" class="'.$btn.' dropdown-toggle">'.s("Exporter les ventes").'</a>';
-		$h .= new \selling\SaleUi()->getExportDropdownList($eFarmConf->conf()['pdfGrid'], $urlPdf);
+
+		$h .= new \selling\SaleUi()->getExportDropdownList(
+			$eFarmConf->conf()['pdfGrid'],
+			$urlPdf,
+			$urlCsv
+		);
 
 		return $h;
 		

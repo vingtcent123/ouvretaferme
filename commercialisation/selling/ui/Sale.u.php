@@ -873,7 +873,7 @@ class SaleUi {
 
 	}
 
-	public function getExportDropdownList(string $pdfGrid, string $urlPdf, bool $batch = FALSE): string {
+	public function getExportDropdownList(string $pdfGrid, string $urlPdf, string $urlCsv, bool $batch = FALSE): string {
 
 		$grid = match($pdfGrid) {
 			\farm\Configuration::GRID_2X2 => \Asset::icon('grid'),
@@ -882,6 +882,7 @@ class SaleUi {
 		};
 
 		$urlPdf .= 'data-ajax-download="'.s("Ventes").'.pdf" data-waiter="'.s("Export en cours").'"';
+		$urlCsv .= 'data-ajax-download="'.s("Ventes").'.csv"';
 
 		$post = $batch ? 'data-batch-test="accept-export" data-batch-contains="post"' : '';
 
@@ -889,7 +890,8 @@ class SaleUi {
 			$h .= '<div class="dropdown-subtitle">'.s("PDF").'</div>';
 			$h .= '<a '.str_replace('@template', 'grid', $urlPdf).' '.$post.' class="dropdown-item">'.$grid.'  '.s("Affichage en grille").'</a>';
 			$h .= '<a '.str_replace('@template', 'line', $urlPdf).' '.$post.' class="dropdown-item">'.\Asset::icon('layout-three-columns', ['class' => 'asset-icon-rotate-90']).'  '.s("Affichage en ligne").'</a>';
-		/*	$h .= '<a class="dropdown-item">'.\Asset::icon('filetype-csv').'  '.s("Fichier CSV").'</a>';*/
+			$h .= '<div class="dropdown-subtitle">'.s("CSV").'</div>';
+			$h .= '<a '.$urlCsv.' '.$post.' class="dropdown-item">'.\Asset::icon('list').'  '.s("Liste des articles vendus").'</a>';
 		$h .= '</div>';
 
 		return $h;
@@ -969,7 +971,8 @@ class SaleUi {
 		$menu .= '</a>';
 		$menu .= new \selling\SaleUi()->getExportDropdownList(
 			$eFarm->conf()['pdfGrid'],
-			'data-ajax="/selling/sale:doExportCollection?template=@template"',
+			'data-ajax="/selling/sale:downloadPdfCollection?template=@template"',
+			'data-ajax="/selling/sale:downloadCsvCollection"',
 			TRUE
 		);
 

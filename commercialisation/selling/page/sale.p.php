@@ -516,7 +516,7 @@ new Page(function($data) {
 		$data->eFarm = $data->c->first()['farm'];
 
 	})
-	->post('doExportCollection', function($data) {
+	->post('downloadPdfCollection', function($data) {
 
 		$data->c->validate('canRead');
 
@@ -537,6 +537,20 @@ new Page(function($data) {
 		\selling\ItemLib::fillSummaryDistribution($data->c, $data->cItem);
 
 		throw new ViewAction($data);
+
+	})
+	->post('downloadCsvCollection', function($data) {
+
+		$data->c->validate('canRead');
+
+		\selling\SaleLib::fillForExport($data->c);
+
+		$hasVat = $data->eFarm->getConf('hasVat');
+
+		$export = \selling\CsvLib::getExportItemsBySales($data->c, $hasVat);
+		array_unshift($export, new \selling\CsvUi()->getExportItemsBySalesHeader($hasVat));
+
+		throw new CsvAction($export, 'ventes.csv');
 
 	})
 	->post('doUpdateCanceledCollection', function($data) {

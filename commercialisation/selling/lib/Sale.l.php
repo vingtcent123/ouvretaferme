@@ -290,9 +290,12 @@ class SaleLib extends SaleCrud {
 			]);
 		}
 
+		$selection = Sale::getSelection();
+		$selection['customer']['user'] = \user\UserElement::getSelection();
+
 		$cSale = Sale::model()
 			->join(Customer::model(), 'm1.customer = m2.id')
-			->select(Sale::getSelection())
+			->select($selection)
 			->getCollection();
 
 		if($selectItems) {

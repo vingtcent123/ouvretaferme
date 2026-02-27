@@ -2103,7 +2103,7 @@ class AnalyzeUi {
 			'invoice_id',
 			'customer_name',
 			'type',
-			'delivery',
+			'delivery_date',
 			'items',
 			'shop',
 			'payment_method'
@@ -2139,7 +2139,7 @@ class AnalyzeUi {
 		$header = array_merge($header, [
 			'customer_name',
 			'type',
-			'delivery',
+			'delivery_date',
 			'quantity',
 			'unit'
 		]);

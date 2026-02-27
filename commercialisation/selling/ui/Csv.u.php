@@ -9,6 +9,38 @@ class CsvUi {
 
 	}
 
+	public function getExportItemsBySalesHeader(bool $hasVat, bool $hasFarm = FALSE): array {
+
+		$header = [
+			'sale_id'
+		];
+
+		if($hasFarm) {
+			$header[] = 'sale_farm';
+		}
+
+		$header = array_merge($header, [
+			'customer_name',
+			'delivery_date',
+			'delivery_point',
+			'product',
+			'product_reference',
+			'quantity',
+			'unit'
+		]);
+
+		if($hasVat) {
+			$header[] = 'amount_excluding_vat';
+			$header[] = 'vat';
+			$header[] = 'amount_including_vat';
+		} else {
+			$header[] = 'amount';
+		}
+
+		return $header;
+
+	}
+
 	public function getProducts(\farm\Farm $eFarm, array $data): string {
 
 		['import' => $import, 'errorsCount' => $errorsCount, 'errorsGlobal' => $errorsGlobal, 'infoGlobal' => $infoGlobal] = $data;
