@@ -22,6 +22,10 @@ abstract class ConfigurationElement extends \Element {
 	const NUMBER = 'number';
 	const PRICE = 'price';
 
+	const GRID_2X2 = 'grid-2x2';
+	const GRID_3X2 = 'grid-3x2';
+	const GRID_3X3 = 'grid-3x3';
+
 	public static function getSelection(): array {
 		return Configuration::model()->getProperties();
 	}
@@ -95,11 +99,12 @@ class ConfigurationModel extends \ModuleModel {
 			'marketSalePaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
 			'marketSaleDefaultDecimal' => ['enum', [\farm\Configuration::NUMBER, \farm\Configuration::PRICE], 'cast' => 'enum'],
 			'pdfNaturalOrder' => ['bool', 'cast' => 'bool'],
+			'pdfGrid' => ['enum', [\farm\Configuration::GRID_2X2, \farm\Configuration::GRID_3X2, \farm\Configuration::GRID_3X3], 'cast' => 'enum'],
 			'profileAccount' => ['json', 'null' => TRUE, 'cast' => 'array'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'hasVatAccounting', 'vatFrequency', 'vatChargeability', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'electronicScheme', 'electronicAddress', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'profileAccount'
+			'id', 'farm', 'documentSales', 'documentInvoices', 'documentCustomers', 'hasVat', 'hasVatAccounting', 'vatFrequency', 'vatChargeability', 'defaultVat', 'defaultVatShipping', 'vatNumber', 'organicCertifier', 'paymentMode', 'saleClosing', 'documentCopy', 'documentTarget', 'orderFormDelivery', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteHeader', 'deliveryNoteFooter', 'electronicScheme', 'electronicAddress', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePrefix', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount', 'marketSalePaymentMethod', 'marketSaleDefaultDecimal', 'pdfNaturalOrder', 'pdfGrid', 'profileAccount'
 		]);
 
 		$this->propertiesToModule += [
@@ -162,6 +167,9 @@ class ConfigurationModel extends \ModuleModel {
 			case 'pdfNaturalOrder' :
 				return FALSE;
 
+			case 'pdfGrid' :
+				return Configuration::GRID_2X2;
+
 			case 'profileAccount' :
 				return [];
 
@@ -186,6 +194,9 @@ class ConfigurationModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'marketSaleDefaultDecimal' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'pdfGrid' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'profileAccount' :
@@ -378,6 +389,10 @@ class ConfigurationModel extends \ModuleModel {
 
 	public function wherePdfNaturalOrder(...$data): ConfigurationModel {
 		return $this->where('pdfNaturalOrder', ...$data);
+	}
+
+	public function wherePdfGrid(...$data): ConfigurationModel {
+		return $this->where('pdfGrid', ...$data);
 	}
 
 	public function whereProfileAccount(...$data): ConfigurationModel {
