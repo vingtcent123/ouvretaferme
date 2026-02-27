@@ -1211,7 +1211,7 @@ class SeriesUi {
 			}
 
 			$h .= $form->group(
-				content: $form->submit(s("Créer un itinéraire technique"), ['data-waiter' => s("Création en cours..."), 'data-confirm' => s("Vous allez créer un itinéraire technique à partir d'une série, voulez-vous continuer ?")])
+				content: $form->submit(s("Créer un itinéraire technique"), ['data-waiter' => s("Création en cours"), 'data-confirm' => s("Vous allez créer un itinéraire technique à partir d'une série, voulez-vous continuer ?")])
 			);
 
 		$h .= $form->close();

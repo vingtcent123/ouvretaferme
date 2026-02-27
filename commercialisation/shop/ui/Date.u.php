@@ -1040,7 +1040,7 @@ class DateUi {
 	
 	protected function getExportDropdown(\farm\Farm $eFarm, Date $eDate, string $btn): string {
 		
-		$urlPdf = '/shop/date:downloadSales?id='.$eDate['id'].($eFarm->empty() ? '' : '&farm='.$eFarm['id']);
+		$urlPdf = 'href="/shop/date:downloadSales?id='.$eDate['id'].($eFarm->empty() ? '' : '&farm='.$eFarm['id']).'&template=@template"';
 
 		$eFarmConf = $eFarm->empty() ? $eDate['farm'] : $eFarm;
 

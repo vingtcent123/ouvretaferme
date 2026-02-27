@@ -413,7 +413,7 @@ class PlanningUi {
 
 	public function getExport(\farm\Farm $eFarm, string $week): string {
 
-		$h = '<a href="/farm/planning:downloadWeeklyPdf?id='.$eFarm['id'].'&week='.$week.'" data-ajax-navigation="never" data-waiter="'.s("Création en cours").'" data-waiter-timeout="8" class="btn btn-primary">';
+		$h = '<a href="/farm/planning:downloadWeeklyPdf?id='.$eFarm['id'].'&week='.$week.'" data-ajax-download="'.s("Planning {value}", $week).'.pdf" data-waiter="'.s("Création en cours").'" data-waiter-timeout="8" class="btn btn-primary">';
 			$h .= \Asset::icon('file-pdf').' '.s("PDF");
 		$h .= '</a> ';
 

@@ -102,7 +102,6 @@ class Batch {
 				if(test('post') || test('get')) {
 
 					let ids = [];
-
 					selectionFiltered.forEach(node => {
 						ids[ids.length] = ['ids[]', node.value];
 					});

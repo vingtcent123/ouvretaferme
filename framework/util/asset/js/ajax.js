@@ -11,6 +11,7 @@ Ajax.Query = class {
 	fetchMethod = 'POST';
 	fetchUrl;
 	fetchBody;
+	fetchDownload = null;
 
 	static elementsLocked = { };
 
@@ -49,6 +50,11 @@ Ajax.Query = class {
 
 	url(url) {
 		this.fetchUrl = url;
+		return this;
+	};
+
+	download(fileName) {
+		this.fetchDownload = fileName;
 		return this;
 	};
 
@@ -159,9 +165,35 @@ Ajax.Query = class {
 
 				if(response.ok) {
 
-					response
-						.text()
-						.then(text => this.ok(text, resolve, reject))
+					if(this.fetchDownload) {
+
+						response
+							.blob()
+							.then( blob => {
+
+								const url = URL.createObjectURL(blob);
+								const a = document.createElement("a");
+								a.href = url;
+								a.download = this.fetchDownload;
+
+								document.body.appendChild(a);
+
+								a.click();
+
+								URL.revokeObjectURL(url);
+								document.body.removeChild(a);
+
+								resolve(blob);
+
+							});
+
+					} else {
+
+						response
+							.text()
+							.then(text => this.ok(text, resolve, reject))
+
+					}
 
 				} else {
 
@@ -1448,6 +1480,11 @@ document.delegateEventListener('click', '[data-ajax]', function(e) {
 	}
 
 	const object = new className(this);
+
+	if(this.dataset.ajaxDownload) {
+		object.download(this.dataset.ajaxDownload);
+	}
+
 	const enable = startWaiter(this);
 
 	switch(this.dataset.ajaxMethod) {
@@ -1576,9 +1613,18 @@ document.delegateEventListener('click', 'a[href]', function(e) {
 
 	e.preventDefault();
 
-	new Ajax.Navigation(this)
+	const object = new Ajax.Navigation(this);
+
+	const enable = startWaiter(node);
+
+	if(this.dataset.ajaxDownload) {
+		object.download(this.dataset.ajaxDownload);
+	}
+
+	object
 		.url(href)
-		.fetch();
+		.fetch()
+		.then(() => enable(), () => enable());
 
 });
 

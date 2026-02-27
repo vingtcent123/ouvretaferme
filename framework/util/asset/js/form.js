@@ -18,6 +18,10 @@ function submitAjaxForm(form, submitter) {
 		eval(form.getAttribute('data-ajax-class')) :
 		Ajax.Navigation;
 
+	if(form.dataset.ajaxDownload) {
+		object.download(form.dataset.ajaxDownload);
+	}
+
 	const body = form.form();
 	let url = form.getAttribute('data-ajax-form');
 

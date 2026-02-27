@@ -690,8 +690,10 @@ function startWaiter(target) {
 		};
 	}
 
+	let original = null;
+
 	if(target.dataset.waiter !== '') {
-		target.dataset.original = target.innerHTML;
+		original = target.innerHTML;
 		target.innerHTML = target.dataset.waiter;
 	}
 
@@ -705,9 +707,8 @@ function startWaiter(target) {
 
 	return () => {
 
-		if(target.dataset.waiter !== '') {
-			target.innerHTML = target.dataset.original;
-			target.dataset.original = null;
+		if(original !== null) {
+			target.innerHTML = original;
 		}
 
 		target.matches('[type="submit"]') ?
@@ -719,25 +720,12 @@ function startWaiter(target) {
 
 }
 
-document.delegateEventListener('click', '[data-waiter]:not([type="submit"]):not([data-ajax])', function(e) {
-
-	// Sera traité dans le [data-confirm]
-	if(this.getAttribute('data-confirm') === null) {
-		startWaiter(this);
-	}
-
-});
-
 document.delegateEventListener('click', '[data-confirm]', function(e) {
 
 	if(confirm(this.getAttribute('data-confirm')) === false) {
 
 		e.preventDefault();
 		e.stopImmediatePropagation();
-
-	} else if(this.getAttribute('data-waiter') !== null) {
-
-		startWaiter(this);
 
 	}
 
