@@ -3,33 +3,6 @@ namespace shop;
 
 class DepartmentUi {
 
-	public function __construct() {
-
-		\Asset::css('shop', 'department.css');
-
-	}
-
-	public static function getVignette(Department $eDepartment, string $size): string {
-
-		\Asset::css('shop', 'department.css');
-
-		$eDepartment->expects(['icon']);
-
-		$h = '<div class="department-vignette" style="'.\media\MediaUi::getSquareCss($size).';">';
-
-		if(str_starts_with($eDepartment['icon'], 'bs-')) {
-			$h .= \Asset::icon(substr($eDepartment['icon'], 3), ['style' => 'width: 90%; height: 90%']);
-		} else {
-			$h .= '<svg width="100%" height="100%"><use xlink:href="'.\Asset::getPath('shop', 'departments.svg', 'image').'#'.strtolower($eDepartment['icon']).'"/></svg>';
-		}
-
-		$h .= '</div>';
-
-		return $h;
-
-
-	}
-
 	public function getManage(\shop\Shop $eShop, \Collection $cDepartment): string {
 
 		if($cDepartment->empty()) {
@@ -73,7 +46,7 @@ class DepartmentUi {
 						$h .= '<b>'.$eDepartment['position'].'.</b>';
 					$h .= '</td>';
 					$h .= '<td class="td-min-content">';
-						$h .= self::getVignette($eDepartment, '2.5rem');
+						$h .= \selling\CategoryUi::getVignette($eDepartment, '2.5rem');
 					$h .= '</td>';
 					$h .= '<td>';
 						$h .= $eDepartment->quick('name', encode($eDepartment['name']));
@@ -168,26 +141,7 @@ class DepartmentUi {
 		switch($property) {
 
 			case 'icon' :
-				$d->field = function(\util\FormUi $form, Department $e) {
-
-					$selectedIcon = $e->empty() ? NULL : $e['icon'];
-
-					$h = '<div class="department-vignette-wrapper">';
-
-						foreach(Department::getIcons() as $icon) {
-
-							$h .= '<label class="department-vignette-icon">';
-								$h .= DepartmentUi::getVignette(new Department(['icon' => $icon]), '3rem');
-								$h .= $form->inputRadio('icon', $icon, selectedValue: $selectedIcon, attributes: ['class' => 'hide']);
-							$h .= '</label>';
-
-						}
-
-					$h .= '</div>';
-
-					return $h;
-
-				};
+				$d->field = new \selling\CategoryUi()->getCategoryBuild();
 				break;
 
 		}

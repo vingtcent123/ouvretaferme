@@ -12,7 +12,7 @@ document.delegateEventListener('click', '#shop-basket-point div.point-place-wrap
 
 document.addEventListener('scroll', function() {
 
-	BasketManage.scrollDepartment();
+	BasketManage.scrollMenuItem();
 
 });
 
@@ -22,82 +22,82 @@ class BasketManage {
 	static version = 'v5';
 	static json = null;
 
-	static clickDepartment(target) {
+	static clickMenu(target) {
 
 		const mainNavHeight = window.matchMedia('(min-height: 768px) and (min-width: 768px)').matches ?
 			parseFloat(window.getComputedStyle(document.body).getPropertyValue('--nav-main')) * rem() :
 			0;
-		const departmentsListHeight = parseInt(window.getComputedStyle(qs('#product-department-list')).height);
+		const departmentsListHeight = parseInt(window.getComputedStyle(qs('#shop-menu-list')).height);
 
-		const destination = qs('.product-department-element[data-department="'+ target.dataset.department +'"]');
+		const destination = qs('.shop-menu-element[data-menu="'+ target.dataset.menu +'"]');
 
 		window.scrollTo({
 			left: 0,
 			top: destination.getBoundingClientRect().top + window.scrollY - departmentsListHeight - mainNavHeight - 1 * rem()
 		});
 
-		setTimeout(() => this.selectDepartment(target), 10);
+		setTimeout(() => this.selectMenuItem(target), 10);
 
 	}
 
-	static scrollDepartment() {
+	static scrollMenuItem() {
 
-		const departmentsList = qs('#product-department-list');
+		const itemsList = qs('#shop-menu-list');
 
-		if(departmentsList === null) {
+		if(itemsList === null) {
 			return;
 		}
 
-		const stickyTop = parseInt(window.getComputedStyle(departmentsList).top);
-		const currentTop = departmentsList.getBoundingClientRect().top;
-		const currentBottom = departmentsList.getBoundingClientRect().bottom + 1 * rem();
+		const stickyTop = parseInt(window.getComputedStyle(itemsList).top);
+		const currentTop = itemsList.getBoundingClientRect().top;
+		const currentBottom = itemsList.getBoundingClientRect().bottom + 1 * rem();
 		const isSticky = Math.abs(currentTop - stickyTop) <= 1;
 
 		if(isSticky) {
 
-			if(departmentsList.classList.contains('product-department-list-sticky') === false) {
-				departmentsList.classList.add('product-department-list-sticky');
+			if(itemsList.classList.contains('shop-menu-list-sticky') === false) {
+				itemsList.classList.add('shop-menu-list-sticky');
 			}
 
 		} else {
 
-			if(departmentsList.classList.contains('product-department-list-sticky')) {
-				departmentsList.classList.remove('product-department-list-sticky');
+			if(itemsList.classList.contains('shop-menu-list-sticky')) {
+				itemsList.classList.remove('shop-menu-list-sticky');
 			}
 
-			departmentsList.qsa('[data-department]', node => node.classList.remove('selected'));
+			itemsList.qsa('[data-menu]', node => node.classList.remove('selected'));
 
 			return;
 
 		}
 
 		let minBounds = 999999999;
-		let minDepartment = null;
+		let minItem = null;
 
-		qsa('[data-department]', department => {
+		qsa('[data-menu]', item => {
 
-			const bounds = department.getBoundingClientRect();
+			const bounds = item.getBoundingClientRect();
 
 			if(bounds.top < currentBottom && bounds.bottom > currentBottom) {
 
 				minBounds = bounds.top;
-				minDepartment = department;
+				minItem = item;
 
 			}
 
 		});
 
-		if(minDepartment) {
-			this.selectDepartment(minDepartment);
+		if(minItem) {
+			this.selectMenuItem(minItem);
 		}
 
 	}
 
-	static selectDepartment(target) {
+	static selectMenuItem(target) {
 
-		qsa('#product-department-list [data-department]', node => {
+		qsa('#shop-menu-list [data-menu]', node => {
 
-			if(node.dataset.department === target.dataset.department) {
+			if(node.dataset.menu === target.dataset.menu) {
 				node.classList.add('selected');
 			} else {
 				node.classList.remove('selected')

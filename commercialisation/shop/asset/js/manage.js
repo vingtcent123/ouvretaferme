@@ -57,13 +57,14 @@ class ShopManage {
             .setArgument('customColor', form.qs('[name="customColor"]').value)
             .setArgument('customBackground', form.qs('[name="customBackground"]').value)
             .setArgument('customFont', form.qs('[name="customFont"]').value)
-            .setArgument('customTitleFont', form.qs('[name="customTitleFont"]').value);
+            .setArgument('customTitleFont', form.qs('[name="customTitleFont"]').value)
+            .setArgument('customTabs', form.qs('[name="customTabs"]:checked').value);
         iframe.src = newSrc;
     }
 
 }
 
-document.delegateEventListener('input', '#shop-customize [name="customBackground"], #shop-customize [name="customColor"]', () => {
+document.delegateEventListener('input', '#shop-customize [name="customBackground"], #shop-customize [name="customColor"], #shop-customize [name="customTabs"]', () => {
 
     ShopManage.updatePreview();
 

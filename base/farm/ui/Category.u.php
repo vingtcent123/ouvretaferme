@@ -27,8 +27,6 @@ class CategoryUi {
 		$eCategory = $e['category'];
 		$eCategory->expects(['name']);
 
-		\Asset::css('farm', 'category.css');
-
 		$h = '<span class="category-text">';
 
 		if($ePlant->empty()) {

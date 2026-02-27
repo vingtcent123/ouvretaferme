@@ -19,12 +19,6 @@ class Department extends DepartmentElement {
 
 	}
 
-	public static function getIcons(): array {
-
-		return ['fruit', 'legume', 'lait', 'vin', 'biere', 'oeuf', 'fromage', 'champignon', 'plant', 'pain', 'farine', 'bs-flower1', 'miel', 'pot', 'viande', 'charcuterie', 'poisson', 'tisane', 'savon', 'panier', 'bs-box', 'bs-heart', 'bs-star', 'bs-list', 'bs-plus', 'bs-percent'];
-
-	}
-
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
@@ -32,7 +26,7 @@ class Department extends DepartmentElement {
 
 				return (
 					$icon == NULL or
-					in_array($icon, Department::getIcons())
+					in_array($icon, \selling\Category::getIcons())
 				);
 
 			});

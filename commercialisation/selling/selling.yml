@@ -1,6 +1,7 @@
 Category:
   id: serial32
   name: text8(1, null) @collate(general)
+  icon: ?text8(1, 50) @charset(ascii)
   farm: ?farm\Farm
   position: int8(0, null)
   createdAt: datetime = SPECIAL(now)

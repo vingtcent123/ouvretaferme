@@ -4,11 +4,11 @@ namespace selling;
 class CategoryLib extends CategoryCrud {
 
 	public static function getPropertiesCreate(): array {
-		return ['name'];
+		return ['name', 'icon'];
 	}
 
 	public static function getPropertiesUpdate(): array {
-		return ['name'];
+		return ['name', 'icon'];
 	}
 
 	public static function getByFarm(\farm\Farm $eFarm, mixed $id = NULL, ?string $index = NULL): \Collection|Category {

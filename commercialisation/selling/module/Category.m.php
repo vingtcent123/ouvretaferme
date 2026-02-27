@@ -42,13 +42,14 @@ class CategoryModel extends \ModuleModel {
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
 			'name' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'cast' => 'string'],
+			'icon' => ['text8', 'min' => 1, 'max' => 50, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'null' => TRUE, 'cast' => 'element'],
 			'position' => ['int8', 'min' => 0, 'max' => NULL, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'farm', 'position', 'createdAt'
+			'id', 'name', 'icon', 'farm', 'position', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -89,6 +90,10 @@ class CategoryModel extends \ModuleModel {
 
 	public function whereName(...$data): CategoryModel {
 		return $this->where('name', ...$data);
+	}
+
+	public function whereIcon(...$data): CategoryModel {
+		return $this->where('icon', ...$data);
 	}
 
 	public function whereFarm(...$data): CategoryModel {

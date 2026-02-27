@@ -371,7 +371,7 @@ class AnalyzeUi {
 					$h .= '</div>';
 
 					$h .= '<div class="tab-panel" data-tab="analyze-category">';
-						$h .= '<div class="analyze-working-time-categorys analyze-chart-table">';
+						$h .= '<div class="analyze-working-time-categories analyze-chart-table">';
 							$h .= $this->getCategoryTimesheetTable($eFarm, $year, $eUser, $cTimesheetCategory);
 							$h .= $this->getCategoryPie($cTimesheetCategory);
 						$h .= '</div>';

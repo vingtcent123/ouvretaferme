@@ -177,6 +177,13 @@ class Shop extends ShopElement {
 
 	}
 
+	public function acceptCustomTabs(): bool {
+		return (
+			($this->isShared() === FALSE) or
+			($this->isShared() === TRUE and $this['sharedGroup'] === Shop::DEPARTMENT)
+		);
+	}
+
 	public function hasSharedKey(): bool {
 		return ($this['sharedHash'] !== NULL);
 	}

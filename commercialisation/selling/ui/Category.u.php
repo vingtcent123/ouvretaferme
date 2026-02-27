@@ -3,6 +3,31 @@ namespace selling;
 
 class CategoryUi {
 
+	public static function getVignette(Category|\shop\Department $eCategory, string $size): string {
+
+		\Asset::css('selling', 'category.css');
+
+		$eCategory->expects(['icon']);
+
+		if($eCategory['icon'] === NULL) {
+			return '';
+		}
+
+		$h = '<div class="category-vignette" style="'.\media\MediaUi::getSquareCss($size).';">';
+
+		if(str_starts_with($eCategory['icon'], 'bs-')) {
+			$h .= \Asset::icon(substr($eCategory['icon'], 3), ['style' => 'width: 90%; height: 90%']);
+		} else {
+			$h .= '<svg width="100%" height="100%"><use xlink:href="'.\Asset::getPath('selling', 'categories.svg', 'image').'#'.strtolower($eCategory['icon']).'"/></svg>';
+		}
+
+		$h .= '</div>';
+
+		return $h;
+
+
+	}
+
 	public function getManage(\farm\Farm $eFarm, \Collection $cCategory): string {
 
 		$h = '';
@@ -23,6 +48,7 @@ class CategoryUi {
 						if($cCategory->count() >= 2 ) {
 							$h .= '<th colspan="2">'.s("Position").'</th>';
 						}
+						$h .= '<th></th>';
 						$h .= '<th>'.self::p('name')->label.'</th>';
 						$h .= '<th></th>';
 					$h .= '</tr>';
@@ -55,6 +81,9 @@ class CategoryUi {
 							$h .= '</td>';
 
 						}
+						$h .= '<td class="td-min-content">';
+							$h .= self::getVignette($eCategory, '2.5rem');
+						$h .= '</td>';
 						$h .= '<td>';
 							$h .= encode($eCategory['name']);
 						$h .= '</td>';
@@ -91,7 +120,7 @@ class CategoryUi {
 			$h .= $form->asteriskInfo();
 
 			$h .= $form->hidden('farm', $eFarm['id']);
-			$h .= $form->dynamicGroups($eCategory, ['name*']);
+			$h .= $form->dynamicGroups($eCategory, ['name*', 'icon']);
 			$h .= $form->group(
 				content: $form->submit(s("Ajouter"))
 			);
@@ -114,7 +143,7 @@ class CategoryUi {
 		$h = $form->openAjax('/selling/category:doUpdate');
 
 			$h .= $form->hidden('id', $eCategory['id']);
-			$h .= $form->dynamicGroups($eCategory, ['name']);
+			$h .= $form->dynamicGroups($eCategory, ['name', 'icon']);
 			$h .= $form->group(
 				content: $form->submit(s("Enregistrer"))
 			);
@@ -130,14 +159,52 @@ class CategoryUi {
 
 	}
 
+	public function getCategoryBuild(): \Closure {
+
+		return function(\util\FormUi $form, Category|\shop\Department $e) {
+
+			\Asset::css('selling', 'category.css');
+
+			$selectedIcon = $e->empty() ? NULL : $e['icon'];
+
+			$h = '<div class="category-vignette-wrapper">';
+
+				$h .= '<label class="category-vignette-icon">';
+					$h .= s("Aucune");
+					$h .= $form->inputRadio('icon', '', selectedValue: $selectedIcon, attributes: ['class' => 'hide']);
+				$h .= '</label>';
+
+				foreach(Category::getIcons() as $icon) {
+
+					$h .= '<label class="category-vignette-icon">';
+						$h .= \selling\CategoryUi::getVignette(new Category(['icon' => $icon]), '3rem');
+						$h .= $form->inputRadio('icon', $icon, selectedValue: $selectedIcon, attributes: ['class' => 'hide']);
+					$h .= '</label>';
+
+				}
+
+			$h .= '</div>';
+
+			return $h;
+
+		};
+
+	}
+
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Category::model()->describer($property, [
 			'name' => s("Nom de la catégorie"),
+			'icon' => s("Icône de la catégorie"),
 			'fqn' => s("Nom qualifié")
 		]);
 
+
 		switch($property) {
+
+			case 'icon' :
+				$d->field = new \selling\CategoryUi()->getCategoryBuild();
+				break;
 
 		}
 

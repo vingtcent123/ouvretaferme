@@ -197,7 +197,7 @@ class ShareUi {
 
 				if($eRange->canWrite()) {
 					if($eRange['department']->notEmpty()) {
-						$h .= DepartmentUi::getVignette($cDepartment[$eRange['department']['id']], '1.75rem').'  ';
+						$h .= \selling\CategoryUi::getVignette($cDepartment[$eRange['department']['id']], '1.75rem').'  ';
 					}
 
 					$h .= '<a data-dropdown="bottom-start" class="shop-share-range-department dropdown-toggle">';
@@ -205,7 +205,7 @@ class ShareUi {
 					$h .= '</a>';
 					$h .= '<div class="dropdown-list bg-secondary">';
 						foreach($cDepartment as $eDepartment) {
-							$h .= '<a data-ajax="/shop/range:doUpdateDepartment" post-id="'.$eRange['id'].'" post-department="'.$eDepartment['id'].'" class="dropdown-item '.(($eRange['department']->notEmpty() and $eDepartment['id'] === $eRange['department']['id']) ? 'selected' : '').'">'.DepartmentUi::getVignette($eDepartment, '2rem').'  '.encode($eDepartment['name']).'</a>';
+							$h .= '<a data-ajax="/shop/range:doUpdateDepartment" post-id="'.$eRange['id'].'" post-department="'.$eDepartment['id'].'" class="dropdown-item '.(($eRange['department']->notEmpty() and $eDepartment['id'] === $eRange['department']['id']) ? 'selected' : '').'">'.\selling\CategoryUi::getVignette($eDepartment, '2rem').'  '.encode($eDepartment['name']).'</a>';
 						}
 						$h .= '<a data-ajax="/shop/range:doUpdateDepartment" post-id="'.$eRange['id'].'" post-department="" class="dropdown-item '.($eRange['department']->empty() ? 'selected' : '').'"><i>'.s("Pas de rayonnage").'</i></a>';
 					$h .= '</div>';

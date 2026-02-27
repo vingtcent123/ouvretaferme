@@ -595,6 +595,10 @@ class ShopUi {
 
 		$h .= $form->dynamicGroups($eShop, ['customColor', 'customBackground', 'customFont', 'customTitleFont']);
 
+		if($eShop->acceptCustomTabs()) {
+			$h .= $form->dynamicGroup($eShop, 'customTabs');
+		}
+
 		$h .= $form->group(
 				content: $form->submit(s("Enregistrer les modifications"))
 		);
@@ -1258,6 +1262,12 @@ class ShopUi {
 			'customColor' => s("Couleur contrastante"),
 			'customFont' => s("Police pour le texte"),
 			'customTitleFont' => s("Police pour le titre principal des pages"),
+			'customTabs' => fn($eShop) => $eShop->isShared() ?
+					match($eShop['sharedGroup']) {
+							Shop::FARM => s("Afficher un menu pour naviguer entre les fermes"),
+							Shop::DEPARTMENT => s("Afficher un menu pour naviguer entre les rayons")
+					} :
+					s("Afficher un menu pour naviguer entre les catégories"),
 			'emailNewSale' => fn($eShop) => $eShop->isShared() ? s("Envoyer à chaque producteur un e-mail à chaque nouvelle commande ou modification de commande d'un client") : s("Recevoir un e-mail à chaque nouvelle commande ou modification de commande d'un de vos clients"),
 			'emailEndDate' => fn($eShop) => $eShop->isShared() ? s("Envoyer à chaque producteur un e-mail de synthèse lorsque les prises de commande d'une livraison se terminent") : s("Recevoir un e-mail de synthèse lorsque les prises de commande d'une livraison se terminent")
 		]);
@@ -1479,6 +1489,10 @@ class ShopUi {
 				$d->field = 'select';
 				$d->placeholder = s("Par défaut");
 				$d->values = \website\WebsiteSetting::CUSTOM_TITLE_FONTS;
+				break;
+
+			case 'customTabs':
+				$d->field = 'yesNo';
 				break;
 
 			case 'embedUrl':

@@ -164,6 +164,15 @@ END;
 		'/shop/public/{fqn}/{date}',
 	], function($data) {
 
+		if(
+			$data->eShop->canWrite() and
+			get_exists('customize')
+		) {
+
+			$data->eShop['customTabs'] = GET('customTabs', 'bool');
+
+		}
+
 		$data->eCustomer = \selling\CustomerLib::getByUserAndFarm($data->eUserOnline, $data->eShop['farm']);
 
 		if($data->eShop->canCustomerRead($data->eCustomer) === FALSE) {

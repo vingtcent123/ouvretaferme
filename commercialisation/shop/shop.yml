@@ -12,7 +12,7 @@ Catalog:
 
 Department:
   id: serial32
-  icon: text8(1, 50) @charset(ascii)
+  icon: ?text8(1, 50) @charset(ascii)
   name: text8(1, 50) @collate(general)
   shop: shop\Shop
   catalogs: ?json = PHP([])
@@ -188,6 +188,7 @@ Shop:
   customBackground: ?color
   customTitleFont: ?text8
   customFont: ?text8
+  customTabs: bool = FALSE
   embedOnly: bool = FALSE
   embedUrl: ?url
   approximate: bool = FALSE

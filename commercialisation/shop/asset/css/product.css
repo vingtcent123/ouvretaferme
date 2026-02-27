@@ -14,6 +14,9 @@ body:not([data-template~="shop-embedded"]) {
 	color: var(--secondary);
 	font-weight: normal;
 	margin-bottom: 2rem;
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
 }
 
 .shop-title-group-label {
@@ -815,7 +818,7 @@ body:not([data-template~="shop-embedded"]) {
 	text-decoration: line-through;
 }
 
-#product-department-list {
+#shop-menu-list {
 	display: flex;
 	row-gap: 1rem;
 	margin-bottom: 2rem;
@@ -827,20 +830,20 @@ body:not([data-template~="shop-embedded"]) {
 	border-radius: var(--radius);
 }
 
-body[data-template~="shop-embedded"] #product-department-list {
+body[data-template~="shop-embedded"] #shop-menu-list {
 	display: none;
 }
 
-#product-department-list.product-department-list-sticky {
+#shop-menu-list.shop-menu-list-sticky {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 	box-shadow: 1px 1px 1px var(--border);
 }
 
-a.shop-department-item {
+a.shop-menu-item {
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
+	justify-content: end;
 	align-items: center;
 	text-align: center;
 	color: white;
@@ -848,35 +851,35 @@ a.shop-department-item {
 	line-height: 1.2;
 }
 
-a.shop-department-item:hover,
-a.shop-department-item.selected {
+a.shop-menu-item:hover,
+a.shop-menu-item.selected {
 	background-color: #fff2;
 }
 
-a.shop-department-item svg:not(.asset-icon) {
+a.shop-menu-item svg:not(.asset-icon) {
 	stroke: white;
 }
 
-a.shop-department-item:not(:last-child) {
+a.shop-menu-item:not(:last-child) {
 	border-right: 1px solid #fff5;
 }
 
-a.shop-department-item .department-vignette {
+a.shop-menu-item .category-vignette {
 	margin-bottom: 0.5rem;
 }
 
 @media (min-height: 768px) and (min-width: 768px) {
 
-	#product-department-list {
+	#shop-menu-list {
 		padding: 0;
 		top: calc(var(--nav-main));
 	}
 
-	a.shop-department-item {
+	a.shop-menu-item {
 		padding: 0.75rem 1rem;
 	}
 
-	.product-department-list-sticky a.shop-department-item .department-vignette {
+	.shop-menu-list-sticky a.shop-menu-item .category-vignette {
 		width: 2.25rem !important;
 		height: 2.25rem !important;
 		min-width: 2.25rem !important;
@@ -886,20 +889,20 @@ a.shop-department-item .department-vignette {
 
 @media (max-height: 767px), (max-width: 767px) {
 
-	a.shop-department-item {
+	a.shop-menu-item {
 		padding: 0.5rem 0.5rem;
 	}
 
-	#product-department-list {
+	#shop-menu-list {
 		padding: 0;
 		top: 0;
 	}
 
-	.product-department-list-sticky {
+	.shop-menu-list-sticky {
 		font-size: 0.9rem;
 	}
 
-	a.shop-department-item .department-vignette {
+	a.shop-menu-item .category-vignette {
 		width: 1.75rem !important;
 		height: 1.75rem !important;
 		min-width: 1.75rem !important;
@@ -909,7 +912,7 @@ a.shop-department-item .department-vignette {
 
 @media (max-width: 575px) {
 
-	#product-department-list {
+	#shop-menu-list {
 		font-size: 0.85rem;
 		letter-spacing: -0.1px;
 	}

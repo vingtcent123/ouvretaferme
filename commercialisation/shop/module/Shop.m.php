@@ -96,6 +96,7 @@ class ShopModel extends \ModuleModel {
 			'customBackground' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'customTitleFont' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'customFont' => ['text8', 'null' => TRUE, 'cast' => 'string'],
+			'customTabs' => ['bool', 'cast' => 'bool'],
 			'embedOnly' => ['bool', 'cast' => 'bool'],
 			'embedUrl' => ['url', 'null' => TRUE, 'cast' => 'string'],
 			'approximate' => ['bool', 'cast' => 'bool'],
@@ -110,7 +111,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedCategory', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'limitGroups', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedCategory', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'limitGroups', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'customTabs', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -156,6 +157,9 @@ class ShopModel extends \ModuleModel {
 
 			case 'limitGroups' :
 				return [];
+
+			case 'customTabs' :
+				return FALSE;
 
 			case 'embedOnly' :
 				return FALSE;
@@ -389,6 +393,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereCustomFont(...$data): ShopModel {
 		return $this->where('customFont', ...$data);
+	}
+
+	public function whereCustomTabs(...$data): ShopModel {
+		return $this->where('customTabs', ...$data);
 	}
 
 	public function whereEmbedOnly(...$data): ShopModel {

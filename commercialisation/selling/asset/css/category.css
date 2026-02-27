@@ -1,0 +1,50 @@
+.category-vignette-wrapper {
+	display: flex;
+	flex-wrap: wrap;
+	row-gap: 0.5rem;
+}
+
+.category-vignette-wrapper > * {
+	padding: 0.5rem 1rem;
+	border-radius: var(--radius);
+}
+
+label.category-vignette-empty  {
+	display: flex;
+	align-items: center;
+}
+
+label.category-vignette-icon  {
+	transition: all 0.25s;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+}
+
+label.category-vignette-icon:has(> input:checked),
+label.category-vignette-icon:hover {
+	background-color: var(--background-light);
+}
+
+.category-vignette {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	vertical-align: middle;
+}
+
+.tab-item .category-vignette,
+.dropdown-item .category-vignette {
+	margin-right: 0.5rem;
+}
+
+.category-vignette svg:not(.asset-icon) {
+	stroke: var(--text);
+	stroke-width: 5px;
+}
+
+.tab-item.selected .category-vignette svg:not(.asset-icon),
+.tab-item:hover .category-vignette svg:not(.asset-icon),
+.dropdown-item .category-vignette svg:not(.asset-icon) {
+	stroke: white;
+}

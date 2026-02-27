@@ -1137,7 +1137,7 @@ class DateUi {
 		if($cDepartment->notEmpty()) {
 			$h .= '<td class="td-border t-highlight">';
 				if($eRange['department']->notEmpty()) {
-					$h .= DepartmentUi::getVignette($cDepartment[$eRange['department']['id']], '1.75rem').'  '.encode($cDepartment[$eRange['department']['id']]['name']);
+					$h .= \selling\CategoryUi::getVignette($cDepartment[$eRange['department']['id']], '1.75rem').'  '.encode($cDepartment[$eRange['department']['id']]['name']);
 				} else {
 					$h .= '-';
 				}

@@ -30,6 +30,18 @@ class ShopLib extends ShopCrud {
 		};
 	}
 
+	public static function getPropertiesCustomize(Shop $eShop): array {
+
+		$properties = ['customBackground', 'customColor', 'customFont', 'customTitleFont'];
+
+		if($eShop->acceptCustomTabs()) {
+			$properties[] = 'customTabs';
+		}
+
+		return $properties;
+
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm, ?string $type = NULL): \Collection {
 
 		return Shop::model()
@@ -152,6 +164,7 @@ class ShopLib extends ShopCrud {
 				$e['sharedCategory'] = FALSE;
 				$e['hasPayment'] = FALSE;
 				$e['paymentOffline'] = FALSE;
+				$e['customTabs'] = TRUE;
 			}
 
 			Redirect::model()

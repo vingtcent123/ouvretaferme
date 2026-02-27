@@ -41,7 +41,7 @@ class DepartmentModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'icon' => ['text8', 'min' => 1, 'max' => 50, 'charset' => 'ascii', 'cast' => 'string'],
+			'icon' => ['text8', 'min' => 1, 'max' => 50, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'name' => ['text8', 'min' => 1, 'max' => 50, 'collate' => 'general', 'cast' => 'string'],
 			'shop' => ['element32', 'shop\Shop', 'cast' => 'element'],
 			'catalogs' => ['json', 'null' => TRUE, 'cast' => 'array'],

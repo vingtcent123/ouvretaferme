@@ -54,29 +54,16 @@ class ProductUi {
 					break;
 
 				case 'department' :
-
-					$h .= '<div id="product-department-list">';
-
-						foreach($eShop['cDepartment'] as $eDepartment) {
-
-							if($eDate['ccProduct']->offsetExists($eDepartment['id'])) {
-
-								$h .= '<a onclick="BasketManage.clickDepartment(this);" class="shop-department-item" data-department="'.$eDepartment['id'].'">';
-									$h .= DepartmentUi::getVignette($eDepartment, '2.5rem');
-									$h .= encode($eDepartment['name']);
-								$h .= '</a>';
-
-							}
-
-						}
-
-					$h .= '</div>';
-
+					if($eShop['customTabs']) {
+						$h .= $this->getMenuByDepartments($eShop['cDepartment'], $eDate['ccProduct']);
+					}
 					$h .= $this->getListByDepartment($eShop['cDepartment'], $cCategory, $eShop, $eDate, $callback);
-
 					break;
 
 				case 'category' :
+					if($eShop['customTabs']) {
+						$h .= $this->getMenuByCategories($cCategory, $eDate['ccProduct']);
+					}
 					$h .= $this->getListByCategory($cCategory, $eDate['ccProduct'], $callback);
 					break;
 			};
@@ -85,6 +72,72 @@ class ProductUi {
 
 		if($eDate->acceptOrder() and ($canBasket or $isModifying)) {
 			$h .= $this->getOrderedProducts($eShop, $eDate, $cItem, $basketProducts, $isModifying);
+		}
+
+		return $h;
+
+	}
+
+	protected function getMenuByDepartments(\Collection $cDepartment, \Collection $ccProduct): string {
+
+		$h = '';
+
+		if($cDepartment->notEmpty()) {
+
+			$menu = '';
+
+			foreach($cDepartment as $eDepartment) {
+
+				if($ccProduct->offsetExists($eDepartment['id'])) {
+
+					$menu .= '<a onclick="BasketManage.clickMenu(this);" class="shop-menu-item" data-menu="department-'.$eDepartment['id'].'">';
+						$menu .= \selling\CategoryUi::getVignette($eDepartment, '2.5rem');
+						$menu .= encode($eDepartment['name']);
+					$menu .= '</a>';
+
+				}
+
+			}
+
+			if($menu) {
+				$h .= '<div id="shop-menu-list">';
+					$h .= $menu;
+				$h .= '</div>';
+			}
+
+		}
+
+		return $h;
+
+	}
+
+	protected function getMenuByCategories(\Collection $cCategory, \Collection $ccProduct): string {
+
+		$h = '';
+
+		if($cCategory->notEmpty()) {
+
+			$menu = '';
+
+			foreach($cCategory as $eCategory) {
+
+				if($ccProduct->offsetExists($eCategory['id'])) {
+
+					$menu .= '<a onclick="BasketManage.clickMenu(this);" class="shop-menu-item" data-menu="category-'.$eCategory['id'].'">';
+						$menu .= \selling\CategoryUi::getVignette($eCategory, '2.5rem');
+						$menu .= encode($eCategory['name']);
+					$menu .= '</a>';
+
+				}
+
+			}
+
+			if($menu) {
+				$h .= '<div id="shop-menu-list">';
+					$h .= $menu;
+				$h .= '</div>';
+			}
+
 		}
 
 		return $h;
@@ -123,9 +176,9 @@ class ProductUi {
 
 			$h .= '<div data-filter-farm="'.$eFarm['id'].'">';
 				$h .= '<h3 class="shop-title-group">';
-					$h .= encode($eFarm['name']);
+					$h .= '<span>'.encode($eFarm['name']).'</span>';
 					if($eShare['label'] !== NULL) {
-						$h .= '<span class="shop-title-group-label">  /  '.encode($eShare['label']).'</span>';
+						$h .= '<span class="shop-title-group-label">/  '.encode($eShare['label']).'</span>';
 					}
 				$h .= '</h3>';
 
@@ -140,7 +193,7 @@ class ProductUi {
 
 		if($xProduct->offsetExists('')) {
 			$h .= '<div data-filter-farm="">';
-				$h .= '<h3 class="shop-title-group">'.s("Autres producteurs").'</h3>';
+				$h .= '<h3 class="shop-title-group"><span>'.s("Autres producteurs").'</span></h3>';
 				if($eShop['sharedCategory']) {
 					$h .= $this->getListByCategory($cCategory, $xProduct[''], $callback);
 				} else {
@@ -161,7 +214,7 @@ class ProductUi {
 			$xProduct = $eDate['ccProduct'];
 		}
 
-		$h = '<div id="product-department-wrapper">';
+		$h = '<div id="shop-menu-wrapper">';
 
 			foreach($cDepartment as $eDepartment) {
 
@@ -184,9 +237,9 @@ class ProductUi {
 
 				$farms = array_unique($farms);
 
-				$h .= '<div class="product-department-element" data-department="'.$eDepartment['id'].'" data-filter-farm="'.implode(' ', $farms).'">';
+				$h .= '<div class="shop-menu-element" data-menu="department-'.$eDepartment['id'].'" data-filter-farm="'.implode(' ', $farms).'">';
 					$h .= '<h3 class="shop-title-group">';
-						$h .= encode($eDepartment['name']);
+						$h .= \selling\CategoryUi::getVignette($eDepartment, '1.5rem').'<span>'.encode($eDepartment['name']).'</span>';
 					$h .= '</h3>';
 					if($eShop['sharedCategory']) {
 						$h .= $this->getListByCategory($cCategory, $xProduct[$eDepartment['id']], $callback);
@@ -199,7 +252,7 @@ class ProductUi {
 
 			if($xProduct->offsetExists('')) {
 				$h .= '<div>';
-					$h .= '<h3 class="shop-title-group">'.s("Autres").'</h3>';
+					$h .= '<h3 class="shop-title-group"><span>'.s("Autres").'</span></h3>';
 					if($eShop['sharedCategory']) {
 						$h .= $this->getListByCategory($cCategory, $xProduct[''], $callback);
 					} else {
@@ -231,12 +284,15 @@ class ProductUi {
 					continue;
 				}
 
-				$h .= '<h3>'.encode($eCategory['name']).'</h3>';
-				$h .= $callback($ccProduct[$eCategory['id']]);
+				$h .= '<div class="shop-menu-element" data-menu="category-'.$eCategory['id'].'">';
+					$h .= '<h3 class="shop-title-group">'.\selling\CategoryUi::getVignette($eCategory, '1.5rem').'<span>'.encode($eCategory['name']).'</span></h3>';
+					$h .= $callback($ccProduct[$eCategory['id']]);
+				$h .= '</div>';
 
 			}
 
 		}
+
 
 		return $h;
 
@@ -1257,7 +1313,7 @@ class ProductUi {
 		$taxes = $eFarm->getConf('hasVat') ? '<span class="util-annotation">'.\selling\CustomerUi::getTaxes($eCatalog['type']).'</span>' : '';
 		$columns = 2;
 
-		$h = '<div class="util-overflow-md stick-xs">';
+		$h = '<div class="util-overflow-md stick-xs mb-2">';
 			$h .= '<table class="tbody-even td-padding-sm" data-batch="#batch-catalog">';
 				$h .= '<thead>';
 					$h .= '<tr>';
