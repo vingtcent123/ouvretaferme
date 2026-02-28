@@ -214,6 +214,11 @@ new Page()
 		}
 
 		$data->cSale = \selling\SaleLib::getForLabelsByDate($data->eFarm, $data->e, selectItems: TRUE, selectPoint: TRUE);
+
+		if($data->e['shop']['sharedExport'] === \shop\Shop::CUSTOMER) {
+			$data->cSale = \selling\SaleLib::reorderSalesByCustomerForLabels($data->cSale);
+		}
+
 		$data->cItem = \selling\ItemLib::getSummaryByDate($data->eFarm, $data->e);
 
 		$data->template = GET('template', ['grid', 'line'], fn() => throw new NotExpectedAction());

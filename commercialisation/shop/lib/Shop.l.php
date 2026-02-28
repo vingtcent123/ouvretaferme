@@ -22,6 +22,7 @@ class ShopLib extends ShopCrud {
 			if($eShop['shared']) {
 				$properties[] = 'sharedGroup';
 				$properties[] = 'sharedCategory';
+				$properties[] = 'sharedExport';
 				array_delete($properties, 'shipping');
 				array_delete($properties, 'shippingUntil');
 			}

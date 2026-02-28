@@ -192,7 +192,11 @@ class ItemLib extends ItemCrud {
 				'number' => new \Sql('SUM(number)', 'float'),
 				'packaging',
 				'quantity' => new \Sql('SUM(IF(packaging IS NULL, 1, packaging) * number)', 'float'),
-				'product' => ['vignette', 'farm', 'profile'],
+				'product' => [
+					'vignette',
+					'farm' => ['name'],
+					'profile'
+				],
 				'composition',
 				'cItemIngredient' => SaleLib::delegateIngredients($eDate['deliveryDate'], 'product')
 			])

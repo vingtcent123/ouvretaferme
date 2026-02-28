@@ -1133,11 +1133,11 @@ class PdfUi {
 				$h .= '<h1>'.encode($eDate['shop']['name']).'</h1>';
 				$h .= '<h2>'.s("Livraison du {value}", \util\DateUi::numeric($eDate['deliveryDate'])).' | '.p("{value} commande", "{value} commandes", $cSale->count()).'</h2>';
 
-				$h .= $this->getSalesSummary($cItem);
+				$h .= $this->getSalesSummary($cItem, $eDate['shop']['shared']);
 
 			$h .= '</div>';
 
-			$h .= $this->getSalesContent($eDate['farm'], $cSale, $template);
+			$h .= $this->getSalesContent($eDate['farm'], $cSale, $template, $eDate['shop']['shared'], $eDate['shop']['sharedExport'] === \shop\Shop::CUSTOMER);
 
 		$h .= '</div>';
 
@@ -1157,11 +1157,11 @@ class PdfUi {
 
 				$h .= '<h1>'.p("{value} vente", "{value} ventes", $cSale->count()).'</h1>';
 
-				$h .= $this->getSalesSummary($cItem);
+				$h .= $this->getSalesSummary($cItem, FALSE);
 
 			$h .= '</div>';
 
-			$h .= $this->getSalesContent($eFarm, $cSale, $template);
+			$h .= $this->getSalesContent($eFarm, $cSale, $template, FALSE);
 
 		$h .= '</div>';
 
@@ -1180,10 +1180,9 @@ class PdfUi {
 
 	}
 
-	protected function getSalesContent(\farm\Farm $eFarm, \Collection $cSale, string $template): string {
+	protected function getSalesContent(\farm\Farm $eFarm, \Collection $cSale, string $template, bool $shared, bool $groupByCustomer = FALSE): string {
 
 		$items = [];
-		$farms = array_count_values($cSale->getColumnCollection('farm')->getIds());
 
 		foreach($cSale as $eSale) {
 
@@ -1191,7 +1190,7 @@ class PdfUi {
 				$items,
 				$this->getSaleLabel(
 					$eFarm,
-					$eSale, $farms,
+					$eSale, $shared, $groupByCustomer,
 					match($template) {
 						'grid' => TRUE,
 						'line' => FALSE
@@ -1271,7 +1270,7 @@ class PdfUi {
 
 	}
 
-	protected function getSalesSummary(\Collection $cItem): string {
+	protected function getSalesSummary(\Collection $cItem, bool $shared): string {
 
 		$h = '<table class="pdf-sales-summary tr-even">';
 
@@ -1288,6 +1287,9 @@ class PdfUi {
 				foreach($cItem as $eItem) {
 					$h .= '<tr>';
 						$h .= '<td>';
+							if($shared) {
+								$h .= '<div class="font-sm color-muted">'.encode($eItem['product']['farm']['name']).'</div>';
+							}
 							if(
 								$eItem['product']->notEmpty() and
 								$eItem['product']['profile'] === Product::COMPOSITION
@@ -1416,7 +1418,7 @@ class PdfUi {
 
 	}
 
-	public function getSaleLabel(\farm\Farm $eFarm, \selling\Sale $eSale, array $farms, bool $split): array {
+	public function getSaleLabel(\farm\Farm $eFarm, \selling\Sale $eSale, bool $shared, bool $groupByCustomer, bool $split): array {
 
 		if($eSale['ccItem']->empty()) {
 			return [];
@@ -1425,6 +1427,7 @@ class PdfUi {
 		$eCustomer = $eSale['customer'];
 
 		$itemsList = [];
+		$itemsFarms = [];
 
 		$cItemFormated = new \Collection();
 		$nItem = 0;
@@ -1494,6 +1497,7 @@ class PdfUi {
 			$item .= '</div>';
 
 			$itemsList[] = $item;
+			$itemsFarms[] = $eItem['farm'];
 
 		}
 
@@ -1502,7 +1506,7 @@ class PdfUi {
 			\farm\Configuration::GRID_3X3 => 12
 		};
 
-		$itemsChunk = $split ? array_chunk($itemsList, $chunkSize) : [$itemsList];
+		$itemsChunk = $split ? array_chunk($itemsList, $chunkSize, preserve_keys: TRUE) : [$itemsList];
 		$pages = count($itemsChunk);
 
 		$entries = [];
@@ -1511,10 +1515,14 @@ class PdfUi {
 
 			$showComment = ($eSale['shopComment'] !== NULL and $position === 0);
 
+			$name = $shared ?
+				$eCustomer['user']->getName() :
+				$eCustomer->getName();
+
 			$entry = '<div class="pdf-sales-label-item">';
 
 				$entry .= '<div class="pdf-sales-label-customer">';
-					$entry .= '<div '.(mb_strlen($eCustomer->getName()) > 50 ? 'pdf-sales-label-customer-large' : '').'>'.encode($eCustomer->getName()).'</div>';
+					$entry .= '<div '.(mb_strlen($name) > 50 ? 'pdf-sales-label-customer-large' : '').'>'.encode($name).'</div>';
 					if($showComment) {
 						$entry .= '<div class="pdf-sales-label-comment">&laquo; '.encode($eSale['shopComment']).' &raquo;</div>';
 					}
@@ -1529,26 +1537,32 @@ class PdfUi {
 						$entry .= '</div>';
 					}
 
-					$entry .= '<div class="pdf-sales-label-detail">';
-						$entry .= '<div class="pdf-sales-label-detail-title">'.s("Commande").'</div>';
-						$entry .= '<div class="pdf-sales-label-detail-value"><span class="pdf-sales-label-detail-document">'.$eSale['document'].'</span></div>';
-					$entry .= '</div>';
+					if($groupByCustomer === FALSE) {
+						$entry .= '<div class="pdf-sales-label-detail">';
+							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Commande").'</div>';
+							$entry .= '<div class="pdf-sales-label-detail-value"><span class="pdf-sales-label-detail-document">'.$eSale['document'].'</span></div>';
+						$entry .= '</div>';
+					}
 
 					$entry .= '<div class="pdf-sales-label-detail">';
 						$entry .= '<div class="pdf-sales-label-detail-title">'.s("Articles").'</div>';
 						$entry .= '<div class="pdf-sales-label-detail-value">'.$nItem.'</div>';
 					$entry .= '</div>';
 
-					if(in_array($eSale['preparationStatus'], [Sale::DRAFT, Sale::CANCELED, Sale::BASKET])) {
+					if($groupByCustomer === FALSE) {
 
-						\Asset::css('selling', 'sale.css');
+						if(in_array($eSale['preparationStatus'], [Sale::DRAFT, Sale::CANCELED, Sale::BASKET])) {
 
-						$entry .= '<div class="pdf-sales-label-detail">';
-							$entry .= '<div class="pdf-sales-label-detail-title">'.s("État").'</div>';
-							$entry .= '<div class="pdf-sales-label-detail-value">';
-								$entry .= '<span class="btn sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
+							\Asset::css('selling', 'sale.css');
+
+							$entry .= '<div class="pdf-sales-label-detail">';
+								$entry .= '<div class="pdf-sales-label-detail-title">'.s("État").'</div>';
+								$entry .= '<div class="pdf-sales-label-detail-value">';
+									$entry .= '<span class="btn sale-preparation-status-'.$eSale['preparationStatus'].'-button">'.SaleUi::p('preparationStatus')->values[$eSale['preparationStatus']].'</span>';
+								$entry .= '</div>';
 							$entry .= '</div>';
-						$entry .= '</div>';
+
+						}
 
 					}
 
@@ -1561,14 +1575,21 @@ class PdfUi {
 							$entry .= s("Total");
 						$entry .= '</div>';
 						$entry .= '<div class="pdf-sales-label-detail-value">';
-							$entry .= \util\TextUi::money($eSale['priceIncludingVat']);
-							if($eSale['discount']) {
+
+							$entry .= \util\TextUi::money(
+								$groupByCustomer ?
+									$eSale['cSale']->sum('priceIncludingVat') :
+									$eSale['priceIncludingVat']
+							);
+
+							if($groupByCustomer === FALSE and $eSale['discount']) {
 								$entry .= '<br/><small style="font-weight: normal">'.s("(avec remise de {value} %)", $eSale['discount']).'</small>';
 							}
+
 						$entry .= '</div>';
 					$entry .= '</div>';
 
-					if($eSale['cPayment']->notEmpty()) {
+					if($groupByCustomer === FALSE and $eSale['cPayment']->notEmpty()) {
 						$entry .= '<div class="pdf-sales-label-detail">';
 							$entry .= '<div class="pdf-sales-label-detail-title">'.s("Paiement").'</div>';
 							$entry .= '<div class="pdf-sales-label-detail-value">';
@@ -1596,13 +1617,23 @@ class PdfUi {
 
 				$entry .= '<div class="pdf-sales-label-content pdf-sales-label-content-'.count($items).'">';
 
-					if(count($farms) > 1) {
+					$eFarmPrevious = new \farm\Farm();
 
-						$entry .= '<div class="pdf-sales-label-content-farm">'.encode($eSale['farm']['name']).'</div>';
+					foreach($items as $key => $item) {
+
+						$eFarmCurrent = $itemsFarms[$key];
+
+						if(
+							$shared and
+							$eFarmPrevious->is($eFarmCurrent) === FALSE
+						) {
+							$entry .= '<div class="pdf-sales-label-content-farm">'.encode($eFarmCurrent['name']).'</div>';
+							$eFarmPrevious = $eFarmCurrent;
+						}
+
+						$entry .= $item;
 
 					}
-
-					$entry .= implode('', $items);
 				$entry .= '</div>';
 
 			$entry .= '</div>';

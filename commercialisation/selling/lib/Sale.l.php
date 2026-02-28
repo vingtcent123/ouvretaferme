@@ -186,6 +186,44 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function reorderSalesByCustomerForLabels(\Collection $cSale): \Collection {
+
+		$cSaleOutput = new \Collection();
+
+		foreach($cSale as $eSale) {
+
+			$eUser = $eSale['customer']['user'];
+
+			if($cSaleOutput->offsetExists($eUser['id'])) {
+
+				$eSaleOutput = $cSaleOutput[$eUser['id']];
+
+				foreach($eSale['ccItem'] as $key => $cItem) {
+
+					if($key === '') {
+						$eSaleOutput['ccItem'][NULL]->mergeCollection($cItem);
+					} else {
+						$eSaleOutput['ccItem'][$key] = $cItem;
+					}
+
+				}
+
+			} else {
+
+				$cSaleOutput[$eUser['id']] = (clone $eSale)->merge([
+					'cSale' => new \Collection()
+				]);
+
+			}
+
+			$cSaleOutput[$eUser['id']]['cSale'][] = $eSale;
+
+		}
+
+		return $cSaleOutput;
+
+	}
+
 	public static function fillItems(\Collection $cSale): void {
 
 		Sale::model()

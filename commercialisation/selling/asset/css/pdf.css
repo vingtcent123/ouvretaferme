@@ -582,6 +582,10 @@ table.pdf-sales-summary {
 	text-transform: uppercase;
 }
 
+.pdf-sales-label-content-farm:not(:first-child) {
+	margin-top: 0.15cm;
+}
+
 .pdf-sales-label-content-value {
 	display: inline-block;
 	background-color: white;

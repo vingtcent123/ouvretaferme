@@ -162,6 +162,7 @@ Shop:
   type: enum(PRIVATE, PRO)
   shared: bool
   sharedGroup: ?enum(FARM, DEPARTMENT, PRODUCT)
+  sharedExport: ?enum(SALE, CUSTOMER)
   sharedCategory: ?bool
   sharedHash: ?text8
   sharedHashExpiresAt: ?date

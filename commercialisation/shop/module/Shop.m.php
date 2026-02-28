@@ -14,6 +14,9 @@ abstract class ShopElement extends \Element {
 	const DEPARTMENT = 'department';
 	const PRODUCT = 'product';
 
+	const SALE = 'sale';
+	const CUSTOMER = 'customer';
+
 	const FREQUENCY = 'frequency';
 	const ALWAYS = 'always';
 
@@ -76,6 +79,7 @@ class ShopModel extends \ModuleModel {
 			'type' => ['enum', [\shop\Shop::PRIVATE, \shop\Shop::PRO], 'cast' => 'enum'],
 			'shared' => ['bool', 'cast' => 'bool'],
 			'sharedGroup' => ['enum', [\shop\Shop::FARM, \shop\Shop::DEPARTMENT, \shop\Shop::PRODUCT], 'null' => TRUE, 'cast' => 'enum'],
+			'sharedExport' => ['enum', [\shop\Shop::SALE, \shop\Shop::CUSTOMER], 'null' => TRUE, 'cast' => 'enum'],
 			'sharedCategory' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'sharedHash' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'sharedHashExpiresAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
@@ -119,7 +123,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedCategory', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'limitGroups', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'customTabs', 'customDesign', 'embedOnly', 'embedUrl', 'approximate', 'productInput', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedExport', 'sharedCategory', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'limitGroups', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'customTabs', 'customDesign', 'embedOnly', 'embedUrl', 'approximate', 'productInput', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -213,6 +217,9 @@ class ShopModel extends \ModuleModel {
 			case 'sharedGroup' :
 				return ($value === NULL) ? NULL : (string)$value;
 
+			case 'sharedExport' :
+				return ($value === NULL) ? NULL : (string)$value;
+
 			case 'opening' :
 				return ($value === NULL) ? NULL : (string)$value;
 
@@ -303,6 +310,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereSharedGroup(...$data): ShopModel {
 		return $this->where('sharedGroup', ...$data);
+	}
+
+	public function whereSharedExport(...$data): ShopModel {
+		return $this->where('sharedExport', ...$data);
 	}
 
 	public function whereSharedCategory(...$data): ShopModel {

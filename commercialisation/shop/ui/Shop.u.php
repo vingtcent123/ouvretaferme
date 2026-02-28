@@ -297,8 +297,6 @@ class ShopUi {
 		if($eShop['shared']) {
 			array_delete($update, 'shipping');
 			array_delete($update, 'shippingUntil');
-			$update[] = 'sharedGroup';
-			$update[] = 'sharedCategory';
 		}
 
 		$h .= $form->dynamicGroups($eShop, $update, [
@@ -309,6 +307,12 @@ class ShopUi {
 				$d->group['class'] = 'hide';
 			}
 		]);
+
+
+		$h .= '<div class="util-block bg-background-light">';
+			$h .= $form->group(content: '<h4>'.s("Paramétrage spécifique à la boutique collective").'</h4>');
+			$h .= $form->dynamicGroups($eShop, ['sharedGroup', 'sharedCategory', 'sharedExport']);
+		$h .= '</div>';
 
 		$h .= $form->group(
 			s("Limiter l'accès à cette boutique à certains clients seulement").\util\FormUi::info(s("Seuls les clients que vous aurez choisis pourront accéder à cette boutique.")),
@@ -1289,6 +1293,7 @@ class ShopUi {
 			'paymentMethod' => s("Moyen de paiement"),
 			'sharedGroup' => s("Groupage des produits sur la boutique"),
 			'sharedCategory' => s("Conserver les catégories créées par les producteurs à l'affichage des produits"),
+			'sharedExport' => s("Génération des étiquettes lors de l'export des ventes au format PDF"),
 			'orderMin' => s("Montant minimal de commande"),
 			'shipping' => s("Frais de livraison par commande"),
 			'shippingUntil' => s("Montant minimal de commande au delà duquel les frais de livraison sont offerts"),
@@ -1580,6 +1585,17 @@ class ShopUi {
 					Shop::FARM => s("Grouper par producteur"),
 					Shop::DEPARTMENT => s("Grouper par rayon"),
 					Shop::PRODUCT => s("Ne pas grouper les produits")
+				];
+				$d->field = 'select';
+				$d->attributes = [
+					'mandatory' => TRUE
+				];
+				break;
+
+			case 'sharedExport' :
+				$d->values = [
+					Shop::SALE => s("Dissocier les producteurs sur plusieurs étiquettes pour chaque vente"),
+					Shop::CUSTOMER => s("Grouper les producteurs sur une même étiquette pour chaque vente")
 				];
 				$d->field = 'select';
 				$d->attributes = [
