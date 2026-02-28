@@ -80,13 +80,17 @@ class SaleLib {
 
 	}
 
+	public static function getValidStatuses(): array {
+		return [\selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED];
+	}
+
 	public static function getByCustomersForDate(Shop $eShop, Date $eDate, \Collection $cCustomer, ?array $sales = NULL): \Collection {
 
 		if($cCustomer->empty()) {
 			return new \Collection();
 		}
 
-		$statuses = [\selling\Sale::BASKET, \selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED];
+		$statuses = self::getValidStatuses();
 
 		if($eDate['deliveryDate'] === NULL) {
 

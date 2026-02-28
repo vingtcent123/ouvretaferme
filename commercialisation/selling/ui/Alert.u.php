@@ -91,6 +91,7 @@ class AlertUi {
 			'Sale::orderFormValidUntil.check' => s("La date d'échéance ne peut pas être dans le passé"),
 			'Sale::deliveryNoteDate.check' => s("Vous n'avez pas renseigné de date de livraison"),
 			'Sale::deliveryAddress.empty' => s("L'adresse de livraison est incomplète (la première ligne, le code postal et la ville sont requis)"),
+			'Sale::shopDate.existing' => s("Une vente a déjà été associée à cette date de livraison pour ce client"),
 			'Sale::sales.check' => s("Merci de sélectionner au moins une vente"),
 			'Sale::from.check' => s("Vous n'avez pas indiqué l'origine de la vente"),
 			'Sale::market.status' => s("Vous ne pouvez pas mettre à jour une vente terminée ou annulée."),

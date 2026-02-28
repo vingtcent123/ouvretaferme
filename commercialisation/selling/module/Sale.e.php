@@ -1110,6 +1110,18 @@ class Sale extends SaleElement {
 							$this['shopSharedCustomer'] = new Customer();
 						}
 
+						if(
+							$eDate['shop']['opening'] === \shop\Shop::FREQUENCY and
+							Sale::model()
+								->wherePreparationStatus('IN', \shop\SaleLib::getValidStatuses())
+								->whereShopDate($eDate)
+								->whereCustomer($this['customer'])
+								->exists()
+						) {
+							\Fail::log('Sale::shopDate.existing');
+							return TRUE;
+						}
+
 						return $eDate->canCreateSale($this['farm']);
 
 					}
