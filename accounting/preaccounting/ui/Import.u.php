@@ -286,7 +286,8 @@ Class ImportUi {
 											$accountLabel .= encode($operation[\preaccounting\AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
 										$accountLabel .= '</div>';
 										if($operation[AccountingLib::FEC_COLUMN_OPERATION_NATURE] !== NULL) {
-											$more = s(" - rattaché au compte {value}", $operation[AccountingLib::FEC_COLUMN_OPERATION_NATURE]);
+											$operationLinked = array_find($operations, fn($op) => $op[AccountingLib::FEC_COLUMN_NUMBER] === (int)$operation[AccountingLib::FEC_COLUMN_OPERATION_NATURE]);
+											$more = s(" - rattaché au compte {value}", $operationLinked[AccountingLib::FEC_COLUMN_ACCOUNT_LABEL]);
 										} else {
 											$more = '';
 										}

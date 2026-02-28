@@ -282,6 +282,7 @@ Class ImportLib {
 	): void {
 
 		$cOperation = new \Collection();
+		$eFarm = \farm\Farm::getConnected();
 
 		foreach($fecData as $data) {
 
@@ -300,7 +301,9 @@ Class ImportLib {
 			$date = mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 0, 4).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 4, 2).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], -2);
 			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();
 
-			if($eAccount->notEmpty() and \account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::BANK_ACCOUNT_CLASS) === FALSE) {
+			if($eAccount->notEmpty() and \account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT)) {
+				$vatRule = \journal\Operation::VAT_STD;
+			} else if($eAccount->notEmpty() and \account\AccountLabelLib::isFromClass($eAccount['class'], \account\AccountSetting::BANK_ACCOUNT_CLASS) === FALSE) {
 				$vatRule = \account\AccountUi::getVatRuleByAccount($eAccount, $eFinancialYear);
 			} else {
 				$vatRule = NULL;
@@ -357,7 +360,7 @@ Class ImportLib {
 
 					\journal\Operation::model()
 						->update($eOperationOrigin, [
-							'vatRate' => round($eOperation['amount'] / $cOperation[$number]['amount'], 4) * 100,
+							'vatRate' => \overview\VatLib::getClosestVatRate($eFarm, round($eOperation['amount'] / $cOperation[$number]['amount'], 4) * 100),
 							'vatAccount' => $eOperation['account']]
 						);
 

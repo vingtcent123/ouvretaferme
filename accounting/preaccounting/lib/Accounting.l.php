@@ -568,9 +568,22 @@ Class AccountingLib {
 					);
 
 					if($item['isVat'] === FALSE) {
-						$numberWithoutVat = $number;
+
+						// On rattache le numéro de l'écriture (pour l'utiliser dans la TVA)
+						$index = array_find_key($ratios['amountsExcludingVat'], fn($ratio) => $ratio['amount'] === $item['amount'] and $ratio['account'] === $item['account'] and $ratio['vatRate'] === $item['vatRate']);
+						if($index !== NULL) {
+							$ratios['amountsExcludingVat'][$index]['number'] = $number;
+						}
+
 					} else if($forImport) {
+						
+						// Rechercher l'écriture originale
+						$index = array_find_key($ratios['amountsVat'], fn($ratio) => $ratio['amount'] === $item['amount'] and $ratio['account'] === $item['account'] and $ratio['vatRate'] === $item['vatRate']);
+						$numberWithoutVat = $ratios['amountsExcludingVat'][$index]['number'];
+
 						$fecDataItemPayment[self::FEC_COLUMN_NUMBER] .= '-'.$numberWithoutVat;
+						$fecDataItemPayment[self::FEC_COLUMN_OPERATION_NATURE] .= $numberWithoutVat;
+
 					}
 
 					self::mergeFecLineIntoItemData($items, $fecDataItemPayment);
@@ -1218,36 +1231,39 @@ Class AccountingLib {
 	private static function mergeFecLineIntoItemData(array &$items, array $fecLine): void {
 
 		$added = FALSE;
-		foreach($items as &$item) {
-			if(
-				$fecLine[self::FEC_COLUMN_ACCOUNT_LABEL] !== '' and // On ne regroupe pas si on n'a pas le numéro de compte
-				$item[self::FEC_COLUMN_ACCOUNT_LABEL] === $fecLine[self::FEC_COLUMN_ACCOUNT_LABEL] and
-				$item[self::FEC_COLUMN_PAYMENT_METHOD] === $fecLine[self::FEC_COLUMN_PAYMENT_METHOD] and
-				$item[self::FEC_COLUMN_OPERATION_NATURE] === $fecLine[self::FEC_COLUMN_OPERATION_NATURE]
-			) {
-				$item[self::FEC_COLUMN_DEBIT] = round($item[self::FEC_COLUMN_DEBIT] + $fecLine[self::FEC_COLUMN_DEBIT], 2);
-				$item[self::FEC_COLUMN_CREDIT] = round($item[self::FEC_COLUMN_CREDIT] + $fecLine[self::FEC_COLUMN_CREDIT], 2);
-				$item[self::FEC_COLUMN_DEVISE_AMOUNT] = round($item[self::FEC_COLUMN_DEVISE_AMOUNT] + $fecLine[self::FEC_COLUMN_DEVISE_AMOUNT], 2);
+		if(isset($fecLine[self::FEC_COLUMN_NUMBER]) === FALSE or str_contains($fecLine[self::FEC_COLUMN_NUMBER], '-') === FALSE) {
 
-				if($item[self::FEC_COLUMN_DEBIT] > 0 and $item[self::FEC_COLUMN_CREDIT] > 0) {
+			foreach($items as &$item) {
+				if(
+					$fecLine[self::FEC_COLUMN_ACCOUNT_LABEL] !== '' and // On ne regroupe pas si on n'a pas le numéro de compte
+					$item[self::FEC_COLUMN_ACCOUNT_LABEL] === $fecLine[self::FEC_COLUMN_ACCOUNT_LABEL] and
+					$item[self::FEC_COLUMN_PAYMENT_METHOD] === $fecLine[self::FEC_COLUMN_PAYMENT_METHOD] and
+					$item[self::FEC_COLUMN_OPERATION_NATURE] === $fecLine[self::FEC_COLUMN_OPERATION_NATURE]
+				) {
+					$item[self::FEC_COLUMN_DEBIT] = round($item[self::FEC_COLUMN_DEBIT] + $fecLine[self::FEC_COLUMN_DEBIT], 2);
+					$item[self::FEC_COLUMN_CREDIT] = round($item[self::FEC_COLUMN_CREDIT] + $fecLine[self::FEC_COLUMN_CREDIT], 2);
+					$item[self::FEC_COLUMN_DEVISE_AMOUNT] = round($item[self::FEC_COLUMN_DEVISE_AMOUNT] + $fecLine[self::FEC_COLUMN_DEVISE_AMOUNT], 2);
 
-					if($item[self::FEC_COLUMN_DEBIT] > $item[self::FEC_COLUMN_CREDIT]) {
+					if($item[self::FEC_COLUMN_DEBIT] > 0 and $item[self::FEC_COLUMN_CREDIT] > 0) {
 
-						$item[self::FEC_COLUMN_DEBIT] -= $item[self::FEC_COLUMN_CREDIT];
-						$item[self::FEC_COLUMN_CREDIT] = 0.0;
-						$item[self::FEC_COLUMN_DEBIT] = round($item[self::FEC_COLUMN_DEBIT], 2);
+						if($item[self::FEC_COLUMN_DEBIT] > $item[self::FEC_COLUMN_CREDIT]) {
 
-					} else {
+							$item[self::FEC_COLUMN_DEBIT] -= $item[self::FEC_COLUMN_CREDIT];
+							$item[self::FEC_COLUMN_CREDIT] = 0.0;
+							$item[self::FEC_COLUMN_DEBIT] = round($item[self::FEC_COLUMN_DEBIT], 2);
 
-						$item[self::FEC_COLUMN_CREDIT] -= $item[self::FEC_COLUMN_DEBIT];
-						$item[self::FEC_COLUMN_DEBIT] = 0.0;
-						$item[self::FEC_COLUMN_CREDIT] = round($item[self::FEC_COLUMN_CREDIT], 2);
+						} else {
+
+							$item[self::FEC_COLUMN_CREDIT] -= $item[self::FEC_COLUMN_DEBIT];
+							$item[self::FEC_COLUMN_DEBIT] = 0.0;
+							$item[self::FEC_COLUMN_CREDIT] = round($item[self::FEC_COLUMN_CREDIT], 2);
+
+						}
 
 					}
-
+					$added = TRUE;
+					break;
 				}
-				$added = TRUE;
-				break;
 			}
 		}
 
