@@ -1264,11 +1264,8 @@ class ShopUi {
 			'customTitleFont' => s("Police pour le titre principal des pages"),
 			'customDesign' => s("Disposition des produits"),
 			'customTabs' => fn($eShop) => $eShop->isShared() ?
-					match($eShop['sharedGroup']) {
-							Shop::FARM => s("Afficher un menu pour naviguer entre les fermes"),
-							Shop::DEPARTMENT => s("Afficher un menu pour naviguer entre les rayons")
-					} :
-					s("Afficher un menu pour naviguer entre les catégories"),
+					s("Afficher un menu pour naviguer entre les rayons") :
+					s("Afficher un menu pour naviguer entre les catégories de produits"),
 			'emailNewSale' => fn($eShop) => $eShop->isShared() ? s("Envoyer à chaque producteur un e-mail à chaque nouvelle commande ou modification de commande d'un client") : s("Recevoir un e-mail à chaque nouvelle commande ou modification de commande d'un de vos clients"),
 			'emailEndDate' => fn($eShop) => $eShop->isShared() ? s("Envoyer à chaque producteur un e-mail de synthèse lorsque les prises de commande d'une livraison se terminent") : s("Recevoir un e-mail de synthèse lorsque les prises de commande d'une livraison se terminent")
 		]);
