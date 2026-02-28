@@ -114,6 +114,8 @@ Class VatLib {
 			->or(
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS.'%'),
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::CHARGE_ESCOMPTES_ACCOUNT_CLASS.'%'),
+				// TODO : vérifier si c'est OK de faire ça quand même (prendre les comptes de tiers également)
+				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'%'),
 			)
 			->group(['compte', 'vatRate'])
 			->getCollection();
