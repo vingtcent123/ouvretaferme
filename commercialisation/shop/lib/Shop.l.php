@@ -32,7 +32,7 @@ class ShopLib extends ShopCrud {
 
 	public static function getPropertiesCustomize(Shop $eShop): array {
 
-		$properties = ['customBackground', 'customColor', 'customFont', 'customTitleFont'];
+		$properties = ['customBackground', 'customColor', 'customFont', 'customTitleFont', 'customDesign'];
 
 		if($eShop->acceptCustomTabs()) {
 			$properties[] = 'customTabs';
@@ -164,7 +164,13 @@ class ShopLib extends ShopCrud {
 				$e['sharedCategory'] = FALSE;
 				$e['hasPayment'] = FALSE;
 				$e['paymentOffline'] = FALSE;
+
 				$e['customTabs'] = TRUE;
+				$e['customDesign'] = Shop::LINE;
+
+			} else {
+				$e['customTabs'] = FALSE;
+				$e['customDesign'] = Shop::GRID;
 			}
 
 			Redirect::model()

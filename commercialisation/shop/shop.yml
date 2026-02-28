@@ -189,6 +189,7 @@ Shop:
   customTitleFont: ?text8
   customFont: ?text8
   customTabs: bool = FALSE
+  customDesign: enum(LINE, GRID)
   embedOnly: bool = FALSE
   embedUrl: ?url
   approximate: bool = FALSE

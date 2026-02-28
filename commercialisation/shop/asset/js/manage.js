@@ -58,7 +58,8 @@ class ShopManage {
             .setArgument('customBackground', form.qs('[name="customBackground"]').value)
             .setArgument('customFont', form.qs('[name="customFont"]').value)
             .setArgument('customTitleFont', form.qs('[name="customTitleFont"]').value)
-            .setArgument('customTabs', form.qs('[name="customTabs"]:checked').value);
+            .setArgument('customTabs', form.qs('[name="customTabs"]:checked').value)
+            .setArgument('customDesign', form.qs('[name="customDesign"] option:checked').value);
         iframe.src = newSrc;
     }
 
@@ -71,7 +72,7 @@ document.delegateEventListener('input', '#shop-customize [name="customBackground
 });
 
 document.delegateEventListener('change',
-    '#shop-customize [name="customFont"], #shop-customize [name="customTitleFont"]', e => {
+    '#shop-customize [name="customFont"], #shop-customize [name="customTitleFont"], #shop-customize [name="customDesign"]', e => {
 
 		ShopManage.updatePreview();
 

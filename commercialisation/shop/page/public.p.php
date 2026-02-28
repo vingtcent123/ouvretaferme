@@ -170,6 +170,7 @@ END;
 		) {
 
 			$data->eShop['customTabs'] = GET('customTabs', 'bool');
+			$data->eShop['customDesign'] = GET('customDesign', [\shop\Shop::LINE, \shop\Shop::GRID], $data->eShop['customDesign']);
 
 		}
 

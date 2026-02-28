@@ -41,7 +41,7 @@ class ProductUi {
 
 		$callback = fn(\Collection $cProduct) => $this->getProducts($eShop, $eDate, $canBasket, $isModifying, $cProduct);
 
-		$h .= '<div class="shop-product-wrapper shop-product-'.$eShop['type'].'">';
+		$h .= '<div class="shop-product-wrapper shop-design-'.$eShop['customDesign'].' shop-product-'.$eShop['type'].'">';
 
 			switch($eDate['productsIndex']) {
 
@@ -413,13 +413,13 @@ class ProductUi {
 				if($url === NULL) {
 					$h .= $this->getDefaultVignette($eProductDefault, $eShop);
 				}
-				if($eShop['type'] === Shop::PRIVATE) {
+				if($eShop['customDesign'] === Shop::GRID) {
 					$h .= $promotion;
 				}
 			$h .= '</div>';
 			$h .= '<div class="shop-product-content">';
 
-				if($eShop['type'] === Shop::PRO) {
+				if($eShop['customDesign'] === Shop::LINE) {
 					$h .= $promotion;
 				}
 
@@ -540,14 +540,14 @@ class ProductUi {
 				if($url === NULL) {
 					$h .= $this->getDefaultVignette($eProduct, $eShop);
 				}
-				if($eShop['type'] === Shop::PRIVATE) {
+				if($eShop['customDesign'] === Shop::GRID) {
 					$h .= $quality;
 					$h .= $promotion;
 				}
 			$h .= '</div>';
 			$h .= '<div class="shop-product-content">';
 
-				if($eShop['type'] === Shop::PRO) {
+				if($eShop['customDesign'] === Shop::LINE) {
 					$h .= $promotion;
 				}
 				$h .= '<div class="shop-product-header">';
@@ -555,7 +555,7 @@ class ProductUi {
 
 						$name = $eProductSelling->getName('html');
 
-						if($eShop['type'] === Shop::PRO) {
+						if($eShop['customDesign'] === Shop::LINE) {
 							$name .= $quality;
 						}
 

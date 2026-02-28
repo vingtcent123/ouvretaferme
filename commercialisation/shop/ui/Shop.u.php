@@ -593,7 +593,7 @@ class ShopUi {
 
 		$h .= $form->hidden('id', $eShop['id']);
 
-		$h .= $form->dynamicGroups($eShop, ['customColor', 'customBackground', 'customFont', 'customTitleFont']);
+		$h .= $form->dynamicGroups($eShop, ['customColor', 'customBackground', 'customFont', 'customTitleFont', 'customDesign']);
 
 		if($eShop->acceptCustomTabs()) {
 			$h .= $form->dynamicGroup($eShop, 'customTabs');
@@ -1262,6 +1262,7 @@ class ShopUi {
 			'customColor' => s("Couleur contrastante"),
 			'customFont' => s("Police pour le texte"),
 			'customTitleFont' => s("Police pour le titre principal des pages"),
+			'customDesign' => s("Disposition des produits"),
 			'customTabs' => fn($eShop) => $eShop->isShared() ?
 					match($eShop['sharedGroup']) {
 							Shop::FARM => s("Afficher un menu pour naviguer entre les fermes"),
@@ -1489,6 +1490,15 @@ class ShopUi {
 				$d->field = 'select';
 				$d->placeholder = s("Par défaut");
 				$d->values = \website\WebsiteSetting::CUSTOM_TITLE_FONTS;
+				break;
+
+			case 'customDesign':
+				$d->field = 'select';
+				$d->attributes = ['mandatory' => TRUE];
+				$d->values = [
+					Shop::GRID => s("Grille adaptée à la largeur de l'écran"),
+					Shop::LINE => s("Une ligne par produit"),
+				];
 				break;
 
 			case 'customTabs':
