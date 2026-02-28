@@ -1594,8 +1594,8 @@ class ShopUi {
 
 			case 'sharedExport' :
 				$d->values = [
-					Shop::SALE => s("Dissocier les producteurs sur plusieurs étiquettes pour chaque vente"),
-					Shop::CUSTOMER => s("Grouper les producteurs sur une même étiquette pour chaque vente")
+					Shop::SALE => s("Dissocier les achats d'un client sur une étiquette par producteur"),
+					Shop::CUSTOMER => s("Grouper les achats d'un client sur une même étiquette")
 				];
 				$d->field = 'select';
 				$d->attributes = [
