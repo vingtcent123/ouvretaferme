@@ -5,7 +5,8 @@ new \farm\FarmPage(
 		}
 	)
 	->getCreateElement(fn($data) => new \farm\Farm([
-		'owner' => \user\ConnectionLib::getOnline()
+		'owner' => \user\ConnectionLib::getOnline(),
+		'type' => INPUT('type', [\farm\Farm::COMMUNITY, \farm\Farm::PRODUCER], \farm\Farm::PRODUCER)
 	]))
 	->create(function($data) {
 
@@ -22,7 +23,10 @@ new \farm\FarmPage(
 
 	}, validate: ['canManage'])
 	->doCreate(function($data) {
-		throw new RedirectAction('/farm/farm:start?id='.$data->e['id']);
+		throw new RedirectAction(match($data->e['type']) {
+			\farm\Farm::PRODUCER => '/farm/farm:start?id='.$data->e['id'],
+			\farm\Farm::COMMUNITY => \farm\FarmUi::urlShopList($data->e),
+		});
 	});
 
 new \farm\FarmPage()

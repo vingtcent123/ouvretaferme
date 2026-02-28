@@ -114,15 +114,6 @@ div.farm-financial-year-menu {
 	opacity: 0.7;
 }
 
-.farm-quality-fee {
-	margin-top: 1rem;
-	display: none;
-}
-
-[data-wrapper="quality"]:has(input[name="quality"][value="no"]:checked) .farm-quality-fee {
-	display: block;
-}
-
 /* Legal form */
 
 form.farm-legal-form:has(select[name="legalCountry"] option[value="75"]:not(:checked)) [data-wrapper="siret"] {

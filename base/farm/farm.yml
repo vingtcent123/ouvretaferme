@@ -86,6 +86,7 @@ ConfigurationHistory:
 Farm:
   id: serial32
   name: text8(1, null) @collate(general)
+  type: enum(PRODUCER, COMMUNITY) = PRODUCER
   legalName: ?text8
   legalEmail: email
   legalCountry: user\Country

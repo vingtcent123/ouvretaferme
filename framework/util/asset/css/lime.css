@@ -3255,6 +3255,7 @@ div.util-buttons.util-buttons-dark > .util-button:hover {
 }
 
 div.util-buttons > .util-button.disabled {
+	pointer-events: none;
 	opacity: 0.3;
 }
 

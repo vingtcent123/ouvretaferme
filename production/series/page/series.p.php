@@ -3,7 +3,7 @@ new \series\CultivationPage(function($data) {
 
 		\user\ConnectionLib::checkLogged();
 
-		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage');
+		$data->eFarm = \farm\FarmLib::getById(POST('farm'))->validate('canManage', 'hasFeatureCultivation');
 
 	})
 	->create(function($data) {

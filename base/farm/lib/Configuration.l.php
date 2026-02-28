@@ -12,18 +12,16 @@ class ConfigurationLib extends ConfigurationCrud {
 
 		$eFarm->expects(['legalCountry']);
 
-		Configuration::model()->beginTransaction();
+		$e = new Configuration([
+			'farm' => $eFarm,
+			'defaultVat' => \selling\SellingSetting::getStartVat($eFarm['legalCountry']),
+			'invoiceMandatoryTexts' => $eFarm->isFR(),
+			'invoiceCollection' => $eFarm->isFR() ? new \farm\ConfigurationUi()->getInvoiceMention('collection') : NULL,
+			'invoiceLateFees' => $eFarm->isFR() ? new \farm\ConfigurationUi()->getInvoiceMention('lateFees') : NULL,
+			'invoiceDiscount' => $eFarm->isFR() ? new \farm\ConfigurationUi()->getInvoiceMention('discount') : NULL,
+		]);
 
-			$e = new Configuration([
-				'farm' => $eFarm,
-				'defaultVat' => \selling\SellingSetting::getStartVat($eFarm['legalCountry']),
-				'invoiceMandatoryTexts' => $eFarm->isFR(),
-				'invoiceCollection' => $eFarm->isFR() ? new \farm\ConfigurationUi()->getInvoiceMention('collection') : NULL,
-				'invoiceLateFees' => $eFarm->isFR() ? new \farm\ConfigurationUi()->getInvoiceMention('lateFees') : NULL,
-				'invoiceDiscount' => $eFarm->isFR() ? new \farm\ConfigurationUi()->getInvoiceMention('discount') : NULL,
-			]);
-
-			parent::create($e);
+		parent::create($e);
 
 	}
 

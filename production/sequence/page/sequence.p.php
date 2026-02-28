@@ -35,7 +35,7 @@ new \sequence\SequencePage(function($data) {
 	})
 	->getCreateElement(function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('hasFeatureCultivation');
 
 		return new \sequence\Sequence([
 			'farm' => $data->eFarm,

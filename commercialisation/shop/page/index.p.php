@@ -105,6 +105,11 @@ new shop\ShopPage()
 
 	})
 	->create()
+	->create(function($data) {
+
+		throw new ViewAction($data);
+
+	}, page: 'createShared')
 	->doCreate(function($data) {
 
 		$url = \shop\ShopUi::adminUrl($data->eFarm, $data->e);

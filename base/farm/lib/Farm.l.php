@@ -150,38 +150,38 @@ class FarmLib extends FarmCrud {
 
 		Farm::model()->beginTransaction();
 
-		$e['seasonFirst'] = date('Y');
-		$e['seasonLast'] = date('n') >= (FarmSetting::NEW_SEASON - 1) ? nextYear() : date('Y');
+			$e['seasonFirst'] = date('Y');
+			$e['seasonLast'] = date('n') >= (FarmSetting::NEW_SEASON - 1) ? nextYear() : date('Y');
 
-		Farm::model()->insert($e);
+			Farm::model()->insert($e);
 
-		if(isset($e['owner'])) {
+			if(isset($e['owner'])) {
 
-			$eFarmer = new Farmer([
-				'user' => $e['owner'],
-				'farm' => $e,
-				'status' => Farmer::IN,
-				'role' => Farmer::OWNER
-			]);
+				$eFarmer = new Farmer([
+					'user' => $e['owner'],
+					'farm' => $e,
+					'status' => Farmer::IN,
+					'role' => Farmer::OWNER
+				]);
 
-			Farmer::model()->insert($eFarmer);
+				Farmer::model()->insert($eFarmer);
 
-			$ePresence = new \hr\Presence([
-				'farm' => $e,
-				'user' => $eFarmer['user'],
-				'from' => (date('Y') - 1).'-01-01'
-			]);
+				$ePresence = new \hr\Presence([
+					'farm' => $e,
+					'user' => $eFarmer['user'],
+					'from' => (date('Y') - 1).'-01-01'
+				]);
 
-			\hr\Presence::model()->insert($ePresence);
+				\hr\Presence::model()->insert($ePresence);
 
-		}
+			}
 
-		ConfigurationLib::createForFarm($e);
+			ConfigurationLib::createForFarm($e);
 
-		\farm\ActionLib::duplicateForFarm($e);
-		\plant\PlantLib::duplicateForFarm($e);
-		\selling\UnitLib::duplicateForFarm($e);
-		\payment\MethodLib::duplicateForFarm($e);
+			\farm\ActionLib::duplicateForFarm($e);
+			\plant\PlantLib::duplicateForFarm($e);
+			\selling\UnitLib::duplicateForFarm($e);
+			\payment\MethodLib::duplicateForFarm($e);
 
 		Farm::model()->commit();
 

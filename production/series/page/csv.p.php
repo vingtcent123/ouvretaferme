@@ -94,7 +94,7 @@ new \farm\FarmPage()
 		}
 
 
-	})
+	}, validate: ['canWrite', 'hasFeatureCultivation'])
 	->write('doCreateCultivations', function($data) {
 
 		$data->data = \series\CsvLib::getCultivations($data->e);

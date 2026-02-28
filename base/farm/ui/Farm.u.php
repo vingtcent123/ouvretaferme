@@ -1217,13 +1217,17 @@ class FarmUi {
 
 		}
 
-		$h .= '<div class="farm-tab-wrapper farm-nav-cultivation">';
+		if($eFarm->hasFeatureCultivation()) {
 
-			$h .= $this->getNav('cultivation', $nav);
+			$h .= '<div class="farm-tab-wrapper farm-nav-cultivation">';
 
-			$h .= $this->getCultivationMenu($eFarm, subNav: $subNav);
+				$h .= $this->getNav('cultivation', $nav);
 
-		$h .= '</div>';
+				$h .= $this->getCultivationMenu($eFarm, subNav: $subNav);
+
+			$h .= '</div>';
+
+		}
 
 		if($eFarm->canAnalyze()) {
 
@@ -3286,7 +3290,6 @@ class FarmUi {
 
 			case 'quality' :
 				$d->values = self::getQualities();
-				$d->after = '<div class="farm-quality-fee util-block-info">'.s("L'accès à Ouvretaferme vous est laissé en accès libre pendant une période d'essai de {value} mois après votre inscription. Au-delà de cette période, vous devrez <link>adhérer à l'association Ouvretaferme</link> pour continuer à utiliser le logiciel.", ['value' => \association\AssociationSetting::MEMBERSHIP_TRY, 'link' => '<a href="/presentation/adhesion">']).'</div>';
 				break;
 
 			case 'emailDefaultTime' :

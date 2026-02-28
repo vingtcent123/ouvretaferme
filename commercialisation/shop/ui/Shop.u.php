@@ -92,13 +92,9 @@ class ShopUi {
 
 		if($eShop['shared'] === NULL) {
 
-			$h = '<div class="util-block-help">';
-				$h .= s("Vous devez choisir si vous souhaitez créer une boutique en ligne dédiée à la vente de votre seule production, ou si cette boutique en ligne sera partagée avec d'autres producteurs. Le choix que vous faites maintenant ne pourra pas être modifié par la suite, mais vous pouvez toujours créer autant de boutiques que vous le souhaitez.");
-			$h .= '</div>';
+			$h = '<div class="util-buttons mb-3">';
 
-			$h .= '<div class="util-buttons mb-3">';
-
-				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=0" class="util-button">';
+				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=0" class="util-button '.($eShop->acceptCreateNotShared() ? '' : 'disabled').'">';
 					$h .= '<div>';
 						$h .= '<h4>'.s("Créer une boutique personnelle").'</h4>';
 						$h .= '<div class="util-button-text">'.s("Vous serez le seul producteur à vendre sur cette boutique.").'</div>';
@@ -106,7 +102,7 @@ class ShopUi {
 					$h .= \Asset::icon('person-fill-lock');
 				$h .= '</a>';
 
-				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=1" class="util-button">';
+				$h .= '<a href="'.($eShop->acceptCreateShared() ? '/shop/:create?farm='.$eShop['farm']['id'].'&shared=1' : '/shop/:createShared?farm='.$eShop['farm']['id']).'" class="util-button">';
 					$h .= '<div>';
 						$h .= '<h4>'.s("Créer une boutique collective").'</h4>';
 						$h .= '<div class="util-button-text">'.s("Vous pourrez inviter d'autres producteurs à vendre leur production sur cette boutique.").'</div>';
@@ -145,7 +141,6 @@ class ShopUi {
 						$content .='<li>'.s("Une boutique collective est administrée uniquement par la ferme qui l'a créée").'</li>';
 						$content .='<li>'.s("La ferme à l'origine de la création d'une boutique collective ne peut pas y vendre sa production").'</li>';
 					$content .= '</ul>';
-					$content .= '<p>'.s("Nous vous recommandons donc de <link>créer une ferme dédiée</link> pour créer une boutique collective</b> !", ['link' => '<a href="/farm/farm:create">']).'</p>';
 
 					$h .= $form->group(content: '<div class="util-block-help">'.$content.'</div>');
 
@@ -185,7 +180,51 @@ class ShopUi {
 
 		return new \Panel(
 			id: 'panel-shop-create',
-			title: $eShop['shared'] ? s("Nouvelle boutique collective") : s("Nouvelle boutique personnelle"),
+			title: match($eShop['shared']) {
+				TRUE => s("Nouvelle boutique collective"),
+				FALSE => s("Nouvelle boutique personnelle"),
+				NULL => s("Nouvelle boutique")
+			},
+			body: $h
+		);
+
+	}
+
+	public function createShared(Shop $eShop): \Panel {
+
+		$form = new \util\FormUi();
+
+		$content = '<h3>'.s("Démarrer une boutique collective").'</h3>';
+		$content .= '<p>'.s("Une boutique collective permet à plusieurs producteurs de vendre sur la même boutique, et de partager ses créneaux de commercialisation.").'</p>';
+		$content .= '<p>'.s("Nous vous recommandons de bien travailler le mode de fonctionnement de votre collectif avant d'engager la création d'une boutique en commun, à la fois en termes organisationnels, logistiques et financiers afin que votre projet soit un succès.").'</p>';
+		$content .= '<p>'.s("Vous devez tenir compte des éléments suivants pour créer une boutique collective :").'</p>';
+		$content .= '<ul>';
+			$content .='<li>'.s("Une boutique collective est administrée uniquement par la ferme qui l'a créée").'</li>';
+			$content .='<li>'.s("La ferme à l'origine de la création d'une boutique collective ne peut pas y vendre sa production").'</li>';
+		$content .= '</ul>';
+		$content .= '<p>'.s("La première étape est donc de créer une ferme dédiée à l'administration de votre boutique collective</b> !").'</p>';
+
+		$h = $form->group(content: '<div class="util-block-help">'.$content.'</div>');
+
+		$h .= '<h3>'.s("Créer une ferme dédiée à l'administration de ma boutique collective").'</h3>';
+
+		$h .= $form->openAjax('/farm/farm:doCreate', ['id' => 'farm-create', 'autocomplete' => 'off']);
+
+			$h .= $form->asteriskInfo();
+
+			$h .= $form->hidden('type', \farm\Farm::COMMUNITY);
+
+			$h .= $form->dynamicGroups(new \farm\Farm(), ['name*', 'legalEmail*', 'legalCountry', 'quality']);
+
+			$h .= $form->group(
+				content: $form->submit(s("Créer ma ferme"), ['data-waiter' => s("Création en cours")])
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-shop-create',
+			title: s("Nouvelle boutique collective"),
 			body: $h
 		);
 

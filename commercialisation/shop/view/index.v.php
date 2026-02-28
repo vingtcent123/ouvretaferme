@@ -39,6 +39,10 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 	return new \shop\ShopUi()->create($data->e);
 });
 
+new AdaptativeView('createShared', function($data, PanelTemplate $t) {
+	return new \shop\ShopUi()->createShared($data->e);
+});
+
 new AdaptativeView('website', function($data, FarmTemplate $t) {
 
 	$t->title = s("Intégrer la boutique sur un site internet");

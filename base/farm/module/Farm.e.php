@@ -54,6 +54,14 @@ class Farm extends FarmElement {
 
 	}
 
+	public function isProducer(): bool {
+		return $this['type'] === Farm::PRODUCER;
+	}
+
+	public function isCommunity(): bool {
+		return $this['type'] === Farm::COMMUNITY;
+	}
+
 	public function getFirstValidSeason(): int {
 
 		$this->expects(['seasonFirst']);
@@ -181,10 +189,21 @@ class Farm extends FarmElement {
 	}
 
 	public function canProduction(): bool {
+
+		if($this->hasFeatureProduction() === FALSE) {
+			return FALSE;
+		}
+
 		return (
 			$this->canPlanning() or
 			$this->canAnalyze() or
 			$this->canManage()
+		);
+	}
+
+	public function hasFeatureProduction(): bool {
+		return (
+			$this->hasFeatureCultivation()
 		);
 	}
 
@@ -407,6 +426,12 @@ class Farm extends FarmElement {
 		foreach(['featureTime'] as $feature) {
 			FarmSetting::${$feature} = $this[$feature];
 		}
+
+	}
+
+	public function hasFeatureCultivation(): bool {
+
+		return $this->isProducer();
 
 	}
 

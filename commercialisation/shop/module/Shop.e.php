@@ -140,6 +140,35 @@ class Shop extends ShopElement {
 
 	}
 
+	public function acceptCreate(): bool {
+
+		$this->expects(['farm']);
+
+		if($this['shared'] === NULL) {
+			return TRUE;
+		}
+
+		return (
+			($this['shared'] === FALSE and $this['farm']->isProducer()) or
+			($this['shared'] === TRUE and $this['farm']->isCommunity())
+		);
+
+	}
+
+	public function acceptCreateNotShared(): bool {
+
+		$this->expects(['farm']);
+		return $this['farm']->isProducer();
+
+	}
+
+	public function acceptCreateShared(): bool {
+
+		$this->expects(['farm']);
+		return $this['farm']->isCommunity();
+
+	}
+
 	public function canCreate(): bool {
 
 		$this->expects(['farm']);
