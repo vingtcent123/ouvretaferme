@@ -1695,6 +1695,13 @@ class SaleUi {
 						}
 					$h .= '</dd>';
 
+				}
+
+				if(
+					$eSale['shop']->notEmpty() or
+					$eSale->hasDeliveryAddress()
+				) {
+
 					$h .= '<dt>'.s("Mode de livraison").'</dt>';
 					$h .= '<dd>';
 						if($eSale['shopPoint']->notEmpty()) {
@@ -1705,6 +1712,8 @@ class SaleUi {
 									\shop\Point::PLACE => encode($eSale['shopPoint']['name'])
 								};
 							$h .= '</div>';
+						} else if($eSale->hasDeliveryAddress()) {
+							$h .= '<a href="'.$eSale->getDeliveryAddressLink().'" target="_blank" class="color-muted">'.$eSale->getDeliveryAddress('html', $eSale['farm']).'</a>';
 						}
 					$h .= '</dd>';
 
@@ -2461,7 +2470,7 @@ class SaleUi {
 			$h .= $form->dynamicGroup($eSale, 'comment');
 
 			if(
-				$eSale->acceptUpdateShipping() or
+				$eSale->acceptUpdateDelivery() or
 				$eSale->acceptUpdateShopPoint()
 			) {
 
@@ -2473,7 +2482,11 @@ class SaleUi {
 						$h .= $form->dynamicGroup($eSale, 'shopPointPermissive');
 					}
 
-					if($eSale->acceptShipping()) {
+					if($eSale->acceptUpdateDeliveryAddress()) {
+						$h .= $form->addressGroup(s("Adresse de livraison"), 'delivery', $eSale);
+					}
+
+					if($eSale->acceptDelivery()) {
 
 						$h .= $form->dynamicGroup($eSale, 'shipping');
 
@@ -2836,6 +2849,14 @@ class SaleUi {
 			case 'discount' :
 				$d->append = s("%");
 				$d->after = \util\FormUi::info(s("La remise commerciale s'applique à l'intégralité de la vente à l'exception d'éventuels frais de livraison."));
+				break;
+
+			case 'deliveryCountry' :
+				$d->values = fn(Sale $e) => \user\Country::form();
+				$d->attributes = fn(\util\FormUi $form, Sale $e) => [
+					'group' => is_array(\user\Country::form()),
+					'mandatory' => TRUE
+				];
 				break;
 
 			case 'deliveredAt' :

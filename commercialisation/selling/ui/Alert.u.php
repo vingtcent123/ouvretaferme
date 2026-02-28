@@ -90,6 +90,7 @@ class AlertUi {
 			'Sale::canNotSell' => s("La caisse virtuelle n'est plus accessible pour cette vente !"),
 			'Sale::orderFormValidUntil.check' => s("La date d'échéance ne peut pas être dans le passé"),
 			'Sale::deliveryNoteDate.check' => s("Vous n'avez pas renseigné de date de livraison"),
+			'Sale::deliveryAddress.empty' => s("L'adresse de livraison est incomplète (la première ligne, le code postal et la ville sont requis)"),
 			'Sale::sales.check' => s("Merci de sélectionner au moins une vente"),
 			'Sale::from.check' => s("Vous n'avez pas indiqué l'origine de la vente"),
 			'Sale::market.status' => s("Vous ne pouvez pas mettre à jour une vente terminée ou annulée."),

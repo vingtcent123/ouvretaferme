@@ -476,7 +476,7 @@ class Sale extends SaleElement {
 		return $this->isSale();
 	}
 
-	public function acceptShipping(): bool {
+	public function acceptDelivery(): bool {
 
 		return (
 			$this->isMarket() === FALSE and
@@ -487,11 +487,23 @@ class Sale extends SaleElement {
 
 	}
 
-	public function acceptUpdateShipping(): bool {
+	public function acceptUpdateDelivery(): bool {
 
 		return (
 			$this->isLocked() === FALSE and
-			$this->acceptShipping()
+			$this->acceptDelivery()
+		);
+
+	}
+
+	public function acceptUpdateDeliveryAddress(): bool {
+
+		return (
+			$this->acceptUpdateDelivery() and
+			(
+				$this['shopPoint']->empty() or
+				$this['shopPoint']['type'] === \shop\Point::HOME
+			)
 		);
 
 	}
@@ -882,6 +894,8 @@ class Sale extends SaleElement {
 
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
+		\user\User::propertyAddress('delivery', $properties);
+
 		$fw = new \FailWatch();
 
 		$p
@@ -1113,6 +1127,8 @@ class Sale extends SaleElement {
 
 				$this->expects(['farm']);
 
+				$this['oldShopPoint'] = $this['shopPoint'];
+
 				if($point === '') {
 					$this['shopPointPermissive'] = new \shop\Point();
 					return TRUE;
@@ -1193,6 +1209,15 @@ class Sale extends SaleElement {
 			->setCallback('deliveryNoteDate.check', function(?string &$date): bool {
 
 				return \Filter::check('date', $date);
+
+			})
+			->setCallback('deliveryAddress.empty', fn() => \user\User::buildAddress('delivery', $this))
+			->setCallback('deliveryCountry.check', function(\user\Country $eCountry): bool {
+
+				return (
+					$eCountry->empty() or
+					\user\Country::model()->exists($eCountry)
+				);
 
 			})
 			->setCallback('productsList.check', function(mixed $list) use($p): bool {

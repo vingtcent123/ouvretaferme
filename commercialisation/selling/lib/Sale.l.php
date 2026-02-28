@@ -21,7 +21,9 @@ class SaleLib extends SaleCrud {
 
 			$e->expects(['preparationStatus']);
 
-			$properties = ['comment'];
+			$properties = [
+				'comment'
+			];
 
 			if($e->isLocked() === FALSE) {
 
@@ -33,16 +35,22 @@ class SaleLib extends SaleCrud {
 
 			}
 
-			if($e->acceptUpdateShipping()) {
+			if($e->acceptUpdateDelivery()) {
+
 				$properties[] = 'shipping';
 
 				if($e['hasVat']) {
 					$properties[] = 'shippingVatRate';
 				}
+
 			}
 
 			if($e->acceptUpdateShopPoint()) {
 				$properties[] = 'shopPointPermissive';
+			}
+
+			if($e->acceptUpdateDeliveryAddress()) {
+				$properties = array_merge($properties, ['deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry']);
 			}
 
 			return $properties;
@@ -1063,18 +1071,28 @@ class SaleLib extends SaleCrud {
 			array_delete($properties, 'shopPointPermissive');
 			$e['shopPoint'] = $e['shopPointPermissive'];
 
-			if(
-				$e['customer']['user']->notEmpty() and
-				$e['shopPoint']->notEmpty() and
-				$e['shopPoint']['type'] === \shop\Point::HOME
-			) {
+			if($e['shopPoint']->notEmpty()) {
 
-				$eUser = \user\UserLib::getById($e['customer']['user']);
-				$eUser->copyDeliveryAddress($e, $properties);
+				switch($e['shopPoint']['type']) {
 
-			} else {
+					case \shop\Point::HOME :
 
-				$e->emptyDeliveryAddress($properties);
+						if(
+							$e['oldShopPoint']->empty() or
+							$e['oldShopPoint']['type'] !== \shop\Point::HOME
+						) {
+
+							$eUser = \user\UserLib::getById($e['customer']['user']);
+							$eUser->copyDeliveryAddress($e, $properties);
+
+						}
+						break;
+
+					case \shop\Point::PLACE :
+						$e->emptyDeliveryAddress($properties);
+						break;
+
+				}
 
 			}
 
