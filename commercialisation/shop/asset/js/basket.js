@@ -438,7 +438,7 @@ class BasketManage {
 		let totalPrice, totalArticles;
 		[totalArticles, totalPrice] = this.calculateTotal(dateId);
 
-		qs('#shop-basket-articles').renderInner(totalArticles + (totalArticles > 1 ? ' articles' : ' article'));
+		qs('#shop-basket-articles').renderInner(totalArticles + '<span class="hide-xs-down">'+ (totalArticles > 1 ? ' articles' : ' article') +'</span>');
 		qs('#shop-basket-price', node => node.renderInner(totalPrice));
 		qs('#shop-basket').removeHide();
 
