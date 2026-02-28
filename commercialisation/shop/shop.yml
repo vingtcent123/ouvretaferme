@@ -193,6 +193,7 @@ Shop:
   embedOnly: bool = FALSE
   embedUrl: ?url
   approximate: bool = FALSE
+  productInput: enum(PLUS_MINUS, TEXT) = PLUS_MINUS
   outOfStock: enum(SHOW, HIDE) = SHOW
   comment: bool = FALSE
   commentCaption: ?text8

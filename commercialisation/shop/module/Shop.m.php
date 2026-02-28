@@ -24,6 +24,9 @@ abstract class ShopElement extends \Element {
 	const LINE = 'line';
 	const GRID = 'grid';
 
+	const PLUS_MINUS = 'plus-minus';
+	const TEXT = 'text';
+
 	const SHOW = 'show';
 	const HIDE = 'hide';
 
@@ -104,6 +107,7 @@ class ShopModel extends \ModuleModel {
 			'embedOnly' => ['bool', 'cast' => 'bool'],
 			'embedUrl' => ['url', 'null' => TRUE, 'cast' => 'string'],
 			'approximate' => ['bool', 'cast' => 'bool'],
+			'productInput' => ['enum', [\shop\Shop::PLUS_MINUS, \shop\Shop::TEXT], 'cast' => 'enum'],
 			'outOfStock' => ['enum', [\shop\Shop::SHOW, \shop\Shop::HIDE], 'cast' => 'enum'],
 			'comment' => ['bool', 'cast' => 'bool'],
 			'commentCaption' => ['text8', 'null' => TRUE, 'cast' => 'string'],
@@ -115,7 +119,7 @@ class ShopModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedCategory', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'limitGroups', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'customTabs', 'customDesign', 'embedOnly', 'embedUrl', 'approximate', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
+			'id', 'name', 'fqn', 'farm', 'logo', 'email', 'type', 'shared', 'sharedGroup', 'sharedCategory', 'sharedHash', 'sharedHashExpiresAt', 'opening', 'openingFrequency', 'openingDelivery', 'hasPoint', 'hasPayment', 'paymentCard', 'paymentTransfer', 'paymentTransferHow', 'paymentOffline', 'paymentOfflineHow', 'paymentMethod', 'description', 'terms', 'termsField', 'limitCustomers', 'limitGroups', 'orderMin', 'shipping', 'shippingUntil', 'customColor', 'customBackground', 'customTitleFont', 'customFont', 'customTabs', 'customDesign', 'embedOnly', 'embedUrl', 'approximate', 'productInput', 'outOfStock', 'comment', 'commentCaption', 'emailNewSale', 'emailEndDate', 'status', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -171,6 +175,9 @@ class ShopModel extends \ModuleModel {
 			case 'approximate' :
 				return FALSE;
 
+			case 'productInput' :
+				return Shop::PLUS_MINUS;
+
 			case 'outOfStock' :
 				return Shop::SHOW;
 
@@ -222,6 +229,9 @@ class ShopModel extends \ModuleModel {
 				return $value === NULL ? NULL : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
 
 			case 'customDesign' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'productInput' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'outOfStock' :
@@ -420,6 +430,10 @@ class ShopModel extends \ModuleModel {
 
 	public function whereApproximate(...$data): ShopModel {
 		return $this->where('approximate', ...$data);
+	}
+
+	public function whereProductInput(...$data): ShopModel {
+		return $this->where('productInput', ...$data);
 	}
 
 	public function whereOutOfStock(...$data): ShopModel {
