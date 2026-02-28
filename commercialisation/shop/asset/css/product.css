@@ -614,11 +614,11 @@ input.shop-product-number-display {
 		column-gap: 0.25rem;
 	}
 
-	.shop-type-private .shop-product-number .btn {
+	.shop-input-plus-minus .shop-product-number .btn {
 		width: 3.5rem;
 	}
 
-	.shop-type-pro .shop-product-number .btn {
+	.shop-input-text .shop-product-number .btn {
 		width: 2.5rem;
 	}
 

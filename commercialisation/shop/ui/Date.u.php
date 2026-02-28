@@ -944,10 +944,14 @@ class DateUi {
 				$eDate['shop'] = $eShop;
 
 				$actions .= '<div class="data-actions-filter">';
-					if($eShop['shared']) {
-						$actions .= self::getSearchFarm($eFarm, $eShop, $eDate);
+					if($cxSale->notEmpty()) {
+						if($eShop['shared']) {
+							$actions .= self::getSearchFarm($eFarm, $eShop, $eDate);
+						}
+						$actions .= self::getSearchSort($eFarm, $eShop, $eDate);
+					} else {
+						$actions .= '<div class="util-empty">'.s("Aucune vente n'a encore été enregistrée !").'</div>';
 					}
-					$actions .= self::getSearchSort($eFarm, $eShop, $eDate);
 				$actions .= '</div>';
 				$actions .= '<div>';
 
@@ -993,17 +997,11 @@ class DateUi {
 
 			$h .= '<div class="tab-panel" data-tab="sales">';
 
-				if($actions) {
+				$h .= '<div class="data-actions">';
+					$h .= $actions;
+				$h .= '</div>';
 
-					$h .= '<div class="data-actions">';
-						$h .= $actions;
-					$h .= '</div>';
-
-				}
-
-				if($cxSale->empty()) {
-					$h .= '<div class="util-empty">'.s("Aucune vente n'a encore été enregistrée !").'</div>';
-				} else {
+				if($cxSale->notEmpty()) {
 
 					$h .= new \selling\SaleUi()->getShopList(
 						$eShop,

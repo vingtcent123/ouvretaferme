@@ -41,7 +41,7 @@ class ProductUi {
 
 		$callback = fn(\Collection $cProduct) => $this->getProducts($eShop, $eDate, $canBasket, $isModifying, $cProduct);
 
-		$h .= '<div class="shop-product-wrapper shop-design-'.$eShop['customDesign'].' shop-product-'.$eShop['type'].'">';
+		$h .= '<div class="shop-product-wrapper shop-design-'.$eShop['customDesign'].' shop-input-'.$eShop['productInput'].'">';
 
 			switch($eDate['productsIndex']) {
 
@@ -980,9 +980,9 @@ class ProductUi {
 		$h = '<div class="shop-product-number" data-inconsistency="'.($inconsistency ? 1 : 0).'">';
 			$h .= '<a class="btn btn-outline-primary shop-product-number-decrease" onclick="'.$attributesDecrease.'">-</a>';
 			$h .= '<span class="shop-product-number-value" data-price="'.$price.'" data-step="'.$step.'" data-available="'.$available.'" data-number="'.$number.'" data-product="'.$eProductSelling['id'].'" data-field="number">';
-				$h .= match($eShop['type']) {
-					Shop::PRIVATE => '<span class="shop-product-number-display">'.$number.'</span> '.$unit,
-					Shop::PRO => $form->inputGroup(
+				$h .= match($eShop['productInput']) {
+					Shop::PLUS_MINUS => '<span class="shop-product-number-display">'.$number.'</span> '.$unit,
+					Shop::TEXT => $form->inputGroup(
 						$form->number('value', $number > 0 ? $number : '', ['min' => $min, 'class' => 'shop-product-number-display', 'onfocus' => 'this.select()', 'onchange' => 'BasketManage.update('.$eDate['id'].', '.$eProductSelling['id'].', this, '.$step.', '.$min.', '.($available !== NULL ? $available : -1).')']).
 						$form->addon($unit)
 					)

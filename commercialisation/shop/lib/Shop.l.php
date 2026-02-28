@@ -17,6 +17,7 @@ class ShopLib extends ShopCrud {
 			}
 
 			$properties[] = 'outOfStock';
+			$properties[] = 'productInput';
 
 			if($eShop['shared']) {
 				$properties[] = 'sharedGroup';
@@ -166,11 +167,25 @@ class ShopLib extends ShopCrud {
 				$e['paymentOffline'] = FALSE;
 
 				$e['customTabs'] = TRUE;
-				$e['customDesign'] = Shop::LINE;
 
 			} else {
+
 				$e['customTabs'] = FALSE;
-				$e['customDesign'] = Shop::GRID;
+
+			}
+
+			switch($e['type']) {
+
+				case Shop::PRIVATE :
+					$e['customDesign'] = Shop::GRID;
+					$e['productInput'] = Shop::PLUS_MINUS;
+					break;
+
+				case Shop::PRO :
+					$e['customDesign'] = Shop::LINE;
+					$e['productInput'] = Shop::TEXT;
+					break;
+
 			}
 
 			Redirect::model()

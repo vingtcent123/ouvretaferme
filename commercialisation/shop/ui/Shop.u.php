@@ -292,7 +292,7 @@ class ShopUi {
 
 		$h .= $this->getOpeningFields($form, $eShop);
 
-		$update = ['description', 'approximate', 'outOfStock', 'orderMin', 'shipping', 'shippingUntil', 'hasPoint', 'comment', 'commentCaption'];
+		$update = ['description', 'approximate', 'productInput', 'outOfStock', 'orderMin', 'shipping', 'shippingUntil', 'hasPoint', 'comment', 'commentCaption'];
 
 		if($eShop['shared']) {
 			array_delete($update, 'shipping');
@@ -1298,7 +1298,7 @@ class ShopUi {
 			'termsField' => s("Demander à vos clients d'accepter explicitement les conditions générales de vente avec une case à cocher"),
 			'approximate' => s("Indiquer aux clients que le montant de leur commande affiché sur le site est approximatif s'il y a des produits qui nécessitent une pesée"),
 			'outOfStock' => s("Affichage des produits en rupture de stock"),
-			'input' => s("Choix des quantités par vos clients"),
+			'productInput' => s("Choix des quantités par vos clients"),
 			'comment' => s("Permettre à vos clients de laisser un commentaire lors d'une commande"),
 			'commentCaption' => s("Instructions à communiquer à vos clients pour remplir le commentaire"),
 			'customBackground' => s("Couleur d'arrière plan"),
@@ -1501,7 +1501,7 @@ class ShopUi {
 
 			case 'productInput' :
 				$d->values = [
-					Shop::PLUS_MINUS => s("Uniquement par + et -"),
+					Shop::PLUS_MINUS => s("Uniquement par {plus} et {minus}", ['plus' => ' <span class="btn btn-xs btn-outline-primary">'.\Asset::icon('plus').'</span> ', 'minus' => ' <span class="btn btn-xs btn-outline-primary">'.\Asset::icon('dash').'</span>']),
 					Shop::TEXT => s("Laisser les clients saisir les quantités")
 				];
 				$d->after = \util\FormUi::info(s("Les erreurs de saisie sont plus fréquentes si vous laissez les clients saisir les quantités. Nous ne recommandons cette option que pour les boutiques destinées à vos clients professionnels."));

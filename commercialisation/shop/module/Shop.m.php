@@ -175,9 +175,6 @@ class ShopModel extends \ModuleModel {
 			case 'approximate' :
 				return FALSE;
 
-			case 'productInput' :
-				return Shop::PLUS_MINUS;
-
 			case 'outOfStock' :
 				return Shop::SHOW;
 
