@@ -454,7 +454,7 @@ class Customer extends CustomerElement {
 				}
 
 				if($electronicScheme === NULL) {
-					if($p->for === 'update') {
+					if($p->for === 'update' and POST('isFromInvoicing', 'bool') === TRUE) {
 						return FALSE;
 					}
 					return TRUE;
@@ -474,7 +474,7 @@ class Customer extends CustomerElement {
 				}
 
 				if($electronicAddress === NULL) {
-					if($p->for === 'update') {
+					if($p->for === 'update' and POST('isFromInvoicing', 'bool') === TRUE) {
 						return FALSE;
 					}
 					return TRUE;
