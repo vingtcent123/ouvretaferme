@@ -270,9 +270,23 @@ Class VatUi {
 
 	public function getOperationsTab(\farm\Farm $eFarm, string $type, \Collection $cOperation, array $vatParameters): string {
 
+		$hasDifferences = $cOperation->find(fn($eOperation) => $eOperation['operation']->notEmpty() and round($eOperation['operation']['vatRate'], 1) !== round(($eOperation['amount'] / $eOperation['operation']['amount']) * 100, 1))->notEmpty();
+
+
 		$h = '<div class="tab-panel selected" data-tab="journal-'.$type.'">';
 
 			$h .= $this->displayPeriod($vatParameters);
+
+			if($hasDifferences) {
+				$form = new \util\FormUi();
+
+				$h .= '<div class="mb-1">'.$form->checkbox(NULL, '1', [
+					'onchange' => 'Vat.toggleJournalFilter(this.checked);',
+					'checked' => FALSE,
+					'callbackLabel' => fn($input) => $input.' '.s("Filtrer sur les écarts de TVA"),
+				]).'</div>';
+
+			}
 
 			$h .= '<div class="stick-sm util-overflow-sm">';
 
@@ -282,8 +296,7 @@ Class VatUi {
 
 				} else {
 
-
-					$h .= '<table class="tr-even tr-hover">';
+					$h .= '<table id="vat-journal" class="tr-even tr-hover">';
 
 						$h .= '<thead class="thead-sticky">';
 							$h .= '<tr>';

@@ -11,6 +11,14 @@ document.delegateEventListener('input', '#cerfa-3 input', function(e) {
 
 class Vat {
 
+	static toggleJournalFilter(checked) {
+		if(checked) {
+			qs('#vat-journal').classList.add('vat-journal-filter');
+		} else {
+			qs('#vat-journal').classList.remove('vat-journal-filter');
+		}
+	}
+
 	static scrollTo(identifier) {
 
 		const { top: mainTop} = qs('main').getBoundingClientRect();

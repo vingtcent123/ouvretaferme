@@ -140,3 +140,7 @@ table.no-border-bottom td {
 	align-items: center;
 	gap: 0.25rem;
 }
+
+table.vat-journal-filter tbody tr:not(:has(td.color-danger)) {
+	display: none;
+}
