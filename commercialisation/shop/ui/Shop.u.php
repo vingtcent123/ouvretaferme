@@ -92,7 +92,10 @@ class ShopUi {
 
 		if($eShop['shared'] === NULL) {
 
-			$h = '<div class="util-buttons mb-3">';
+			$h = '<div class="util-block-help">';
+				$h .= s("Vous devez choisir si vous souhaitez créer une boutique en ligne dédiée à la vente de votre seule production, ou si cette boutique en ligne sera partagée avec d'autres producteurs. Le choix que vous faites maintenant ne pourra pas être modifié par la suite, mais vous pouvez toujours créer autant de boutiques que vous le souhaitez.");
+			$h .= '</div>';
+			$h .= '<div class="util-buttons mb-3">';
 
 				$h .= '<a href="/shop/:create?farm='.$eShop['farm']['id'].'&shared=0" class="util-button '.($eShop->acceptCreateNotShared() ? '' : 'disabled').'">';
 					$h .= '<div>';
