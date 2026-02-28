@@ -106,11 +106,6 @@ table.table-bordered td:first-child.no-border {
 	border-left: none;
 }
 
-thead.thead-sticky td,
-thead.thead-sticky th {
-	background-color: #edecec;
-}
-
 tr.tr-border-top {
 	border-top: 1px dotted var(--secondary);
 }

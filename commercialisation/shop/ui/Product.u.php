@@ -1074,7 +1074,7 @@ class ProductUi {
 		}
 
 		$h = '<div class="'.$overflow.' stick-xs mb-3">';
-			$h .= '<table class="tbody-even td-padding-sm" data-batch="#batch-catalog">';
+			$h .= '<table class="tbody-even" data-batch="#batch-catalog">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						if($canAction) {
@@ -1314,7 +1314,7 @@ class ProductUi {
 		$columns = 2;
 
 		$h = '<div class="util-overflow-md stick-xs mb-2">';
-			$h .= '<table class="tbody-even td-padding-sm" data-batch="#batch-catalog">';
+			$h .= '<table class="tbody-even" data-batch="#batch-catalog">';
 				$h .= '<thead>';
 					$h .= '<tr>';
 						if($eCatalog->canWrite()) {

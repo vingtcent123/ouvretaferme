@@ -168,7 +168,7 @@ class CashflowUi {
 
 		$h .= '<div id="cashflow-list" class="stick-md util-overflow-md">';
 
-			$h .= '<table class="tr-even tr-hover td-padding-sm">';
+			$h .= '<table class="tr-even tr-hover">';
 
 				$h .= '<thead class="thead-sticky">';
 					$h .= '<tr>';
