@@ -308,11 +308,14 @@ class ShopUi {
 			}
 		]);
 
+		if($eShop->isShared()) {
 
-		$h .= '<div class="util-block bg-background-light">';
-			$h .= $form->group(content: '<h4>'.s("Paramétrage spécifique à la boutique collective").'</h4>');
-			$h .= $form->dynamicGroups($eShop, ['sharedGroup', 'sharedCategory', 'sharedExport']);
-		$h .= '</div>';
+			$h .= '<div class="util-block bg-background-light">';
+				$h .= $form->group(content: '<h4>'.s("Paramétrage spécifique à la boutique collective").'</h4>');
+				$h .= $form->dynamicGroups($eShop, ['sharedGroup', 'sharedCategory', 'sharedExport']);
+			$h .= '</div>';
+
+		}
 
 		$h .= $form->group(
 			s("Limiter l'accès à cette boutique à certains clients seulement").\util\FormUi::info(s("Seuls les clients que vous aurez choisis pourront accéder à cette boutique.")),
