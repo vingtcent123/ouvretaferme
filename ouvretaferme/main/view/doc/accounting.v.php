@@ -663,12 +663,12 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 			echo '<tr>';
 				echo '<td>'.s("Avec TVA (TVA collectée)").'</td>';
 				echo '<td>'.s("Opération imposable à la TVA au taux indiqué").'</td>';
-				echo '<td>'.s("Ajoute une précision à l'écriture de TVA, lorsque l'écriture HT n'est pas une écriture de vente (classe 7). Cette précision est utile pour le calcul de la déclaration de TVA.").'</td>';
+				echo '<td>'.s("Ajoute une précision à l'écriture de TVA, lorsque l'écriture HT n'est pas une écriture de vente (classe {value}). Cette précision est utile pour le calcul de la déclaration de TVA.", \account\AccountSetting::PRODUCT_ACCOUNT_CLASS).'</td>';
 			echo '</tr>';
 			echo '<tr>';
 				echo '<td>'.s("Avec TVA (TVA déductible)").'</td>';
 				echo '<td>'.s("Opération imposable à la TVA au taux indiqué").'</td>';
-				echo '<td>'.s("Ajoute une précision à l'écriture de TVA, lorsque l'écriture HT n'est pas une écriture d'achat (classe 6). Cette précision est utile pour le calcul de la déclaration de TVA.").'</td>';
+				echo '<td>'.s("Ajoute une précision à l'écriture de TVA, lorsque l'écriture HT n'est pas une écriture d'achat (classe {value}). Cette précision est utile pour le calcul de la déclaration de TVA.", \account\AccountSetting::CHARGE_ACCOUNT_CLASS).'</td>';
 			echo '</tr>';
 			echo '<tr>';
 				echo '<td>'.s("Exonéré de TVA").'</td>';
