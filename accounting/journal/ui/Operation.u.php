@@ -1049,7 +1049,6 @@ class OperationUi {
 
 				$eOperation['vatRate'.$suffix] = '';
 				$noVat = ($eOperation['account']->notEmpty() and $eOperation['account']['vatAccount']->empty());
-				$vatAttributes = $noVat ? ['disabled' => 'disabled'] : [];
 
 				$vatValueField = '<div data-wrapper="vatRate'.$suffix.'" class="company_form_group-with-tip">';
 					$vatValueField .= $form->inputGroup(
@@ -1057,7 +1056,7 @@ class OperationUi {
 						$form->calculation(
 							'vatValue'.$suffix,
 							$vatAmountDefault ?? '',
-							['data-index' => $index, 'data-field' => 'vatValue'] + $vatAttributes
+							['data-index' => $index, 'data-field' => 'vatValue']
 						).
 						$form->addon(s("€")),
 					);
@@ -1085,7 +1084,7 @@ class OperationUi {
 						$form->number(
 							'vatRate'.$suffix,
 							$vatRateDefault,
-							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.01, 'tabindex' => -1] + $vatAttributes,
+							['data-index' => $index, 'data-field' => 'vatRate', 'data-vat-rate' => $form->getId(), 'min' => 0, 'max' => 20, 'step' => 0.01, 'tabindex' => -1],
 						).$form->addon(s("%"))
 					);
 				$vatRateField .= '</fieldset>';
