@@ -1146,11 +1146,7 @@ class Sale extends SaleElement {
 					return TRUE;
 				}
 
-				$this['shopPointPermissive'] = \shop\Point::model()
-					->select(\shop\Point::getSelection())
-					->whereId($point)
-					->whereFarm($this['farm'])
-					->get();
+				$this['shopPointPermissive'] = \shop\PointLib::getValidBySale($this, $point);
 
 				return $this['shopPointPermissive']->notEmpty();
 

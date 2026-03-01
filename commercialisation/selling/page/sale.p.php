@@ -400,7 +400,7 @@ new \selling\SalePage()
 	->quick(['deliveredAt', 'shipping'], validate: ['canUpdate', 'isOpen'])
 	->update(function($data) {
 
-		$data->e['cPoint'] = \shop\PointLib::getAlphabeticalByFarm($data->e['farm']);
+		$data->e['cPoint'] = \shop\PointLib::getAlphabeticalBySale($data->e);
 
 		throw new ViewAction($data);
 

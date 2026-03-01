@@ -114,6 +114,31 @@ class PointLib extends PointCrud {
 
 	}
 
+	public static function getAlphabeticalBySale(\selling\Sale $eSale): \Collection {
+
+		return self::getAlphabeticalByFarm(
+			$eSale['shopShared'] ?
+				$eSale['shop']['farm'] :
+				$eSale['farm']
+		);
+
+	}
+
+	public static function getValidBySale(\selling\Sale $eSale, mixed $point): Point {
+
+		return Point::model()
+			->select(\shop\Point::getSelection())
+			->whereStatus(Point::ACTIVE)
+			->whereId($point)
+			->whereFarm(
+				$eSale['shopShared'] ?
+					$eSale['shop']['farm'] :
+					$eSale['farm']
+			)
+			->get();
+
+	}
+
 	public static function getAlphabeticalByFarm(\farm\Farm $eFarm): \Collection {
 
 		return Point::model()
