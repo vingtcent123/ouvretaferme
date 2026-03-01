@@ -485,65 +485,59 @@ Class VatLib {
 		// si déclaration trimestrielle => 1er trimestre de l'exercice ou mois de mars
 		// si déclaration mensuelle => 3è mois de l'exercice ou mois de mars
 		// si exercice incomplet : calculer un prorata tempris de la partie forfaitaire et du seuil de 370k selon le nombre de jours
-		$eFinancialYearLast = \account\FinancialYearLib::getPreviousFinancialYear($eFarm['eFinancialYear']);
 		$adarTax = 0;
 
-		if($eFinancialYearLast->notEmpty()) {
+		$turnover = self::getTurnoverOperations($search)->sum('amount');
 
-			$searchAdar = new \Search(['minDate' => $eFinancialYearLast['startDate'], 'maxDate' => $eFinancialYearLast['endDate'], 'financialYear' => new \account\FinancialYear()]);
-			$turnover = self::getTurnoverOperations($searchAdar)->sum('amount');
+		// Calcul du prorata
+		$daysYear = (strtotime($search->get('maxDate')) - strtotime($search->get('maxDate').' - 1 YEAR')) / 86400;
+		$daysFinancialYear = ((strtotime($search->get('maxDate')) - strtotime($search->get('minDate'))) / 86400 + 1);
+		$prorata = $daysFinancialYear / $daysYear;
 
-			// Calcul du prorata
-			$daysYear = (strtotime($eFinancialYearLast['endDate']) - strtotime($eFinancialYearLast['endDate'].' - 1 YEAR')) / 86400;
-			$daysFinancialYear = ((strtotime($eFinancialYearLast['endDate']) - strtotime($eFinancialYearLast['startDate'])) / 86400 + 1);
-			$prorata = $daysFinancialYear / $daysYear;
+		// Pas de taxe ADAR l'année de création de l'exploitation
+		$isNotCreationYear = ($eFarm['startedAt'] === NULL or $eFarm['startedAt'].'-12-31' < $search->get('minDate'));
 
-			// Pas de taxe ADAR l'année de création de l'exploitation
-			$isNotCreationYear = ($eFarm['startedAt'] === NULL or $eFarm['startedAt'].'-12-31' < $eFinancialYearLast['startDate']);
+		if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
 
-			if($eFarm->getConf('vatFrequency') === \farm\Configuration::ANNUALLY) {
+			$isInPeriod = TRUE;
 
-				$isInPeriod = TRUE;
+		} else if($eFarm->getConf('vatFrequency') === \farm\Configuration::QUARTERLY) {
 
-			} else if($eFarm->getConf('vatFrequency') === \farm\Configuration::QUARTERLY) {
+			$firstMonth = (int)mb_substr($search->get('minDate'), 6, 2);
+			$hasMarchInTrimester = in_array($firstMonth, [1, 2, 3]);
+			$isFirstTrimester = (int)mb_substr($search->get('minDate'), 6, 2);
 
-				$firstMonth = (int)mb_substr($search->get('minDate'), 6, 2);
-				$hasMarchInTrimester = in_array($firstMonth, [1, 2, 3]);
-				$isFirstTrimester = (int)mb_substr($eFinancialYearLast['startDate'], 6, 2);
-
-				if(
-					$eFinancialYearLast['startDate'] >= date('Y-04-01', strtotime($eFinancialYearLast['startDate']))
-				) {
-					$isInPeriod = $isFirstTrimester;
-				} else {
-					$isInPeriod = $hasMarchInTrimester;
-				}
-
-			} else { // Monthly
-
-				// 3è mois de l'exercice :
-				$thirdMonth = (int)mb_substr($eFinancialYear['startDate'], 6, 2) + 2;
-				// Mois en cours de déclaration
-				$currentMonth = (int)mb_substr($search->get('minDate'), 6, 2);
-
-				// On prend le premier encore le 3è mois et le mois de mars
-				$isInPeriod = ($currentMonth === min($thirdMonth, 3));
-
+			if(
+				$search->get('minDate') >= date('Y-04-01', strtotime($search->get('minDate')))
+			) {
+				$isInPeriod = $isFirstTrimester;
+			} else {
+				$isInPeriod = $hasMarchInTrimester;
 			}
 
-			if($isNotCreationYear and $isInPeriod) {
+		} else { // Monthly
 
-	      $associates = min(1, $eFinancialYearLast['associates']); // Le nombre d'associés du dernier exercice, au moins 1
-				$UNIT_BY_ASSOCIATE_ADAR_TAX = 90;
-				$fixed = $UNIT_BY_ASSOCIATE_ADAR_TAX * $associates * $prorata;
+			// 3è mois de l'exercice :
+			$thirdMonth = (int)mb_substr($eFinancialYear['startDate'], 6, 2) + 2;
+			// Mois en cours de déclaration
+			$currentMonth = (int)mb_substr($search->get('minDate'), 6, 2);
 
-				$RATE_1_ADAR = 0.19 / 100;
-				$THRESHOLD_ADAR_TAX = 370000 * $prorata;
-				$RATE_2_ADAR = 0.05 / 100;
+			// On prend le premier encore le 3è mois et le mois de mars
+			$isInPeriod = ($currentMonth === min($thirdMonth, 3));
 
-				$adarTax = round($fixed + min($THRESHOLD_ADAR_TAX, $turnover) * $RATE_1_ADAR + max(0, $turnover - $THRESHOLD_ADAR_TAX) * $RATE_2_ADAR, $precision);
+		}
 
-			}
+		if($isNotCreationYear and $isInPeriod) {
+
+      $associates = max(1, $eFinancialYear['associates']); // Le nombre d'associés du dernier exercice, au moins 1
+			$UNIT_BY_ASSOCIATE_ADAR_TAX = 90;
+			$fixed = $UNIT_BY_ASSOCIATE_ADAR_TAX * $associates * $prorata;
+
+			$RATE_1_ADAR = 0.19 / 100;
+			$THRESHOLD_ADAR_TAX = 370000 * $prorata;
+			$RATE_2_ADAR = 0.05 / 100;
+
+			$adarTax = round($fixed + min($THRESHOLD_ADAR_TAX, $turnover) * $RATE_1_ADAR + max(0, $turnover - $THRESHOLD_ADAR_TAX) * $RATE_2_ADAR, $precision);
 
 		}
 
