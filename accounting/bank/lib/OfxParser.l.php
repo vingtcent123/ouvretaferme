@@ -38,10 +38,6 @@ class OfxParserLib {
 
 	}
 
-	protected static function extractDate(string $date): string {
-		return substr($date, 0, 4).'-'.substr($date, 4, 2).'-'.substr($date, 6, 2).' '.substr($date, 8, 2).':'.substr($date, 10, 2).':'.substr($date, 12, 2);
-	}
-
 	public static function extractImport(\DOMDocument $ofx): array {
 
 		return [

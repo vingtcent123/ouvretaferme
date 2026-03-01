@@ -268,8 +268,8 @@ class ImportLib extends ImportCrud {
 			if($e['newAccount']->empty()) {
 
 				// Créer le nouveau compte bancaire
-				$bankId = uniqid();
-				$accountId = uniqid();
+				$bankId = $e['bankId'] ?? uniqid();
+				$accountId = $e['accountId'] ?? uniqid();
 
 				$e['account'] = BankAccountLib::createNew($bankId, $accountId);
 
