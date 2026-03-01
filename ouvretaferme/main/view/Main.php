@@ -224,6 +224,9 @@ class MainTemplate extends BaseTemplate {
 								$h .= '<a href="/presentation/producteur">'.s("Liste des fonctionnalités").'</a>';
 							$h .= '</div>';
 							$h .= '<div>';
+								$h .= '<h4>'.s("Newsletter").'</h4>';
+								$h .= '<a href="https://asso.ouvretaferme.org/newsletter" target="_blank">'.s("Inscription à la newsletter").'</a><br/>';
+								$h .= '<br/>';
 								$h .= '<h4>'.s("Discord").'</h4>';
 								$h .= '<a href="https://discord.com/channels/1344219338684497961/1444680100548448307" target="_blank">'.s("Salons de discussion").'</a><br/>';
 								$h .= '<a href="https://discord.gg/bdSNc3PpwQ" target="_blank">'.s("Recevoir une invitation").'</a>';
