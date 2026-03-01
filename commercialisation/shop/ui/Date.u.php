@@ -885,7 +885,7 @@ class DateUi {
 					$h .= s("Ventes");
 					if($cxSale->notEmpty()) {
 						$h .= '<span class="tab-item-count">'.$cxSale
-							->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]), depth: $cxSale->getDepth())
+							->find(fn($eSale) => in_array($eSale['preparationStatus'], [\selling\Sale::DRAFT, \selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED]), depth: $cxSale->getDepth())
 							->count().'</span>';
 					}
 				$h .= '</a>';

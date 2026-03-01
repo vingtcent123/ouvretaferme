@@ -299,6 +299,9 @@ body {
 	display: grid;
 	grid-template-rows: max-content max-content 1fr max-content;
 	background-color: var(--background-body);
+	/*
+	background: linear-gradient(135deg, var(--secondary-highlight) 0, #eceaf6 75vw, var(--background-body));
+	*/
 }
 
 body[data-touch="yes"] {
