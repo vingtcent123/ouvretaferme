@@ -11,6 +11,8 @@ abstract class OperationElement extends \Element {
 	const CREDIT = 'credit';
 
 	const VAT_STD = 'vat-std';
+	const VAT_STD_COLLECTED = 'vat-std-collected';
+	const VAT_STD_DEDUCTIBLE = 'vat-std-deductible';
 	const VAT_0 = 'vat-0';
 	const VAT_0_EXPORT = 'vat-0-export';
 	const VAT_0_INTRACOM = 'vat-0-intracom';
@@ -71,7 +73,7 @@ class OperationModel extends \ModuleModel {
 			'asset' => ['element32', 'asset\Asset', 'null' => TRUE, 'cast' => 'element'],
 			'paymentDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'paymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
-			'vatRule' => ['enum', [\journal\Operation::VAT_STD, \journal\Operation::VAT_0, \journal\Operation::VAT_0_EXPORT, \journal\Operation::VAT_0_INTRACOM, \journal\Operation::VAT_HCA, \journal\Operation::VAT_HC], 'null' => TRUE, 'cast' => 'enum'],
+			'vatRule' => ['enum', [\journal\Operation::VAT_STD, \journal\Operation::VAT_STD_COLLECTED, \journal\Operation::VAT_STD_DEDUCTIBLE, \journal\Operation::VAT_0, \journal\Operation::VAT_0_EXPORT, \journal\Operation::VAT_0_INTRACOM, \journal\Operation::VAT_HCA, \journal\Operation::VAT_HC], 'null' => TRUE, 'cast' => 'enum'],
 			'isSelfConsumption' => ['bool', 'cast' => 'bool'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],

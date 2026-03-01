@@ -70,6 +70,7 @@ new Page()
 		'classPrefixes' => GET('classPrefixes', 'array'),
 		'withVat' => GET('withVat', 'bool', FALSE),
 		'withJournal' => GET('withJournal', 'bool', FALSE),
+		'withDetail' => GET('withDetail', 'bool', FALSE),
 		'status' => GET('status'),
 	]);
 

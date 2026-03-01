@@ -110,12 +110,16 @@ Class VatLib {
 				'vatRate',
 				'amount' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'float'),
 			])
-			->whereVatRule(\journal\Operation::VAT_STD)
 			->or(
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS.'%'),
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::CHARGE_ESCOMPTES_ACCOUNT_CLASS.'%'),
-				// TODO : vérifier si c'est OK de faire ça quand même (prendre les comptes de tiers également)
-				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::THIRD_ACCOUNT_RECEIVABLE_DEBT_CLASS.'%'),
+				// Soit c'est de la TVA standard => on doit vérifier les numéros de compte
+				fn() => $this
+					->or(
+						fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS.'%'),
+						fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::CHARGE_ESCOMPTES_ACCOUNT_CLASS.'%'),
+					)
+					->whereVatRule(\journal\Operation::VAT_STD),
+				// Soit c'est de la TVA "forcée" collectée => On prend sans vérifier
+				fn() => $this->whereVatRule(\journal\Operation::VAT_STD_COLLECTED),
 			)
 			->group(['compte', 'vatRate'])
 			->getCollection();
@@ -151,7 +155,7 @@ Class VatLib {
 				'amount', 'type',
 				'operation' => ['vatRate'],
 			])
-			->whereVatRule(\journal\Operation::VAT_STD)
+			->whereVatRule('IN', [\journal\Operation::VAT_STD, \journal\Operation::VAT_STD_COLLECTED, \journal\Operation::VAT_STD_DEDUCTIBLE])
 			->or(
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_BUY_CLASS_PREFIX.'%'),
 				fn() => $this->whereAccountLabel('LIKE', \account\AccountSetting::VAT_SELL_CLASS_PREFIX.'%'),

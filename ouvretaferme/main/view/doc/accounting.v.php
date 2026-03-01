@@ -661,6 +661,16 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 				echo '<td>'.s("Achat de graines, frais de livraison, vente directe, aide ou subvention versée en contrepartie d'une opération (bien ou service), achat ou cession d'immobilisation.<br />À utiliser aussi pour un achat sans TVA apparente sur la facture (carburant agricole, facture sans mention TVA...). Dans ce cas, indiquer le montant total de la facture comme montant HT et 0% comme taux.").'</td>';
 			echo '</tr>';
 			echo '<tr>';
+				echo '<td>'.s("Avec TVA (TVA collectée)").'</td>';
+				echo '<td>'.s("Opération imposable à la TVA au taux indiqué").'</td>';
+				echo '<td>'.s("Ajoute une précision à l'écriture de TVA, lorsque l'écriture HT n'est pas une écriture de vente (classe 7). Cette précision est utile pour le calcul de la déclaration de TVA.").'</td>';
+			echo '</tr>';
+			echo '<tr>';
+				echo '<td>'.s("Avec TVA (TVA déductible)").'</td>';
+				echo '<td>'.s("Opération imposable à la TVA au taux indiqué").'</td>';
+				echo '<td>'.s("Ajoute une précision à l'écriture de TVA, lorsque l'écriture HT n'est pas une écriture d'achat (classe 6). Cette précision est utile pour le calcul de la déclaration de TVA.").'</td>';
+			echo '</tr>';
+			echo '<tr>';
 				echo '<td>'.s("Exonéré de TVA").'</td>';
 				echo '<td>'.s("Opération qui est dans le champ d'application de la TVA, mais qui n'est pas soumise à la TVA en raison d'une disposition de la loi. En revanche, l'opération entre dans le chiffre d'affaires.").'</td>';
 				echo '<td>'.s("Services financiers et bancaires (art. 261 C), Loyers nus (art. 261 D), Cessions d'immeubles anciens").'</td>';
@@ -689,11 +699,22 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 
 	echo '</div>';
 
+	echo '<div class="util-block" id="doc-accounting-vat-create-operation">';
+
+		echo '<h2>'.s("Pourquoi il ne faut pas créer une écriture de TVA \"seule\" ?").'</h2>';
+
+		echo '<p>'.s("Pour répondre à cette question, il faut revenir sur la finalité de la ventilation par montant et taux de TVA.").'</p>';
+		echo '<p>'.s("Dans votre déclaration (mensuelle, trimestrielle ou annuelle) de TVA, l'État demande le montant HT pour chaque taux de TVA et le montant de TVA associé. Hors, en créant une écriture de TVA \"seule\", {siteName} ne sera pas en mesure d'indiquer quel est le montant HT d'origine ni le taux de TVA qui a été appliqué. Vos déclarations risquent donc d'être incomplètes.").'</p>';
+		echo '<p>'.s("C'est pourquoi une écriture comptable de TVA doit <u>toujours être créée depuis l'opération HT</u> à laquelle elle est rattachée.").'</p>';
+		echo '<p>'.s("Le seul cas où une écriture de TVA peut être réalisée \"seule\", c'est pour comptabiliser votre déclaration de TVA (et solder vos comptes de TVA collectée et déductible).").'</p>';
+
+	echo '</div>';
+
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Déclaration de TVA").'</h2>';
 
-		echo '<p>'.s("{siteName} vous permet de vérifier plus facilement la TVA que vous avez collectée et la TVA déductible de la période concernée.").'</p>';
+		echo '<p>'.s("{siteName} vous permet de vérifier plus facilement la TVA que vous avez collectée et la TVA déductible de la période concernée, en consultant toutes vos opérations de ventes et d'achat avec leurs taux et montants de TVA déclarés et calculés. Vous pouvez doubler cette vérification avec le solde de vos comptes de TVA présents dans le Grand livre.").'</p>';
 		echo '<p>'.s("Vous pouvez ainsi vérifier la proposition de déclaration de {siteName} compte tenu des écritures comptables que vous avez enregistrées sur cette période.").'</p>';
 
 		echo '<h3>'.s("Compléter ma déclaration").'</h3>';

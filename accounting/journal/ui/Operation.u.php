@@ -1742,6 +1742,8 @@ class OperationUi {
 				$d->field = 'select';
 				$d->values = [
 					Operation::VAT_STD => s("Avec TVA"),
+					Operation::VAT_STD_COLLECTED => s("Avec TVA (collectée)"),
+					Operation::VAT_STD_DEDUCTIBLE => s("Avec TVA (déductible)"),
 					Operation::VAT_0 => s("Exonéré de TVA"),
 					Operation::VAT_0_EXPORT => s("Exonéré de TVA (export hors UE)"),
 					Operation::VAT_0_INTRACOM => s("Exonéré de TVA (livraison intracommunautaire)"),

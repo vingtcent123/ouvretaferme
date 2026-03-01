@@ -385,7 +385,16 @@ class AccountUi {
 
 				foreach($accounts as $account) {
 
+					if(str_starts_with('!', $account)) {
+						$exclude = TRUE;
+					} else {
+						$exclude = FALSE;
+					}
+
 					if(AccountLabelLib::isFromClass($eAccount['class'], (string)$account)) {
+						if($exclude) {
+							break;
+						}
 						return $vatCode;
 					}
 

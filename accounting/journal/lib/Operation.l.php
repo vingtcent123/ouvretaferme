@@ -593,6 +593,28 @@ class OperationLib extends OperationCrud {
 			// Ce type d'écriture a un compte de TVA correspondant
 			$eAccount = $eOperation['account'];
 			$vatValue = var_filter($vatValues[$index] ?? NULL, 'float', 0.0);
+
+			// L'utilisateur force le type de TVA à enregistrer
+			if($eOperation['vatRule'] === Operation::VAT_STD_DEDUCTIBLE) {
+
+				$eAccount['vatAccount'] = \account\AccountLib::getByClass(\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT);
+
+			} else if($eOperation['vatRule'] === Operation::VAT_STD_COLLECTED) {
+
+				$eAccount['vatAccount'] = \account\AccountLib::getByClass(\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT);
+
+			} else if($eOperation['vatRule'] === Operation::VAT_STD and $eAccount['vatAccount']->empty()) {
+
+				\Fail::log('Operation::vatStd.unknown');
+				return new \Collection();
+
+			} else if($input['vatValue'][$index]) { // Il a saisi une valeur de TVA mais une règle qui dit "pas de TVA"
+
+				\Fail::log('Operation::vatRuleNoWithVatValue.inconsistency', [$eOperation['vatRule']]);
+				return new \Collection();
+
+			}
+
 			$hasVatAccount = (
 				\farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $eOperation['date']) and
 				$eAccount->exists() and

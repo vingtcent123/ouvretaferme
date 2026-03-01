@@ -45,6 +45,9 @@ class AlertUi {
 			'Operation::typeProduitCharge.inconsistent' => s("Il n'est pas possible d'avoir en même temps une écriture de charge et une écriture de produit. Réalisez deux écritures séparément."),
 			'Operation::thirdPartys.inconsistent' => s("Il n'est pas possible de créer des écritures pour plusieurs tiers différents, réalisez des écritures séparément par tiers."),
 
+			'Operation::vatRuleNoWithVatValue.inconsistency' => s("L'une des écritures a de la TVA indiquée malgré une règle de TVA \"{value}\"", OperationUi::p('vatRule')->values[$options[0]]),
+			'Operation::vatStd.unknown' => s("Veuillez préciser le type de règle de TVA : collectée ou déductible. Le type de compte choisi ne permet pas une déduction automatique type de la règle."),
+
 			default => null
 
 		};
