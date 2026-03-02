@@ -21,6 +21,7 @@ class Item extends ItemElement {
 
 	public static function containsApproximate(\Collection $cItem) {
 		return $cItem->contains(fn($eItem) => (
+			$eItem['unit']->notEmpty() and
 			$eItem['unit']['approximate']
 		));
 	}
