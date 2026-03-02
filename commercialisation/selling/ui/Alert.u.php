@@ -79,6 +79,7 @@ class AlertUi {
 			'Sale::orderMin.check' => s("Vous n'avez pas atteint le minimum de commande demandé pour ce point de livraison !"),
 			'Sale::address.check' => s("Nous avons besoin de votre adresse pour vous livrer à domicile !"),
 			'Sale::products.check' => s("Vous ne pouvez pas continuer car votre panier est vide !"),
+			'Sale::customer.check' => s("Client non reconnu sur votre ferme."),
 			'Sale::customer.market' => s("Le logiciel de caisse n'est disponible que pour les points de vente aux particuliers."),
 			'Sale::deliveredAt.check' => s("La date de vente est obligatoire."),
 			'Sale::deliveredAt.composition' => s("Vous avez déjà ajouté une composition pour cette même date."),

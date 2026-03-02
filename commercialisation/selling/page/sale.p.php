@@ -207,6 +207,8 @@ new Page(function($data) {
 
 			$eSale->build($properties, ['customer' => $customer] + $_POST, new \Properties('create'));
 
+			$fw->validate();
+
 			$type ??= $eSale['type'];
 
 			if($type !== $eSale['type']) {
