@@ -163,7 +163,12 @@ class FinancialYearUi {
 
 		$h = '';
 
-		if($eFinancialYear['nOperation'] > 0) {
+		if($eFinancialYear->isClosed()) {
+			$h .= '<div class="util-block-info">';
+				$h .= '<h4>'.s("Attention").'</h4>';
+				$h .= s("Certains paramètres ne sont plus modifiables car l'exercice a été clos.");
+			$h .= '</div>';
+		} else if($eFinancialYear['nOperation'] > 0) {
 			$h .= '<div class="util-block-info">';
 				$h .= '<h4>'.s("Attention").'</h4>';
 				$h .= s("Certains paramètres ne sont plus modifiables car il y a des écritures comptables enregistrées pour cet exercice.");
@@ -185,6 +190,26 @@ class FinancialYearUi {
 				},
 				'endDate*' => function($d) use($form, $eFinancialYear) {
 					if($eFinancialYear['nOperation'] > 0) {
+						$d->attributes['disabled'] = 'disabled';
+					}
+				},
+				'taxSystem*' => function($d) use($form, $eFinancialYear) {
+					if($eFinancialYear->isClosed()) {
+						$d->attributes['disabled'] = 'disabled';
+					}
+				},
+				'accountingMode' => function($d) use($form, $eFinancialYear) {
+					if($eFinancialYear->isClosed()) {
+						$d->attributes['disabled'] = 'disabled';
+					}
+				},
+				'accountingType' => function($d) use($form, $eFinancialYear) {
+					if($eFinancialYear->isClosed()) {
+						$d->attributes['disabled'] = 'disabled';
+					}
+				},
+				'legalCategory*' => function($d) use($form, $eFinancialYear) {
+					if($eFinancialYear->isClosed()) {
 						$d->attributes['disabled'] = 'disabled';
 					}
 				},
@@ -990,40 +1015,27 @@ class FinancialYearUi {
 						$fecMenu .= s("Télécharger une attestation FEC");
 					$fecMenu .= '</a>';
 
-						if($eFinancialYear->acceptUpdate()) {
+						$h .= '<a class="dropdown-item" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
+							$h .= s("Modifier l'exercice");
+						$h .= '</a>';
+						$h .= '<div class="dropdown-divider"></div>';
+						$h .= $fecMenu;
 
-							if($eFinancialYear->acceptDelete()) {
+						if($eFinancialYear->acceptDelete()) {
 
-								$h .= '<a class="dropdown-item" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
-									$h .= s("Modifier l'exercice");
-								$h .= '</a>';
-								$h .= $fecMenu;
-								$h .= '<div class="dropdown-divider"></div>';
-								$h .= '<a class="dropdown-item bg-danger" data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doDelete" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Cette opération est définitive, toutes les informations liées seront supprimées. Confirmez-vous cette suppression ?").'">';
-									$h .= \Asset::icon('trash').' ';
-									$h .= s("Supprimer l'exercice");
-								$h .= '</a>';
+							$h .= '<a class="dropdown-item bg-danger" data-ajax="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:doDelete" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Cette opération est définitive, toutes les informations liées seront supprimées. Confirmez-vous cette suppression ?").'">';
+								$h .= \Asset::icon('trash').' ';
+								$h .= s("Supprimer l'exercice");
+							$h .= '</a>';
 
-							} else {
+						}
 
-								$h .= '<a class="dropdown-item" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
-									$h .= s("Modifier");
-								$h .= '</a>';
-								$h .= '<div class="dropdown-divider"></div>';
-								$h .= $fecMenu;
+						if($eFinancialYear->acceptReOpen()) {
 
-							}
-
-						} else if($eFinancialYear->acceptReOpen()) {
-
-							$h .= $fecMenu;
-							$h .= '<div class="dropdown-divider"></div>';
 							$h .= '<a class="bg-danger dropdown-item" data-ajax="'.\company\CompanyUi::urlAccount($eFarm, $eFinancialYear).'/financialYear/:doReopen" post-id="'.$eFinancialYear['id'].'" data-confirm="'.s("Voulez-vous réellement rouvrir cet exercice ? N'effectuez cette action que si vous maîtrisez ce que vous faites et pour une durée très limitée. Notez qu'aucune écriture ne sera enregistrée automatiquement à la refermeture.").'">';
 								$h .= \Asset::icon('exclamation-triangle').' '.s("Rouvrir");
 							$h .= '</a>';
 
-						} else {
-							$h .= $fecMenu;
 						}
 
 					$h .= '</div>';
@@ -1094,13 +1106,9 @@ class FinancialYearUi {
 
 							$h .= '<div class="financial-year-buttons">';
 
-								if($eFinancialYear->acceptUpdate()) {
-
-									$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
-										$h .= \Asset::icon('gear-fill');
-									$h .= '</a>';
-
-								}
+								$h .= '<a class="btn btn-primary" href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/:update?id='.$eFinancialYear['id'].'">';
+									$h .= \Asset::icon('gear-fill');
+								$h .= '</a>';
 
 							$h .= '</div>';
 						$h .= '</div>';
@@ -1115,22 +1123,26 @@ class FinancialYearUi {
 							$h .= s("Régime du {value}", '<b>'.self::p('taxSystem')->values[$eFinancialYear['taxSystem']].'</b>');
 						$h .= '</li>';
 
-						if($readOnly) {
-
-							$type = match($eFinancialYear['accountingType']) {
-								FinancialYear::CASH => s("de <b>trésorerie</b>"),
-								FinancialYear::ACCRUAL => s("à l'<b>engagement</b>"),
-							};
-
-							$mode = match($eFinancialYear['accountingMode']) {
-								FinancialYear::CASH_RECEIPTS => s("avec un <b>livre de recettes</b>"),
-								FinancialYear::ACCOUNTING => s("selon le <b>plan comptable agricole</b>"),
-							};
-							$h .= '<li>';
-								$h .= s("Comptabilité {type} {mode}", ['type' => $type, 'mode' => $mode]);
-							$h .= '</li>';
-
+						$h .= '<li>';
+							$h .= s("{value}", '<b>'.self::p('legalCategory')->values[$eFinancialYear['legalCategory']].'</b>');
+						if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_GAEC) {
+								$h .= ' '.p("(<b>{value}</b> associé·e)", "(<b>{value}</b> associé·e·s)", $eFinancialYear['associates']);
 						}
+						$h .= '</li>';
+
+
+						$type = match($eFinancialYear['accountingType']) {
+							FinancialYear::CASH => s("de <b>trésorerie</b>"),
+							FinancialYear::ACCRUAL => s("à l'<b>engagement</b>"),
+						};
+
+						$mode = match($eFinancialYear['accountingMode']) {
+							FinancialYear::CASH_RECEIPTS => s("avec un <b>livre de recettes</b>"),
+							FinancialYear::ACCOUNTING => s("selon le <b>plan comptable agricole</b>"),
+						};
+						$h .= '<li>';
+							$h .= s("Comptabilité {type} {mode}", ['type' => $type, 'mode' => $mode]);
+						$h .= '</li>';
 
 						if($readOnly === FALSE and $eFinancialYear['cImport']->notEmpty()) {
 							if($eFinancialYear['cImport']->first()['status'] === Import::DONE) {

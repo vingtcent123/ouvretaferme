@@ -7,8 +7,16 @@ class FinancialYearLib extends FinancialYearCrud {
 	public static function getPropertiesCreate(): array {
 		return ['taxSystem', 'accountingType', 'startDate', 'endDate', 'legalCategory', 'associates', 'accountingMode'];
 	}
-	public static function getPropertiesUpdate(): array {
-		return ['taxSystem', 'accountingType', 'legalCategory', 'associates', 'accountingMode'];
+	public static function getPropertiesUpdate(): \Closure {
+		return function(FinancialYear $e) {
+
+			if($e->isClosed()) {
+				return ['associates'];
+			}
+
+			return ['taxSystem', 'accountingType', 'legalCategory', 'associates', 'accountingMode'];
+
+		};
 	}
 
 	public static function getPreviousFinancialYear(FinancialYear $eFinancialYear): FinancialYear {

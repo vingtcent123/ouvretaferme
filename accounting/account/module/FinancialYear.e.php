@@ -71,7 +71,7 @@ class FinancialYear extends FinancialYearElement {
 		return ($this['status'] === FinancialYearElement::OPEN);
 	}
 
-	public function acceptUpdate(): bool {
+	public function acceptResultUpdate(): bool {
 		return ($this['status'] === FinancialYearElement::OPEN and $this['closeDate'] === NULL);
 	}
 
