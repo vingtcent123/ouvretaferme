@@ -695,6 +695,7 @@ class SaleLib extends SaleCrud {
 		return Sale::model()
 			->select(Sale::getSelection())
 			->whereCustomer('IN', $cCustomer)
+			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::CANCELED])
 			->whereStats(TRUE)
 			->sort([
 				'id' => SORT_DESC

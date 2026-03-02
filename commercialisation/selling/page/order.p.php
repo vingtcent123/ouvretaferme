@@ -40,5 +40,5 @@ new \selling\SalePage()
 
 		throw new ViewAction($data);
 
-	}, validate: ['canAccess']);
+	}, validate: ['canAccess', 'acceptAccess']);
 ?>

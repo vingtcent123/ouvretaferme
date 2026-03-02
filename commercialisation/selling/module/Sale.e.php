@@ -326,6 +326,10 @@ class Sale extends SaleElement {
 
 	}
 
+	public function acceptAccess(): bool {
+		return in_array($this['preparationStatus'], [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::CANCELED]);
+	}
+
 	public function canAccess(): bool {
 
 		$this->expects(['customer', 'farm', 'stats']);
@@ -1264,7 +1268,7 @@ class Sale extends SaleElement {
 				return ($this['basket'] !== [] and $warning === FALSE);
 
 			});
-		
+
 		parent::build($properties, $input, $p);
 
 	}
