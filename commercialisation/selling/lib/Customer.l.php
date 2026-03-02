@@ -188,7 +188,7 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
-	public static function getByGroup(CustomerGroup $eCustomerGroup): \Collection {
+	public static function getByGroup(CustomerGroup $eCustomerGroup, bool $onlyActive = FALSE): \Collection {
 
 		$eCustomerGroup->expects(['farm']);
 
@@ -196,6 +196,7 @@ class CustomerLib extends CustomerCrud {
 			->select(Customer::getSelection())
 			->whereFarm($eCustomerGroup['farm'])
 			->where('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$eCustomerGroup['id'].'\')')
+			->whereStatus(Customer::ACTIVE, if: $onlyActive)
 			->sort(['name' => SORT_ASC])
 			->getCollection();
 

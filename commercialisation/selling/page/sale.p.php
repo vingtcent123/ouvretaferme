@@ -88,7 +88,7 @@ new Page(function($data) {
 		if(get_exists('group')) {
 
 			$eCustomerGroup = \selling\CustomerGroupLib::getById(GET('group'))->validateProperty('farm', $data->eFarm);
-			$cCustomer = \selling\CustomerLib::getByGroup($eCustomerGroup);
+			$cCustomer = \selling\CustomerLib::getByGroup($eCustomerGroup, onlyActive: TRUE);
 
 			if($cCustomer->notEmpty()) {
 				$eCustomer = $cCustomer->first();
