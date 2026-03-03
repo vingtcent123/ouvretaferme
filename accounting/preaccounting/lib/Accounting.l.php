@@ -285,7 +285,7 @@ Class AccountingLib {
 
 	}
 
-	public static function generateSalesFec(\Collection $cSale, \Collection $cAccount, \account\Account $eAccountFilter, \selling\Payment $ePaymentFilter = new \selling\Payment(), \cash\Cash $eCash = new \cash\Cash(), ?string $counterpart = NULL): array {
+	public static function generateSalesFec(\Collection $cSale, \Collection $cAccount, \account\Account $eAccountFilter, \selling\Payment $ePaymentFilter = new \selling\Payment(), \cash\Cash $eCash = new \cash\Cash(), ?string $counterpart = NULL, \payment\Method $eMethodFilter = new \payment\Method()): array {
 
 		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL);
 
@@ -311,7 +311,7 @@ Class AccountingLib {
 
 			$items = [];
 
-			$ratios = self::computeRatios($eSale, $cAccount, $ePaymentFilter, $counterpart);
+			$ratios = self::computeRatios($eSale, $cAccount, $ePaymentFilter, $counterpart, $eMethodFilter);
 			$allEntries = array_merge(...array_values($ratios));
 
 			// Exclure les ventes réglées dans les journaux de caisse
@@ -394,7 +394,7 @@ Class AccountingLib {
 
 	}
 
-	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cAccount, \account\Account $eAccountFilter = new \account\Account(), \selling\Payment $ePaymentFilter = new \selling\Payment(), ?string $counterpart = NULL): array {
+	public static function generateInvoicesFec(\Collection $cInvoice, \Collection $cAccount, \account\Account $eAccountFilter = new \account\Account(), \selling\Payment $ePaymentFilter = new \selling\Payment(), ?string $counterpart = NULL, \payment\Method $eMethodFilter = new \payment\Method()): array {
 
 		$eAccountBank = $cAccount->find(fn($eAccount) => $eAccount['class'] === \account\AccountSetting::BANK_ACCOUNT_CLASS)->first();
 		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL);
@@ -417,7 +417,7 @@ Class AccountingLib {
 			}
 			$eInvoice['cItem'] = $cItems;
 
-			$ratios = self::computeRatios($eInvoice, $cAccount, $ePaymentFilter, $counterpart);
+			$ratios = self::computeRatios($eInvoice, $cAccount, $ePaymentFilter, $counterpart, $eMethodFilter);
 			$allEntries = array_merge(...array_values($ratios));
 
 			foreach($allEntries as $item) {
@@ -855,7 +855,7 @@ Class AccountingLib {
 		return $items;
 	}
 
-	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount, \selling\Payment $ePaymentFilter, ?string $counterpart = NULL): array {
+	public static function computeRatios(\selling\Sale|\selling\Invoice $eElement, \Collection $cAccount, \selling\Payment $ePaymentFilter, ?string $counterpart = NULL, \payment\Method $eMethodFilter = new \payment\Method()): array {
 
 		$eElement->expects(['hasVat', 'cItem', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat']);
 
@@ -909,6 +909,10 @@ Class AccountingLib {
 		}
 
 		foreach($cPayment as $ePayment) {
+
+			if($eMethodFilter->notEmpty() and $eMethodFilter->is($ePayment['method']) === FALSE) {
+				continue;
+			}
 
 			$paymentRatio = $ePayment['amountIncludingVat'] / $eElement['priceIncludingVat'];
 

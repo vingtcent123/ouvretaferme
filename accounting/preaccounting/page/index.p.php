@@ -275,7 +275,7 @@ new Page(function($data) {
 				if($data->search->get('filter') === NULL or $hasInvoice === FALSE) {
 
 					$data->cSale = \preaccounting\SaleLib::getForAccounting($data->eFarm, $data->search);
-					[$fecSale, $data->nSale] = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $cAccount, $data->search->get('account'), new \selling\Payment(), counterpart: $data->search->get('counterpart') ?? NULL);
+					[$fecSale, $data->nSale] = \preaccounting\AccountingLib::generateSalesFec($data->cSale, $cAccount, $data->search->get('account'), new \selling\Payment(), counterpart: $data->search->get('counterpart') ?? NULL, eMethodFilter: $data->search->get('method'));
 
 				} else {
 
@@ -288,7 +288,7 @@ new Page(function($data) {
 				if($data->search->get('filter') === NULL or $hasInvoice === TRUE) {
 
 					$cInvoice = \preaccounting\InvoiceLib::getForExport($data->eFarm, $data->search);
-					[$fecInvoice, $data->nInvoice] = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $cAccount, $data->search->get('account'), new \selling\Payment(), $data->search->get('counterpart'));
+					[$fecInvoice, $data->nInvoice] = preaccounting\AccountingLib::generateInvoicesFec($cInvoice, $cAccount, $data->search->get('account'), new \selling\Payment(), $data->search->get('counterpart'), eMethodFilter: $data->search->get('method'));
 
 					$documents = array_unique(array_column($fecInvoice, \preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT));
 
