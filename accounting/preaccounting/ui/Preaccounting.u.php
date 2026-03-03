@@ -114,7 +114,7 @@ Class PreaccountingUi {
 
 	}
 	
-	public function getCheckSteps(int $nProductToCheck, int $nItemToCheck, int $nInvoiceForPaymentToCheck, \Collection $cRegisterMissing, string $type, string $checkType, string $url, \Search $search): string {
+	public function getCheckSteps(int $nProductToCheck, int $nItemToCheck, int $nPaymentToCheck, \Collection $cRegisterMissing, string $type, string $checkType, string $url, \Search $search): string {
 		
 		\Asset::css('preaccounting', 'step.css');
 
@@ -128,10 +128,10 @@ Class PreaccountingUi {
 			],
 			[
 				'position' => 2,
-				'number' => ($checkType === 'fec' ? $nInvoiceForPaymentToCheck : $cRegisterMissing->count()),
+				'number' => ($checkType === 'fec' ? $nPaymentToCheck : $cRegisterMissing->count()),
 				'type' => 'payment',
 				'title' => ($checkType === 'fec' ? s("Moyens de paiement") : s("Numéros de compte")),
-				'description' => ($checkType === 'fec' ? s("Renseignez les moyens de paiement des factures") : s("Paramétrez les numéros de compte de vos journaux")),
+				'description' => ($checkType === 'fec' ? s("Renseignez les moyens de paiement des ventes et factures") : s("Paramétrez les numéros de compte de vos journaux")),
 			],
 		];
 
@@ -296,7 +296,7 @@ Class PreaccountingUi {
 
 	}
 
-	public function invoices(\farm\Farm $eFarm, \Collection $cInvoice, \Collection $cPaymentMethod, \Search $search): string {
+	public function payments(\farm\Farm $eFarm, \Collection $cInvoice, \Collection $cSale, \Collection $cPaymentMethod, \Search $search): string {
 
 		\Asset::css('selling', 'sale.css');
 
@@ -308,18 +308,18 @@ Class PreaccountingUi {
 			$h .= $form->close();
 		$h .= '</div>';
 
-		if($cInvoice->empty()) {
-			return $h.'<div class="util-info">'.s("Toutes les factures ont un moyen de paiement renseigné.").'</div>';
+		if($cInvoice->empty() and $cSale->empty()) {
+			return $h.'<div class="util-info">'.s("Toutes les factures et ventes ont un moyen de paiement renseigné.").'</div>';
 		}
 
-		$h .= '<table class="tr-even" data-batch="#batch-accounting-invoice">';
+		$h .= '<table class="tr-even" data-batch="#batch-accounting-payment">';
 
 			$h .= '<thead>';
 
 				$h .= '<tr>';
 
 					$h .= '<th class="text-center">';
-						$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="invoice" onclick="Preaccounting.toggleGroupSelection(this)"/>';
+						$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="payment" onclick="Preaccounting.toggleGroupSelection(this)"/>';
 					$h .= '</th>';
 					$h .= '<th class="td-min-content">#</th>';
 					$h .= '<th>'.s("Date").'</th>';
@@ -338,11 +338,11 @@ Class PreaccountingUi {
 					$h .= '<tr>';
 
 						$h .= '<td class="td-checkbox">';
-							$h .= '<input type="checkbox" name="batch[]" batch-type="invoice" value="'.$eInvoice['id'].'" oninput="Preaccounting.changeSelection(this)"/>';
+							$h .= '<input type="checkbox" name="batch[]" batch-type="payment" data-batch="accept-invoice" value="'.$eInvoice['id'].'" oninput="Preaccounting.changeSelection(this)"/>';
 						$h .= '</td>';
 
 						$h .= '<td class="td-min-content">';
-							$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?invoice='.encode($eInvoice['id']).'&customer='.encode($eInvoice['customer']['name']).'">'.encode($eInvoice['number']).'</a></td>';
+							$h .= '<a href="/ferme/'.$eFarm['id'].'/factures?invoice='.encode($eInvoice['id']).'&customer='.encode($eInvoice['customer']['name']).'" class="btn btn-sm btn-outline-primary">'.encode($eInvoice['number']).'</a></td>';
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -374,11 +374,52 @@ Class PreaccountingUi {
 
 				}
 
+				foreach($cSale as $eSale) {
+
+					$h .= '<tr>';
+
+						$h .= '<td class="td-checkbox">';
+							$h .= '<input type="checkbox" name="batch[]" batch-type="payment" data-batch="accept-sale" value="'.$eSale['id'].'" oninput="Preaccounting.changeSelection(this)"/>';
+						$h .= '</td>';
+
+						$h .= '<td class="td-min-content">';
+							$h .= '<a href="/vente/'.$eSale['id'].'" class="btn btn-sm btn-outline-primary">'.encode($eSale['document']).'</a></td>';
+						$h .= '</td>';
+
+						$h .= '<td>';
+							$h .= \util\DateUi::numeric($eSale['deliveredAt'], \util\DateUi::DATE);
+						$h .= '</td>';
+
+						$h .= '<td class="sale-item-name">';
+							$h .= encode($eSale['customer']->getName());
+							if($eSale['customer']->notEmpty()) {
+								$h .= '<div class="util-annotation">';
+									$h .= \selling\CustomerUi::getCategory($eSale['customer']);
+								$h .= '</div>';
+							}
+						$h .= '</td>';
+
+						$h .= '<td class="t-highlight sale-item-price text-end">';
+							$h .= \selling\SaleUi::getTotal($eSale);
+						$h .= '</td>';
+
+						$h .= '<td>';
+							$h .= '<a href="/selling/sale:updatePayment?id='.$eSale['id'].'" class="btn btn-sm btn-outline-primary">'.s("Choisir").'</a>';
+						$h .= '</td>';
+
+						$h .= '<td class="sale-item-status">';
+							$h .= new \selling\SaleUi()->getPreparationStatusForCustomer($eSale, 'btn-xs');
+						$h .= '</td>';
+
+					$h .= '</tr>';
+
+				}
+
 			$h .= '</tbody>';
 
 		$h .= '</table>';
 
-		$h .= $this->getBatchInvoices($cPaymentMethod);
+		$h .= $this->getBatchPayments($cPaymentMethod);
 
 		return $h;
 
@@ -426,11 +467,11 @@ Class PreaccountingUi {
 
 	}
 
-	public function getBatchInvoices(\Collection $cPaymentMethod): string {
+	public function getBatchPayments(\Collection $cPaymentMethod): string {
 
 		$menu = '';
 
-		$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item">';
+		$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item" data-batch-test="accept-invoice" data-batch-not-contains="hide" >';
 			$menu .= \Asset::icon('cash-coin');
 			$menu .= '<span style="letter-spacing: -0.2px">'.s("Choisir un moyen de paiement").'</span>';
 		$menu .= '</a>';
@@ -440,13 +481,29 @@ Class PreaccountingUi {
 			$menu .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
 			foreach($cPaymentMethod as $ePaymentMethod) {
 				if($ePaymentMethod['online'] === FALSE) {
-					$menu .= '<a data-ajax-submit="/selling/invoice:doUpdatePaymentNotPaidCollection" data-ajax-target="#batch-accounting-invoice-form" post-for="preaccounting" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+					$menu .= '<a data-ajax-submit="/selling/invoice:doUpdatePaymentNotPaidCollection" data-ajax-target="#batch-accounting-payment-form" post-for="preaccounting" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
 				}
 			}
 
 		$menu .= '</div>';
 
-		return \util\BatchUi::group('batch-accounting-invoice', $menu, title: s("Pour les paiements sélectionnés"));
+		$menu .= '<a data-dropdown="top-start" class="batch-payment-method batch-item" data-batch-test="accept-sale" data-batch-not-contains="hide" >';
+			$menu .= \Asset::icon('cash-coin');
+			$menu .= '<span style="letter-spacing: -0.2px">'.s("Choisir un moyen de paiement").'</span>';
+		$menu .= '</a>';
+
+		$menu .= '<div class="dropdown-list bg-secondary">';
+
+			$menu .= '<div class="dropdown-title">'.s("Moyen de paiement").'</div>';
+			foreach($cPaymentMethod as $ePaymentMethod) {
+				if($ePaymentMethod['online'] === FALSE) {
+					$menu .= '<a data-ajax-submit="/selling/sale:doUpdatePaymentNotPaidCollection" data-ajax-target="#batch-accounting-payment-form" post-for="preaccounting" post-payment-method="'.$ePaymentMethod['id'].'" class="dropdown-item">'.\payment\MethodUi::getName($ePaymentMethod).'</a>';
+				}
+			}
+
+		$menu .= '</div>';
+
+		return \util\BatchUi::group('batch-accounting-payment', $menu, title: s("Pour les paiements sélectionnés"));
 
 	}
 

@@ -115,7 +115,7 @@ new AdaptativeView('/precomptabilite/verifier', function($data, FarmTemplate $t)
 		echo '</div>';
 	}
 
-	echo new \preaccounting\PreaccountingUi()->getCheckSteps($data->nProductToCheck,  $data->nItemToCheck, $data->nInvoiceForPaymentToCheck,  $data->cRegisterMissing, $data->type, $data->checkType, $t->canonical, $data->search);
+	echo new \preaccounting\PreaccountingUi()->getCheckSteps($data->nProductToCheck,  $data->nItemToCheck, $data->nInvoiceForPaymentToCheck + $data->nSaleForPaymentToCheck,  $data->cRegisterMissing, $data->type, $data->checkType, $t->canonical, $data->search);
 
 	switch($data->type) {
 
@@ -136,7 +136,7 @@ new AdaptativeView('/precomptabilite/verifier', function($data, FarmTemplate $t)
 		case 'payment':
 			echo '<div data-step="'.$data->type.'" class="stick-md util-overflow-md">';
 				if($data->checkType === 'fec') {
-					echo new \preaccounting\PreaccountingUi()->invoices($data->eFarm, $data->cInvoiceForPayment, $data->cPaymentMethod, $data->search);
+					echo new \preaccounting\PreaccountingUi()->payments($data->eFarm, $data->cInvoiceForPayment, $data->cSaleForPayment, $data->cPaymentMethod, $data->search);
 				} else {
 					echo new \preaccounting\PreaccountingUi()->registers($data->eFarm, $data->cRegister, $data->search);
 				}

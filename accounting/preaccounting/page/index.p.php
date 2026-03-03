@@ -93,6 +93,7 @@ new Page(function($data) {
 		$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
 
 		$data->nInvoiceForPaymentToCheck = \preaccounting\InvoiceLib::countForPaymentAccountingCheck($data->eFarm, $data->search);
+		$data->nSaleForPaymentToCheck = \preaccounting\SaleLib::countForPaymentAccountingCheck($data->eFarm, $data->search);
 
 		$data->cRegister = \cash\RegisterLib::getActive();
 		$data->cRegisterMissing = $data->cRegister->find(fn($e) => $e['account']->empty());
@@ -118,18 +119,19 @@ new Page(function($data) {
 		if(
 			$data->nProductToCheck === 0 and
 			$data->nItemToCheck === 0 and
-			$data->nInvoiceForPaymentToCheck === 0
+			$data->nInvoiceForPaymentToCheck === 0 and
+			$data->nSaleForPaymentToCheck === 0
 		) {
 
 			$data->type = 'export';
 
 		} else if(get_exists('type') === FALSE or empty(GET('type'))) {
 
-			if(($data->nProductToCheck + $data->nItemToCheck + $data->nInvoiceForPaymentToCheck) > 0) {
+			if(($data->nProductToCheck + $data->nItemToCheck + $data->nInvoiceForPaymentToCheck + $data->nSaleForPaymentToCheck) > 0) {
 
 				$data->type = 'product';
 
-			} else if($data->nInvoiceForPaymentToCheck > 0) {
+			} else if($data->nInvoiceForPaymentToCheck  + $data->nSaleForPaymentToCheck> 0) {
 
 				$data->type = 'payment';
 
@@ -142,7 +144,7 @@ new Page(function($data) {
 		} else if($data->type === 'product') { // On bascule sur l'onglet suivant si + pertinent
 
 			if($data->nProductToCheck + $data->nItemToCheck === 0) {
-				if($data->nInvoiceForPaymentToCheck > 0) {
+				if($data->nInvoiceForPaymentToCheck + $data->nSaleForPaymentToCheck > 0) {
 					$data->type = 'payment';
 				} else {
 					$data->type = 'export';
@@ -151,7 +153,7 @@ new Page(function($data) {
 
 		} else if($data->type === 'payment') { // On bascule sur l'onglet suivant si + pertinent
 
-			if($data->nInvoiceForPaymentToCheck === 0) {
+			if($data->nInvoiceForPaymentToCheck + $data->nSaleForPaymentToCheck === 0) {
 				if($data->nProductToCheck + $data->nItemToCheck > 0) {
 					$data->type = 'product';
 				} else {
@@ -176,6 +178,7 @@ new Page(function($data) {
 			case 'payment':
 				$data->search->set('customer', \selling\CustomerLib::getById(GET('customer')));
 				$data->cInvoiceForPayment = \preaccounting\InvoiceLib::getForAccountingCheck($data->eFarm, $data->search);
+				$data->cSaleForPayment = \preaccounting\SaleLib::getForAccountingCheck($data->eFarm, $data->search);
 				$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
 				break;
 
@@ -338,7 +341,8 @@ new Page(function($data) {
 		$data->nProductToCheck = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
 		$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
 
-		$data->nInvoiceForPaymentToCheck = \preaccounting\InvoiceLib::countForPaymentAccountingCheck($data->eFarm, $data->search);
+		$data->nInvoiceForPaymentToCheck = 0;
+		$data->nSaleForPaymentToCheck = 0;
 
 		$data->cRegister = \cash\RegisterLib::getActive();
 

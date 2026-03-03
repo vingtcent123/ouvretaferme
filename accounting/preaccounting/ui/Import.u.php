@@ -12,7 +12,7 @@ Class ImportUi {
 	public function list(\farm\Farm $eFarm, \Collection $cOperation, ?string $lastValidationDate, \Search $search): string {
 
 		if($cOperation->empty() and $search->empty(['from', 'to', 'cRegister', 'cMethod'])) {
-			return '<div class="util-empty">'.s("Il n'y a aucune opération à importer. Avez-vous terminé de <link>préparer vos données</link> ?", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite/verifier:import?from='.$search->get('from').'">']).'</div>';
+			return '<div class="util-empty">'.s("Il n'y a aucune opération à importer.").'</div>';
 		}
 
 		$nPayment = $cOperation->find(fn($e) => $e instanceof \selling\Payment)->count();

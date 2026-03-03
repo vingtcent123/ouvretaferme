@@ -5,6 +5,26 @@ Class SaleLib {
 
 	const MARKET_PAYMENT_METHOD_FAKE_ID = 0;
 
+	public static function countForPaymentAccountingCheck(\farm\Farm $eFarm, \Search $search): int {
+
+		return self::filterForAccountingCheck($eFarm, $search)
+			->select(\selling\Sale::getSelection())
+			->where('m3.id IS NULL')
+			->count();
+
+	}
+
+	public static function getForAccountingCheck(\farm\Farm $eFarm, \Search $search): \Collection {
+
+		return self::filterForAccountingCheck($eFarm, $search)
+			->select(\selling\Sale::getSelection())
+			->where('m1.closed = 0')
+			->where('m3.id IS NULL')
+			->sort(['deliveredAt' => SORT_DESC])
+			->getCollection(NULL, NULL, 'id');
+
+	}
+
 	// Renvoie toutes les ventes payées incluses dans un paiement ou dans une facture elle-même incluse dans un paiement
 	public static function getPaidSaleIdsForPeriod(\farm\Farm $eFarm, string $from, string $to): array {
 
@@ -36,14 +56,13 @@ Class SaleLib {
 
 		\selling\Sale::model()
 			->join(\selling\Customer::model(), 'm1.customer = m2.id')
-			->join(\selling\Payment::model(), 'm1.id = m3.sale AND m3.status = '.\selling\Payment::model()->format(\selling\Payment::PAID), 'LEFT'); // Moyen de paiement OK
+			->join(\selling\Payment::model(), 'm1.id = m3.sale', 'LEFT')
+			->where('m3.status = '.\selling\Payment::model()->format(\selling\Payment::PAID), if: $search->has('paymentStatus') and $search->get('paymentStatus') === \selling\Payment::PAID); // Moyen de paiement OK
 
 		if($search->get('method') and $search->get('method')->notEmpty()) {
 
 			\selling\Sale::model()
-				->where(fn() => new \Sql('m3.method = '.$search->get('method')['id']), if: $search->get('method')->notEmpty() and $search->get('method')['id'] !== self::MARKET_PAYMENT_METHOD_FAKE_ID)
-				->whereProfile('IN', [\selling\Sale::SALE, \selling\Sale::MARKET], if: ($search->get('method')->empty() or $search->get('method')['id'] !== self::MARKET_PAYMENT_METHOD_FAKE_ID))
-				->whereProfile('=', \selling\Sale::MARKET, if: $search->get('method')->notEmpty() and $search->get('method')['id'] === self::MARKET_PAYMENT_METHOD_FAKE_ID);
+				->where(fn() => new \Sql('m3.method = '.$search->get('method')['id']), if: $search->get('method')->notEmpty() and $search->get('method')['id'] !== self::MARKET_PAYMENT_METHOD_FAKE_ID);
 
 		}
 
@@ -51,6 +70,8 @@ Class SaleLib {
 			->wherePreparationStatus(\selling\Sale::DELIVERED)
 			->where('priceExcludingVat != 0.0')
 			->where('m1.invoice IS NULL')
+			->whereProfile('IN', [\selling\Sale::SALE, \selling\Sale::MARKET], if: ($search->has('method') === FALSE or $search->get('method')->empty() or $search->get('method')['id'] !== self::MARKET_PAYMENT_METHOD_FAKE_ID))
+			->whereProfile('=', \selling\Sale::MARKET, if: $search->has('method') and $search->get('method')->notEmpty() and $search->get('method')['id'] === self::MARKET_PAYMENT_METHOD_FAKE_ID)
 			->where('m1.type = "'.\selling\Sale::PRIVATE.'"')
 			->where(fn() => new \Sql('m1.customer = '.$search->get('customer')['id']), if: $search->get('customer') and $search->get('customer')->notEmpty())
 			->where('m1.farm = '.$eFarm['id'])
@@ -77,6 +98,8 @@ Class SaleLib {
 					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 					->delegateCollection('sale')
 		];
+
+		$search->set('paymentStatus', \selling\Payment::PAID);
 
 		return self::filterForAccountingCheck($eFarm, $search)
 			->select($selectSale)
