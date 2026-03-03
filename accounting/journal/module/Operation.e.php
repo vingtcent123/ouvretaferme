@@ -58,12 +58,14 @@ class Operation extends OperationElement {
 
 	public function acceptWrite(): bool {
 
-		return $this['id'] === NULL or (
+		if($this->exists() === FALSE) {
+			return TRUE;
+		}
+
+		return (
+			$this['number'] === NULL and
 			mb_substr($this['hash'], -1) !== JournalSetting::HASH_LETTER_RETAINED and
-			(
-				($this['financialYear']->acceptUpdate()) or
-				($this['number'] === NULL and $this['financialYear']->acceptAdd())
-			)
+			$this['financialYear']->acceptAdd()
 		);
 
 	}

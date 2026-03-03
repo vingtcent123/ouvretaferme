@@ -18,7 +18,7 @@ class CompanyLib {
 		if(
 			str_starts_with(LIME_REQUEST, '/comptabilite/decouvrir') or
 			str_starts_with(LIME_REQUEST, '/company/public:doInitialize') or
-			str_contains(LIME_REQUEST, '/pdp/')
+			str_contains(LIME_REQUEST, '/pdp/:connect')
 		) {
 			return;
 		}

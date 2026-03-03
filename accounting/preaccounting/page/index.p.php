@@ -320,6 +320,10 @@ new Page(function($data) {
 	})
 	->get('/precomptabilite/verifier:import', function($data) {
 
+		if($data->eFarm['eFinancialYear']->acceptAdd() === FALSE) {
+			throw new NotExistsAction();
+		}
+
 		$data->checkType = 'import';
 		$data->search->set('to', date('Y-m-t', strtotime($data->search->get('from'))));
 

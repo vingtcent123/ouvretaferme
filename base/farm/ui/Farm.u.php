@@ -1453,11 +1453,19 @@ class FarmUi {
 				$cFinancialYear = $eFarm['cFinancialYear?']();
 
 				if($cFinancialYear->notEmpty()) {
-					$eFinancialYearSelected = $eFarm->getView('viewAccountingYear');
+					$eFinancialYearSelected = $cFinancialYear->find(fn($e) => $e['id'] === $eFarm->getView('viewAccountingYear')['id'] ?? NULL)->first();
 					$h .= $this->getFinancialYearsTitle($cFinancialYear, $eFinancialYearSelected);
+				} else {
+					$eFinancialYearSelected = new \account\FinancialYear();
 				}
 
-				$h .= $this->getNav('accounting', $nav);
+				if($eFinancialYearSelected->isClosed()) {
+					$locked = '  '.\Asset::icon('lock-fill');
+				} else {
+					$locked = '';
+				}
+
+				$h .= $this->getNav('accounting', $nav, complement: $locked);
 
 				$h .= $this->getAccountingMenu($eFarm, subNav: $subNav);
 
@@ -1535,9 +1543,6 @@ class FarmUi {
 			$h .= '</div>';
 			$h .= '<div class="farm-nav-accounting-selected">';
 				$h .= s("Exercice {value}", $eFinancialYearSelected->getLabel());
-				if($eFinancialYearSelected['status'] === \account\FinancialYear::CLOSE) {
-					$h .= '  '.\Asset::icon('lock-fill');
-				}
 			$h .= '</div>';
 			$h .= '<div class="farm-nav-accounting-after">';
 
@@ -1571,10 +1576,6 @@ class FarmUi {
 			$h .= '<a href="'.$url.'" class="dropdown-item '.($eFinancialYear->is($eFinancialYearSelected) ? 'selected' : '').'" data-ajax-navigation="never">';
 
 				$h .= s("Exercice {value}", $eFinancialYear->getLabel());
-
-				if($eFinancialYear['status'] === \account\FinancialYear::CLOSE) {
-					$h .= '  '.\Asset::icon('lock-fill');
-				}
 
 			$h .= '</a>';
 
@@ -2670,7 +2671,21 @@ class FarmUi {
 				return $categories;
 
 			case 'accounting':
-				return ['operations', 'preaccounting', 'book', 'balance', 'assets', 'analyze'];
+
+				$categories = ['operations'];
+
+				$eFinancialYear = $eFarm['eFinancialYear'] ?? new \account\FinancialYear();
+
+				if($eFinancialYear->notEmpty() and $eFinancialYear->isClosed() === FALSE) {
+					$categories[] = 'preaccounting';
+				}
+
+				$categories[] = 'book';
+				$categories[] = 'balance';
+				$categories[] = 'assets';
+				$categories[] = 'analyze';
+
+				return $categories;
 
 			case 'invoicing':
 				return ['buy', 'sell'];

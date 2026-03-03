@@ -70,8 +70,6 @@ new \account\FinancialYearPage(function($data) {
 	})
 	->read('open', function($data) {
 
-		$data->e->validate('acceptOpen');
-
 		$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->e);
 
 		$data->cOperation = \account\OpeningLib::getRetainedEarnings($data->eFinancialYearPrevious, $data->e, '');
@@ -82,10 +80,8 @@ new \account\FinancialYearPage(function($data) {
 
 		throw new ViewAction($data);
 
-	})
+	}, validate: ['acceptOpen'])
 	->write('doOpen', function($data) {
-
-		$data->e->validate('acceptOpen');
 
 		$data->eFinancialYearPrevious = \account\FinancialYearLib::getPreviousFinancialYear($data->e);
 		if($data->eFinancialYearPrevious->notEmpty() and $data->eFinancialYearPrevious->isClosed() === FALSE) {
@@ -99,7 +95,7 @@ new \account\FinancialYearPage(function($data) {
 
 		throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/?success=account\\FinancialYear::open');
 
-	})
+	}, validate: ['acceptOpen'])
 	->read('fec', function($data) {
 
 		$operations = \account\FecLib::generateByFinancialYear($data->e);
@@ -173,10 +169,8 @@ new \account\FinancialYearPage(function($data) {
 		$data->e['isBalanced'] = \journal\TrialBalanceLib::isBalanced($data->e);
 
 		throw new ViewAction($data);
-	})
+	}, validate: ['acceptClose'])
 	->write('doClose', function($data) {
-
-		$data->e->validate('acceptClose');
 
 		$isDone = \account\ClosingLib::closeFinancialYear($data->eFarm, $data->e);
 
@@ -186,7 +180,7 @@ new \account\FinancialYearPage(function($data) {
 
 		throw new FailAction('account\FinancialYear::notClosed');
 
-	})
+	}, validate: ['acceptClose'])
 	->doDelete(function($data) {
 
 		$fw = new FailWatch();
@@ -211,15 +205,11 @@ new \account\FinancialYearPage(function($data) {
 })
 	->write('doReopen', function($data) {
 
-		$data->e->validate('isClosed');
-
 		\account\FinancialYearLib::reopen($data->e);
 
 		throw new ReloadAction('account', 'FinancialYear::reopen');
-	})
+	}, validate: ['isClosed'])
 	->write('doReclose', function($data) {
-
-		$data->e->validate('acceptReClose');
 
 		$dataReclose = \account\ClosingLib::checkReclose($data->e);
 
@@ -232,7 +222,7 @@ new \account\FinancialYearPage(function($data) {
 			throw new RedirectAction(\farm\FarmUi::urlFinancialYear($data->e).'/account/financialYear/:reclose?id='.$data->e['id']);
 		}
 
-	});
+	}, validate: ['acceptReClose']);
 
 new \account\FinancialYearPage(function($data) {
 
@@ -245,8 +235,6 @@ new \account\FinancialYearPage(function($data) {
 })
 	->read('reclose', function($data) {
 
-		$data->e->validate('acceptReClose');
-
 		$dataReclose = \account\ClosingLib::checkReclose($data->e);
 
 		if(empty($dataReclose)) {
@@ -256,7 +244,7 @@ new \account\FinancialYearPage(function($data) {
 		$data->reclose = $dataReclose;
 
 		throw new ViewAction($data);
-	});
+	}, validate: ['acceptReClose']);
 
 new \account\FinancialYearPage(function($data) {
 	$data->eFarm->validate('canManage');
