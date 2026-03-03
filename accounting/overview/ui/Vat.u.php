@@ -738,6 +738,7 @@ Class VatUi {
 
 	private function getCerfaCA12(\farm\Farm $eFarm, array $data, int $precision, array $vatParameters): string {
 
+		\Asset::js('overview', 'vat-ca12.js');
 		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration(['from' => $vatParameters['from'], 'to' => $vatParameters['to']]);
 		$isDisabled = ($eVatDeclaration->acceptUpdate() === FALSE);
 
@@ -782,7 +783,7 @@ Class VatUi {
 		}
 
 
-		$h .= $form->openAjax(\farm\FarmUi::urlConnected($eFarm).'/vat/saveCerfa', ['id' => 'cerfa-12', 'data-precision' => $precision, 'onrender' => 'Vat12.recalculateAll();']);
+		$h .= $form->openAjax(\farm\FarmUi::urlConnected($eFarm).'/vat/saveCerfa', ['id' => 'cerfa-12', 'data-precision' => $precision]);
 
 			$h .= $form->hidden('from', $vatParameters['from']);
 			$h .= $form->hidden('to', $vatParameters['to']);
@@ -2653,6 +2654,8 @@ Class VatUi {
 
 	private function getCerfaCA3(\farm\Farm $eFarm, array $data, int $precision, array $vatParameters): string {
 
+		\Asset::js('overview', 'vat-ca12.js');
+
 		$h = '';
 
 		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration(['from' => $vatParameters['from'], 'to' => $vatParameters['to']]);
@@ -2665,7 +2668,7 @@ Class VatUi {
 
 		$h .= '<div class="stick-sm util-overflow-sm">';
 
-			$h .= $form->openAjax(\farm\FarmUi::urlConnected($eFarm).'/vat/saveCerfa', ['id' => 'cerfa-3', 'data-precision' => $precision, 'onrender' => 'Vat3.recalculateAll();']);
+			$h .= $form->openAjax(\farm\FarmUi::urlConnected($eFarm).'/vat/saveCerfa', ['id' => 'cerfa-3', 'data-precision' => $precision]);
 
 				$h .= $form->hidden('from', $vatParameters['from']);
 				$h .= $form->hidden('to', $vatParameters['to']);
