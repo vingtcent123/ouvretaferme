@@ -146,6 +146,22 @@ class FarmLib extends FarmCrud {
 
 	}
 
+	public static function runAccounting(\Closure $closure): void {
+
+		$cFarm = \farm\Farm::model()
+			->select('id')
+			->whereHasAccounting(TRUE)
+			->getCollection();
+
+		foreach($cFarm as $eFarm) {
+
+			\farm\FarmLib::connectDatabase($eFarm);
+			$closure($eFarm);
+
+		}
+
+	}
+
 	public static function create(Farm $e): void {
 
 		Farm::model()->beginTransaction();
