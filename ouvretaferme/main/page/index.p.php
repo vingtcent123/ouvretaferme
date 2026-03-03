@@ -43,6 +43,6 @@ new Page()
 	->get('/presentation/faq', fn($data) => throw new ViewAction($data))
 	->get('/presentation/service', fn($data) => throw new ViewAction($data))
 	->get('/presentation/adhesion', fn($data) => throw new ViewAction($data))
-	->get('/presentation/', fn($data) => throw new ViewAction($data))
+	->get('/presentation/accompagnement', fn($data) => throw new ViewAction($data))
 	->get('/facturation-electronique-les-mains-dans-les-poches', fn($data) => throw new ViewAction($data));
 ?>
