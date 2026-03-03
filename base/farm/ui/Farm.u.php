@@ -1457,7 +1457,7 @@ class FarmUi {
 					if($cFinancialYearSelected->empty()) {
 						$eFinancialYearSelected = new \account\FinancialYear();
 					} else {
-						$eFinancialYearSelected = $cFinancialYearSelected;
+						$eFinancialYearSelected = $cFinancialYearSelected->first();
 					}
 					$h .= $this->getFinancialYearsTitle($cFinancialYear, $eFinancialYearSelected);
 				} else {
