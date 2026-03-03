@@ -728,7 +728,7 @@ class OperationLib extends OperationCrud {
 			if(count($uniqueDocuments) === 1 and count($documents) === $cOperation->count()) {
 				$document = first($uniqueDocuments);
 			} else {
-				$document = NULL;
+				$document = join(', ', $uniqueDocuments);
 			}
 
 			$eOperationDefault['hash'] = $hash;
