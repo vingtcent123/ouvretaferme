@@ -37,6 +37,7 @@ Package::setList([
 	'storage' => 'framework',
 	'user' => 'framework',
 	'util' => 'framework',
+	'vat' => 'accounting',
 	'website' => 'ouvretaferme',
 ]);
 

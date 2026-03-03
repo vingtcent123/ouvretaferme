@@ -33,8 +33,8 @@ new Page(function($data) {
 		// On va filtrer sur les dates de la période de TVA et pas sur le financialYear
 		$search->set('financialYear', new \account\FinancialYear());
 
-		$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
-		$data->vatParameters = \overview\VatLib::extractCurrentPeriod($data->allPeriods, $from);
+		$data->allPeriods = \vat\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
+		$data->vatParameters = \vat\VatLib::extractCurrentPeriod($data->allPeriods, $from);
 
 		$search->set('minDate', $data->vatParameters['from']);
 		$search->set('maxDate', $data->vatParameters['to']);
@@ -52,11 +52,11 @@ new Page(function($data) {
 				break;
 
 			case 'check':
-				$data->check = \overview\VatLib::getForCheck($data->eFarm, $search);
+				$data->check = \vat\VatLib::getForCheck($data->eFarm, $search);
 				break;
 
 			case 'cerfa':
-				$data->check = \overview\VatLib::getForCheck($data->eFarm, $search);
+				$data->check = \vat\VatLib::getForCheck($data->eFarm, $search);
 				$data->precision = 0;
 
 				// On tente par l'ID
@@ -82,7 +82,7 @@ new Page(function($data) {
 						'maxDate' => $data->vatParameters['to'],
 						'financialYear' => new \account\FinancialYear(),
 					]);
-					$data->cerfa = \overview\VatLib::getVatDataDeclaration($data->eFarm, $data->eFarm['eFinancialYear'], $search, precision: $data->precision);
+					$data->cerfa = \vat\VatLib::getVatDataDeclaration($data->eFarm, $data->eFarm['eFinancialYear'], $search, precision: $data->precision);
 
 				}
 				break;
@@ -99,7 +99,7 @@ new Page(function($data) {
 
 		$from = POST('from');
 		$to = POST('to');
-		$data->vatParameters = \overview\VatLib::getPeriodForDates($data->eFarm, $data->eFarm['eFinancialYear'], $from, $to);
+		$data->vatParameters = \vat\VatLib::getPeriodForDates($data->eFarm, $data->eFarm['eFinancialYear'], $from, $to);
 
 		if($data->vatParameters === NULL) {
 			throw new NotExpectedAction('Unable to update for this VAT declaration dates');
@@ -123,7 +123,7 @@ new Page(function($data) {
 			throw new NotExistsAction('Unknown declaration');
 		}
 
-		$dataFromDeclaration = \overview\VatLib::generateOperationsFromDeclaration($data->eFarm, $data->eVatDeclaration, $data->eFarm['eFinancialYear']);
+		$dataFromDeclaration = \vat\VatLib::generateOperationsFromDeclaration($data->eFarm, $data->eVatDeclaration, $data->eFarm['eFinancialYear']);
 		$data->cerfaCalculated = $dataFromDeclaration['cerfaCalculated'];
 		$data->cerfaDeclared = $dataFromDeclaration['cerfaDeclared'];
 		$data->cOperation = $dataFromDeclaration['cOperation'];
@@ -165,7 +165,7 @@ new \overview\VatDeclarationPage(function($data) {
 	->write('/vat/doCreateOperations', function($data) {
 
 		// TODO : savoir dans quel financial year écrire
-		\overview\VatLib::createOperations($data->eFarm, $data->e, $data->eFarm['eFinancialYear']);
+		\vat\VatLib::createOperations($data->eFarm, $data->e, $data->eFarm['eFinancialYear']);
 
 		throw new ReloadAction('overview', 'VatDeclaration::operationsCreated');
 

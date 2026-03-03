@@ -4,8 +4,8 @@ namespace overview;
 Class VatUi {
 
 	public function __construct() {
-		\Asset::css('overview', 'vat.css');
-		\Asset::js('overview', 'vat.js');
+		\Asset::css('vat', 'vat.css');
+		\Asset::js('vat', 'vat.js');
 	}
 
 	public function list(\farm\Farm $eFarm, array $allPeriods, \Collection $cDeclaration): string {
@@ -646,7 +646,7 @@ Class VatUi {
 					}
 					$h .= '</th>';
 					$h .= '<td class="text-center">+ '.\Asset::icon('5-circle').' -  '.\Asset::icon('6-circle').'</td>';
-					$h .= '<th class="text-end t-highlight">'.\util\TextUi::money(round($vatBalance) - round($vatDeposit), precision: 0).'</th>';
+					$h .= '<th class="text-end t-highlight">'.\util\TextUi::money(abs(round($vatBalance) - round($vatDeposit)), precision: 0).'</th>';
 				$h .= '<td></td>';
 				$h .= '</tr>';
 			$h .= '</table>';
@@ -738,7 +738,7 @@ Class VatUi {
 
 	private function getCerfaCA12(\farm\Farm $eFarm, array $data, int $precision, array $vatParameters): string {
 
-		\Asset::js('overview', 'vat-ca12.js');
+		\Asset::js('vat', 'vat-ca12.js');
 		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration(['from' => $vatParameters['from'], 'to' => $vatParameters['to']]);
 		$isDisabled = ($eVatDeclaration->acceptUpdate() === FALSE);
 
@@ -2654,7 +2654,7 @@ Class VatUi {
 
 	private function getCerfaCA3(\farm\Farm $eFarm, array $data, int $precision, array $vatParameters): string {
 
-		\Asset::js('overview', 'vat-ca12.js');
+		\Asset::js('vat', 'vat-ca12.js');
 
 		$h = '';
 

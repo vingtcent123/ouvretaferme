@@ -43,7 +43,7 @@ new Page(function($data) {
 
 		if($data->eFarm->getConf('hasVat')) {
 
-			$data->allPeriods = \overview\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
+			$data->allPeriods = \vat\VatLib::getAllPeriodForFinancialYear($data->eFarm, $data->eFarm['eFinancialYear']);
 			$data->cDeclaration = \overview\VatDeclarationLib::getAll(array_column($data->allPeriods, 'from'));
 
 		}

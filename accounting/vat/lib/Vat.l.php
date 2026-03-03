@@ -1,5 +1,5 @@
 <?php
-namespace overview;
+namespace vat;
 
 Class VatLib {
 
@@ -370,7 +370,7 @@ Class VatLib {
 		$taxes = $checkData['taxes'];
 		$deposits = $checkData['deposits'];
 
-		$cerfa = VatDeclarationLib::getCerfaFromFrequency($eFarm->getConf('vatFrequency'));
+		$cerfa = \overview\VatDeclarationLib::getCerfaFromFrequency($eFarm->getConf('vatFrequency'));
 
 		$vatData = [];
 
@@ -413,7 +413,7 @@ Class VatLib {
 		// TVA s/ ABS
 		$vatData['0702'] = round(array_sum(array_column($taxes[\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT] ?? [], 'amount')), $precision);
 
-		if($cerfa === VatDeclaration::CA3) {
+		if($cerfa === \overview\VatDeclaration::CA3) {
 
 			$vatData['16-number'] = round(array_sum(array_filter($vatData, fn($item, $index) => in_array($index, ['0207', '0105', '0151', '0201', '0100', '1120', '1110', '1090', '1081', '1050', '1040', '1010', '0990', '0900', '0208', '0152', '0210', '0211', '0212', '0213', '0214', '0215', '0600', '0602']), ARRAY_FILTER_USE_BOTH)), $precision);
 
@@ -553,7 +553,7 @@ Class VatLib {
 		$vatData['8901'] = round(($vatData['33-number'] ?? 0) - ($vatData['8103'] ?? 0), $precision);
 		$vatData['9992'] = round($vatData['8901'] + $vatData['55-number'] + ($vatData['8123'] ?? 0), $precision);
 
-		if($cerfa === VatDeclaration::CA12) {
+		if($cerfa === \overview\VatDeclaration::CA12) {
 			$vatData['57-number'] = max(0, round($vatData['16-number'] - (($vatData['0970'] ?? 0) + ($vatData['0980'] ?? 0) + $vatData['22-number']), $precision));
 		}
 
@@ -579,7 +579,7 @@ Class VatLib {
 	 * puis ajuster 44562 / 44566 / 445662 par 658 ou 758
 	 *
 	 */
-	public static function generateOperationsFromDeclaration(\farm\Farm $eFarm, VatDeclaration $eVatDeclaration, \account\FinancialYear $eFinancialYear): array {
+	public static function generateOperationsFromDeclaration(\farm\Farm $eFarm, \overview\VatDeclaration $eVatDeclaration, \account\FinancialYear $eFinancialYear): array {
 
 		$cOperation = new \Collection();
 
@@ -607,12 +607,12 @@ Class VatLib {
 			)
 			->getCollection(NULL, NULL, 'class');
 
-		$eThirdParty = \account\ThirdPartyLib::getByName(VatUi::getTranslations('tresor-public'));
-		$document = VatUi::getTranslations('document', ['from' => \util\DateUi::numeric($eVatDeclaration['from']), 'to' => \util\DateUi::numeric($eVatDeclaration['to'])]);
+		$eThirdParty = \account\ThirdPartyLib::getByName(\overview\VatUi::getTranslations('tresor-public'));
+		$document = \overview\VatUi::getTranslations('document', ['from' => \util\DateUi::numeric($eVatDeclaration['from']), 'to' => \util\DateUi::numeric($eVatDeclaration['to'])]);
 
 		// Étape 1
 		// 44571 - TVA collectée
-		if($eVatDeclaration['cerfa'] === VatDeclaration::CA3) {
+		if($eVatDeclaration['cerfa'] === \overview\VatDeclaration::CA3) {
 			$vat44571Declared = round($cerfa['16-number'], 2);
 			$vat44571Calculated = round($cerfaFromOperations['16-number'], 2);
 		} else {
@@ -625,7 +625,7 @@ Class VatLib {
 				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT),
 				'amount' => $vat44571Calculated,
 				'type' => \journal\Operation::DEBIT,
-				'description' => VatUi::getTranslations('tva-sur-ventes'),
+				'description' => \overview\VatUi::getTranslations('tva-sur-ventes'),
 				'thirdParty' => $eThirdParty,
 				'document' => $document,
 			]);
@@ -641,7 +641,7 @@ Class VatLib {
 				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS),
 				'amount' => $vat4452Calculated,
 				'type' => \journal\Operation::DEBIT,
-				'description' => VatUi::getTranslations('tva-sur-ventes'),
+				'description' => \overview\VatUi::getTranslations('tva-sur-ventes'),
 				'thirdParty' => $eThirdParty,
 				'document' => $document,
 			]);
@@ -649,7 +649,7 @@ Class VatLib {
 		}
 
 		// Solde : crédit de TVA
-		if($eVatDeclaration['cerfa'] === VatDeclaration::CA12) {
+		if($eVatDeclaration['cerfa'] === \overview\VatDeclaration::CA12) {
 			$amountVatCredit = $cerfa['0020'];
 		} else {
 			$amountVatCredit = $cerfa['0705'];
@@ -660,7 +660,7 @@ Class VatLib {
 				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_CREDIT_CLASS),
 				'amount' => $amountVatCredit,
 				'type' => \journal\Operation::DEBIT,
-				'description' => VatUi::getTranslations('tva-credit'),
+				'description' => \overview\VatUi::getTranslations('tva-credit'),
 				'thirdParty' => $eThirdParty,
 				'document' => $document,
 			]);
@@ -678,7 +678,7 @@ Class VatLib {
 				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_ASSET_CLASS),
 				'amount' => $vat44562Calculated,
 				'type' => \journal\Operation::CREDIT,
-				'description' => VatUi::getTranslations('tva-versee'),
+				'description' => \overview\VatUi::getTranslations('tva-versee'),
 				'thirdParty' => $eThirdParty,
 				'document' => $document,
 			]);
@@ -694,7 +694,7 @@ Class VatLib {
 				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT),
 				'amount' => $vat44566Calculated,
 				'type' => \journal\Operation::CREDIT,
-				'description' => VatUi::getTranslations('tva-versee'),
+				'description' => \overview\VatUi::getTranslations('tva-versee'),
 				'thirdParty' => $eThirdParty,
 				'document' => $document,
 			]);
@@ -710,7 +710,7 @@ Class VatLib {
 				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_CLASS),
 				'amount' => $vat445662Calculated,
 				'type' => \journal\Operation::CREDIT,
-				'description' => VatUi::getTranslations('tva-versee'),
+				'description' => \overview\VatUi::getTranslations('tva-versee'),
 				'thirdParty' => $eThirdParty,
 				'document' => $document,
 			]);
@@ -725,7 +725,7 @@ Class VatLib {
 				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_DEBIT_CLASS),
 				'amount' => $amountVatToPay,
 				'type' => \journal\Operation::CREDIT,
-				'description' => VatUi::getTranslations('tva-debit'),
+				'description' => \overview\VatUi::getTranslations('tva-debit'),
 				'thirdParty' => $eThirdParty,
 				'document' => $document,
 			]);
@@ -750,7 +750,7 @@ Class VatLib {
 			'accountLabel' => \account\AccountLabelLib::pad($class),
 			'amount' => abs($differenceDeclaredAndCalculated),
 			'type' => $type,
-			'description' => VatUi::getTranslations('tva-versee'),
+			'description' => \overview\VatUi::getTranslations('tva-versee'),
 			'thirdParty' => $eThirdParty,
 			'document' => $document,
 		]);
@@ -763,7 +763,7 @@ Class VatLib {
 		];
 
 	}
-	public static function createOperations(\farm\Farm $eFarm, VatDeclaration $eVatDeclaration, \account\FinancialYear $eFinancialYear): void {
+	public static function createOperations(\farm\Farm $eFarm, \overview\VatDeclaration $eVatDeclaration, \account\FinancialYear $eFinancialYear): void {
 
 		$data = self::generateOperationsFromDeclaration($eFarm, $eVatDeclaration, $eFinancialYear);
 
@@ -812,7 +812,7 @@ Class VatLib {
 
 		if($fw->ok()) {
 
-			VatDeclaration::model()
+			\overview\VatDeclaration::model()
 				->update($eVatDeclaration, [
 					'accountedAt' => new \Sql('NOW()'),
 					'accountedBy' => \user\ConnectionLib::getOnline(),

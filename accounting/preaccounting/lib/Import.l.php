@@ -360,7 +360,7 @@ Class ImportLib {
 
 					\journal\Operation::model()
 						->update($eOperationOrigin, [
-							'vatRate' => \overview\VatLib::getClosestVatRate($eFarm, round($eOperation['amount'] / $cOperation[$number]['amount'], 4) * 100),
+							'vatRate' => \vat\VatLib::getClosestVatRate($eFarm, round($eOperation['amount'] / $cOperation[$number]['amount'], 4) * 100),
 							'vatAccount' => $eOperation['account']]
 						);
 
