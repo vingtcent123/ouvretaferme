@@ -608,7 +608,7 @@ class OperationLib extends OperationCrud {
 				\Fail::log('Operation::vatStd.unknown');
 				return new \Collection();
 
-			} else if($input['vatValue'][$index]) { // Il a saisi une valeur de TVA mais une règle qui dit "pas de TVA"
+			} else if($eOperation['vatRule'] !== Operation::VAT_STD and $input['vatValue'][$index]) { // Il a saisi une valeur de TVA mais une règle qui dit "pas de TVA"
 
 				\Fail::log('Operation::vatRuleNoWithVatValue.inconsistency', [$eOperation['vatRule']]);
 				return new \Collection();
