@@ -48,7 +48,7 @@ class Cashflow extends CashflowElement {
 			return FALSE;
 		}
 
-		return $this['status'] === Cashflow::ALLOCATED;
+		return in_array($this['status'], [Cashflow::ALLOCATED, Cashflow::WAITING]);
 	}
 
 	public function accept(): bool {
