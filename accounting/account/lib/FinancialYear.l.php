@@ -5,16 +5,16 @@ class FinancialYearLib extends FinancialYearCrud {
 	private static ?\Collection $cOpenFinancialYear = NULL;
 
 	public static function getPropertiesCreate(): array {
-		return ['taxSystem', 'accountingType', 'startDate', 'endDate', 'legalCategory', 'associates', 'accountingMode'];
+		return ['taxSystem', 'accountingType', 'startDate', 'endDate', 'legalCategory', 'gaecFormat', 'associates', 'accountingMode'];
 	}
 	public static function getPropertiesUpdate(): \Closure {
 		return function(FinancialYear $e) {
 
 			if($e->isClosed()) {
-				return ['associates'];
+				return ['gaecFormat', 'associates'];
 			}
 
-			return ['taxSystem', 'accountingType', 'legalCategory', 'associates', 'accountingMode'];
+			return ['taxSystem', 'accountingType', 'legalCategory', 'gaecFormat', 'associates', 'accountingMode'];
 
 		};
 	}

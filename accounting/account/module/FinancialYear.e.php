@@ -278,6 +278,15 @@ class FinancialYear extends FinancialYearElement {
 				return (is_int($associates) and $associates > 0);
 
 			})
+			->setCallback('gaecFormat.check', function(?string &$gaecFormat) use ($p): bool {
+
+				if($p->isBuilt('legalCategory') === FALSE or $this['legalCategory'] !== \company\CompanySetting::CATEGORIE_GAEC) {
+					return TRUE;
+				}
+
+				return $gaecFormat !== NULL;
+
+			})
 			->setCallback('accountingMode.check', function(?string &$accountingMode) use ($p): bool {
 
 				if($p->isBuilt('taxSystem') === FALSE) {

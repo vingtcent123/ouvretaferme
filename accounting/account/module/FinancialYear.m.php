@@ -20,6 +20,9 @@ abstract class FinancialYearElement extends \Element {
 	const ACCOUNTING = 'accounting';
 	const CASH_RECEIPTS = 'cash-receipts';
 
+	const TOTAL = 'total';
+	const PARTIAL = 'partial';
+
 	public static function getSelection(): array {
 		return FinancialYear::model()->getProperties();
 	}
@@ -62,6 +65,7 @@ class FinancialYearModel extends \ModuleModel {
 			'legalCategory' => ['int16', 'min' => 1000, 'max' => 9999, 'cast' => 'int'],
 			'accountingMode' => ['enum', [\account\FinancialYear::ACCOUNTING, \account\FinancialYear::CASH_RECEIPTS], 'cast' => 'enum'],
 			'associates' => ['int8', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
+			'gaecFormat' => ['enum', [\account\FinancialYear::TOTAL, \account\FinancialYear::PARTIAL], 'null' => TRUE, 'cast' => 'enum'],
 			'openDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'closeDate' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -69,7 +73,7 @@ class FinancialYearModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'startDate', 'endDate', 'status', 'taxSystem', 'accountingType', 'legalCategory', 'accountingMode', 'associates', 'openDate', 'closeDate', 'createdAt', 'createdBy'
+			'id', 'startDate', 'endDate', 'status', 'taxSystem', 'accountingType', 'legalCategory', 'accountingMode', 'associates', 'gaecFormat', 'openDate', 'closeDate', 'createdAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -112,6 +116,9 @@ class FinancialYearModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'accountingMode' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'gaecFormat' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -163,6 +170,10 @@ class FinancialYearModel extends \ModuleModel {
 
 	public function whereAssociates(...$data): FinancialYearModel {
 		return $this->where('associates', ...$data);
+	}
+
+	public function whereGaecFormat(...$data): FinancialYearModel {
+		return $this->where('gaecFormat', ...$data);
 	}
 
 	public function whereOpenDate(...$data): FinancialYearModel {

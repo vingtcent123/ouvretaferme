@@ -6,7 +6,7 @@ class FinancialYear {
 
 		const form = target.firstParent('form');
 
-		form.qsa('[data-wrapper="associates"]', wrapper => (category === 6533) ? // Pour les GAEC uniquement
+		form.qsa('[data-wrapper="associates"], [data-wrapper="gaecFormat"]', wrapper => (category === 6533) ? // Pour les GAEC uniquement
 			wrapper.classList.remove('hide') :
 			wrapper.classList.add('hide'));
 

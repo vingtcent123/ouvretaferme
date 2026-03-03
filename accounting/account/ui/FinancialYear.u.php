@@ -81,7 +81,7 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 
 			$h .= $form->dynamicGroups($eFinancialYear, [
-				'startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'legalCategory*', 'associates*'
+				'startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'legalCategory*', 'gaecFormat*', 'associates*'
 			]);
 
 			$h .= $form->group(
@@ -182,7 +182,7 @@ class FinancialYearUi {
 			$h .= $form->hidden('farm', $eFarm['id']);
 			$h .= $form->hidden('id', $eFinancialYear['id']);
 
-			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'legalCategory*', 'associates*'], [
+			$h .= $form->dynamicGroups($eFinancialYear, ['startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'legalCategory*', 'gaecFormat*', 'associates*'], [
 				'startDate*' => function($d) use($form, $eFinancialYear) {
 					if($eFinancialYear['nOperation'] > 0) {
 						$d->attributes['disabled'] = 'disabled';
@@ -1125,10 +1125,29 @@ class FinancialYearUi {
 
 						$h .= '<li>';
 							$h .= s("{value}", '<b>'.self::p('legalCategory')->values[$eFinancialYear['legalCategory']].'</b>');
-						if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_GAEC) {
-								$h .= ' '.p("(<b>{value}</b> associé·e)", "(<b>{value}</b> associé·e·s)", $eFinancialYear['associates']);
-						}
 						$h .= '</li>';
+
+						if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_GAEC) {
+
+							$h .= '<li>';
+
+								if($eFinancialYear['gaecFormat']) {
+
+									$h .= p("{type} avec {number} associé·e", "{type} avec {number} associé·e·s", $eFinancialYear['associates'],  [
+										'type' => FinancialYearUi::p('gaecFormat')->values[$eFinancialYear['gaecFormat']] ?? '<a class="color-warning" href="'.\farm\FarmUi::urlConnected($eFarm).'/account/financialYear/:update?id='.$eFinancialYear['id'].'">'.\Asset::icon('exclamation-triangle').' '.s("Forme du GAEC inconnue").'</a>',
+										'number' => $eFinancialYear['associates'],
+									]);
+
+								} else {
+
+									$h .= p("{value} associé·e", "{value} associé·e·s", $eFinancialYear['associates']);
+									$h .= ' (<a href="'.\farm\FarmUi::urlConnected($eFarm).'/account/financialYear/:update?id='.$eFinancialYear['id'].'">'.s("renseigner la forme du GAEC").'</a>)';
+
+								}
+
+							$h .= '</li>';
+
+						}
 
 
 						$type = match($eFinancialYear['accountingType']) {
@@ -1215,6 +1234,7 @@ class FinancialYearUi {
 			'accountingType' => s("Type de comptabilité"),
 			'accountingMode' => s("Comment tenez-vous votre comptabilité ?"),
 			'legalCategory' => s("Forme juridique"),
+			'gaecFormat' => s("Type de GAEC"),
 			'associates' => s("Nombre d'associé·e·s"),
 		]);
 
@@ -1296,6 +1316,16 @@ class FinancialYearUi {
 				$d->attributes['onchange'] = 'FinancialYear.changeLegalCategory(this)';
 				break;
 
+			case 'gaecFormat':
+				$d->attributes['mandatory'] = TRUE;
+				$d->values = [
+					FinancialYear::PARTIAL => s("GAEC partiel"),
+					FinancialYear::TOTAL => s("GAEC total"),
+				];
+				$d->group = fn(FinancialYear $e) => (($e['legalCategory'] ?? NULL) === \company\CompanySetting::CATEGORIE_GAEC) ? [] : ['class' => 'hide'];
+				$d->after = \util\FormUi::info(s("Un GAEC <b>total</b> est un GAEC constitué d'associés dont <b>aucun</b> n'exerce à titre individuel d'activité agricole.<br />Un GAEC <b>partiel</b> est un GAEC dont <b>tous</b> des associés exercent à titre individuel une activité agricole."));
+				break;
+
 			case 'associates':
 				$d->field = 'select';
 				$d->attributes['mandatory'] = TRUE;
@@ -1304,6 +1334,7 @@ class FinancialYearUi {
 					$d->values[$i] = $i;
 				}
 				$d->group = fn(FinancialYear $e) => (($e['legalCategory'] ?? NULL) === \company\CompanySetting::CATEGORIE_GAEC) ? [] : ['class' => 'hide'];
+				$d->after = \util\FormUi::info(s("Nombre d'associé·e·s au 1<sup>er</sup> janvier de l'année, utilisé pour le calcul de la taxe sur le chiffre d'affaires des exploitations agricoles."));
 				break;
 
 			case 'status':
