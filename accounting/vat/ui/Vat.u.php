@@ -1,5 +1,5 @@
 <?php
-namespace overview;
+namespace vat;
 
 Class VatUi {
 
@@ -29,7 +29,7 @@ Class VatUi {
 				if($cDeclaration->offsetExists($period['from'])) {
 					$eDeclaration = $cDeclaration->offsetGet($period['from']);
 				} else {
-					$eDeclaration = new VatDeclaration();
+					$eDeclaration = new Declaration();
 				}
 
 				if($period['from'] > date('Y-m-d')) {
@@ -215,9 +215,9 @@ Class VatUi {
 				$h .= '<div>'.s(
 					"Votre déclaration est ouverte sur {siteName} dès la fin de la période à déclarer, soit le <b>{date}</b>, et vous pouvez la modifier sur {siteName} jusqu'à {days} jours après la date limite (soit le {closeDate}). ",
 					[
-						'days' => VatDeclarationLib::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS,
+						'days' => \vat\VatSetting::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS,
 						'date' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to'].' + 1 day'))),
-						'closeDate' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['limit'].' + '.VatDeclarationLib::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS.' days'))),
+						'closeDate' => \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['limit'].' + '.\vat\VatSetting::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS.' days'))),
 					]
 				).'</div>';
 
@@ -673,10 +673,10 @@ Class VatUi {
 					$h .= s("La déclaration sera ouverte à compter du <b>{value}</b>", \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to'].' + 1 day'))));
 				$h .= '</div>';
 
-			} else if(date('Y-m-d') <= date('Y-m-d', strtotime($vatParameters['limit'].' + '.VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days'))) {
+			} else if(date('Y-m-d') <= date('Y-m-d', strtotime($vatParameters['limit'].' + '.\vat\VatSetting::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days'))) {
 
 				$h .= '<div class="util-info">';
-					$h .= s("La déclaration est encore ouverte jusqu'au <b>{value}</b>. Vous pouvez reporter les informations que vous avez télédéclarées ici afin d'en conserver une trace.", \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['limit'].' + '.VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days'))));
+					$h .= s("La déclaration est encore ouverte jusqu'au <b>{value}</b>. Vous pouvez reporter les informations que vous avez télédéclarées ici afin d'en conserver une trace.", \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['limit'].' + '.\vat\VatSetting::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days'))));
 				$h .= '</div>';
 
 			} else if($hasData === FALSE) {
@@ -739,7 +739,7 @@ Class VatUi {
 	private function getCerfaCA12(\farm\Farm $eFarm, array $data, int $precision, array $vatParameters): string {
 
 		\Asset::js('vat', 'vat-ca12.js');
-		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration(['from' => $vatParameters['from'], 'to' => $vatParameters['to']]);
+		$eVatDeclaration = $data['eVatDeclaration'] ?? new Declaration(['from' => $vatParameters['from'], 'to' => $vatParameters['to']]);
 		$isDisabled = ($eVatDeclaration->acceptUpdate() === FALSE);
 
 		$attributes = $isDisabled ? ['disabled' => 'disabled'] : [];
@@ -775,7 +775,7 @@ Class VatUi {
 
 				$h .= '<div class="util-danger">'.s("Vous êtes en retard ! Pensez à effectuer votre déclaration sur <link>impots.gouv.fr</link> avant le <b>{date}</b> puis à enregistrer ce formulaire comme déclaré.", ['date' => \util\DateUi::numeric($eVatDeclaration['limit']), 'link' => '<a href="http://impots.gouv.fr">']).'</div>';
 
-			} else if($eVatDeclaration['limit'] < date('Y-m-d', strtotime(VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days ago'))) {
+			} else if($eVatDeclaration['limit'] < date('Y-m-d', strtotime(\vat\VatSetting::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days ago'))) {
 
 				$h .= '<div class="util-warning-outline">'.s("Pensez à effectuer votre déclaration sur <link>impots.gouv.fr</link> avant le <b>{date}</b> puis à enregistrer ce formulaire comme déclaré.", ['date' => \util\DateUi::numeric($eVatDeclaration['limit']), 'link' => '<a href="http://impots.gouv.fr">']).'</div>';
 
@@ -2658,7 +2658,7 @@ Class VatUi {
 
 		$h = '';
 
-		$eVatDeclaration = $data['eVatDeclaration'] ?? new VatDeclaration(['from' => $vatParameters['from'], 'to' => $vatParameters['to']]);
+		$eVatDeclaration = $data['eVatDeclaration'] ?? new Declaration(['from' => $vatParameters['from'], 'to' => $vatParameters['to']]);
 
 		$isDisabled = ($eVatDeclaration->acceptUpdate() === FALSE);
 
@@ -3663,7 +3663,7 @@ Class VatUi {
 
 	}
 
-	private function buttons(\farm\Farm $eFarm, \util\FormUi $form, VatDeclaration $eVatDeclaration): string {
+	private function buttons(\farm\Farm $eFarm, \util\FormUi $form, Declaration $eVatDeclaration): string {
 
 		if($eVatDeclaration->acceptUpdate() === FALSE and $eVatDeclaration->acceptReset() === FALSE and $eVatDeclaration->acceptDeclare() === FALSE) {
 			return '';
@@ -5234,12 +5234,12 @@ Class VatUi {
 
 	}
 
-	public function showSuggestedOperations(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, VatDeclaration $eVatDeclaration, \Collection $cOperation, array $cerfaCalculated, array $cerfaDeclared): \Panel {
+	public function showSuggestedOperations(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Declaration $eVatDeclaration, \Collection $cOperation, array $cerfaCalculated, array $cerfaDeclared): \Panel {
 
 		$title = s("Créer les écritures suite à une déclaration de TVA");
 		$panelId = 'panel-create-operations-from-vat-declaration';
 
-		if($eVatDeclaration['status'] !== VatDeclaration::DECLARED) {
+		if($eVatDeclaration['status'] !== Declaration::DECLARED) {
 
 			$h = '<div class="util-warning-outline">'.s("Marquez d'abord votre déclaration comme déclarée.").'</div>';
 

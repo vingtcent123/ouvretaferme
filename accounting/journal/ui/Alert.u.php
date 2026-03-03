@@ -75,7 +75,7 @@ class AlertUi {
 			'Operation::groups.validated' => s("Les groupes d'opérations ont bien été validés."),
 			'Operation::group.validated' => s("Le groupe d'opérations a bien été validé."),
 
-			'VatDeclaration:created' => s("La déclaration de TVA a bien été créée."),
+			'Declaration:created' => s("La déclaration de TVA a bien été créée."),
 
 			'Deferral::charge.created' => s("La charge constatée d'avance a bien été enregistrée."),
 			'Deferral::product.created' => s("Le produit constaté d'avance a bien été enregistré."),

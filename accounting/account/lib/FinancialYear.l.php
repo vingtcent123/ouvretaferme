@@ -214,7 +214,7 @@ class FinancialYearLib extends FinancialYearCrud {
 			\asset\Depreciation::model()->whereFinancialYear($e)->delete();
 
 			\journal\Deferral::model()->whereFinancialYear($e)->delete();
-			\overview\VatDeclaration::model()->whereFinancialYear($e)->delete();
+			\vat\Declaration::model()->whereFinancialYear($e)->delete();
 
 			\farm\Farmer::model()
 				->whereFarm($eFarm)

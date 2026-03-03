@@ -1,5 +1,5 @@
 
-VatDeclaration:
+Declaration:
   id: serial32
   # Période de déclaration
   from: date

@@ -719,7 +719,7 @@ new AdaptativeView('vat', function($data, DocTemplate $t) {
 
 		echo '<h3>'.s("Compléter ma déclaration").'</h3>';
 
-		echo '<p>'.s("Vous pouvez modifier le formulaire de la déclaration {daysBefore} jours avant la date de déclaration limite et jusqu'à {daysAfter} jours après cette date.", ['daysBefore' => \overview\VatDeclarationLib::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS, 'daysAfter' => \overview\VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS]).'</p>';
+		echo '<p>'.s("Vous pouvez modifier le formulaire de la déclaration {daysBefore} jours avant la date de déclaration limite et jusqu'à {daysAfter} jours après cette date.", ['daysBefore' => \vat\VatSetting::DELAY_OPEN_BEFORE_LIMIT_IN_DAYS, 'daysAfter' => \vat\VatSetting::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS]).'</p>';
 
 		echo '<p>'.s("Une fois que vous aurez terminé votre déclaration, enregistrez-la sur {siteName} puis vous pourrez ensuite l'enregistrer comme déclarée. <b>N'oubliez pas de la télédéclarer sur <link>le site des impôts</link></b> ! Vous pourrez ensuite visualiser les écritures proposées par {siteName} à enregistrer dans votre livre-journal, compte-tenu de la déclaration que vous avez enregistrée sur {siteName}.", ['link' => '<a href="https://impots.gouv.fr">']).'</p>';
 

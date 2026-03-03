@@ -1,12 +1,12 @@
 <?php
-namespace overview;
+namespace vat;
 
-class VatDeclarationUi {
+class DeclarationUi {
 
 	public function __construct() {
 	}
 
-	public function getHistory(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cVatDeclaration, array $allPeriods): string {
+	public function getHistory(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Collection $cDeclaration, array $allPeriods): string {
 
 		$h = '<div class="stick-sm util-overflow-sm">';
 			$h .= '<table class="tr-even tr-hover">';
@@ -28,7 +28,7 @@ class VatDeclarationUi {
 
 					foreach($allPeriods as $period) {
 
-						$eVatDeclaration = $cVatDeclaration->find(fn($e) => $e['from'] === $period['from'] and $e['to'] === $period['to'])->first() ?? new VatDeclaration();
+						$eDeclaration = $cDeclaration->find(fn($e) => $e['from'] === $period['from'] and $e['to'] === $period['to'])->first() ?? new Declaration();
 
 						$h .= '<tr class="';
 							if($period['to'] > date('Y-m-d')) {
@@ -39,26 +39,26 @@ class VatDeclarationUi {
 								$text = s("{startDate} au {endDate}",
 									['startDate' => \util\DateUi::numeric($period['from']), 'endDate' => \util\DateUi::numeric($period['to'])]
 								);
-								if($eVatDeclaration->empty()) {
+								if($eDeclaration->empty()) {
 									$h .= $text;
 								} else {
-									$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva?tab=cerfa&id='.$eVatDeclaration['id'].'">';
+									$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva?tab=cerfa&id='.$eDeclaration['id'].'">';
 										$h .= $text;
 									$h .= '</a>';
 								}
 							$h .= '</td>';
 							$h .= '<td class="';
-								if($period['limit'] < date('Y-m-d') and $eVatDeclaration->notEmpty() and $eVatDeclaration['status'] !== VatDeclaration::DECLARED) {
+								if($period['limit'] < date('Y-m-d') and $eDeclaration->notEmpty() and $eDeclaration['status'] !== Declaration::DECLARED) {
 									$h .= 'color-danger';
-								} else if (($period['limit'] < date('Y-m-d', strtotime(VatDeclarationLib::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days ago')) and ($eVatDeclaration->empty() or $eVatDeclaration['status'] !== VatDeclaration::DECLARED))) {
+								} else if (($period['limit'] < date('Y-m-d', strtotime(\vat\VatSetting::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days ago')) and ($eDeclaration->empty() or $eDeclaration['status'] !== Declaration::DECLARED))) {
 									$h .= 'color-warning';
 								}
 								$h .= '">';
 								$h .= \util\DateUi::numeric($period['limit']);
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
-								if($eVatDeclaration->notEmpty()) {
-									$h .= encode(self::p('status')->values[$eVatDeclaration['status']]);
+								if($eDeclaration->notEmpty()) {
+									$h .= encode(self::p('status')->values[$eDeclaration['status']]);
 								} else {
 									if($period['from'] <= date('Y-m-d') and $period['to'] >= date('Y-m-d')) {
 										$h .= s("En cours...");
@@ -66,18 +66,18 @@ class VatDeclarationUi {
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
-								if($eVatDeclaration->empty()) {
+								if($eDeclaration->empty()) {
 									$h .= '-';
 								} else {
-									$h .= \util\DateUi::numeric($eVatDeclaration['createdAt']);
-									$h .= '<div class="font-sm">('.s("par {value}", $eVatDeclaration['createdBy']->getName()).')</div>';
+									$h .= \util\DateUi::numeric($eDeclaration['createdAt']);
+									$h .= '<div class="font-sm">('.s("par {value}", $eDeclaration['createdBy']->getName()).')</div>';
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
-								if($eVatDeclaration->empty() or isset($eVatDeclaration['data']['0705']) === FALSE) {
+								if($eDeclaration->empty() or isset($eDeclaration['data']['0705']) === FALSE) {
 									$h .= '-';
 								} else {
-									if((int)$eVatDeclaration['data']['0705'] > 0) {
+									if((int)$eDeclaration['data']['0705'] > 0) {
 										$h .= s("Crédit de TVA");
 									} else {
 										$h .= s("TVA à payer");
@@ -85,38 +85,38 @@ class VatDeclarationUi {
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-end">';
-								if($eVatDeclaration->empty() or isset($eVatDeclaration['data']['0705']) === FALSE) {
+								if($eDeclaration->empty() or isset($eDeclaration['data']['0705']) === FALSE) {
 									$h .= '-';
 								} else {
-									if((int)$eVatDeclaration['data']['0705'] > 0) {
-										$h .= \util\TextUi::money($eVatDeclaration['data']['0705']);
+									if((int)$eDeclaration['data']['0705'] > 0) {
+										$h .= \util\TextUi::money($eDeclaration['data']['0705']);
 									} else {
-										$h .= \util\TextUi::money($eVatDeclaration['data']['8900']);
+										$h .= \util\TextUi::money($eDeclaration['data']['8900']);
 									}
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
-								if($eVatDeclaration->empty()) {
+								if($eDeclaration->empty()) {
 									$h .= '-';
 								} else {
-									if($eVatDeclaration['declaredAt'] !== NULL) {
-										$h .= \util\DateUi::numeric($eVatDeclaration['declaredAt']);
-										$h .= '<div class="font-sm">('.s("par {value}", $eVatDeclaration['declaredBy']->getName()).')</div>';
+									if($eDeclaration['declaredAt'] !== NULL) {
+										$h .= \util\DateUi::numeric($eDeclaration['declaredAt']);
+										$h .= '<div class="font-sm">('.s("par {value}", $eDeclaration['declaredBy']->getName()).')</div>';
 									}
 								}
 							$h .= '</td>';
 							$h .= '<td class="text-center">';
-								if($eVatDeclaration->empty()) {
+								if($eDeclaration->empty()) {
 									$h .= '-';
 								} else {
-									if($eVatDeclaration['accountedAt'] === NULL) {
+									if($eDeclaration['accountedAt'] === NULL) {
 										$h .= s("Non");
-										if($eVatDeclaration['declaredAt'] !== NULL) {
-											$h .= '<br /><a class="font-sm" href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva/operations?id='.$eVatDeclaration['id'].'">'.s("Voir les écritures proposées").'</a>';
+										if($eDeclaration['declaredAt'] !== NULL) {
+											$h .= '<br /><a class="font-sm" href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva/operations?id='.$eDeclaration['id'].'">'.s("Voir les écritures proposées").'</a>';
 										}
 									} else {
-										$h .= \util\DateUi::numeric($eVatDeclaration['accountedAt']);
-										$h .= '<div class="font-sm">('.s("par {value}", $eVatDeclaration['accountedBy']->getName()).')</div>';
+										$h .= \util\DateUi::numeric($eDeclaration['accountedAt']);
+										$h .= '<div class="font-sm">('.s("par {value}", $eDeclaration['accountedBy']->getName()).')</div>';
 									}
 								}
 							$h .= '</td>';
@@ -135,7 +135,7 @@ class VatDeclarationUi {
 
 	public static function p(string $property): \PropertyDescriber {
 
-		$d = VatDeclaration::model()->describer($property, [
+		$d = Declaration::model()->describer($property, [
 			'status' => s("Status"),
 			'cerfa' => s("Cerfa"),
 			'createdAt' => s("Créée le"),
@@ -149,15 +149,15 @@ class VatDeclarationUi {
 
 			case 'cerfa' :
 				$d->values = [
-					VatDeclaration::CA12 => s("CA12"),
-					VatDeclaration::CA3 => s("CA3"),
+					Declaration::CA12 => s("CA12"),
+					Declaration::CA3 => s("CA3"),
 				];
 				break;
 
 			case 'status':
 				$d->values = [
-					VatDeclaration::DECLARED => s("Déclarée"),
-					VatDeclaration::DRAFT => s("Créée"),
+					Declaration::DECLARED => s("Déclarée"),
+					Declaration::DRAFT => s("Créée"),
 				];
 				break;
 

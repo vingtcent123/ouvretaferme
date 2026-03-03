@@ -1,11 +1,11 @@
 <?php
-namespace overview;
+namespace vat;
 
-abstract class VatDeclarationElement extends \Element {
+abstract class DeclarationElement extends \Element {
 
 	use \FilterElement;
 
-	private static ?VatDeclarationModel $model = NULL;
+	private static ?DeclarationModel $model = NULL;
 
 	const DRAFT = 'draft';
 	const DECLARED = 'declared';
@@ -15,32 +15,32 @@ abstract class VatDeclarationElement extends \Element {
 	const CA12 = 'ca12';
 
 	public static function getSelection(): array {
-		return VatDeclaration::model()->getProperties();
+		return Declaration::model()->getProperties();
 	}
 
 	public static function resetModel(): void {
 		self::$model = NULL;
 	}
 
-	public static function model(): VatDeclarationModel {
+	public static function model(): DeclarationModel {
 		if(self::$model === NULL) {
-			self::$model = new VatDeclarationModel();
+			self::$model = new DeclarationModel();
 		}
 		return self::$model;
 	}
 
 	public static function fail(string|\FailException $failName, array $arguments = [], ?string $wrapper = NULL): bool {
-		return \Fail::log('VatDeclaration::'.$failName, $arguments, $wrapper);
+		return \Fail::log('Declaration::'.$failName, $arguments, $wrapper);
 	}
 
 }
 
 
-class VatDeclarationModel extends \ModuleModel {
+class DeclarationModel extends \ModuleModel {
 
-	protected string $module = 'overview\VatDeclaration';
-	protected string $package = 'overview';
-	protected string $table = 'overviewVatDeclaration';
+	protected string $module = 'vat\Declaration';
+	protected string $package = 'vat';
+	protected string $table = 'vatDeclaration';
 
 	public function __construct() {
 
@@ -51,9 +51,9 @@ class VatDeclarationModel extends \ModuleModel {
 			'from' => ['date', 'cast' => 'string'],
 			'to' => ['date', 'cast' => 'string'],
 			'limit' => ['date', 'cast' => 'string'],
-			'status' => ['enum', [\overview\VatDeclaration::DRAFT, \overview\VatDeclaration::DECLARED, \overview\VatDeclaration::DELETED], 'cast' => 'enum'],
+			'status' => ['enum', [\vat\Declaration::DRAFT, \vat\Declaration::DECLARED, \vat\Declaration::DELETED], 'cast' => 'enum'],
 			'associates' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
-			'cerfa' => ['enum', [\overview\VatDeclaration::CA3, \overview\VatDeclaration::CA12], 'cast' => 'enum'],
+			'cerfa' => ['enum', [\vat\Declaration::CA3, \vat\Declaration::CA12], 'cast' => 'enum'],
 			'data' => ['json', 'null' => TRUE, 'cast' => 'array'],
 			'financialYear' => ['element32', 'account\FinancialYear', 'cast' => 'element'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
@@ -93,7 +93,7 @@ class VatDeclarationModel extends \ModuleModel {
 		switch($property) {
 
 			case 'status' :
-				return VatDeclaration::DRAFT;
+				return Declaration::DRAFT;
 
 			case 'data' :
 				return [];
@@ -151,79 +151,79 @@ class VatDeclarationModel extends \ModuleModel {
 
 	}
 
-	public function select(...$fields): VatDeclarationModel {
+	public function select(...$fields): DeclarationModel {
 		return parent::select(...$fields);
 	}
 
-	public function where(...$data): VatDeclarationModel {
+	public function where(...$data): DeclarationModel {
 		return parent::where(...$data);
 	}
 
-	public function whereId(...$data): VatDeclarationModel {
+	public function whereId(...$data): DeclarationModel {
 		return $this->where('id', ...$data);
 	}
 
-	public function whereFrom(...$data): VatDeclarationModel {
+	public function whereFrom(...$data): DeclarationModel {
 		return $this->where('from', ...$data);
 	}
 
-	public function whereTo(...$data): VatDeclarationModel {
+	public function whereTo(...$data): DeclarationModel {
 		return $this->where('to', ...$data);
 	}
 
-	public function whereLimit(...$data): VatDeclarationModel {
+	public function whereLimit(...$data): DeclarationModel {
 		return $this->where('limit', ...$data);
 	}
 
-	public function whereStatus(...$data): VatDeclarationModel {
+	public function whereStatus(...$data): DeclarationModel {
 		return $this->where('status', ...$data);
 	}
 
-	public function whereAssociates(...$data): VatDeclarationModel {
+	public function whereAssociates(...$data): DeclarationModel {
 		return $this->where('associates', ...$data);
 	}
 
-	public function whereCerfa(...$data): VatDeclarationModel {
+	public function whereCerfa(...$data): DeclarationModel {
 		return $this->where('cerfa', ...$data);
 	}
 
-	public function whereData(...$data): VatDeclarationModel {
+	public function whereData(...$data): DeclarationModel {
 		return $this->where('data', ...$data);
 	}
 
-	public function whereFinancialYear(...$data): VatDeclarationModel {
+	public function whereFinancialYear(...$data): DeclarationModel {
 		return $this->where('financialYear', ...$data);
 	}
 
-	public function whereCreatedAt(...$data): VatDeclarationModel {
+	public function whereCreatedAt(...$data): DeclarationModel {
 		return $this->where('createdAt', ...$data);
 	}
 
-	public function whereCreatedBy(...$data): VatDeclarationModel {
+	public function whereCreatedBy(...$data): DeclarationModel {
 		return $this->where('createdBy', ...$data);
 	}
 
-	public function whereUpdatedAt(...$data): VatDeclarationModel {
+	public function whereUpdatedAt(...$data): DeclarationModel {
 		return $this->where('updatedAt', ...$data);
 	}
 
-	public function whereUpdatedBy(...$data): VatDeclarationModel {
+	public function whereUpdatedBy(...$data): DeclarationModel {
 		return $this->where('updatedBy', ...$data);
 	}
 
-	public function whereDeclaredAt(...$data): VatDeclarationModel {
+	public function whereDeclaredAt(...$data): DeclarationModel {
 		return $this->where('declaredAt', ...$data);
 	}
 
-	public function whereDeclaredBy(...$data): VatDeclarationModel {
+	public function whereDeclaredBy(...$data): DeclarationModel {
 		return $this->where('declaredBy', ...$data);
 	}
 
-	public function whereAccountedAt(...$data): VatDeclarationModel {
+	public function whereAccountedAt(...$data): DeclarationModel {
 		return $this->where('accountedAt', ...$data);
 	}
 
-	public function whereAccountedBy(...$data): VatDeclarationModel {
+	public function whereAccountedBy(...$data): DeclarationModel {
 		return $this->where('accountedBy', ...$data);
 	}
 
@@ -231,24 +231,24 @@ class VatDeclarationModel extends \ModuleModel {
 }
 
 
-abstract class VatDeclarationCrud extends \ModuleCrud {
+abstract class DeclarationCrud extends \ModuleCrud {
 
  private static array $cache = [];
 
-	public static function getById(mixed $id, array $properties = []): VatDeclaration {
+	public static function getById(mixed $id, array $properties = []): Declaration {
 
-		$e = new VatDeclaration();
+		$e = new Declaration();
 
 		if(empty($id)) {
-			VatDeclaration::model()->reset();
+			Declaration::model()->reset();
 			return $e;
 		}
 
 		if($properties === []) {
-			$properties = VatDeclaration::getSelection();
+			$properties = Declaration::getSelection();
 		}
 
-		if(VatDeclaration::model()
+		if(Declaration::model()
 			->select($properties)
 			->whereId($id)
 			->get($e) === FALSE) {
@@ -266,14 +266,14 @@ abstract class VatDeclarationCrud extends \ModuleCrud {
 		}
 
 		if($properties === []) {
-			$properties = VatDeclaration::getSelection();
+			$properties = Declaration::getSelection();
 		}
 
 		if($sort !== NULL) {
-			VatDeclaration::model()->sort($sort);
+			Declaration::model()->sort($sort);
 		}
 
-		return VatDeclaration::model()
+		return Declaration::model()
 			->select($properties)
 			->whereId('IN', $ids)
 			->getCollection(NULL, NULL, $index);
@@ -287,51 +287,51 @@ abstract class VatDeclarationCrud extends \ModuleCrud {
 
 	}
 
-	public static function getNewElement(array $properties = []): VatDeclaration {
+	public static function getNewElement(array $properties = []): Declaration {
 
-		return new VatDeclaration($properties);
-
-	}
-
-	public static function create(VatDeclaration $e): void {
-
-		VatDeclaration::model()->insert($e);
+		return new Declaration($properties);
 
 	}
 
-	public static function update(VatDeclaration $e, array $properties): void {
+	public static function create(Declaration $e): void {
+
+		Declaration::model()->insert($e);
+
+	}
+
+	public static function update(Declaration $e, array $properties): void {
 
 		$e->expects(['id']);
 
-		VatDeclaration::model()
+		Declaration::model()
 			->select($properties)
 			->update($e);
 
 	}
 
-	public static function updateCollection(\Collection $c, VatDeclaration $e, array $properties): void {
+	public static function updateCollection(\Collection $c, Declaration $e, array $properties): void {
 
-		VatDeclaration::model()
+		Declaration::model()
 			->select($properties)
 			->whereId('IN', $c)
 			->update($e->extracts($properties));
 
 	}
 
-	public static function delete(VatDeclaration $e): void {
+	public static function delete(Declaration $e): void {
 
 		$e->expects(['id']);
 
-		VatDeclaration::model()->delete($e);
+		Declaration::model()->delete($e);
 
 	}
 
 }
 
 
-class VatDeclarationPage extends \ModulePage {
+class DeclarationPage extends \ModulePage {
 
-	protected string $module = 'overview\VatDeclaration';
+	protected string $module = 'vat\Declaration';
 
 	public function __construct(
 	   ?\Closure $start = NULL,
@@ -340,8 +340,8 @@ class VatDeclarationPage extends \ModulePage {
 	) {
 		parent::__construct(
 		   $start,
-		   $propertiesCreate ?? VatDeclarationLib::getPropertiesCreate(),
-		   $propertiesUpdate ?? VatDeclarationLib::getPropertiesUpdate()
+		   $propertiesCreate ?? DeclarationLib::getPropertiesCreate(),
+		   $propertiesUpdate ?? DeclarationLib::getPropertiesUpdate()
 		);
 	}
 

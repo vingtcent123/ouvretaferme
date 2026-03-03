@@ -73,7 +73,7 @@ Class DataObserverLib {
 			$eFarmData = new \data\Farm([
 				'data' => $eData,
 				'farm' => $eFarm,
-				'value' => \overview\VatDeclaration::model()->count(),
+				'value' => \vat\Declaration::model()->count(),
  			]);
 
 			\data\FarmLib::create($eFarmData);

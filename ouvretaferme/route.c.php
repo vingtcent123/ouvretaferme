@@ -69,7 +69,7 @@ Route::register([
 			'route' => ['configuration', 'accounting'],
 		],
 		'/declaration-de-tva' => [
-			'request' => 'overview/vat',
+			'request' => 'vat/vat',
 			'priority' => 5,
 			'route' => ['declaration-de-tva'],
 		],
@@ -94,7 +94,7 @@ Route::register([
 			'route' => ['etats-financiers'],
 		],
 		'/etats-financiers/declaration-de-tva/operations' => [
-			'request' => 'overview/vat',
+			'request' => 'vat/vat',
 			'priority' => 5,
 			'route' => ['etats-financiers', 'declaration-de-tva', 'operations'],
 		],
@@ -1033,22 +1033,22 @@ Route::register([
 			'route' => ['shop', 'public', '{fqn}', '{date}', 'paiement'],
 		],
 		'/vat/doCreateOperations' => [
-			'request' => 'overview/vat',
+			'request' => 'vat/vat',
 			'priority' => 5,
 			'route' => ['vat', 'doCreateOperations'],
 		],
 		'/vat/doDeclare' => [
-			'request' => 'overview/vat',
+			'request' => 'vat/vat',
 			'priority' => 5,
 			'route' => ['vat', 'doDeclare'],
 		],
 		'/vat/doReset' => [
-			'request' => 'overview/vat',
+			'request' => 'vat/vat',
 			'priority' => 5,
 			'route' => ['vat', 'doReset'],
 		],
 		'/vat/saveCerfa' => [
-			'request' => 'overview/vat',
+			'request' => 'vat/vat',
 			'priority' => 5,
 			'route' => ['vat', 'saveCerfa'],
 		],

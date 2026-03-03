@@ -1,7 +1,7 @@
 <?php
-namespace overview;
+namespace vat;
 
-class VatDeclaration extends VatDeclarationElement {
+class Declaration extends DeclarationElement {
 
 	public function acceptUpdate(): bool {
 
@@ -18,7 +18,7 @@ class VatDeclaration extends VatDeclarationElement {
 
 		$this->expects(['declaredAt', 'status']);
 
-		return $this['declaredAt'] !== NULL and $this['status'] !== VatDeclaration::DECLARED;
+		return $this['declaredAt'] !== NULL and $this['status'] !== Declaration::DECLARED;
 
 	}
 

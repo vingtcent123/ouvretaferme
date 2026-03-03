@@ -60,10 +60,10 @@ new Page(function($data) {
 				$data->precision = 0;
 
 				// On tente par l'ID
-				$eVatDeclaration = \overview\VatDeclarationLib::getById(GET('id'));
+				$eVatDeclaration = \vat\DeclarationLib::getById(GET('id'));
 				if($eVatDeclaration->empty()) {
 					// On tente par les dates
-					$eVatDeclaration = \overview\VatDeclarationLib::getByDates($data->vatParameters['from'], $data->vatParameters['to']);
+					$eVatDeclaration = \vat\DeclarationLib::getByDates($data->vatParameters['from'], $data->vatParameters['to']);
 				}
 				// On a trouvé
 				if($eVatDeclaration->notEmpty()) {
@@ -88,7 +88,7 @@ new Page(function($data) {
 				break;
 
 			case 'history':
-				$data->cVatDeclaration = \overview\VatDeclarationLib::getHistory($data->eFarm['eFinancialYear']);
+				$data->cVatDeclaration = \vat\DeclarationLib::getHistory($data->eFarm['eFinancialYear']);
 				break;
 		}
 
@@ -110,14 +110,14 @@ new Page(function($data) {
 		unset($input['to']);
 		unset($input['financialYear']);
 
-		\overview\VatDeclarationLib::saveCerfa($data->eFarm, $data->eFarm['eFinancialYear'], $from, $to, $input, $data->vatParameters['limit']);
+		\vat\DeclarationLib::saveCerfa($data->eFarm, $data->eFarm['eFinancialYear'], $from, $to, $input, $data->vatParameters['limit']);
 
-		throw new ReloadAction('overview', 'VatDeclaration::saved');
+		throw new ReloadAction('vat', 'Declaration::saved');
 
 	})
 	->get('/etats-financiers/declaration-de-tva/operations', function($data) {
 
-		$data->eVatDeclaration = \overview\VatDeclarationLib::getById(GET('id'));
+		$data->eVatDeclaration = \vat\DeclarationLib::getById(GET('id'));
 
 		if($data->eVatDeclaration->empty()) {
 			throw new NotExistsAction('Unknown declaration');
@@ -133,7 +133,7 @@ new Page(function($data) {
 	})
 ;
 
-new \overview\VatDeclarationPage(function($data) {
+new \vat\DeclarationPage(function($data) {
 
 	if($data->eFarm->usesAccounting() === FALSE) {
 		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
@@ -150,16 +150,16 @@ new \overview\VatDeclarationPage(function($data) {
 })
 	->write('/vat/doDeclare', function($data) {
 
-		\overview\VatDeclarationLib::declare($data->e);
+		\vat\DeclarationLib::declare($data->e);
 
-		throw new ReloadAction('overview', 'VatDeclaration::declared');
+		throw new ReloadAction('vat', 'Declaration::declared');
 
 	}, validate: ['acceptDeclare'])
 	->write('/vat/doReset', function($data) {
 
-		\overview\VatDeclarationLib::delete($data->e);
+		\vat\DeclarationLib::delete($data->e);
 
-		throw new ReloadAction('overview', 'VatDeclaration::reset');
+		throw new ReloadAction('vat', 'Declaration::reset');
 
 	})
 	->write('/vat/doCreateOperations', function($data) {
@@ -167,7 +167,7 @@ new \overview\VatDeclarationPage(function($data) {
 		// TODO : savoir dans quel financial year écrire
 		\vat\VatLib::createOperations($data->eFarm, $data->e, $data->eFarm['eFinancialYear']);
 
-		throw new ReloadAction('overview', 'VatDeclaration::operationsCreated');
+		throw new ReloadAction('vat', 'Declaration::operationsCreated');
 
 	}, validate: ['acceptAccount'])
 ?>
