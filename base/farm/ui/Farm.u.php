@@ -1453,7 +1453,12 @@ class FarmUi {
 				$cFinancialYear = $eFarm['cFinancialYear?']();
 
 				if($cFinancialYear->notEmpty()) {
-					$eFinancialYearSelected = $cFinancialYear->find(fn($e) => $e['id'] === $eFarm->getView('viewAccountingYear')['id'] ?? NULL)->first();
+					$cFinancialYearSelected = $cFinancialYear->find(fn($e) => $e['id'] === $eFarm->getView('viewAccountingYear')['id'] ?? NULL);
+					if($cFinancialYearSelected->empty()) {
+						$eFinancialYearSelected = new \account\FinancialYear();
+					} else {
+						$eFinancialYearSelected = $cFinancialYearSelected;
+					}
 					$h .= $this->getFinancialYearsTitle($cFinancialYear, $eFinancialYearSelected);
 				} else {
 					$eFinancialYearSelected = new \account\FinancialYear();
