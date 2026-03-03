@@ -173,7 +173,7 @@ Class AccountingLib {
 		// On cherche la contrepartie par ordre de priorité
 		if($eCash['cashflow']->notEmpty()) {
 
-			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['cashflow']['account']['id'])->first();
+			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['cashflow']['account']['account']['id'])->first();
 
 		} else if($eCash['account']->notEmpty()) {
 

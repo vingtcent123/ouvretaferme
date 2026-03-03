@@ -12,7 +12,7 @@ Class CashLib {
 	public static function getForAccounting(\farm\Farm $eFarm, \Search $search, bool $forImport): \Collection {
 
 		return self::filterForAccounting($eFarm, $search, $forImport)
-			->select(\cash\Cash::getSelection() + ['payment' => \selling\Payment::getSelection(), 'cashflow' => ['id', 'account' => ['account']]])
+			->select(\cash\Cash::getSelection() + ['payment' => \selling\Payment::getSelection(), 'cashflow' => ['id', 'amount', 'account' => ['account']]])
 			->sort(['date' => SORT_DESC])
 			->option('count')
 			->getCollection(NULL, NULL, 'id');
