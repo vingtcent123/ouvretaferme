@@ -52,7 +52,8 @@ class BackupLib {
 
 	public static function cleanStorage(): void {
 
-		self::doClean(self::SERVER_BACKUP_DIR.self::STORAGE_FOLDER);
+		// On ne garde que 10j de storage
+		self::doClean(self::SERVER_BACKUP_DIR.self::STORAGE_FOLDER, duration: 10);
 
 	}
 
@@ -85,7 +86,7 @@ class BackupLib {
 
 	}
 
-	private static function doClean(string $folder): void {
+	private static function doClean(string $folder, int $duration = self::DURATION_BACKUP_IN_DAYS): void {
 
 		[$serverUser, $serverHostname] = self::getHostData();
 
@@ -105,7 +106,7 @@ class BackupLib {
 
 			if(
 				// On ne supprime pas les backups de moins de DURATION_BACKUP_IN_DAYS jours
-				$days <= self::DURATION_BACKUP_IN_DAYS
+				$days <= $duration
 				or (
 					// On ne supprime pas les backups de moins de DURATION_BACKUP_MAX_IN_DAYS jours ET du 1er ou du 15
 					$days <= self::DURATION_BACKUP_MAX_IN_DAYS
