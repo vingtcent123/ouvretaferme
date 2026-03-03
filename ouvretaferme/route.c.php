@@ -448,6 +448,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['journal', 'operation', '{id}', 'update'],
 		],
+		'/livre-des-recettes' => [
+			'request' => 'receipts/index',
+			'priority' => 5,
+			'route' => ['livre-des-recettes'],
+		],
 		'/minify/{version}/{filename}' => [
 			'request' => 'dev/minify',
 			'priority' => 5,
@@ -488,15 +493,15 @@ Route::register([
 			'priority' => 5,
 			'route' => ['precomptabilite:rapprocher'],
 		],
+		'/presentation/accompagnement' => [
+			'request' => 'main/index',
+			'priority' => 5,
+			'route' => ['presentation', 'accompagnement'],
+		],
 		'/presentation/adhesion' => [
 			'request' => 'main/index',
 			'priority' => 5,
 			'route' => ['presentation', 'adhesion'],
-		],
-		'/presentation/afocg' => [
-			'request' => 'main/index',
-			'priority' => 5,
-			'route' => ['presentation', 'afocg'],
 		],
 		'/presentation/faq' => [
 			'request' => 'main/index',
