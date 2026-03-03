@@ -1459,7 +1459,7 @@ class FarmUi {
 					$eFinancialYearSelected = new \account\FinancialYear();
 				}
 
-				if($eFinancialYearSelected->isClosed()) {
+				if($eFinancialYearSelected->notEmpty() and $eFinancialYearSelected->isClosed()) {
 					$locked = '  '.\Asset::icon('lock-fill');
 				} else {
 					$locked = '';
