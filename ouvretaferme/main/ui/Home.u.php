@@ -278,7 +278,7 @@ class HomeUi {
 			$h .= '<div class="home-feature">';
 				$h .= '<h2>';
 					$h .= '<div class="home-feature-icon">'.\Asset::icon('journal-bookmark').'</div>';
-					$h .= s("Logiciel comptable pour le micro-BA");
+					$h .= s("Comptabilité pour le micro-BA");
 				$h .= '</h2>';
 				$h .= '<h4>'.s("Vous êtes en comptabilité de trésorerie, savez tenir la comptabilité de votre ferme et connaissez vos écritures comptables et classes de compte ?<br/>Utilisez Ouvretaferme comme logiciel comptable, c'est toujours inclus dans le montant de l'adhésion à l'association.").'</h4>';
 				$h .= '<h5>'.s("Disponible en version beta uniquement").'</h5>';
@@ -302,11 +302,11 @@ class HomeUi {
 		$h = '<div class="home-highlight">';
 
 			$h .= '<p>';
-				$h .= '<span class="font-xl mr-1" style="font-weight: bold">'.s("Vous êtes une AFOCG ?").'</span><br/>';
+				$h .= '<span class="font-xl mr-1" style="font-weight: bold">'.s("Vous êtes un organisme de formation à la comptabilité ou à la gestion ?").'</span><br/>';
 				$h .= s("Lisez pourquoi Ouvretaferme est la solution qu'il vous faut pour accompagner vos producteurs et productrices sur tous les aspects de leur métier.");
 			$h .= '</p>';
 
-			$h .= '<a href="/presentation/afocg" class="btn btn-primary">'.s("En savoir plus").'</a>';
+			$h .= '<a href="/presentation/accompagnement" class="btn btn-primary">'.s("En savoir plus").'</a>';
 
 		$h .= '</div>';
 

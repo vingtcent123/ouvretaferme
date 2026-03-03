@@ -353,14 +353,14 @@ class LegalUi {
 		return $h;
 	}
 
-	public function afocg() : string {
+	public function formation() : string {
 
 		$h = '<div class="home-features home-features-2 mt-2">';
 			$h .= '<div class="home-feature"><h3>'.s("Pourquoi plus de 2500 producteurs utilisent Ouvretaferme ?").'</h3><p>'.s("Nous avons bâti Ouvretaferme avec la promesse faite aux producteurs et productrices de leur proposer pour un prix minimal une solution qui permette de piloter dans un seul logiciel leur production, leur commercialisation et leur comptabilité.").'</p></div>';
 			$h .= '<div class="home-feature"><h3>'.s("Pourquoi travailler avec Ouvretaferme ?").'</h3><p>'.s("Nous constatons une forte demande de formation sur Ouvretaferme, que ce soit sur la production, la commercialisation ou la comptabilité et c'est pourquoi nous cherchons à travailler avec des partenaires qui partagent nos valeurs pour couvrir ces besoins.").'</p></div>';
 		$h .= '</div>';
 
-		$h .= '<h2>'.s("Que propose {siteName} à votre AFOCG ?").'</h2>';
+		$h .= '<h2>'.s("Que propose {siteName} à votre organisme de formation ?").'</h2>';
 
 		$h .= '<p class="util-info">'.s("{siteName} est un écosystème unique qui couvrira bientôt la plupart des besoins logiciels de producteurs et productrices. Nous l'avons conçu pour que chaque fonctionnalité puisse être utilisée indépendamment des autres. Un producteur ou une productrice qui s'investit à 100 % dans le logiciel profite de la synergie entre chaque fonctionnalité et d'une efficacité décuplée sur la gestion de la ferme !").'</p>';
 
@@ -421,16 +421,16 @@ class LegalUi {
 		$h .= '<br/>';
 		$h .= '<br/>';
 
-		$h .= '<h2>'.s("Quels avantages pour votre AFOCG ?").'</h2>';
+		$h .= '<h2>'.s("Quels avantages pour votre organisme ?").'</h2>';
 
 		$h .= '<div class="home-why">';
 			$h .= '<div class="home-why-item">';
 				$h .= \Asset::icon('1-circle');
-				$h .= '<h4>'.s("Tous les adhérents de votre AFOCG bénéficient du tarif privilégié de 100 € / an pour utiliser {siteName}.").'</h4>';
+				$h .= '<h4>'.s("Tous les adhérents de votre organisme bénéficient du tarif privilégié de 100 € / an pour utiliser {siteName}.").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-why-item">';
 				$h .= \Asset::icon('2-circle');
-				$h .= '<h4>'.s("Votre AFOCG est visible sur Ouvretaferme auprès des producteurs qui utilisent notre logiciel sur votre territoire.").'</h4>';
+				$h .= '<h4>'.s("Votre organisme est visible sur Ouvretaferme auprès des producteurs qui utilisent notre logiciel sur votre territoire.").'</h4>';
 			$h .= '</div>';
 			$h .= '<div class="home-why-item">';
 				$h .= \Asset::icon('3-circle');
@@ -450,7 +450,7 @@ class LegalUi {
 			$h .= '</div>';
 		$h .= '</div>';
 
-		$h .= '<p class="home-emphasis">'.s("75 % des fermes qui utilisent {siteName} ne sont pas adhérentes à une AFOCG et une partie d'entre elles pourrait être intéressée par un accompagnement à la comptabilité et à la gestion.").'</p>';
+		$h .= '<p class="home-emphasis">'.s("75 % des fermes qui utilisent {siteName} n'adhérent à aucune structure qui accompagne à la comptabilité et à la gestion et une partie d'entre elles pourrait être intéressée par un accompagnement.").'</p>';
 
 		$h .= '<br/>';
 		$h .= '<br/>';

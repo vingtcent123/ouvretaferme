@@ -444,20 +444,20 @@ new AdaptativeView('/presentation/adhesion', function($data, MainTemplate $t) {
 
 });
 
-new AdaptativeView('/presentation/afocg', function($data, MainTemplate $t) {
+new AdaptativeView('/presentation/accompagnement', function($data, MainTemplate $t) {
 
-	$t->title = s("Vous êtes une AFOCG ?");
+	$t->title = s("Vous êtes un organisme de formation à la comptabilité ou à la gestion ?");
 	$t->metaNoindex = TRUE;
 	$t->template = 'home-legal';
 
 	Asset::css('main', 'home.css');
 
 	$t->header = '<div>';
-		$t->header .= '<h1>'.s("Vous êtes une AFOCG ?").'</h1>';
+		$t->header .= '<h1>'.s("Vous êtes un organisme de formation à la comptabilité ou à la gestion ?").'</h1>';
 		$t->header .= '<h4>'.s("Voyons si vous pourriez utiliser Ouvretaferme comme solution logicielle").'</h4>';
 	$t->header .= '</div>';
 
-	echo new \main\LegalUi()->afocg();
+	echo new \main\LegalUi()->formation();
 
 });
 
