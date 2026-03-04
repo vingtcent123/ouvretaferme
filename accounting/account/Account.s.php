@@ -75,6 +75,7 @@ class AccountSetting extends \Settings {
 	const EXCESS_AMORTIZATION_CLASS = 145;
 	const INVESTMENT_GRANT_AMORTIZATION_CLASS = '139'; // Subventions d'investissement inscrites au CdR
 	const INVESTMENT_GRANT_TO_RESULT_CLASS = '747'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
+	const INCOME_GRANT_CLASS = '745'; // Subventions au revenu
 	const ASSET_AMORTIZATION_GENERAL_CLASS = 28;
 	const ASSET_AMORTIZATION_INTANGIBLE_CLASS = 280;
 	const ASSET_AMORTIZATION_TANGIBLE_CLASS = 281;
@@ -123,6 +124,7 @@ class AccountSetting extends \Settings {
 	const FINANCIAL_INTERNAL_TRANSFER_CLASS = 58; // Virements internes
 
 	// CHARGES
+	const CHARGE_BUY_ACCOUNT_CLASS = 60;
 	const SHIPPING_CHARGE_ACCOUNT_CLASS = '624';
 	const CHARGES_OTHER_CLASS = '658'; // Pénalités et autres charges
 	const CHARGE_FINANCIAL_ACCOUNT_CLASS = 66;

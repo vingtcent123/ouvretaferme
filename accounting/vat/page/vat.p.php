@@ -60,20 +60,21 @@ new Page(function($data) {
 				$data->precision = 0;
 
 				// On tente par l'ID
-				$eVatDeclaration = \vat\DeclarationLib::getById(GET('id'));
-				if($eVatDeclaration->empty()) {
+				$eDeclaration = \vat\DeclarationLib::getById(GET('id'));
+				if($eDeclaration->hasData() === FALSE) {
 					// On tente par les dates
-					$eVatDeclaration = \vat\DeclarationLib::getByDates($data->vatParameters['from'], $data->vatParameters['to']);
+					$eDeclaration = \vat\DeclarationLib::getByDates($data->vatParameters['from'], $data->vatParameters['to']);
 				}
 				// On a trouvé
-				if($eVatDeclaration->notEmpty()) {
+				if($eDeclaration->hasData()) {
 
-					$data->cerfa = $eVatDeclaration->getArrayCopy()['data'] + ['eVatDeclaration' => $eVatDeclaration];
+					$data->cerfa = $eDeclaration->getArrayCopy()['data'] + ['eDeclaration' => $eDeclaration];
 					$data->vatParameters = [
-						'limit' => $eVatDeclaration['limit'],
-						'from' => $eVatDeclaration['from'],
-						'to' => $eVatDeclaration['to'],
+						'limit' => $eDeclaration['limit'],
+						'from' => $eDeclaration['from'],
+						'to' => $eDeclaration['to'],
 					];
+
 				} else {
 
 					// On génère
@@ -85,10 +86,12 @@ new Page(function($data) {
 					$data->cerfa = \vat\VatLib::getVatDataDeclaration($data->eFarm, $data->eFarm['eFinancialYear'], $search, precision: $data->precision);
 
 				}
+
+				$data->adarBase = \vat\AdarLib::getTaxableBase($data->eFarm['eFinancialYear'], $data->vatParameters);
 				break;
 
 			case 'history':
-				$data->cVatDeclaration = \vat\DeclarationLib::getHistory($data->eFarm['eFinancialYear']);
+				$data->cDeclaration = \vat\DeclarationLib::getHistory($data->eFarm['eFinancialYear']);
 				break;
 		}
 
@@ -117,13 +120,13 @@ new Page(function($data) {
 	})
 	->get('/etats-financiers/declaration-de-tva/operations', function($data) {
 
-		$data->eVatDeclaration = \vat\DeclarationLib::getById(GET('id'));
+		$data->eDeclaration = \vat\DeclarationLib::getById(GET('id'));
 
-		if($data->eVatDeclaration->empty()) {
+		if($data->eDeclaration->empty()) {
 			throw new NotExistsAction('Unknown declaration');
 		}
 
-		$dataFromDeclaration = \vat\VatLib::generateOperationsFromDeclaration($data->eFarm, $data->eVatDeclaration, $data->eFarm['eFinancialYear']);
+		$dataFromDeclaration = \vat\VatLib::generateOperationsFromDeclaration($data->eFarm, $data->eDeclaration, $data->eFarm['eFinancialYear']);
 		$data->cerfaCalculated = $dataFromDeclaration['cerfaCalculated'];
 		$data->cerfaDeclared = $dataFromDeclaration['cerfaDeclared'];
 		$data->cOperation = $dataFromDeclaration['cOperation'];

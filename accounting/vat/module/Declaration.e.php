@@ -3,6 +3,30 @@ namespace vat;
 
 class Declaration extends DeclarationElement {
 
+	public function isAccounted(): bool {
+
+		return $this->notEmpty() and $this['accountedAt'] !== NULL;
+
+	}
+
+	public function isDeclared(): bool {
+
+		return $this->notEmpty() and $this['status'] === Declaration::DECLARED;
+
+	}
+
+	public function hasData(): bool {
+
+		if($this->empty()) {
+			return FALSE;
+		}
+
+		$this->expects(['data']);
+
+		return $this['data'] !== NULL;
+
+	}
+
 	public function acceptUpdate(): bool {
 
 		$this->expects(['from', 'to']);

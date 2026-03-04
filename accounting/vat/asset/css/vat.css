@@ -7,6 +7,18 @@
 	width: inherit;
 }
 
+.vat-not-auto {
+	background-color: #FDE9D9;
+	color: var(--primary);
+	padding: 0.25rem 0.5rem;
+	border-radius: var(--radius);
+	border: 1px solid #b17e2f;
+}
+
+.vat-cerfa-form {
+	background-color: white;
+	padding: 1rem;
+}
 
 table.vat-cerfa {
 	margin-bottom: 0;
@@ -84,6 +96,7 @@ table.no-border-bottom td {
 	background-color: var(--background-body);
 	display: flex;
 	justify-content: end;
+	margin: 0 -1rem -1rem -1rem;
 }
 
 /* Récap des déclarations */

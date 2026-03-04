@@ -46,6 +46,15 @@ Class DeclarationLib extends DeclarationCrud {
 
 	}
 
+	public static function getPrevious(Declaration $eDeclaration): Declaration {
+
+		return Declaration::model()
+			->select(Declaration::getSelection())
+			->whereTo(date('Y-m-d', strtotime($eDeclaration['from'].' - 1 day')))
+			->get();
+
+	}
+
 	public static function getCerfaFromFrequency(string $frequency): string {
 
 		if($frequency === \farm\Configuration::ANNUALLY) {

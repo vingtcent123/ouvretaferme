@@ -75,9 +75,7 @@ class VatCa12 {
 		const deposit_not_paid = Vat.getValue('12', 'deposit[total][not-paid]');
 		const deposit_paid = Vat.getValue('12', 'deposit[total][paid]');
 
-		if(deposit_paid > 0) {
-			qs('#cerfa-12 [name="0018"]').value = Vat.computeWithPrecision(deposit_paid);
-		}
+		qs('#cerfa-12 [name="0018"]').value = Vat.computeWithPrecision(deposit_paid + deposit_not_paid);
 
 		const ligne_28 = Vat.getValue('12', '8900');
 		const ligne_29 = Vat.getValue('12', '0705');
@@ -200,6 +198,10 @@ class VatCa12 {
 
 		qs('#cerfa-12 [name="reimburse-c"]').value = c;
 		qs('#cerfa-12 [name="reimburse-e"]').value = e;
+
+		qs('#cerfa-12 [name="8002"]').value = d;
+		VatCa12.updateRecapitulationBase();
+
 	}
 
 }

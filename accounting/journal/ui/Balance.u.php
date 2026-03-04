@@ -497,7 +497,7 @@ Class BalanceUi {
 		$h = '<tr class="tr-bold">';
 
 		$h .= '<td class="hide-sm-down text-end">'.encode($classes['class']).'</td>';
-		$h .= '<td class="text-start">';
+		$h .= '<td class="text-start" colspan="2">';
 		$h .= match($classes['class']) {
 			1 => s("Comptes de capitaux"),
 			2 => s("Comptes d'immobilisation"),

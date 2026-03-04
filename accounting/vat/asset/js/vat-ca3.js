@@ -209,10 +209,8 @@ class VatCa3 {
 		qs('#cerfa-3 [name="8103"]').value = Vat.getValue('3', 'X4');
 		qs('#cerfa-3 [name="8901"]').value = Vat.computeWithPrecision(Vat.getValue('3', '8900') - Vat.getValue('3', '8103'));
 		qs('#cerfa-3 [name="8123"]').value = Vat.getValue('3', 'Z4');
-		qs('#cerfa-3 [name="9991"]').value = Vat.computeWithPrecision(Vat.getValue('3', '8901') + Vat.getValue('3', '9979') + Vat.getValue('3', '8123'));
 
-		// TODO Émilie Pas compris le calcul de la case 32
-		qs('#cerfa-3 [name="9992"]').value = Vat.computeWithPrecision(Vat.getValue('3', '8901') + Vat.getValue('3', '9979') + Vat.getValue('3', '8123'));
+		qs('#cerfa-3 [name="9992"]').value = Vat.computeWithPrecision(Vat.getValue('3', '8901') + Vat.getValue('3', '9979') + Vat.getValue('3', '8123') - Vat.getValue('3', '9991'));
 	}
 
 }

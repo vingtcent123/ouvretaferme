@@ -17,6 +17,10 @@ class Vat {
 
 		qsa('tr', node => node.classList.remove('row-highlight'));
 		qs('tr:has([id="'+ identifier +'"])').classList.add('row-highlight');
+
+		setTimeout(() => {
+			qs('tr:has([id="'+ identifier +'"])').classList.remove('row-highlight');
+		}, 2500);
 	}
 
 	static getValue(cerfa, name) {
