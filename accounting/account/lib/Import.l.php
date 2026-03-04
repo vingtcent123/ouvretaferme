@@ -48,7 +48,8 @@ Class ImportLib extends ImportCrud {
 					return;
 				}
 
-				if(AccountLabelLib::isFromClass($input['key'], $eAccount['class']) === FALSE) {
+				$key = AccountLabelLib::pad(preg_replace('/[^0-9.]+/', '', $input['key']));
+				if(AccountLabelLib::isFromClass($key, $eAccount['class']) === FALSE) {
 					\Fail::log('Import::accountNotCorresponding');
 					return;
 				}
@@ -103,6 +104,42 @@ Class ImportLib extends ImportCrud {
 
 	}
 
+	private static function cleanContent(string $string): string {
+
+		$string = trim($string);
+
+		$search = array("&#39;", "\xc3\xa2\xc2\x80\xc2\x99", "\xc3\xa2\xc2\x80\xc2\x93", "\xc3\xa2\xc2\x80\xc2\x9d", "\xc3\xa2\x3f\x3f");
+    $replace = array("'", "'", ' - ', '"', "'");
+
+    $string = str_replace($search, $replace, $string);
+
+		$quotes = array(
+			"\xC2\xAB"     => '"',
+			"\xC2\xBB"     => '"',
+			"\xE2\x80\x98" => "'",
+			"\xE2\x80\x99" => "'",
+			"\xE2\x80\x9A" => "'",
+			"\xE2\x80\x9B" => "'",
+			"\xE2\x80\x9C" => '"',
+			"\xE2\x80\x9D" => '"',
+			"\xE2\x80\x9E" => '"',
+			"\xE2\x80\x9F" => '"',
+			"\xE2\x80\xB9" => "'",
+			"\xE2\x80\xBA" => "'",
+			"\xe2\x80\x93" => "-",
+			"\xc2\xb0"	   => "°",
+			"\xc2\xba"     => "°",
+			"\xc3\xb1"	   => "&#241;",
+			"\x96"		   => "&#241;",
+			"\xe2\x81\x83" => '&bull;'
+		);
+
+		$string = strtr($string, $quotes);
+
+		return $string;
+
+	}
+
 	public static function create(Import $e): void {
 
 		if(isset($_FILES['fec']['tmp_name']) === FALSE or $_FILES['fec']['tmp_name'] === '') {
@@ -110,7 +147,14 @@ Class ImportLib extends ImportCrud {
 			return;
 		}
 
-		$e['content'] = trim(file_get_contents($_FILES['fec']['tmp_name']));
+		$content = file_get_contents($_FILES['fec']['tmp_name']);
+		$encoding = mb_detect_encoding($content, ['UTF-8', 'UTF-16', 'ISO-8859-1']);
+
+		if(in_array($encoding, ['UTF-16', 'ISO-8859-1'])) {
+			$content = iconv($encoding, 'UTF-8', $content);
+		}
+
+		$e['content'] = $content;
 		$e['filename'] = $_FILES['fec']['name'];
 
 		// Check filename at least
@@ -532,14 +576,20 @@ Class ImportLib extends ImportCrud {
 			) {
 
 				$eAccount = $cAccount->find(fn($e) => $e['id'] === $eImport['rules']['comptes'][$compteNum]['account']['id'])->first();
-				if(AccountLabelLib::isFromClass($compteNum, $eAccount['class']) === FALSE) {
+				if(
+					AccountLabelLib::isFromClass($compteNum, $eAccount['class']) === FALSE and
+					AccountLabelLib::isFromClass(preg_replace('/[^0-9.]+/', '', $compteNum), $eAccount['class']) === FALSE
+				) {
+					$compteNum = preg_replace('/[^0-9.]+/', '', $compteNum);
+					dd($compteNum, $eAccount['class'], str_starts_with($compteNum, $eAccount['class']));
+					dd($compteNum, $eAccount, preg_replace('/[^0-9.]+/', '', $compteNum), AccountLabelLib::isFromClass(preg_replace('/[^0-9.]+/', '', $compteNum), $eAccount['class']));
 					throw new \Exception('Consistency issue between FEC account and account class for import #'.$eImport['id'].' and farm '.$eFarm['id']);
 				}
 
 			} else {
 
 				$eAccount = new Account();
-dd($line);
+
 			}
 
 			if(isset($eImport['rules']['journaux'][$journalCode]['journalCode']['id'])) {

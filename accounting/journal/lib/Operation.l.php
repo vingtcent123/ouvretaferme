@@ -1271,6 +1271,7 @@ class OperationLib extends OperationCrud {
 			->whereThirdParty($eThirdParty, if: $eThirdParty->notEmpty())
 			->whereAccount($eAccount, if: $eAccount->notEmpty())
 			->where('accountLabel LIKE "'.$query.'%"', if: $query !== '')
+			->where('LENGTH(accountLabel) = '.\account\AccountLabelLib::ACCOUNT_LABEL_SIZE) // Pour exclure ceux qui proviennent d'imports FEC
 			->sort(['accountLabel' => SORT_ASC])
 			->getCollection()
 			->getColumn('accountLabel');

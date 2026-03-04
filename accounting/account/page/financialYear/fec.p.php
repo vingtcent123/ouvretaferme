@@ -17,13 +17,6 @@ new \account\ImportPage()
 			 'result' => $result,
 		]);
 
-	})
-	->doCreate(function($data) {
-
-		\company\CompanyCronLib::addConfiguration($data->eFarm, \company\CompanyCronLib::FEC_IMPORT, \company\CompanyCron::WAITING, $data->e['id']);
-
-		throw new ReloadAction('account', 'Import::created');
-
 	});
 
 new \account\ImportPage()

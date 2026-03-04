@@ -26,7 +26,7 @@ class AccountLabelLib {
 	}
 
 	public static function isFromClass(string $accountLabel, string $class): bool {
-		return str_starts_with($accountLabel, $class);
+		return str_starts_with(trim($accountLabel, '0'), trim($class, '0'));
 	}
 
 	public static function isChargeClass(string $account): bool {
