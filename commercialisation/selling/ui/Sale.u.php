@@ -1804,6 +1804,10 @@ class SaleUi {
 
 	public function getMarketSummary(Sale $eSale, \Collection $ccSaleMarket): string {
 
+		if($ccSaleMarket->empty()) {
+			return '';
+		}
+
 		$sales = [];
 
 		$ccSaleMarket[Sale::DELIVERED]->map(function($eSale) use(&$sales, &$hasRegister) {
@@ -1842,7 +1846,7 @@ class SaleUi {
 						$cRegister = $eSale['cRegister']->find(fn($eRegister) => $eRegister['paymentMethod']->is($eMethod));
 
 						$h .= '<tr>';
-						
+
 							$h .= '<td>'.encode($eMethod['name']).'</td>';
 							$h .= '<td class="text-center">'.$sales[$ePayment['method']['id']].'</td>';
 							$h .= '<td class="text-end">'.\util\TextUi::money($ePayment['amountIncludingVat']).'</td>';
