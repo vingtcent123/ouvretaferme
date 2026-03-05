@@ -13,11 +13,12 @@ class RegisterLib extends RegisterCrud {
 
 	}
 
-	public static function getAll(?string $closedBefore = NULL): \Collection {
+	public static function getAll(?string $closedBefore = NULL, bool $onlyActive = FALSE): \Collection {
 
 		return Register::model()
 			->select(Register::getSelection())
 			->whereClosedAt('<', $closedBefore, if: $closedBefore !== NULL)
+			->whereStatus(Register::ACTIVE, if: $onlyActive)
 			->sort([
 				new \Sql('FIELD(status, "'.Register::ACTIVE.'", "'.Register::INACTIVE.'") ASC'),
 				'id' => SORT_ASC

@@ -208,7 +208,7 @@ class LineUi {
 									case Line::DRAFT :
 
 										if($eLineLast['balanceNegative'] === FALSE) {
-											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/receipts/line:doValidate" post-id="'.$eLineLast['id'].'" data-confirm="'.s("Toutes les opérations seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération avant le {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eLineLast['date'])).'" class="btn btn-secondary">'.s("Tout valider maintenant").'</a>';
+											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/receipts/line:doValidate" post-id="'.$eLineLast['id'].'" data-confirm="'.s("Toutes les opérations seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération datée avant le {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eLineLast['date'])).'" class="btn btn-secondary">'.s("Tout valider maintenant").'</a>';
 										}
 
 										break;
@@ -419,7 +419,7 @@ class LineUi {
 											if($eLine->acceptUpdate()) {
 												$h .= '<a href="'.\farm\FarmUi::urlConnected().'/receipts/line:update?id='.$eLine['id'].'" class="dropdown-item">'.s("Modifier l'opération").'</a>';
 											}
-											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/receipts/line:doValidate" post-id="'.$eLine['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération avant le {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eLineLast['date'])).'" class="dropdown-item '.($eLine['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
+											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/receipts/line:doValidate" post-id="'.$eLine['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération datée avant le {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eLineLast['date'])).'" class="dropdown-item '.($eLine['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
 											$h .= '<div class="dropdown-divider"></div>';
 											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/receipts/line:doDelete" data-confirm="'.s("Vous allez supprimer cette opération. Continuer ?").'" post-id="'.$eLine['id'].'" class="dropdown-item">'.s("Supprimer l'opération").'</a>';
 										$h .= '</div>';

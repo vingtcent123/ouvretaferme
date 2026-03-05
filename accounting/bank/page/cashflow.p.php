@@ -257,6 +257,30 @@ new \bank\CashflowPage(function($data) {
 		throw new ReloadAction('bank', 'Cashflow::deallocated.'.$action);
 
 	}, validate: ['acceptDeallocate'])
+	->read('cash', function($data) {
+
+		$data->cRegister = \cash\RegisterLib::getAll($data->e['date'], onlyActive: TRUE);
+
+		throw new ViewAction($data);
+
+	}, validate: ['acceptCashCreate'])
+	->write('doCash', function($data) {
+
+		$cRegister = \cash\RegisterLib::getAll($data->e['date'], onlyActive: TRUE);
+
+		$register = POST('register', 'int');
+
+		if($cRegister->offsetExists($register)) {
+
+			\cash\SuggestionLib::import($cRegister[$register], \cash\Cash::BANK_CASHFLOW, $data->e['id']);
+
+			throw new ReloadAction('bank', 'Cashflow::cashCreated');
+
+		} else {
+			throw new FailAction('bank\Cashflow::register.check');
+		}
+
+	}, validate: ['acceptCashCreate'])
 ;
 
 ?>

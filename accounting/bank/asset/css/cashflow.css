@@ -51,21 +51,6 @@
 	border-radius: 8px;
 }
 
-#bank-cashflow-deallocate > div.panel-header > a,
-#bank-cashflow-allocate > div.panel-header > a,
-#panel-bank-cashflow-copy div.panel-header > a,
-#journal-operation-update[data-cashflow="1"] > div.panel-header > a {
-	display: none;
-}
-#bank-cashflow-deallocate div.panel-title-container,
-#bank-cashflow-allocate div.panel-title-container,
-#panel-bank-cashflow-copy div.panel-title-container,
-#journal-operation-update[data-cashflow="1"] div.panel-title-container {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
 [cashflow-allocate-difference-value] {
 	font-weight: bold;
 	white-space: nowrap;
@@ -153,4 +138,8 @@
 		align-items: center;
 	}
 
+}
+
+.cashflow-cash-import label {
+	padding: 0.5rem 0;
 }

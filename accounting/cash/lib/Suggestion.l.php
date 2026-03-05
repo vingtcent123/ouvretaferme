@@ -7,6 +7,14 @@ class SuggestionLib {
 
 		switch($eMethod['fqn']) {
 
+			case \payment\MethodLib::ONLINE_CARD :
+
+				\bank\Cashflow::model()->or(
+					fn() => $this->whereMemo('LIKE', '%stripe technology europe%'),
+				);
+
+				break;
+
 			case \payment\MethodLib::CASH :
 
 				\bank\Cashflow::model()->or(

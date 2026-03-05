@@ -454,6 +454,14 @@ class CashflowUi {
 
 		}
 
+		if($eCashflow->acceptCashCreate()) {
+
+			$actions .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:cash?id='.$eCashflow['id'].'" class="dropdown-item">';
+				$actions .= s("Importer dans un journal de caisse");
+			$actions .= '</a>';
+
+		}
+
 		switch($eCashflow['status']) {
 
 			case Cashflow::DELETED :
@@ -578,17 +586,13 @@ class CashflowUi {
 
 		$amount = '<span class="util-badge bg-primary" style="padding-left: .75rem; padding-right: .75rem">'.\util\TextUi::money(abs($eCashflow['amount'])).'</span>';
 
-		$title = '<div class="panel-title-container">';
-				$title .= '<h2 class="panel-title">'.s(
-				"Opération bancaire de {amount} du {date}</b>",
-				[
-					'amount' => $amount,
-					'date' => \util\DateUi::numeric($eCashflow['date'], \util\DateUi::DATE),
-				]
-			).'</h2>';
-			$title .= '<a class="panel-close-desktop" onclick="Lime.Panel.closeLast()">'.\Asset::icon('x').'</a>';
-			$title .= '<a class="panel-close-mobile" onclick="Lime.Panel.closeLast()">'.\Asset::icon('arrow-left-short').'</a>';
-		$title .= '</div>';
+		$title = '<h2 class="panel-title">'.s(
+			"Opération bancaire de {amount} du {date}</b>",
+			[
+				'amount' => $amount,
+				'date' => \util\DateUi::numeric($eCashflow['date'], \util\DateUi::DATE),
+			]
+		).'</h2>';
 
 		$subtitle = '<h2 class="panel-subtitle">'.encode($eCashflow->getMemo()).'</h2>';
 
@@ -690,6 +694,70 @@ class CashflowUi {
 			dialogClose: $form->close(),
 			body       : $h,
 			header     : $this->getAllocateTitle($eCashflow),
+		);
+
+	}
+
+	public function getCash(\farm\Farm $eFarm, Cashflow $eCashflow, \Collection $cRegister): \Panel {
+
+		$form = new \util\FormUi();
+
+
+		if($cRegister->empty()) {
+
+			$h = '<div class="util-block-info">';
+				$h .= s("Nous n'avons trouvé aucun journal de caisse compatible avec cette opération bancaire.");
+				$h .= '<ul>';
+					$h .= '<li>'.s("Avez-vous bien configuré des journaux de caisse ?").'</li>';
+					$h .= '<li>'.s("Vos journaux de caisse sont-ils tous clôturés en date de l'opération bancaire au {value} ?", \util\DateUi::numeric($eCashflow['date'])).'</li>';
+				$h .= '</ul>';
+				$h .= '<a href="'.\farm\FarmUi::urlReceipts().'" class="btn btn-transparent">'.s("Mes journaux de caisse").'</a>';
+			$h .= '</div>';
+
+		} else {
+
+			$h = $form->openAjax(\company\CompanyUi::urlBank($eFarm).'/cashflow:doCash');
+
+				$h .= '<div class="util-block-info mb-2">';
+					$h .= \Asset::icon('journal-text', ['class' => 'util-block-icon']);
+					$h .= '<h4>'.s("Importer l'opération dans un journal de caisse").'</h4>';
+					if($eCashflow['amount'] > 0) {
+						$h .= s("L'opération sera enregistrée comme un dépôt à la banque dans votre journal de caisse.");
+					} else {
+						$h .= s("L'opération sera enregistrée comme un retrait depuis la banque dans votre journal de caisse.");
+					}
+				$h .= '</div>';
+
+				$h .= '<h3>'.s("Choisir le journal de caisse").'</h3>';
+
+				$h .= $form->hidden('farm', $eFarm['id']);
+				$h .= $form->hidden('id', $eCashflow['id']);
+
+				$h .= '<div class="cashflow-cash-import mb-2">';
+
+					foreach($cRegister as $eRegister) {
+
+						$label = \cash\RegisterUi::getName($eRegister).' <span class="color-muted">'.s("actuellement clôturé au {value}", \util\DateUi::numeric($eRegister['closedAt'])).'</span>';
+						$h .= $form->radio('register', $eRegister['id'], $label, $cRegister->count() === 1 ? $eRegister['id'] : NULL);
+
+					}
+
+				$h .= '</div>';
+
+				$h .= $form->submit(
+					s("Importer dans le journal sélectionné")
+				);
+
+
+			$h .= $form->close();
+
+		}
+
+		return new \Panel(
+			id: 'panel-bank-cashflow-cash',
+			title: s("Importer une opération bancaire dans un journal"),
+			body: $h,
+			header: $this->getAllocateTitle($eCashflow),
 		);
 
 	}

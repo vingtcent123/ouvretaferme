@@ -27,6 +27,12 @@ class Cashflow extends CashflowElement {
 
 	}
 
+	public function acceptCashCreate(): bool {
+
+		return $this['cash']->empty();
+
+	}
+
 	public function acceptUndoDelete(): bool {
 
 		return $this['status'] == \bank\Cashflow::DELETED;

@@ -51,6 +51,16 @@ new AdaptativeView('copy', function($data, PanelTemplate $t) {
 
 });
 
+new AdaptativeView('cash', function($data, PanelTemplate $t) {
+
+	return new \bank\CashflowUi()->getCash(
+		$data->eFarm,
+		$data->e,
+		$data->cRegister
+	);
+
+});
+
 new AdaptativeView('allocate', function($data, PanelTemplate $t) {
 
 	return new \bank\CashflowUi()->getAllocate(

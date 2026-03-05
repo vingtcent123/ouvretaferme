@@ -16,6 +16,7 @@ Class AlertUi {
 			'Cashflow::noSelectedOperation' => s("Sélectionnez au moins une écriture à rattacher."),
 			'Cashflow::thirdPartyRequiredForAttach' => s("Indiquez le tiers lié à cette opération."),
 			'Cashflow::operationsRequiredForAttach' => s("Sélectionnez au moins une écriture."),
+			'Cashflow::register.check' => s("Sélectionnez un journal de caisse dans la liste."),
 
 			'Import::ofxFormat' => s("Votre fichier ne semble pas être au format OFX."),
 			'Import::ofxSize' => s("Votre import ne peut pas excéder 1 Mo, merci de réduire la taille de votre fichier."),
@@ -35,6 +36,7 @@ Class AlertUi {
 
 			'Cashflow::allocated' => s("Les écritures ont bien été attribuées."),
 			'Cashflow::copied' => s("Les écritures comptables ont bien été copiées à l'identique."),
+			'Cashflow::cashCreated' => s("L'opération bancaire a bien été importée dans le journal de caisse sélectionnée."),
 			'Cashflow::deallocated.delete' => s("L'opération bancaire a bien été dissociée et les écritures supprimées."),
 			'Cashflow::deallocated.dissociate' => s("L'opération bancaire a bien été dissociée des écritures."),
 			'Cashflow::deleted' => s("L'opération bancaire a bien été supprimée."),
