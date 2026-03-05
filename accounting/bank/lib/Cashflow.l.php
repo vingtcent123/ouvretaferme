@@ -59,6 +59,11 @@ class CashflowLib extends CashflowCrud {
 		$maxByPage = 500;
 		self::applySearch($search)
 			->select(Cashflow::getSelection() + [
+				'cash' => [
+					'register' => \cash\RegisterElement::getSelection() + [
+						'paymentMethod' => fn($e) => \payment\MethodLib::ask($e['paymentMethod'], \farm\Farm::getConnected()),
+					]
+				],
 				'cOperationHash' => new \journal\OperationModel()
 					->select(['id', 'hash', 'accountLabel', 'asset', 'type', 'amount', 'number', 'financialYear' => ['id', 'status', 'closeDate']])
 					->delegateCollection('hash', propertyParent: 'hash'),

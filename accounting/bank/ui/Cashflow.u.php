@@ -193,6 +193,7 @@ class CashflowUi {
 				$h .= '<tbody>';
 
 				$lastMonth = NULL;
+
 				foreach($cCashflow as $eCashflow) {
 
 					if(
@@ -228,6 +229,12 @@ class CashflowUi {
 							\selling\Payment::SALE => '<a href="'.\selling\SaleUi::url($eCashflow['payment']['sale']).'" class="btn btn-outline-primary btn-xs">'.\Asset::icon('fire').' '.s("Vente {value}", encode($eCashflow['payment']['sale']['document'])).'</a>',
 							NULL => '',
 						};
+
+					}
+
+					if($eCashflow['cash']->notEmpty()) {
+
+						$details[] = '<a href="'.\farm\FarmUi::urlConnected().'/journal-de-caisse?register='.$eCashflow['cash']['register']['id'].'" class="btn btn-outline-primary btn-xs">'.\cash\RegisterUi::getName($eCashflow['cash']['register']).'</a>';
 
 					}
 
@@ -390,10 +397,10 @@ class CashflowUi {
 
 			if($eCashflow['cOperationHash']->first()['number'] !== NULL) {
 
-				$h .= '<span class="" title="'.p("Écriture validée", "Écritures validées", $eCashflow['cOperationHash']->count()).'">';
+				$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eCashflow['cOperationHash']->first()['financialYear']).'/livre-journal?hash='.$eCashflow['cOperationHash']->first()['hash'].'" class="btn btn-sm btn-outline-primary" title="'.p("Écriture validée", "Écritures validées", $eCashflow['cOperationHash']->count()).'">';
 					$h .= \Asset::icon('lock-fill');
 					$h .= ' '.$label;
-				$h .= '</span>';
+				$h .= '</a>';
 
 			} else {
 				$h = '<a data-dropdown="bottom-end" class="btn btn-sm btn-outline-primary dropdown-toggle">';

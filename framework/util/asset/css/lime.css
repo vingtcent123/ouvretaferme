@@ -2023,6 +2023,11 @@ td.util-manage-vignette {
 	transition: color 0.25s, background-color 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 
+.btn:has(.util-badge) {
+	padding-top: 0.3rem;
+	padding-bottom: 0.3rem;
+}
+
 .btn-group-addon {
 	pointer-events: none;
 }
@@ -2098,10 +2103,20 @@ td.util-manage-vignette {
 	border-radius: var(--radius);
 }
 
+.btn.btn-xs:has(.util-badge) {
+	padding-top: 0.175rem;
+	padding-bottom: 0.175rem;
+}
+
 .btn.btn-sm {
 	padding: 0.45rem 0.625rem;
 	font-size: 0.9rem;
 	border-radius: var(--radius);
+}
+
+.btn.btn-sm:has(.util-badge) {
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
 }
 
 .btn.btn-lg {
@@ -2109,9 +2124,19 @@ td.util-manage-vignette {
 	font-size: 1.1rem;
 }
 
+.btn.btn-lg:has(.util-badge) {
+	padding-top: 0.675rem;
+	padding-bottom: 0.675rem;
+}
+
 .btn.btn-xl {
 	padding: 1.25rem 1.5rem;
 	font-size: 1.1rem;
+}
+
+.btn.btn-xl:has(.util-badge) {
+	padding-top: 1.05rem;
+	padding-bottom: 1.05rem;
 }
 
 .btn.btn-selected {
