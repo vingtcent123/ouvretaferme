@@ -149,7 +149,6 @@ class CashflowUi {
 		}
 
 		$showMonthHighlight = str_starts_with($search->getSort(), 'date');
-		$showReconciliate = $cCashflow->find(fn($e) => $e['isReconciliated'])->count() > 0;
 
 		$h = '';
 
@@ -181,16 +180,13 @@ class CashflowUi {
 							$label = s("Libellé");
 							$h .= ($search ? $search->linkSort('memo', $label) : $label);
 						$h .= '</th>';
-						if($showReconciliate) {
-							$h .= '<th class="text-center td-min-content">'.s("Rapproché ?").'</th>';
-						}
 						$h .= '<th class="text-end t-highlight td-vertical-align-top hide-md-up td-min-content">'.s("Montant").'</th>';
 						$h .= '<th class="text-end t-highlight td-vertical-align-top hide-sm-down td-min-content">'.s("Débit (D)").'</th>';
 						$h .= '<th class="text-end t-highlight td-vertical-align-top hide-sm-down td-min-content">'.s("Crédit (C)").'</th>';
 						if($eFarm->usesAccounting()) {
-							$h .= '<th>'.s("Écritures comptables").'</th>';
+							$h .= '<th>'.s("Comptabilité").'</th>';
 						}
-						$h .= '<th class="text-center td-vertical-align-middle"></th>';
+						$h .= '<th></th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -219,30 +215,41 @@ class CashflowUi {
 					if($eCashflow['status'] === CashflowElement::DELETED) {
 						$class[] = 'cashflow-strikethrough';
 					}
+
+					$details = [];
+
+					if(
+						$eCashflow['isReconciliated'] and
+						$eCashflow['payment']->notEmpty()
+					) {
+
+						$details[] = match($eCashflow['payment']['source']) {
+							\selling\Payment::INVOICE => '<a href="/ferme/'.$eFarm['id'].'/factures?name='.$eCashflow['payment']['invoice']['number'].'" class="btn btn-outline-primary btn-xs">'.\Asset::icon('fire').' '.s("Facture {value}", encode($eCashflow['payment']['invoice']['number'])).'</a>',
+							\selling\Payment::SALE => '<a href="'.\selling\SaleUi::url($eCashflow['payment']['sale']).'" class="btn btn-outline-primary btn-xs">'.\Asset::icon('fire').' '.s("Vente {value}", encode($eCashflow['payment']['sale']['document'])).'</a>',
+							NULL => '',
+						};
+
+					}
+
 					$h .= '<tr name="cashflow-'.$eCashflow['id'].'" class="'.join(' ', $class).'">';
 
 						$h .= '<td class="td-vertical-align-top td-min-content">';
 							$h .= \util\DateUi::numeric($eCashflow['date']);
 						$h .= '</td>';
 
-						$h .= '<td class="td-description td-vertical-align-top color-primary">';
-							$h .= encode($eCashflow->getMemo());
-						$h .= '</td>';
+						$h .= '<td class="td-vertical-align-top color-primary">';
 
-						if($showReconciliate) {
-							$h .= '<td class="text-center td-vertical-align-top td-min-content">';
-								if($eCashflow['isReconciliated'] and $eCashflow['payment']->notEmpty()) {
-									if(isset($eCashflow['payment']['source']) == FALSE) {
-										dd($eCashflow);
-									}
-									$h .= match($eCashflow['payment']['source']) {
-										\selling\Payment::INVOICE => '<a href="/ferme/'.$eFarm['id'].'/factures?name='.$eCashflow['payment']['invoice']['number'].'">'.encode($eCashflow['payment']['invoice']['number']).'</a>',
-										\selling\Payment::SALE => '<a href="'.\selling\SaleUi::url($eCashflow['payment']['sale']).'">'.encode($eCashflow['payment']['sale']['document']).'</a>',
-										NULL => '',
-									};
+							$h .= '<div class="cashflow-item-description">';
+
+								$h .= '<span>'.encode($eCashflow->getMemo()).'</span>';
+
+								if($details) {
+									$h .= implode(' ', $details);
 								}
-							$h .= '</td>';
-						}
+
+							$h .= '</div>';
+
+						$h .= '</td>';
 
 						$h .= '<td class="text-end t-highlight td-vertical-align-top hide-md-up">';
 							$h .= \util\TextUi::money($eCashflow['amount']);
@@ -261,75 +268,16 @@ class CashflowUi {
 							};
 						$h .= '</td>';
 
-						if($eFarm->usesAccounting()) {
-
-							$h .= '<td>';
-
-								if($eCashflow['status'] === Cashflow::WAITING) {
-
-									$canBeAdded = FALSE;
-									foreach($cFinancialYear as $eFinancialYearCurrent) {
-										if($eFinancialYearCurrent->acceptUpdate() and \account\FinancialYearLib::isDateInFinancialYear($eCashflow['date'], $eFinancialYearCurrent)) {
-											$canBeAdded = TRUE;
-											break;
-										}
-									}
-
-									if($canBeAdded) {
-
-										$h .= '<a data-dropdown="bottom-end" class="btn btn-outline-primary dropdown-toggle">'.s("Ajouter").'</a> ';
-
-										$h .= '<div class="dropdown-list">';
-											$h .= '<div class="dropdown-title">'.s("Ajouter des écritures comptables").'</div>';
-
-												$financialYearOptions = [];
-												foreach($cFinancialYear as $eFinancialYearCurrent) {
-
-													if(
-														$eFinancialYearCurrent->acceptUpdate() === FALSE or
-														\account\FinancialYearLib::isDateInFinancialYear($eCashflow['date'], $eFinancialYearCurrent) === FALSE
-													) {
-														continue;
-													}
-
-													$financialYearOption = '<div class="dropdown-subtitle">'.s("Exercice {value}", $eFinancialYearCurrent->getLabel()).'</div>';
-													$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:allocate?id='.$eCashflow['id'].'" class="dropdown-item">';
-														$financialYearOption .= s("Créer de nouvelles écritures");
-													$financialYearOption .= '</a>';
-
-													$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
-														$financialYearOption .= s("Rattacher des écritures existantes");
-													$financialYearOption .= '</a>';
-
-													$financialYearOptions[] = $financialYearOption;
-												}
-
-											$h .= join('<div class="dropdown-divider"></div>', $financialYearOptions);
-										$h .= '</div>';
-									}
-
-								} else if($eCashflow['status'] !== Cashflow::DELETED) {
-
-									$h .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eCashflow['cOperationHash']->first()['financialYear']).'/livre-journal?hash='.$eCashflow['cOperationHash']->first()['hash'].'">';
-										$h .= p("{value} écriture", "{value} écritures", $eCashflow['cOperationHash']->count());
-									$h .= '</a>';
-									if($eCashflow['cOperationHash']->first()['number'] !== NULL) {
-											$h .= ' <span style="color: #00000050" title="'.p("Écriture validée", "Écritures validées", $eCashflow['cOperationHash']->count()).'">';
-												$h .= \Asset::icon('lock-fill');
-											$h .= '</span>';
-									}
-
-								}
-							$h .= '</td>';
-
-						}
+						$h .= '<td>';
+							$h .= $this->getAccountingCell($eFarm, $eCashflow, $cFinancialYear);
+						$h .= '</td>';
 
 						$h .= '<td class="td-min-content text-center">';
 
 								$action = $this->getAction($eFarm, $eCashflow);
 								if($action) {
 									$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
-									$h .= $this->getAction($eFarm, $eCashflow);
+									$h .= $action;
 								}
 
 						$h .= '</td>';
@@ -345,130 +293,205 @@ class CashflowUi {
 
 	}
 
+	protected function getAccountingCell(\farm\Farm $eFarm, Cashflow $eCashflow, \Collection $cFinancialYear): string {
+
+		$label = '';
+		$list = '';
+
+		if($eCashflow['status'] === Cashflow::WAITING) {
+
+			$canBeAdded = $cFinancialYear->contains(fn($eFinancialYear) => ($eFinancialYear->acceptUpdate() and \account\FinancialYearLib::isDateInFinancialYear($eCashflow['date'], $eFinancialYear)));
+
+			if($canBeAdded) {
+
+				$list .= '<div class="dropdown-title">'.s("Ajouter des écritures comptables").'</div>';
+
+				$financialYearOptions = [];
+				foreach($cFinancialYear as $eFinancialYearCurrent) {
+
+					if(
+						$eFinancialYearCurrent->acceptUpdate() === FALSE or
+						\account\FinancialYearLib::isDateInFinancialYear($eCashflow['date'], $eFinancialYearCurrent) === FALSE
+					) {
+						continue;
+					}
+
+					$financialYearOption = '<div class="dropdown-subtitle">'.s("Exercice {value}", $eFinancialYearCurrent->getLabel()).'</div>';
+					$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:allocate?id='.$eCashflow['id'].'" class="dropdown-item">';
+						$financialYearOption .= s("Créer de nouvelles écritures");
+					$financialYearOption .= '</a>';
+
+					$financialYearOption .= '<a href="'.\company\CompanyUi::urlBank($eFarm, $eFinancialYearCurrent).'/cashflow:attach?id='.$eCashflow['id'].'" class="dropdown-item">';
+						$financialYearOption .= s("Rattacher des écritures existantes");
+					$financialYearOption .= '</a>';
+
+					$financialYearOptions[] = $financialYearOption;
+				}
+
+				$list .= join('<div class="dropdown-divider"></div>', $financialYearOptions);
+
+			}
+
+		} else if($eCashflow['status'] === CashflowElement::ALLOCATED) {
+
+			$nOperation = $eCashflow['cOperationHash']->count();
+
+			$list .= '<div class="dropdown-title">';
+				$list .= p("Actions sur l'écriture comptable", "Actions sur les {value} écritures comptables", $nOperation);
+			$list .= '</div>';
+
+			$list .= '<a href="'.\company\CompanyUi::urlJournal($eFarm, $eCashflow['cOperationHash']->first()['financialYear']).'/livre-journal?hash='.$eCashflow['cOperationHash']->first()['hash'].'" class="dropdown-item">';
+				$list .= p(
+					"Voir l'écriture",
+					"Voir les écritures",
+					$nOperation
+				);
+			$list .= '</a>';
+
+			$list .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate?id='.$eCashflow['id'].'&action=dissociate" class="dropdown-item" >';
+				$list .= p("Dissocier sans supprimer l'écriture", "Dissocier sans supprimer les écritures<br/>de l'opération bancaire", $nOperation - 1);
+			$list .= '</a>';
+
+			if($eCashflow['cOperationHash']->first()->canWrite()) {
+
+				$isLinkedToAsset = $eCashflow['cOperationHash']->contains(fn($e) => $e['asset']->notEmpty());
+
+				$label = p(
+					"Supprimer l'écriture",
+					"Supprimer les écritures",
+					$nOperation
+				);
+
+				if($isLinkedToAsset) {
+
+					$list .= '<div class="dropdown-divider"></div>';
+					$list .= '<a class="dropdown-item inactive">';
+						$list .= $label;
+						$list .= '<div class="operations-action-more">'.\Asset::icon('exclamation-circle').' '.s("Supprimez d'abord l'immobilisation liée").'</div>';
+					$list .= '</a>';
+
+				} else if($eCashflow['cOperationHash']->first()->canWrite()) {
+
+					$list .= '<div class="dropdown-divider"></div>';
+					$list .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate?id='.$eCashflow['id'].'&action=delete" class="dropdown-item">';
+						$list .= $label;
+					$list .= '</a>';
+
+				}
+
+			}
+
+		}
+
+		$h = '';
+
+		if($eCashflow['status'] === CashflowElement::ALLOCATED) {
+
+			$label = p("{value} écriture", "{value} écritures", $eCashflow['cOperationHash']->count());
+
+			if($eCashflow['cOperationHash']->first()['number'] !== NULL) {
+
+				$h .= '<span class="" title="'.p("Écriture validée", "Écritures validées", $eCashflow['cOperationHash']->count()).'">';
+					$h .= \Asset::icon('lock-fill');
+					$h .= ' '.$label;
+				$h .= '</span>';
+
+			} else {
+				$h = '<a data-dropdown="bottom-end" class="btn btn-sm btn-outline-primary dropdown-toggle">';
+					$h .= $label;
+				$h .= '</a> ';
+				$h .= '<div class="dropdown-list">'.$list.'</div>';
+			}
+
+
+		} else {
+			$h = '<a data-dropdown="bottom-end" class="btn btn-sm btn-outline-primary dropdown-toggle">';
+				$h .= s("Ajouter");
+			$h .= '</a> ';
+			$h .= '<div class="dropdown-list">'.$list.'</div>';
+		}
+
+
+		return $h;
+
+	}
+
 	protected function getAction(\farm\Farm $eFarm, Cashflow $eCashflow): string {
 
 		if($eCashflow['cOperationHash']->notEmpty()) {
 			$canWrite = $eCashflow['cOperationHash']->first()->acceptWrite();
-			$nOperation = $eCashflow['cOperationHash']->count();
 		} else {
 			$canWrite = TRUE;
-			$nOperation = 0;
 		}
 
 		if($eFarm->canManage() === FALSE or $canWrite === FALSE) {
 			return '';
 		}
 
-		$h = '<div class="dropdown-list">';
 
-			$actions = '';
 
-			if($eCashflow['status'] === CashflowElement::ALLOCATED) {
+		$actions = '';
 
-				$isLinkedToAsset = $eCashflow['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->notEmpty();
+		if($eCashflow->acceptCancelReconciliation()) {
 
-				$actions .= '<div class="dropdown-title">';
-					$actions .= p("Actions sur l'écriture comptable liée", "Actions sur les {value} écritures comptables liées", $nOperation);
-				$actions .= '</div>';
+			$nOperation = $eCashflow['cOperationHash']->count();
 
-				if($isLinkedToAsset) {
-
-					$actions .= '<a class="dropdown-item inactive">';
-						$actions .= p(
-							"Supprimer l'écriture",
-							"Supprimer les {value} écritures",
-							$nOperation
-						);
-						$actions .= '<div class="operations-action-more">'.s("(Supprimez d'abord l'<b>immobilisation</b> liée)").'</div>';
-					$actions .= '</a>';
-
-				} else if($canWrite) {
-
-					$actions .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate?id='.$eCashflow['id'].'&action=delete" class="dropdown-item">';
-					$actions .= p(
-						"Supprimer l'écriture",
-						"Supprimer les {value} écritures",
-						$nOperation
-					);
-					$actions .= '</a>';
-
-				}
-
-				$actions .= '<a href="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:deAllocate?id='.$eCashflow['id'].'&action=dissociate" class="dropdown-item" >';
-					$actions .= p("Dissocier sans supprimer l'écriture", "Dissocier sans supprimer les écritures<br/>de l'opération bancaire", $nOperation - 1);
-				$actions .= '</a>';
-
-			}
-
-			if($eCashflow->acceptCancelReconciliation()) {
-
-				$nOperation = $eCashflow['cOperationHash']->count();
-				if($nOperation === 0) {
-					$confirm = s("Le lien entre la facture et l'opération bancaire sera supprimé. Confirmez-vous cette action ?");
-				} else {
-					$confirm = s("Cette action supprimera le rapprochement entre la facture et l'opération bancaire mais ne supprimera pas les écritures comptables créées. Vous pourrez les supprimer manuellement. Confirmez-vous cette action ?");
-				}
-				$reconciliate = '<a data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/preaccounting/reconciliate:cancel"  post-cashflow="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
-					$reconciliate .= s("Annuler le rapprochement");
-				$reconciliate .= '</a>';
-
+			if($nOperation === 0) {
+				$confirm = s("Le lien entre la facture et l'opération bancaire sera supprimé. Confirmez-vous cette action ?");
 			} else {
-
-				$reconciliate = '';
-
+				$confirm = s("Cette action supprimera le rapprochement entre la facture et l'opération bancaire mais ne supprimera pas les écritures comptables créées. Vous pourrez les supprimer manuellement. Confirmez-vous cette action ?");
 			}
 
+			$actions .= '<a data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/preaccounting/reconciliate:cancel"  post-cashflow="'.$eCashflow['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
+				$actions .= s("Annuler le rapprochement");
+			$actions .= '</a>';
 
-			if($eCashflow['status'] === Cashflow::DELETED) {
+		}
 
-				$actions .= '<div class="dropdown-divider"></div>';
+		switch($eCashflow['status']) {
 
+			case Cashflow::DELETED :
 				$actions .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:undoDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
 					$actions .= s("Annuler la suppression de l'opération bancaire");
 				$actions .= '</a>';
+				break;
 
-			} else if($eCashflow['status'] === Cashflow::ALLOCATED and $canWrite) {
+			case Cashflow::ALLOCATED :
 
-				if($actions) {
-					$actions .= '<div class="dropdown-divider"></div>';
+				if($eCashflow['cOperationHash']->first()->acceptWrite()) {
+
+					$actions .= '<a class="dropdown-item inactive">';
+						$actions .= s("Supprimer l'opération bancaire");
+						$actions .= '<div class="operations-action-more">'.\Asset::icon('exclamation-circle').' '.s("Supprimez d'abord les écritures comptables liées").'</div>';
+					$actions .= '</a>';
+
 				}
 
-				$actions .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
+				break;
 
-				$actions .= $reconciliate;
+			case Cashflow::WAITING :
 
-				$deleteText = s("Supprimer l'opération bancaire<div>(Supprimez d'abord les <b>écritures comptables</b> liées)</div>", ['div' => '<div class="operations-action-more">']);
-				$actions .= '<a class="dropdown-item inactive">'.$deleteText.'</a>';
+				if($eCashflow->acceptDelete()) {
 
+					$actions .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
 
-			} else if($eCashflow->acceptDelete()) {
+					$actions .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
+						$actions .= s("Supprimer l'opération bancaire");
+					$actions .= '</a>';
 
-				if($actions) {
-					$actions .= '<div class="dropdown-divider"></div>';
 				}
 
-				$actions .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
+				break;
 
-				$actions .= $reconciliate;
+		}
 
-				$actions .= '<a data-ajax="'.\company\CompanyUi::urlBank($eFarm).'/cashflow:doDelete"  post-id="'.$eCashflow['id'].'" class="dropdown-item">';
-					$actions .= s("Supprimer l'opération bancaire");
-				$actions .= '</a>';
+		if($actions === '') {
+			return '';
+		}
 
-			} else if($reconciliate) {
-
-				if($actions) {
-					$actions .= '<div class="dropdown-divider"></div>';
-				}
-
-				$actions .= '<div class="dropdown-title">'.s("Actions sur l'opération bancaire").'</div>';
-
-				$actions .= $reconciliate;
-
-			}
-
+		$h = '<div class="dropdown-list">';
+			$h .= '<div class="dropdown-title">'.s("Opération bancaire").'</div>';
 			$h .= $actions;
-
 		$h .= '</div>';
 
 		return $h;

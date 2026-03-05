@@ -225,11 +225,11 @@ table.tbody-even tbody:nth-of-type(even) tr {
 }
 
 table.tr-hover tbody tr:hover {
-	background-color: rgba(0, 0, 0, 0.03) !important;
+	background-color: var(--background-hover) !important;
 }
 
 table.tbody-hover tbody:hover tr {
-	background-color: rgba(0, 0, 0, 0.03) !important;
+	background-color: var(--background-hover) !important;
 }
 
 table.tr-even tbody tr:nth-of-type(even):not(tr.tr-title) {

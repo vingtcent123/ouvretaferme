@@ -38,6 +38,7 @@ form[data-ajax-form="/@module/journal/Operation/doQuick"] {
 	cursor: help;
 }
 .operations-action-more {
+	margin-top: 0.25rem;
 	font-size: 0.85rem;
 	font-weight: lighter;
 	opacity: 0.8;

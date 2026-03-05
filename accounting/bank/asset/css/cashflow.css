@@ -122,10 +122,6 @@
 	align-items: center;
 }
 
-#cashflow-list table tbody tr td:not(:has(a.btn)) {
-	padding-top: 0.75rem;
-}
-
 #bank-cashflow-allocate #operation-create-list {
 	margin-top: 1rem;
 }
@@ -133,4 +129,28 @@
 #bank-cashflow-copy-table tr.tr-title,
 #bank-cashflow-copy-table td a:has(svg.asset-icon-piggy-bank) {
 	display: none;
+}
+
+.cashflow-item-description {
+	display: flex;
+	font-size: .9rem;
+	gap: 0.25rem 0.5rem;
+}
+
+@media (max-width: 1499px) {
+
+	.cashflow-item-description {
+		flex-direction: column;
+		align-items: start;
+	}
+
+}
+
+@media (min-width: 1500px) {
+
+	.cashflow-item-description {
+		flex-wrap: wrap;
+		align-items: center;
+	}
+
 }
