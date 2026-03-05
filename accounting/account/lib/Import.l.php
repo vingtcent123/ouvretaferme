@@ -506,10 +506,10 @@ Class ImportLib extends ImportCrud {
 
 		$contentArray = explode("\n", trim($eImport['content']));
 		// On récupère les colonnes
-		$header = array_shift($contentArray);
+		$header = array_shift($contentArray); // Supprime la 1ère ligne
 		$headerCols = explode(self::extractDelimiter($eImport['content']), $header);
 		$headerModel = self::extractModel($headerCols);
-		$lines = array_slice($contentArray, 1);
+		$lines = $contentArray;
 
 		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 		$cMethod = \payment\MethodLib::getByFarm($eFarm, FALSE);
