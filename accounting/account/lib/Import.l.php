@@ -353,6 +353,9 @@ Class ImportLib extends ImportCrud {
 				}
 				$lineElements[$headerIndex - 1] = $debit;
 				$lineElements[$headerIndex] = $credit;
+			} else if(mb_strtolower($header[$headerIndex]) === FecLib::HEADER_COL_COMPTE_NUM or mb_strtolower($header[$headerIndex]) === FecLib::HEADER_COL_COMPTE_AUX_NUM) {
+				$accountLabel = $allElements[self::findCol($headerIndex, $headerCols, $headerModel)];
+				$lineElements[] = AccountLabelLib::pad(trim($accountLabel, '0'));
 			} else {
 				$lineElements[] = $allElements[self::findCol($headerIndex, $headerCols, $headerModel)];
 			}

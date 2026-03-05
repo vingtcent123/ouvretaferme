@@ -69,6 +69,8 @@ class FecLib  {
 
 	const HEADER_COL_MONTANT = 'montant';
 	const HEADER_COL_SENS = 'sens';
+	const HEADER_COL_COMPTE_NUM = 'comptenum';
+	const HEADER_COL_COMPTE_AUX_NUM = 'compteauxnum';
 
 	public static function checkDataForFec(\farm\Farm $eFarm, FinancialYear $eFinancialYear): array {
 
