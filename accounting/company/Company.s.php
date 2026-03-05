@@ -46,6 +46,7 @@ class CompanySetting extends \Settings {
 		26, // 26 février
 		2293, 3635, 2973, // 2 mars
 		3149,
+		1897, // 5 mars
 	];
 
 	const CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL = 1000;
