@@ -456,6 +456,30 @@ class CashLib extends CashCrud {
 
 		Cash::model()->beginTransaction();
 
+			switch($e['source']) {
+
+				case Cash::BANK_CASHFLOW :
+					\bank\Cashflow::model()
+						->whereCash($e)
+						->update([
+							'cash' => new Cash(),
+							'cashStatus' => \selling\Payment::WAITING
+						]);
+					break;
+
+				case Cash::SELL_INVOICE :
+				case Cash::SELL_SALE :
+					\selling\Payment::model()
+						->whereFarm(\farm\Farm::getConnected())
+						->whereCash($e)
+						->update([
+							'cash' => new Cash(),
+							'cashStatus' => \selling\Payment::WAITING
+						]);
+					break;
+
+			}
+
 			$affected = Cash::model()
 				->whereStatus(Cash::DRAFT)
 				->update($e, [

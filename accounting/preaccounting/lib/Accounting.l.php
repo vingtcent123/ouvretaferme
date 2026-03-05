@@ -316,7 +316,7 @@ Class AccountingLib {
 
 			// Exclure les ventes réglées dans les journaux de caisse
 			if($eCash->empty()) {
-				$paymentIdsToExclude = $eSale['cPayment']->find(fn($e) => ($e['statusCash'] ?? NULL) === \selling\Payment::VALID)->getIds();
+				$paymentIdsToExclude = $eSale['cPayment']->find(fn($e) => ($e['cashStatus'] ?? NULL) === \selling\Payment::VALID)->getIds();
 			} else {
 				$paymentIdsToExclude = [];
 			}

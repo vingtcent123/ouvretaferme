@@ -66,7 +66,8 @@ class PaymentModel extends \ModuleModel {
 			'onlineCheckoutId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'onlinePaymentIntentId' => ['text8', 'null' => TRUE, 'unique' => TRUE, 'cast' => 'string'],
 			'status' => ['enum', [\selling\Payment::NOT_PAID, \selling\Payment::PAID, \selling\Payment::FAILED], 'cast' => 'enum'],
-			'statusCash' => ['enum', [\selling\Payment::WAITING, \selling\Payment::VALID, \selling\Payment::IGNORED], 'cast' => 'enum'],
+			'cash' => ['element32', 'cash\Cash', 'null' => TRUE, 'cast' => 'element'],
+			'cashStatus' => ['enum', [\selling\Payment::WAITING, \selling\Payment::VALID, \selling\Payment::IGNORED], 'cast' => 'enum'],
 			'paidAt' => ['date', 'null' => TRUE, 'cast' => 'string'],
 			'cashflow' => ['element32', 'bank\Cashflow', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
@@ -78,7 +79,7 @@ class PaymentModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'status', 'statusCash', 'paidAt', 'cashflow', 'accountingHash', 'accountingDifference', 'accountingReady', 'createdAt', 'closed', 'closedAt'
+			'id', 'source', 'sale', 'invoice', 'customer', 'farm', 'amountIncludingVat', 'method', 'methodName', 'onlineCheckoutId', 'onlinePaymentIntentId', 'status', 'cash', 'cashStatus', 'paidAt', 'cashflow', 'accountingHash', 'accountingDifference', 'accountingReady', 'createdAt', 'closed', 'closedAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -87,6 +88,7 @@ class PaymentModel extends \ModuleModel {
 			'customer' => 'selling\Customer',
 			'farm' => 'farm\Farm',
 			'method' => 'payment\Method',
+			'cash' => 'cash\Cash',
 			'cashflow' => 'bank\Cashflow',
 		];
 
@@ -107,7 +109,7 @@ class PaymentModel extends \ModuleModel {
 
 		switch($property) {
 
-			case 'statusCash' :
+			case 'cashStatus' :
 				return Payment::WAITING;
 
 			case 'accountingReady' :
@@ -136,7 +138,7 @@ class PaymentModel extends \ModuleModel {
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'statusCash' :
+			case 'cashStatus' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'accountingDifference' :
@@ -205,8 +207,12 @@ class PaymentModel extends \ModuleModel {
 		return $this->where('status', ...$data);
 	}
 
-	public function whereStatusCash(...$data): PaymentModel {
-		return $this->where('statusCash', ...$data);
+	public function whereCash(...$data): PaymentModel {
+		return $this->where('cash', ...$data);
+	}
+
+	public function whereCashStatus(...$data): PaymentModel {
+		return $this->where('cashStatus', ...$data);
 	}
 
 	public function wherePaidAt(...$data): PaymentModel {

@@ -69,7 +69,7 @@ class SuggestionLib {
 				\bank\Cashflow::model()
 					->whereId('IN', $cCashflow)
 					->update([
-						'statusCash' => \selling\Payment::IGNORED
+						'cashStatus' => \selling\Payment::IGNORED
 					]);
 
 			}
@@ -85,7 +85,7 @@ class SuggestionLib {
 				\selling\Payment::model()
 					->whereId('IN', $cPayment)
 					->update([
-						'statusCash' => \selling\Payment::IGNORED
+						'cashStatus' => \selling\Payment::IGNORED
 					]);
 
 			}
@@ -101,7 +101,7 @@ class SuggestionLib {
 				\selling\Payment::model()
 					->whereId('IN', $cPayment)
 					->update([
-						'statusCash' => \selling\Payment::IGNORED
+						'cashStatus' => \selling\Payment::IGNORED
 					]);
 
 			}
@@ -234,7 +234,8 @@ class SuggestionLib {
 			case Cash::BANK_CASHFLOW :
 
 				\bank\Cashflow::model()->update($eCash['cashflow'], [
-					'statusCash' => \bank\Cashflow::VALID
+					'cash' => $eCash,
+					'cashStatus' => \bank\Cashflow::VALID
 				]);
 
 				break;
@@ -243,7 +244,8 @@ class SuggestionLib {
 			case Cash::SELL_SALE :
 
 				\selling\Payment::model()->update($eCash['payment'], [
-					'statusCash' => \selling\Payment::VALID
+					'cash' => $eCash,
+					'cashStatus' => \selling\Payment::VALID
 				]);
 
 				break;
@@ -256,9 +258,9 @@ class SuggestionLib {
 
 		self::getModule($source)
 			->whereId($reference)
-			->where('m1.statusCash', \selling\Payment::WAITING)
+			->where('m1.cashStatus', \selling\Payment::WAITING)
 			->update([
-				'statusCash' => \selling\Payment::IGNORED
+				'cashStatus' => \selling\Payment::IGNORED
 			]);
 
 	}
@@ -284,7 +286,7 @@ class SuggestionLib {
 						'description' => new \Sql('memo'),
 						'customer' => fn() => new \selling\Customer(),
 					])
-					->where('m1.statusCash', \bank\Cashflow::WAITING);
+					->where('m1.cashStatus', \bank\Cashflow::WAITING);
 
 			case Cash::SELL_INVOICE :
 
@@ -312,7 +314,7 @@ class SuggestionLib {
 						'description' => fn($e) => \selling\InvoiceUi::getName($e['invoice'])
 					])
 					->where('m2.status', 'IN', [\selling\Invoice::GENERATED, \selling\Invoice::DELIVERED])
-					->where('m1.statusCash', \selling\Payment::WAITING)
+					->where('m1.cashStatus', \selling\Payment::WAITING)
 					->where('m1.farm', $eFarm)
 					->where('m1.source', \selling\Payment::INVOICE);
 
@@ -334,7 +336,7 @@ class SuggestionLib {
 						'amountIncludingVat' => fn($e) => ($e['amountIncludingVat'] > 0) ? $e['amountIncludingVat'] : $e['amountIncludingVat'] * -1,
 						'description' => fn($e) => \selling\SaleUi::getName($e['sale'])
 					])
-					->where('m1.statusCash', \selling\Payment::WAITING)
+					->where('m1.cashStatus', \selling\Payment::WAITING)
 					->where('m1.farm', $eFarm)
 					->where('m2.preparationStatus', 'IN', [\selling\Sale::CONFIRMED, \selling\Sale::PREPARED, \selling\Sale::DELIVERED])
 					->where('m2.profile', 'IN', [\selling\Sale::SALE, \selling\Sale::MARKET])

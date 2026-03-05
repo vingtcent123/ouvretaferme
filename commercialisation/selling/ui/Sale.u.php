@@ -1854,7 +1854,7 @@ class SaleUi {
 							if($eSale['cRegister']->notEmpty()) {
 								$h .= '<td>';
 
-									switch($ePayment['statusCash']) {
+									switch($ePayment['cashStatus']) {
 
 										case Payment::WAITING :
 											if($cRegister->notEmpty()) {

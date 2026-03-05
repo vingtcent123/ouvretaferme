@@ -295,7 +295,6 @@ class CashflowUi {
 
 	protected function getAccountingCell(\farm\Farm $eFarm, Cashflow $eCashflow, \Collection $cFinancialYear): string {
 
-		$label = '';
 		$list = '';
 
 		if($eCashflow['status'] === Cashflow::WAITING) {

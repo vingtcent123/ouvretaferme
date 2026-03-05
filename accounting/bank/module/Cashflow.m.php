@@ -62,7 +62,8 @@ class CashflowModel extends \ModuleModel {
 			'account' => ['element32', 'bank\BankAccount', 'null' => TRUE, 'cast' => 'element'],
 			'import' => ['element32', 'bank\Import', 'cast' => 'element'],
 			'status' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::ALLOCATED, \bank\Cashflow::DELETED], 'cast' => 'enum'],
-			'statusCash' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::VALID, \bank\Cashflow::IGNORED], 'cast' => 'enum'],
+			'cash' => ['element32', 'cash\Cash', 'null' => TRUE, 'cast' => 'element'],
+			'cashStatus' => ['enum', [\bank\Cashflow::WAITING, \bank\Cashflow::VALID, \bank\Cashflow::IGNORED], 'cast' => 'enum'],
 			'isReconciliated' => ['bool', 'cast' => 'bool'],
 			'isSuggestionCalculated' => ['bool', 'cast' => 'bool'],
 			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
@@ -74,12 +75,13 @@ class CashflowModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'date', 'hash', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'statusCash', 'isReconciliated', 'isSuggestionCalculated', 'invoice', 'sale', 'payment', 'createdAt', 'updatedAt', 'createdBy'
+			'id', 'date', 'hash', 'type', 'amount', 'fitid', 'name', 'memo', 'account', 'import', 'status', 'cash', 'cashStatus', 'isReconciliated', 'isSuggestionCalculated', 'invoice', 'sale', 'payment', 'createdAt', 'updatedAt', 'createdBy'
 		]);
 
 		$this->propertiesToModule += [
 			'account' => 'bank\BankAccount',
 			'import' => 'bank\Import',
+			'cash' => 'cash\Cash',
 			'invoice' => 'selling\Invoice',
 			'sale' => 'selling\Sale',
 			'payment' => 'selling\Payment',
@@ -103,7 +105,7 @@ class CashflowModel extends \ModuleModel {
 			case 'status' :
 				return Cashflow::WAITING;
 
-			case 'statusCash' :
+			case 'cashStatus' :
 				return Cashflow::WAITING;
 
 			case 'isReconciliated' :
@@ -138,7 +140,7 @@ class CashflowModel extends \ModuleModel {
 			case 'status' :
 				return ($value === NULL) ? NULL : (string)$value;
 
-			case 'statusCash' :
+			case 'cashStatus' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -200,8 +202,12 @@ class CashflowModel extends \ModuleModel {
 		return $this->where('status', ...$data);
 	}
 
-	public function whereStatusCash(...$data): CashflowModel {
-		return $this->where('statusCash', ...$data);
+	public function whereCash(...$data): CashflowModel {
+		return $this->where('cash', ...$data);
+	}
+
+	public function whereCashStatus(...$data): CashflowModel {
+		return $this->where('cashStatus', ...$data);
 	}
 
 	public function whereIsReconciliated(...$data): CashflowModel {
