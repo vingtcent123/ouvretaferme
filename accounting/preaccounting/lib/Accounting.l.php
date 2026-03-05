@@ -244,7 +244,7 @@ Class AccountingLib {
 				eAccount    : $eAccount['vatAccount'],
 				date        : $eCash['date'],
 				eCode       : $eJournalCode,
-				ecritureLib : $eCash['description'],
+				ecritureLib : $eCash['description'] ?? \cash\CashUi::getOperation($eCash['source']),
 				document    : $document,
 				documentDate: $eCash['date'],
 				amount      : $eCash['vat'],
