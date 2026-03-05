@@ -23,6 +23,8 @@ new Page()
 
 			\bank\Cashflow::model()->pdo()->exec("ALTER TABLE farm_".$eFarm['id'].".`bankCashflow` CHANGE `statusCash` `cashStatus` ENUM('waiting','valid','ignored') CHARACTER SET ascii COLLATE ascii_bin NOT NULL DEFAULT 'waiting';");
 
+			new \ModuleAdministration('bank\Cashflow')->rebuild([]);
+
 			\bank\Cashflow::model()
 				->join(\cash\Cash::model(), 'm1.id = m2.cashflow')
 				->where('m2.source', 'IN', [\cash\Cash::BANK_CASHFLOW])
