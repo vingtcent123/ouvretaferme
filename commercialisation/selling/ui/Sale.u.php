@@ -1640,7 +1640,7 @@ class SaleUi {
 
 	}
 
-	public function getContent(Sale $eSale, \Collection $cPdf): string {
+	public function getContent(Sale $eSale, \Collection $ccSaleMarket, \Collection $cPdf): string {
 
 		if($eSale->isComposition()) {
 			return '';
@@ -1648,13 +1648,15 @@ class SaleUi {
 
 		$h = $this->getPresentation($eSale, $cPdf);
 
+		$h .= $this->getStats($eSale);
+
 		if(
 			(
 				($eSale->isMarket() and $eSale->isMarketPreparing() === FALSE) or
 				($eSale->isMarket() === FALSE and $eSale['items'] > 0)
 			)
 		) {
-			$h .= $this->getSummary($eSale);
+			$h .= $this->getSummary($eSale, $ccSaleMarket);
 		}
 
 		return $h;
@@ -1750,21 +1752,8 @@ class SaleUi {
 
 		$h = '';
 
-		if($eSale['closed']) {
-			$h .= '<div class="sale-closed">';
-				$h .= \Asset::icon('lock-fill').' ';
-				if($eSale->isMarket()) {
-					$h .= s("Cette vente est clôturée et n'est plus modifiable, mais vous pouvez toujours <link>consulter le logiciel de caisse</link> en lecture seule.", ['link' => '<a href="'.SaleUi::urlMarket($eSale).'">']);
-				} else {
-					$h .= s("Cette vente est clôturée, elle n'est plus modifiable.");
-				}
-			$h .= '</div>';
-		}
+		if($eSale->isMarket()) {
 
-		if(
-			$eSale->isMarket() and
-			$eSale->canWrite()
-		) {
 			if($eSale['preparationStatus'] === Sale::CONFIRMED) {
 
 				$h .= '<div class="util-block color-white bg-selling mb-2">';
@@ -1775,14 +1764,121 @@ class SaleUi {
 
 			} else if($eSale['preparationStatus'] === Sale::SELLING) {
 				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling mb-2" style="width: 100%">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';
+			} else if($eSale['closed']) {
+				$h .= '<div class="sale-closed">';
+					$h .= \Asset::icon('lock-fill').' ';
+					$h .= s("Cette vente est clôturée et n'est plus modifiable, mais vous pouvez toujours <link>consulter le logiciel de caisse</link> en lecture seule.", ['link' => '<a href="'.SaleUi::urlMarket($eSale).'">']);
+				$h .= '</div>';
+			} else {
+
 			}
+		} else {
+
+			if($eSale['closed']) {
+				$h .= '<div class="sale-closed">';
+					$h .= \Asset::icon('lock-fill').' ';
+					$h .= s("Cette vente est clôturée, elle n'est plus modifiable.");
+				$h .= '</div>';
+			}
+
 		}
 
 		return $h;
 
 	}
 
-	public function getSummary(Sale $eSale): string {
+	public function getSummary(Sale $eSale, \Collection $ccSaleMarket): string {
+
+		$h = $this->getSaleSummary($eSale);
+
+		if(
+			$eSale->isMarket() and
+			$eSale['closed']
+		) {
+			$h .= $this->getMarketSummary($eSale, $ccSaleMarket);
+		}
+
+		return $h;
+
+	}
+
+	public function getMarketSummary(Sale $eSale, \Collection $ccSaleMarket): string {
+
+		$sales = [];
+
+		$ccSaleMarket[Sale::DELIVERED]->map(function($eSale) use(&$sales) {
+
+			foreach($eSale['cPayment'] as $ePayment) {
+				$sales[$ePayment['method']['id']] ??= 0;
+				$sales[$ePayment['method']['id']]++;
+			}
+
+		});
+
+		$h = '<h3>'.s("Moyens de paiement").'</h3>';
+		$h .= '<div class="util-overflow-xs stick-xs">';
+			$h .= '<table class="tbody-even mb-2">';
+				$h .= '<thead>';
+					$h .= '<tr>';
+						$h .= '<th></th>';
+						$h .= '<th class="text-center">'.s("Ventes").'</th>';
+						if($eSale['hasVat']) {
+							$h .= '<th class="text-end">'.s("Montant {taxes}", ['taxes' => '<span class="util-annotation">TTC</span>']).'</th>';
+						} else {
+							$h .= '<th class="text-end">'.s("Montant").'</th>';
+						}
+						$h .= '<th>'.s("Journal de caisse").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+
+					foreach($eSale['cPayment'] as $ePayment) {
+
+						$eMethod = $ePayment['method'];
+
+						$cRegister = $eSale['cRegister']->find(fn($eRegister) => $eRegister['paymentMethod']->is($eMethod));
+
+						$h .= '<tr>';
+							$h .= '<td>'.encode($eMethod['name']).'</td>';
+							$h .= '<td class="text-center">'.$sales[$ePayment['method']['id']].'</td>';
+							$h .= '<td class="text-end">'.\util\TextUi::money($ePayment['amountIncludingVat']).'</td>';
+							$h .= '<td>';
+
+								switch($ePayment['statusCash']) {
+
+									case Payment::WAITING :
+										if($cRegister->notEmpty()) {
+											$h .= s("Importer dans");
+											foreach($cRegister as $eRegister) {
+												$h .= ' <a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doImport" post-id="'.$eRegister['id'].'" post-source="'.\cash\Cash::SELL_SALE.'" post-reference="'.$ePayment['id'].'" class="btn btn-xs btn-primary" data-confirm="'.s("Confirmez l'import de {value} ce journal de caisse ?", \util\TextUi::money($ePayment['amountIncludingVat'])).'">';
+													$h .= \cash\RegisterUi::getName($eRegister);
+												$h .= '</a> ';
+											}
+										}
+										break;
+
+									case Payment::VALID :
+										$h .= '<span class="color-success">'.\Asset::icon('check-circle').' '.s("Importé").'</span>';
+										break;
+
+								}
+
+							$h .= '</td>';
+						$h .= '</tr>';
+
+					}
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getSaleSummary(Sale $eSale): string {
 
 		$h = '<table class="tr-bordered sale-summary">';
 
@@ -1940,7 +2036,7 @@ class SaleUi {
 
 	}
 
-	public function getMarket(Sale $eSaleMarket, \farm\Farm $eFarm, \Collection $ccSale, \Collection $cPaymentMethod) {
+	public function getMarket(\farm\Farm $eFarm, \Collection $ccSale, \Collection $cPaymentMethod) {
 
 		if($ccSale->empty()) {
 			return '';
@@ -1965,54 +2061,11 @@ class SaleUi {
 				$h .= '  <span class="util-badge bg-primary">'.$cSale->count().'</span>';
 			$h .= '</h3>';
 
-			if($preparationStatus === Sale::DELIVERED) {
-				$h .= $this->getPaymentMethods($eSaleMarket, $cSale, $cPaymentMethod);
-			}
-
 			$h .= $this->getList($eFarm, $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], cPaymentMethod: $cPaymentMethod);
 
 		}
 
 		$h .= '<br/>';
-
-		return $h;
-
-	}
-
-	protected function getPaymentMethods(Sale $eSaleMarket, \Collection $cSale, \Collection $cPaymentMethod): string {
-
-		$methods = [];
-
-		$cSale->map(function($eSale) use(&$methods) {
-
-			foreach($eSale['cPayment'] as $ePayment) {
-
-				$methods[$ePayment['method']['id']] ??= [
-					'sales' => 0,
-					'amountIncludingVat' => 0.0
-				];
-				$methods[$ePayment['method']['id']]['sales']++;
-				$methods[$ePayment['method']['id']]['amountIncludingVat'] += $ePayment['amountIncludingVat'];
-
-			}
-
-		});
-
-		$h = '<ul class="util-summarize">';
-
-			foreach($methods as $method => ['sales' => $sales, 'amountIncludingVat' => $amountIncludingVat]) {
-
-				$h .= '<li>';
-
-					$h .= '<h5>'.encode($cPaymentMethod[$method]['name']).'</h5>';
-					$h .= '<div>'.\util\TextUi::money($amountIncludingVat).'</div>';
-					$h .= '<div class="util-summarize-muted">'.p("{value} vente", "{value} ventes", $sales).'</div>';
-
-				$h .= '</li>';
-
-			}
-
-		$h .= '</ul>';
 
 		return $h;
 

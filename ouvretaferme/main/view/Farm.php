@@ -71,11 +71,11 @@ class FarmTemplate extends MainTemplate {
 		$sections = [];
 
 		if($eFarm->canProduction()) {
-			$sections['production'] = [\Asset::icon('leaf'), s("Produire")];
+			$sections['production'] = [\Asset::icon('leaf'), s("Production")];
 		}
 
 		if($eFarm->canCommercialisation()) {
-			$sections['commercialisation'] = [\Asset::icon('basket3'), s("Vendre")];
+			$sections['commercialisation'] = [\Asset::icon('basket3'), s("Vente")];
 		}
 
 		if($eFarm->canAccounting()) {
@@ -379,6 +379,7 @@ class FarmTemplate extends MainTemplate {
 			case 'cash' :
 			case 'invoicing' :
 			case 'accounting' :
+			case 'receipts' :
 			case 'settings-accounting' :
 				$this->section = 'accounting';
 				$this->template .= ' farm-accounting ';

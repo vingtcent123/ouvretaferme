@@ -739,17 +739,18 @@ Class AccountingLib {
 			// Montant HT
 			if($totalByVatRateExcludingVat !== 0.0) {
 
-				$key = array_find_key($items, fn($item) => ($item['account'] === $eAccount['id'] and $item['accountReference'] === NULL));
+				$key = array_find_key($items, fn($item) => ($item['vatRate'] === $eItem['vatRate'] and $item['account'] === $eAccount['id'] and $item['accountReference'] === NULL));
 
 				if($key === NULL) {
 					$items[] = [
 						'account' => $eAccount['id'],
 						'accountReference' => NULL,
-						'ratio' => $amountExcludingVat / $totalByVatRateExcludingVat,
+						//'ratio' => $amountExcludingVat / $totalByVatRateExcludingVat,
+						'amount' => $amountExcludingVat,
 						'vatRate' => $eItem['vatRate'],
 					];
 				} else {
-					$items[$key]['ratio'] += $amountExcludingVat / $totalByVatRateExcludingVat;
+					$items[$key]['amount'] += $amountExcludingVat;
 				}
 
 			}
@@ -762,17 +763,18 @@ Class AccountingLib {
 					$eAccountVat = $eAccountVatDefault;
 				}
 
-				$key = array_find_key($items, fn($item) => ($item['account'] === $eAccountVat['id'] and $item['accountReference'] === $eAccount['id']));
+				$key = array_find_key($items, fn($item) => ($item['vatRate'] === $eItem['vatRate'] and $item['account'] === $eAccountVat['id'] and $item['accountReference'] === $eAccount['id']));
 
 				if($key === NULL) {
 					$items[] = [
 						'account' => $eAccountVat['id'],
 						'accountReference' => $eAccount['id'],
-						'ratio' => $amountVat / $eElement['vatByRate'][$keyForTotal]['vat'],
+						//'ratio' => $amountVat / $eElement['vatByRate'][$keyForTotal]['vat'],
+						'amount' => $amountVat,
 						'vatRate' => $eItem['vatRate'],
 					];
 				} else {
-					$items[$key]['ratio'] += $amountVat / $eElement['vatByRate'][$keyForTotal]['vat'];
+					$items[$key]['amount'] += $amountVat;
 				}
 
 			}
@@ -810,19 +812,18 @@ Class AccountingLib {
 				}
 
 				$keyForTotal = array_find_key($eElement['vatByRate'], fn($vatByRate) => ($vatByRate['vatRate'] === $eSale['shippingVatRate']));
-				$totalByVatRateExcludingVat = $eElement['vatByRate'][$keyForTotal]['amount'] - $eElement['vatByRate'][$keyForTotal]['vat'];
 
-				$key = array_find_key($items, fn($item) => ($item['account'] === $eAccountShipping['id'] and $item['accountReference'] === NULL));
+				$key = array_find_key($items, fn($item) => ($item['vatRate'] === $shippingVatRate and $item['account'] === $eAccountShipping['id'] and $item['accountReference'] === NULL));
 
 				if($key === NULL) {
 					$items[] = [
 						'account' => $eAccountShipping['id'],
 						'accountReference' => NULL,
-						'ratio' => $shippingExcludingVat / $totalByVatRateExcludingVat,
+						'amount' => $shippingExcludingVat,
 						'vatRate' => $shippingVatRate,
 					];
 				} else {
-					$items[$key]['ratio'] += $shippingExcludingVat / $totalByVatRateExcludingVat;
+					$items[$key]['amount'] += $shippingExcludingVat;
 				}
 
 				// Si les frais de port ont de la TVA
@@ -835,21 +836,28 @@ Class AccountingLib {
 
 					$amountVat = $eSale['shipping'] - $eSale['shippingExcludingVat'];
 
-					$key = array_find_key($items, fn($item) => ($item['account'] === $eAccountVat['id'] and $item['accountReference'] === $eAccountShipping['id']));
+					$key = array_find_key($items, fn($item) => ($item['vatRate'] === $eSale['shippingVatRate'] and $item['account'] === $eAccountVat['id'] and $item['accountReference'] === $eAccountShipping['id']));
 
 					if($key === NULL) {
 						$items[] = [
 							'account' => $eAccountVat['id'],
 							'accountReference' => $eAccountShipping['id'],
-							'ratio' => $amountVat / $eElement['vatByRate'][$keyForTotal]['vat'],
+							'amount' => $amountVat,
 							'vatRate' => $eSale['shippingVatRate'],
 						];
 					} else {
-						$items[$key]['ratio'] += $amountVat / $eElement['vatByRate'][$keyForTotal]['vat'];
+						$items[$key]['amount'] += $amountVat;
 					}
 
 				}
 			}
+		}
+
+		// Extraction des ratios pour chaque item
+		$total = array_sum(array_column($items, 'amount'));
+
+		foreach($items as &$item) {
+			$item['ratio'] = $item['amount'] / $total;
 		}
 
 		return $items;
@@ -928,7 +936,7 @@ Class AccountingLib {
 				foreach($eElement['vatByRate'] as $vatByRate) {
 					$vatByRates[] = [
 						'amountWithoutRatio' => $vatByRate['amount'], // TTC
-						'amount' => round($vatByRate['amount'] * round($paymentRatio, 2), 2), // TTC
+						'amount' => round($vatByRate['amount'] * $paymentRatio, 2), // TTC
 						'vatRate' => $vatByRate['vatRate']
 					];
 				}
@@ -961,10 +969,12 @@ Class AccountingLib {
 					// TVA
 					$amountExcludingVat = round($vatByRate['amount'] / (1 + $vatByRate['vatRate'] / 100), 2);
 					$amountVat = round($vatByRate['amount'] - $amountExcludingVat, 2);
+					$amountIncludingVat = $vatByRate['amount'];
 
 				} else {
 
 					$amountExcludingVat = $eElement['priceExcludingVat'];
+					$amountIncludingVat = $eElement['priceExcludingVat'];
 
 				}
 

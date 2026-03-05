@@ -1394,7 +1394,7 @@ class ProductUi {
 	private function getFieldAccounting(\util\FormUi $form, Product $eProduct): string {
 
 		if($eProduct['farm']->hasAccounting() === FALSE) {
-			return '<div class="util-block-help">'.s("Pour utiliser cette fonctionnalité, activez le module de comptabilité !").'</div>';
+			return '<div class="util-block-help">'.s("Pour utiliser cette fonctionnalité, activez le module de gestion !").'</div>';
 		}
 
 		$h = '<div class="util-block bg-background-light">';

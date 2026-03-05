@@ -73,7 +73,7 @@ class RegisterModel extends \ModuleModel {
 		switch($property) {
 
 			case 'color' :
-				return '#AAAAAA';
+				return '#333333';
 
 			case 'balance' :
 				return 0;

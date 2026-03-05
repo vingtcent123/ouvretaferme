@@ -1,7 +1,7 @@
 <?php
 namespace cash;
 
-class SuggestionLib extends CashCrud {
+class SuggestionLib {
 
 	public static function getForCashflow(\payment\Method $eMethod, string $dateAfter): \Collection {
 
@@ -110,6 +110,42 @@ class SuggestionLib extends CashCrud {
 
 	}
 
+	public static function importByMethod(Register $eRegister, string $dateAfter): void {
+
+	$eMethod = $eRegister['paymentMethod'];
+
+		Cash::model()->beginTransaction();
+
+			$cCashflow = self::getForCashflow($eMethod, $dateAfter);
+
+			foreach($cCashflow as $eCashflow) {
+				self::import($eRegister, Cash::BANK_CASHFLOW, $eCashflow['reference']);
+			}
+
+		Cash::model()->commit();
+
+		Cash::model()->beginTransaction();
+
+			$cPayment = self::getForInvoice($eMethod, $dateAfter);
+
+			foreach($cPayment as $ePayment) {
+				self::import($eRegister, Cash::SELL_INVOICE, $ePayment['reference']);
+			}
+
+		Cash::model()->commit();
+
+		Cash::model()->beginTransaction();
+
+			$cPayment = self::getForSale($eMethod, $dateAfter);
+
+			foreach($cPayment as $ePayment) {
+				self::import($eRegister, Cash::SELL_SALE, $ePayment['reference']);
+			}
+
+		Cash::model()->commit();
+
+	}
+
 	public static function import(Register $eRegister, string $source, int $reference): void {
 
 		Cash::model()->beginTransaction();
@@ -177,36 +213,9 @@ class SuggestionLib extends CashCrud {
 
 	public static function importCreateFromRatios(Cash $eCash, \selling\Sale|\selling\Invoice $e, \selling\Payment $ePayment): void {
 
-		$ratios = \preaccounting\AccountingLib::computeRatios(
-			$e,
-			\account\AccountLib::getAll(),
-			$ePayment
-		);
+		$amounts = \selling\PaymentTransactionLib::getRatios($e, $ePayment);
 
-		$amounts = [];
-
-		foreach($ratios['amountsExcludingVat'] as ['vatRate' => $vatRate, 'amount' => $amount]) {
-
-			$amounts[(string)$vatRate] ??= [
-				'amountExcludingVat' => 0.0,
-				'vat' => 0.0
-			];
-
-			$amounts[(string)$vatRate]['amountExcludingVat'] += $amount;
-
-		}
-
-		foreach($ratios['amountsVat'] as ['vatRate' => $vatRate, 'amount' => $amount]) {
-			$amounts[(string)$vatRate]['vat'] += $amount;
-		}
-
-		foreach($amounts as $vatRate => $amount) {
-
-			$amount['amountExcludingVat'] = round($amount['amountExcludingVat'], 2);
-			$amount['hasVat'] = $e['hasVat'];
-			$amount['vat'] = round($amount['vat'], 2);
-			$amount['vatRate'] = (float)$vatRate;
-			$amount['amountIncludingVat'] = round($amount['amountExcludingVat'] + $amount['vat'], 2);
+		foreach($amounts as $amount) {
 
 			$eCashCreate = (clone $eCash)->merge($amount);
 

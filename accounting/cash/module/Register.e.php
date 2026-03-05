@@ -22,7 +22,10 @@ class Register extends RegisterElement {
 		]);
 
 		if($source === Cash::PRIVATE) {
-			return ($this['paymentMethod']['fqn'] === \payment\MethodLib::CASH);
+			return (
+				in_array($this['paymentMethod']['fqn'], \payment\MethodLib::CARDS) === FALSE and
+				in_array($this['paymentMethod']['fqn'], \payment\MethodLib::BANK) === FALSE
+			);
 		}
 
 		if($source === Cash::BANK_MANUAL and $type === Cash::CREDIT) {

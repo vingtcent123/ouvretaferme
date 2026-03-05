@@ -146,7 +146,18 @@ class FarmLib extends FarmCrud {
 
 	}
 
-	public static function runAccounting(\Closure $closure): void {
+	public static function runAccounting(\farm\Farm $eFarm, \Closure $closureOk, \Closure $closureKo): mixed {
+
+		if($eFarm['hasAccounting'] === FALSE) {
+			return $closureKo($eFarm);
+		}
+
+		self::connectDatabase($eFarm);
+		return $closureOk($eFarm);
+
+	}
+
+	public static function runAccountingAll(\Closure $closure): void {
 
 		$cFarm = \farm\Farm::model()
 			->select('id')

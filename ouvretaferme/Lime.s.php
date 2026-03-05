@@ -85,6 +85,8 @@ switch(LIME_ENV) {
 			'game' => 'dev_ouvretaferme',
 			'website' => 'dev_ouvretaferme',
 			'securing' => 'dev_ouvretaferme',
+			'cash' => 'dev_ouvretaferme',
+			'receipts' => 'dev_ouvretaferme',
 
 			'association' => 'dev_ouvretaferme',
 

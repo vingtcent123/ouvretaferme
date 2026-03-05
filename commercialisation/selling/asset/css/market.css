@@ -376,6 +376,9 @@ a.market-sales-item .market-sales-svg svg {
 .market-item:hover {
 	text-decoration: none;
 	color: white;
+}
+
+.market-item:not(.market-item-highlight):hover {
 	background-color: var(--text) !important;
 }
 
@@ -453,7 +456,7 @@ a.market-sales-item .market-sales-svg svg {
 }
 
 .market-item.market-item-highlight {
-	background-color: var(--secondary);
+	background-color: var(--success);
 }
 
 .market-item-wrapper.market-item-delivered .market-item:not(.market-item-highlight),

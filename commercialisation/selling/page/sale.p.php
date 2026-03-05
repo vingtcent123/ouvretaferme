@@ -269,6 +269,18 @@ new \selling\SalePage()
 		$data->e['invoice'] = \selling\InvoiceLib::getById($data->e['invoice'], properties: \selling\InvoiceElement::getSelection());
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
 
+		if($data->e->isMarket()) {
+
+			$data->e['cRegister'] = \farm\FarmLib::runAccounting(
+				$data->eFarm,
+				fn() => \cash\RegisterLib::getAll(),
+				fn() => new Collection()
+			);
+
+
+		}
+
+
 		if(get_exists('prepare')) {
 			\selling\PreparationLib::start($data->eFarm, GET('prepare'));
 		}

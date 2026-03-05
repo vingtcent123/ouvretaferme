@@ -215,6 +215,11 @@ body[data-template~="farm"] .container {
 
 }
 
+.farm-nav-section-production,
+.farm-nav-section-accounting {
+	letter-spacing: -0.2px;
+}
+
 .farm-nav-accounting {
 	border: 1px solid white;
 	border-radius: var(--radius);
@@ -508,7 +513,8 @@ body[data-template~="farm"] .container {
 	#farm-nav-sections {
 		bottom: -1px;
 		display: grid;
-		grid-column-gap: 0.5rem;
+		grid-template-columns: 4fr 3fr 4fr;
+		grid-column-gap: 0.25rem;
 		width: 100%;
 		height: var(--sections-height);
 		align-items: end;

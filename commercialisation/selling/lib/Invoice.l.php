@@ -14,7 +14,7 @@ class InvoiceLib extends InvoiceCrud {
 	public static function getByFarm(\farm\Farm $eFarm, int $page = 0, \Search $search = new \Search()): array {
 
 		if($search->get('customer')) {
-			$cCustomer = CustomerLib::getFromQuery($search->get('customer'), $eFarm, type: Customer::INDIVIDUAL);
+			$cCustomer = CustomerLib::getFromQuery($search->get('customer'), $eFarm, destination: Customer::INDIVIDUAL);
 			Invoice::model()->whereCustomer('IN', $cCustomer);
 		}
 
@@ -34,6 +34,7 @@ class InvoiceLib extends InvoiceCrud {
 			} else {
 				Invoice::model()->wherePaymentStatus($search->get('paymentStatus'));
 			}
+
 		}
 
 		if($search->get('reminder')) {

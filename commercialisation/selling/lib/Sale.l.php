@@ -392,6 +392,20 @@ class SaleLib extends SaleCrud {
 			}
 		}
 
+		if($search->get('paymentStatus')) {
+
+			if($search->get('paymentStatus') === Sale::NOT_PAID) {
+				Sale::model()
+					->or(
+						fn() => $this->wherePaymentStatus(NULL),
+						fn() => $this->wherePaymentStatus(Sale::NOT_PAID)
+					);
+			} else {
+				Sale::model()->wherePaymentStatus($search->get('paymentStatus'));
+			}
+
+		}
+
 		return Sale::model()
 			->select(Sale::getSelection())
 			->select([
@@ -412,7 +426,6 @@ class SaleLib extends SaleCrud {
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))
 			->wherePreparationStatus($search->get('preparationStatus'), if: $search->get('preparationStatus'))
 			->wherePreparationStatus('!=', Sale::COMPOSITION)
-			->wherePaymentStatus($search->get('paymentStatus'), if: $search->get('paymentStatus'))
 			->where('m1.stats', TRUE)
 			->sort($search->buildSort([
 				'firstName' => fn($direction) => match($direction) {
@@ -705,6 +718,10 @@ class SaleLib extends SaleCrud {
 	}
 
 	public static function getByParent(Sale $eSale, bool $indexByStatus = TRUE): \Collection {
+
+		if($eSale->isMarket() === FALSE) {
+			return new \Collection();
+		}
 
 		$ccSale = Sale::model()
 			->select(Sale::getSelection() + [

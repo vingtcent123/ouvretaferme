@@ -3,8 +3,8 @@ new AdaptativeView('/vente/{id}/marche', function($data, MarketTemplate $t) {
 
 	echo '<h2 class="mt-2 text-center">';
 
-		if($data->e['closed']) {
-			echo s("Cette vente est clôturée !");
+		if($data->e['preparationStatus'] === \selling\Sale::DELIVERED) {
+			echo s("Cette vente est terminée !");
 		} else if($data->e['preparationStatus'] === \selling\Sale::CANCELED) {
 			echo s("Vous avez annulé cette vente.");
 		} else {

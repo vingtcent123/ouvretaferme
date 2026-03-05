@@ -3,7 +3,7 @@ Register:
   account: ?account\Account
   bankAccount: ?account\Account
   paymentMethod: payment\Method
-  color: color = PHP('#AAAAAA')
+  color: color = PHP('#333333')
   balance: decimal(10, 2) = 0.0
   operations: int(0, null) = 0
   hasAccounts: bool = TRUE

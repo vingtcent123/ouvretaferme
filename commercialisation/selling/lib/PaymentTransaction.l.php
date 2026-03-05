@@ -580,6 +580,45 @@ class PaymentTransactionLib {
 
 	}
 
+	public static function getRatios(Sale|Invoice $e, Payment $ePayment): array {
+
+		$ratios = \preaccounting\AccountingLib::computeRatios(
+			$e,
+			new \Collection(),
+			$ePayment
+		);
+
+		$amounts = [];
+
+		foreach($ratios['amountsExcludingVat'] as ['vatRate' => $vatRate, 'amount' => $amount]) {
+
+			$amounts[(string)$vatRate] ??= [
+				'amountExcludingVat' => 0.0,
+				'vat' => 0.0
+			];
+
+			$amounts[(string)$vatRate]['amountExcludingVat'] += $amount;
+
+		}
+
+		foreach($ratios['amountsVat'] as ['vatRate' => $vatRate, 'amount' => $amount]) {
+			$amounts[(string)$vatRate]['vat'] += $amount;
+		}
+
+		foreach($amounts as $vatRate => $amount) {
+
+			$amounts[$vatRate]['amountExcludingVat'] = round($amount['amountExcludingVat'], 2);
+			$amounts[$vatRate]['hasVat'] = $e['hasVat'];
+			$amounts[$vatRate]['vat'] = round($amount['vat'], 2);
+			$amounts[$vatRate]['vatRate'] = (float)$vatRate;
+			$amounts[$vatRate]['amountIncludingVat'] = round($amount['amountExcludingVat'] + $amount['vat'], 2);
+
+		}
+
+		return $amounts;
+
+	}
+
 	protected static function reset(Sale|Invoice $e, ?string $paymentStatus): void {
 
 		if($paymentStatus !== NULL and $paymentStatus !== Sale::NEVER_PAID) {

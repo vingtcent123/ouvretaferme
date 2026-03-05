@@ -344,6 +344,7 @@ class InvoiceUi {
 									) {
 
 										$h .= '<div class="dropdown-divider"></div>';
+										$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
 										$h .= '<a data-ajax="/selling/invoice:doUpdateCanceledCollection" post-ids="'.$eInvoice['id'].'" data-confirm="'.s("L'annulation d'une facture est définitive. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Annuler la facture").'</a>';
 
 									}

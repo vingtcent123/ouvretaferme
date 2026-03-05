@@ -1,0 +1,160 @@
+<?php
+namespace receipts;
+
+class Book extends BookElement {
+
+	public static function getSelection(): array {
+
+		return parent::getSelection() + [
+			'openedSince' => new \Sql('closedAt + INTERVAL 1 DAY'),
+			'pending?' => fn($e) => fn($key) => BookLib::countPending($e)[$key]
+		];
+
+	}
+
+	public function acceptOperation(string $source, string $type): bool {
+
+		$this->expects([
+			'paymentMethod' => ['fqn']
+		]);
+
+		if($source === Line::PRIVATE) {
+			return ($this['paymentMethod']['fqn'] === \payment\MethodLib::CASH);
+		}
+
+		if($source === Line::BANK_MANUAL and $type === Line::CREDIT) {
+			return ($this['paymentMethod']['fqn'] === \payment\MethodLib::CASH);
+		}
+
+		if($source === Line::BUY_MANUAL) {
+			return ($this['paymentMethod']['fqn'] !== \payment\MethodLib::CHECK);
+		}
+
+		return TRUE;
+
+	}
+
+	public function acceptLine(): bool {
+
+		return ($this['status'] === Book::ACTIVE);
+
+	}
+
+	public function acceptUpdateBalance(): bool {
+		return (
+			$this['status'] === Book::ACTIVE and
+			$this['paymentMethod']['fqn'] === \payment\MethodLib::CASH and
+			$this['pending?']('draft') === 0
+		);
+	}
+
+	public function acceptClose(): bool {
+		return ($this['status'] === Book::ACTIVE);
+	}
+
+	public function getCloseDate(): ?string {
+
+		if($this['closedAt'] === NULL) {
+			return NULL;
+		}
+
+		$date = date('Y-m-t', strtotime($this['closedAt']));
+
+		if($date === $this['closedAt']) {
+			$date = date('Y-m-t', strtotime($date) + 86400);
+		}
+
+		if(
+			$date > currentDate() or
+			($this['pending?']('firstDraft') !== NULL and $this['pending?']('firstDraft') <= $date)
+		) {
+			return NULL;
+		} else {
+			return $date;
+		}
+
+	}
+
+	public function acceptDelete(): bool {
+
+		$this->expects(['operations']);
+
+		return ($this['operations'] <= ReceiptsSetting::DELETE_LIMIT);
+
+	}
+
+	public function isClosedByDate(string $date): bool {
+
+		$this->expects(['closedAt']);
+
+		return ($date <= $this['closedAt']);
+
+	}
+
+	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
+
+		$p
+			->setCallback('paymentMethod.check', function(\payment\Method $eMethod) {
+
+				$this->expects(['cPaymentMethod']);
+
+
+				return (
+					$eMethod->notEmpty() and
+					$this['cPaymentMethod']->offsetExists($eMethod['id'])
+				);
+
+			})
+			->setCallback('account.check', function(\account\Account &$eAccount) use ($p) {
+
+				if($p->isBuilt('hasAccounts') === FALSE) {
+					throw new \UnsupportedException();
+				}
+
+				if($this['hasAccounts'] === FALSE) {
+					$eAccount = new \account\Account();
+					return TRUE;
+				}
+
+				if($eAccount->empty()) {
+					return TRUE;
+				}
+
+				$eAccount = \account\AccountLib::getById($eAccount);
+
+				return (
+					$eAccount->notEmpty() and
+					\account\AccountLabelLib::isFromClasses($eAccount['class'], ReceiptsSetting::CLASSES)
+				);
+
+			})
+			->setCallback('bankAccount.check', function(\account\Account &$eAccount) use ($p) {
+
+				if($p->isBuilt('hasAccounts') === FALSE) {
+					throw new \UnsupportedException();
+				}
+
+				if($this['hasAccounts'] === FALSE) {
+					$eAccount = new \account\Account();
+					return TRUE;
+				}
+
+				if($eAccount->empty()) {
+					return TRUE;
+				}
+
+				$eAccount = \account\AccountLib::getById($eAccount);
+
+				return (
+					$eAccount->notEmpty() and
+					\account\AccountLabelLib::isFromClasses($eAccount['class'], [\account\AccountSetting::BANK_ACCOUNT_CLASS])
+				);
+
+			});
+
+		parent::build($properties, $input, $p);
+
+	}
+
+}
+?>

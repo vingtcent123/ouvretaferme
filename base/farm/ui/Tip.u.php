@@ -455,6 +455,26 @@ class TipUi {
 					'button' => NULL,
 				];
 
+			case 'accounting-receipts' :
+
+				$h = '<p>'.s("Le code général des impôts prévoit que les exploitations placées sous le régime micro-BA doivent tenir et, sur demande du service des impôts, présenter un document donnant le détail journalier de leurs recettes professionnelles ainsi que les factures et toute autre pièce justificative de ces recettes.").'</p>';
+				$h .= '<p>'.s("{siteName} vous permet de tenir votre livre des recettes conforme aux exigences de la réglementation, dès lors que vous ne tenez pas de comptabilité selon les normes du plan comptable agricole.").'</p>';
+				$h .= '<h3>'.s("Un livre des recettes tenu avec Ouvretaferme peut être alimenté automatiquement par :").'</h3>';
+				$h .= '<ul style="list-style-type: none;">';
+					$h .= '<li>'.\Asset::icon('1-circle-fill').' '.s("Vos opérations bancaires").'</li>';
+					$h .= '<li>'.\Asset::icon('2-circle-fill').' '.s("Vos cahiers de caisse").'</li>';
+					$h .= '<li>'.\Asset::icon('3-circle-fill').' '.s("Les ventes que vous avez réalisées sur le logiciel").'</li>';
+				$h .= '</ul>';
+				$h .= '<p>'.s("Plus vous avez intégré Ouvretaferme dans le quotidien de votre ferme, plus la tenue de votre livre des recettes est facilitée.").'</p>';
+
+				return [
+					'icon' => \Asset::icon('journal-text'),
+					'title' => s("Qu'est-ce que le livre des recettes ?"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => NULL,
+				];
+
 			case 'accounting-custom-account' :
 
 				$h = '<p>'.s("Les numéros de comptes peuvent être personnalisés pour refléter au mieux vos habitudes.").'</p>';

@@ -376,6 +376,10 @@ class FarmUi {
 		return self::urlConnected($eFarm).'/journal-de-caisse'.($eRegister->notEmpty() ? '?register='.$eRegister['id'] : '');
 	}
 
+	public static function urlReceipts(\farm\Farm $eFarm = new \farm\Farm()): string {
+		return self::urlConnected($eFarm).'/journal-de-caisse';
+	}
+
 	public static function urlFinancialYear(?\account\FinancialYear $eFinancialYear = NULL, \farm\Farm $eFarm = new \farm\Farm()): string {
 
 		if($eFarm->empty()) {
@@ -1049,7 +1053,11 @@ class FarmUi {
 			],
 			'cash' => [
 				'icon' => \Asset::icon('journal-text'),
-				'label' => s("Journal de caisse")
+				'label' => s("Journaux de caisse")
+			],
+			'receipts' => [
+				'icon' => \Asset::icon('journal-plus'),
+				'label' => s("Livre des recettes")
 			],
 			'invoicing' => [
 				'icon' => \Asset::icon('receipt'),
@@ -1100,6 +1108,7 @@ class FarmUi {
 			'bank' => \farm\FarmUi::urlConnected($eFarm).'/banque/operations',
 			'preaccounting' => \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite:verifier',
 			'cash' => \farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse',
+			'receipts' => \farm\FarmUi::urlConnected($eFarm).'/livre-des-recettes',
 			'accounting' => match($name) {
 				'preaccounting' => \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite',
 				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal',
@@ -1420,6 +1429,9 @@ class FarmUi {
 
 				$h .= $this->getNav('cash', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse');
 
+				/*if(LIME_ENV === 'dev')
+					$h .= $this->getNav('receipts', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/livre-des-recettes');
+*/
 			$h .= '</div>';
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-preaccounting">';
@@ -3098,10 +3110,10 @@ class FarmUi {
 			$h .= '</div>';
 			$h .= '<div class="farmer-farms-item-buttons">';
 				if($eFarm->canProduction()) {
-					$h .= '<a href="'.$eFarm->getProductionUrl().'" class="btn btn-production">'.\Asset::icon('leaf').'<br/>'.s("Produire").'</a> ';
+					$h .= '<a href="'.$eFarm->getProductionUrl().'" class="btn btn-production">'.\Asset::icon('leaf').'<br/>'.s("Production").'</a> ';
 				}
 				if($eFarm->canCommercialisation()) {
-					$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-commercialisation">'.\Asset::icon('basket3').'<br/>'.s("Vendre").'</a> ';
+					$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-commercialisation">'.\Asset::icon('basket3').'<br/>'.s("Vente").'</a> ';
 				}
 				if($eFarm->canAccounting()) {
 					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-accounting">'.\Asset::icon('piggy-bank').'<br/>'.s("Comptabilité").'</a> ';

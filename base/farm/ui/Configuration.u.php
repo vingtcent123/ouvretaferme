@@ -392,7 +392,7 @@ class ConfigurationUi {
 	public function updateAccounting(\farm\Farm $eFarm, \Collection $cAccount): string {
 
 		if($eFarm->hasAccounting() === FALSE) {
-			return '<div class="util-block-help">'.s("Activez le <link>module de comptabilité</link> pour vous servir de cette fonctionnalité !", ['link' => '<a href="'.\company\CompanyUi::urlSettings($eFarm).'">']).'</div>';
+			return '<div class="util-block-help">'.s("Activez le <link>module de gestion</link> pour vous servir de cette fonctionnalité !", ['link' => '<a href="'.\company\CompanyUi::urlSettings($eFarm).'">']).'</div>';
 		}
 
 		$eConfiguration = $eFarm->conf();

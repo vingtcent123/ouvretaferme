@@ -11,7 +11,7 @@ class TipLib extends TipCrud {
 		return [
 			'sequence-weeks', 'mailing-contact-help', 'mailing-campaign-help', 'series-forecast-help', 'feature-rotation', 'selling-photo', 'selling-market-start',
 			'accounting-invoice-cashflow',
-			'accounting-pre-accounting-fec', 'accounting-pre-accounting-import', 'accounting-pre-accounting-summary', 'accounting-cash', 'accounting-pre-accounting-export',
+			'accounting-pre-accounting-fec', 'accounting-pre-accounting-import', 'accounting-pre-accounting-summary', 'accounting-cash', 'accounting-receipts', 'accounting-pre-accounting-export',
 		];
 	}
 

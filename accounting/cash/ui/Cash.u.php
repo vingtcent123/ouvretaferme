@@ -189,10 +189,7 @@ class CashUi {
 		}
 
 		$h = '<br/>';
-		$h .= '<div class="util-title">';
-			$h .= '<h3>'.\Asset::icon('fire').' '.s("Opérations en {method} automatiquement trouvées depuis le {value}", ['method' => '<span style="text-transform: uppercase">'.encode($eRegister['paymentMethod']['name']).'</span>', 'value' => \util\DateUi::numeric($eRegister['openedSince'])]).'</h3>';
-			$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doIgnoreByMethod" post-id="'.$eRegister['id'].'" class="btn btn-outline-secondary" data-confirm="'.s("Ces opérations ne vous seront plus jamais proposées à l'importation dans vos journaux de caisse. Continuer ?").'">'.s("Tout ignorer").'</a>';
-		$h .= '</div>';
+		$h .= '<h3>'.\Asset::icon('fire').' '.s("Opérations en {method} automatiquement trouvées depuis le {value}", ['method' => '<span style="text-transform: uppercase">'.encode($eRegister['paymentMethod']['name']).'</span>', 'value' => \util\DateUi::numeric($eRegister['openedSince'])]).'</h3>';
 
 		$h .= '<ul class="util-summarize util-summarize-overflow">';
 			$h .= $summarize;
@@ -206,6 +203,15 @@ class CashUi {
 				'date' => SORT_ASC,
 				'id' => SORT_ASC
 			]);
+
+		if($cSuggestion->count() > 3) {
+
+			$h .= '<div class="text-end mb-1">';
+				$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doImportByMethod" post-id="'.$eRegister['id'].'" class="btn btn-outline-primary" data-confirm="'.s("Vous allez importer {value} opérations dans le journal de caisse. Continuer ?", $cSuggestion->count()).'" data-waiter="'.s("Import en cours...").'">'.s("Tout importer dans le journal").'</a> ';
+				$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doIgnoreByMethod" post-id="'.$eRegister['id'].'" class="btn" data-confirm="'.s("Ces opérations ne vous seront plus jamais proposées à l'importation dans vos journaux de caisse. Continuer ?").'">'.s("Tout ignorer").'</a>';
+			$h .= '</div>';
+
+		}
 
 		$h .= '<div class="util-overflow-sm">';
 
@@ -253,8 +259,8 @@ class CashUi {
 						$h .= '<td class="text-end">';
 
 							$h .= '<div class="flex-buttons" style="justify-content: end">';
-								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doImport" post-id="'.$eRegister['id'].'" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['reference'].'" class="btn btn-secondary">'.s("Importer dans le journal").'</a> ';
-								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doIgnore" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['reference'].'" class="btn btn-outline-secondary" data-confirm="'.s("Cette ligne ne vous sera plus jamais proposée à l'importation dans vos journaux de caisse. Continuer ?").'">'.s("Ignorer").'</a>';
+								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doImport" post-id="'.$eRegister['id'].'" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['reference'].'" class="btn btn-outline-primary">'.s("Importer dans le journal").'</a> ';
+								$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doIgnore" post-source="'.$eSuggestion['source'].'" post-reference="'.$eSuggestion['reference'].'" class="btn" data-confirm="'.s("Cette ligne ne vous sera plus jamais proposée à l'importation dans vos journaux de caisse. Continuer ?").'">'.s("Ignorer").'</a>';
 							$h .= '</div>';
 
 						$h .= '</td>';
@@ -325,8 +331,8 @@ class CashUi {
 				$h .= '<thead>';
 					$h .= '<tr>';
 						$h .= '<td colspan="'.$columns.'" style="padding: 0">';
-							$h .= '<div class="util-title">';
-								$h .= '<h2 class="mt-2">';
+							$h .= '<div class="util-title mt-2">';
+								$h .= '<h2>';
 									$h .= match($status) {
 										Cash::DRAFT => s("Brouillard de caisse").' <span class="util-counter">'.$cCash->count().'</span>',
 										Cash::VALID => s("Journal de caisse"),

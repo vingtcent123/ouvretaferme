@@ -36,4 +36,11 @@ new \cash\RegisterPage()
 
 		throw new ReloadAction();
 
+	})
+	->write('doImportByMethod', function($data) {
+
+		\cash\SuggestionLib::importByMethod($data->e, $data->e['closedAt']);
+
+		throw new ReloadAction();
+
 	});

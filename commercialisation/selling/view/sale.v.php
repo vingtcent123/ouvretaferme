@@ -3,9 +3,9 @@ new AdaptativeView('salePanel', function($data, PanelTemplate $t) {
 
 		$h = '';
 
-		$h .= new \selling\SaleUi()->getContent($data->e, $data->ccPdf);
+		$h .= new \selling\SaleUi()->getContent($data->e, $data->ccSaleMarket, $data->ccPdf);
 		$h .= new \selling\ItemUi()->getBySale($data->e, $data->cItem);
-		$h .= new \selling\SaleUi()->getMarket($data->e, $data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
+		$h .= new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
 		$h .= new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
 
 		return new \Panel(
@@ -26,9 +26,9 @@ new AdaptativeView('salePlain', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \selling\SaleUi()->getHeader($data->e);
 
-	echo new \selling\SaleUi()->getContent($data->e, $data->ccPdf);
+	echo new \selling\SaleUi()->getContent($data->e, $data->ccSaleMarket, $data->ccPdf);
 	echo new \selling\ItemUi()->getBySale($data->e, $data->cItem);
-	echo new \selling\SaleUi()->getMarket($data->e, $data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
+	echo new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
 	echo new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
 
 });
@@ -48,7 +48,7 @@ new AdaptativeView('salePreparing', function($data, FarmTemplate $t) {
 	echo new \selling\SaleUi()->getPresentation($data->e, $data->ccPdf);
 	echo new \selling\PreparationUi()->getSummary($data->e, $data->cItem, $data->preparing);
 	echo new \selling\ItemUi()->getBySale($data->e, $data->cItem, isPreparing: $data->e['preparationStatus'] === \selling\Sale::CONFIRMED);
-	echo new \selling\SaleUi()->getMarket($data->e, $data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
+	echo new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
 	echo new \selling\SaleUi()->getHistory($data->e, $data->cHistory);
 
 });

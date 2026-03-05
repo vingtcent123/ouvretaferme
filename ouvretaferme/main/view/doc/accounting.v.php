@@ -32,7 +32,7 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 	echo '<h2>'.s("Tutoriels en vidéo").'</h2>';
 	echo '<p>'.s("Des tutoriels vidéos sont également disponibles sur Youtube. Cliquez sur le petit menu en haut à droite de la vidéo pour voir le sommaire des vidéos disponibles.").'</p>';
 	echo '<p>'.s("Les liens vers les tutoriels vidéos sont identifiés dans la documentation avec le symbole {icon}.", ['icon' => Asset::icon('youtube')]).'</p>';
-	echo '<iframe width="100%" style="min-height: 550px;" src="https://www.youtube.com/embed/videoseries?si=AygzF4yxK0N0U92J&amp;list=PL9PdPD-HgdQO9OLw_Ky5hTdtmGagCLfcE" title="'.s("Tutoriels du module de comptabilité de {siteName}").'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+	echo '<iframe width="100%" style="min-height: 550px;" src="https://www.youtube.com/embed/videoseries?si=AygzF4yxK0N0U92J&amp;list=PL9PdPD-HgdQO9OLw_Ky5hTdtmGagCLfcE" title="'.s("Tutoriels du module de gestion de {siteName}").'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
 	echo '</div>';
 
 

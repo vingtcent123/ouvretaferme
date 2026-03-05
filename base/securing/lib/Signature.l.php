@@ -55,6 +55,7 @@ class SignatureLib {
 	public static function getCashData(\cash\Cash $eCash): array {
 
 		return [
+			'position' => $eCash['position'],
 			'register' => $eCash['register']['id'],
 			'balance' => $eCash['balance'],
 			'amountIncludingVat' => $eCash['amountIncludingVat'],
@@ -119,6 +120,7 @@ class SignatureLib {
 					->sort([
 						'id' => SORT_DESC
 					])
+					->whereSource($source)
 					->getValue('hmac');
 
 				$e['hmac'] = self::getHmac($e);

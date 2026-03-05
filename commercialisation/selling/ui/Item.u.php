@@ -87,8 +87,6 @@ class ItemUi {
 			$new = '';
 		}
 
-		$h .= new \selling\SaleUi()->getStats($eSale);
-
 		if($eSale['comment']) {
 			$h .= '<div class="util-block mb-2">';
 				$h .= '<h4>'.s("Commentaire interne").'</h4>';

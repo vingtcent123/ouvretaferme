@@ -3,8 +3,8 @@ namespace cash;
 
 class CashSetting extends \Settings {
 
-	const CLASSES = ['53', '511'];
-	const DRAFT_LIMIT = 100;
+	const CLASSES = ['53', '511', '517'];
+	const DRAFT_LIMIT = 200;
 	const DELETE_LIMIT = 10;
 
 	const AMOUNT_THRESHOLD = 76;

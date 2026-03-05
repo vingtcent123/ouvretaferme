@@ -94,12 +94,13 @@ class SignatureControlLib {
 
 	}
 
-	public static function controlHmac(\farm\Farm $eFarm) {
+	public static function controlHmac(\farm\Farm $eFarm, string $source) {
 
 		\farm\FarmLib::connectDatabase($eFarm);
 
 		$cSignature = Signature::model()
 			->select('id', 'hmac', 'hmacChained', 'data', 'key')
+			->whereSource($source)
 			->recordset()
 			->sort(['id' => SORT_ASC])
 			->getCollection();
@@ -125,12 +126,12 @@ class SignatureControlLib {
 
 	}
 
-	public static function rebuild(\farm\Farm $eFarm) {
+	public static function rebuildSales(\farm\Farm $eFarm) {
 
 		\farm\FarmLib::connectDatabase($eFarm);
 
 		Signature::model()
-			->all()
+			->whereSource(Signature::SALE)
 			->delete();
 
 		$c = \selling\Sale::model()
@@ -144,8 +145,6 @@ class SignatureControlLib {
 
 		$counter = 0;
 
-		echo 'Sales'."\n";
-
 		foreach($c as $e) {
 
 			echo "\r".(++$counter).' updated';
@@ -155,13 +154,23 @@ class SignatureControlLib {
 		}
 
 		echo "\n";
-		echo 'Cash'."\n";
+
+	}
+
+	public static function rebuildCash(\farm\Farm $eFarm) {
+
+		\farm\FarmLib::connectDatabase($eFarm);
+
+		Signature::model()
+			->whereSource(Signature::CASH)
+			->delete();
 
 		$c = \cash\Cash::model()
 			->select(\cash\Cash::getSelection())
 			->sort([
-				'id' => SORT_ASC
+				'position' => SORT_ASC
 			])
+			->whereStatus('!=', \cash\Cash::DRAFT)
 			->getCollection();
 
 		$counter = 0;

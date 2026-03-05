@@ -1,6 +1,6 @@
 <?php
 new Page()
-	->cli('sales', function($data) {
+	->cli('checkSales', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate();
 		$eSale = \selling\SaleLib::getById(GET('sale'));
@@ -11,25 +11,39 @@ new Page()
 		\securing\SignatureControlLib::controlSales($eFarm, $eSale);
 
 	})
-	->cli('cash', function($data) {
+	->cli('checkCash', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate();
 
 		\securing\SignatureControlLib::controlCash($eFarm);
 
 	})
-	->cli('hmac', function($data) {
+	->cli('hmacSales', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate();
 
-		\securing\SignatureControlLib::controlHmac($eFarm);
+		\securing\SignatureControlLib::controlHmac($eFarm, \securing\Signature::SALE);
 
 	})
-	->cli('rebuild', function($data) {
+	->cli('hmacCash', function($data) {
 
 		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate();
 
-		\securing\SignatureControlLib::rebuild($eFarm);
+		\securing\SignatureControlLib::controlHmac($eFarm, \securing\Signature::CASH);
+
+	})
+	->cli('rebuildSales', function($data) {
+
+		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate();
+
+		\securing\SignatureControlLib::rebuildSales($eFarm);
+
+	})
+	->cli('rebuildCash', function($data) {
+
+		$eFarm = \farm\FarmLib::getById(GET('farm'))->validate();
+
+		\securing\SignatureControlLib::rebuildCash($eFarm);
 
 	});
 

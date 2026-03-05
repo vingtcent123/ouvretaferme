@@ -11,6 +11,10 @@ class MethodLib extends MethodCrud {
 	const CHECK = 'check';
 	const TRANSFER = 'transfer';
 	const DIRECT_DEBIT = 'direct-debit';
+	const BILL_EXCHANGE = 'bill-exchange';
+
+	const CARDS = [self::CARD, self::ONLINE_CARD];
+	const BANK = [self::TRANSFER, self::DIRECT_DEBIT, self::BILL_EXCHANGE];
 
 	public static function getPropertiesCreate(): array {
 		return ['name'];
@@ -85,7 +89,7 @@ class MethodLib extends MethodCrud {
 
 	public static function getForCash(\farm\Farm $eFarm): \Collection {
 
-		return self::askCallback(fn(Method $e) => in_array($e['fqn'], [MethodLib::CHECK, MethodLib::CASH]) or $e['fqn'] === NULL, $eFarm);
+		return self::askCallback(fn(Method $e) => in_array($e['fqn'], MethodLib::BANK) === FALSE, $eFarm);
 
 	}
 

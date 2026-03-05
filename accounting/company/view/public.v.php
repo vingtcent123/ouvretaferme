@@ -5,7 +5,7 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 	$t->nav = 'settings-accounting';
 
 	$h = '<h1>';
-		$h .= s("La comptabilité avec {image}", ['image' => Asset::image('main', 'favicon.png', ['style' => 'height: 4rem'])]);
+		$h .= s("La gestion avec {image}", ['image' => Asset::image('main', 'favicon.png', ['style' => 'height: 4rem'])]);
 	$h .= '</h1>';
 
 	$t->mainTitle = $h;
@@ -21,7 +21,7 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 			echo '<h4>'.s("Vous êtes adhérent à l'association et donc éligible à l'utilisation du module de comptabilité.").'</h4>';
 			echo '<div>';
 				echo '<a class="btn btn-primary btn-xl" data-option="no" data-waiter="'.s("Activation en cours").'" data-ajax="/company/public:doInitialize" post-farm="'.$data->eFarm['id'].'">';
-					echo s("Activer le module de comptabilité");
+					echo s("Activer le module de gestion");
 				echo '</a>';
 
 			echo '</div>';
@@ -30,7 +30,7 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 	} else {
 
 		echo '<div class="util-association">';
-			echo '<h4>'.s("Le module de comptabilité est accessible pour les fermes qui ont adhéré à notre association.").'</h4>';
+			echo '<h4>'.s("Le module de gestion est accessible pour les fermes qui ont adhéré à notre association.").'</h4>';
 			echo '<p>'.s("Les fonctionnalités de ce module sont pleinement intégrées avec le reste du logiciel pour que la comptabilité devienne presque un plaisir 🏖️").'</p>';
 			echo '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="btn btn-primary btn-xl">';
 				echo \association\AssociationSetting::isDiscount($this->data->eFarm) ?
@@ -130,7 +130,7 @@ new AdaptativeView('/comptabilite/parametrer', function($data, FarmTemplate $t) 
 	$t->mainTitle = $h;
 
 	echo '<div class="util-block-info">';
-		echo '<h3>'.s("Bienvenue sur le module de comptabilité de {siteName}").'</h3>';
+		echo '<h3>'.s("Bienvenue sur le module de gestion de {siteName}").'</h3>';
 		echo '<p>';
 			echo s("Pour utiliser ce module, vous devez préalablement paramétrer un premier exercice comptable !");
 		echo '</p>';
@@ -211,7 +211,7 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 
 			echo '<h2 class="color-accounting">';
 				echo '<div class="home-feature-icon">'.Asset::icon('journal-bookmark').'</div>';
-				echo s("Logiciel comptable pour le micro-BA");
+				echo s("Comptabilité pour le micro-BA");
 			echo '</h2>';
 			echo '<ul>';
 				echo '<li>'.s("Je suis en comptabilité de trésorerie").'</li>';
