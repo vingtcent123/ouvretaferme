@@ -273,7 +273,7 @@ new \selling\SalePage()
 
 			$data->e['cRegister'] = \farm\FarmLib::runAccounting(
 				$data->eFarm,
-				fn() => \cash\RegisterLib::getAll(),
+				fn() => \cash\RegisterLib::getAll($data->e['deliveredAt']),
 				fn() => new Collection()
 			);
 

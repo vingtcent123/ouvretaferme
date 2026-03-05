@@ -1806,7 +1806,7 @@ class SaleUi {
 
 		$sales = [];
 
-		$ccSaleMarket[Sale::DELIVERED]->map(function($eSale) use(&$sales) {
+		$ccSaleMarket[Sale::DELIVERED]->map(function($eSale) use(&$sales, &$hasRegister) {
 
 			foreach($eSale['cPayment'] as $ePayment) {
 				$sales[$ePayment['method']['id']] ??= 0;
@@ -1827,7 +1827,9 @@ class SaleUi {
 						} else {
 							$h .= '<th class="text-end">'.s("Montant").'</th>';
 						}
-						$h .= '<th>'.s("Journal de caisse").'</th>';
+						if($eSale['cRegister']->notEmpty()) {
+							$h .= '<th>'.s("Journal de caisse").'</th>';
+						}
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -1840,31 +1842,37 @@ class SaleUi {
 						$cRegister = $eSale['cRegister']->find(fn($eRegister) => $eRegister['paymentMethod']->is($eMethod));
 
 						$h .= '<tr>';
+						
 							$h .= '<td>'.encode($eMethod['name']).'</td>';
 							$h .= '<td class="text-center">'.$sales[$ePayment['method']['id']].'</td>';
 							$h .= '<td class="text-end">'.\util\TextUi::money($ePayment['amountIncludingVat']).'</td>';
-							$h .= '<td>';
 
-								switch($ePayment['statusCash']) {
+							if($eSale['cRegister']->notEmpty()) {
+								$h .= '<td>';
 
-									case Payment::WAITING :
-										if($cRegister->notEmpty()) {
-											$h .= s("Importer dans");
-											foreach($cRegister as $eRegister) {
-												$h .= ' <a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doImport" post-id="'.$eRegister['id'].'" post-source="'.\cash\Cash::SELL_SALE.'" post-reference="'.$ePayment['id'].'" class="btn btn-xs btn-primary" data-confirm="'.s("Confirmez l'import de {value} ce journal de caisse ?", \util\TextUi::money($ePayment['amountIncludingVat'])).'">';
-													$h .= \cash\RegisterUi::getName($eRegister);
-												$h .= '</a> ';
+									switch($ePayment['statusCash']) {
+
+										case Payment::WAITING :
+											if($cRegister->notEmpty()) {
+												$h .= s("Importer dans");
+												foreach($cRegister as $eRegister) {
+													$h .= ' <a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/suggestion:doImport" post-id="'.$eRegister['id'].'" post-source="'.\cash\Cash::SELL_SALE.'" post-reference="'.$ePayment['id'].'" class="btn btn-xs btn-primary" data-confirm="'.s("Confirmez l'import de {value} ce journal de caisse ?", \util\TextUi::money($ePayment['amountIncludingVat'])).'">';
+														$h .= \cash\RegisterUi::getName($eRegister);
+													$h .= '</a> ';
+												}
 											}
-										}
-										break;
+											break;
 
-									case Payment::VALID :
-										$h .= '<span class="color-success">'.\Asset::icon('check-circle').' '.s("Importé").'</span>';
-										break;
+										case Payment::VALID :
+											$h .= '<span class="color-success">'.\Asset::icon('check-circle').' '.s("Importé").'</span>';
+											break;
 
-								}
+									}
 
-							$h .= '</td>';
+								$h .= '</td>';
+
+							}
+
 						$h .= '</tr>';
 
 					}

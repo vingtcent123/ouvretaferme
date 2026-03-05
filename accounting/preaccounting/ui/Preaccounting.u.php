@@ -427,8 +427,6 @@ Class PreaccountingUi {
 
 	public function registers(\farm\Farm $eFarm, \Collection $cRegister, \Search $search): string {
 
-		$form = new \util\FormUi();
-
 		$h = '<table class="tr-even">';
 
 			$h .= '<thead>';
