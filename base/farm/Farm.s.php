@@ -32,7 +32,7 @@ class FarmSetting extends \Settings {
 	}
 
 	public static function getAccountingPackages(): array {
-		return ['account', 'asset', 'bank', 'journal', 'overview', 'preaccounting', 'invoicing', 'vat', 'cash', 'pdp'];
+		return ['account', 'asset', 'bank', 'journal', 'overview', 'preaccounting', 'invoicing', 'vat', 'cash', 'receipts', 'pdp'];
 	}
 
 	public static function getPackages(): array {
