@@ -108,7 +108,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		if($cOperation->notEmpty()) {
 			if($cOperation->count() === 1) {
-				if($e['accountLabel'] !== $cOperation->first()['accountLabel']) {
+				if(\account\AccountLabelLib::isFromClass($e['accountLabel'], $cOperation->first()['accountLabel']) === FALSE) {
 					throw new \FailAction('Asset::accountLabel.check');
 				}
 				if($e['account']['id'] !== $cOperation->first()['account']['id']) {
