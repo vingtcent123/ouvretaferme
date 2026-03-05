@@ -372,7 +372,7 @@ Class VatLib {
 		];
 
 	}
-	public static function getVatDataDeclaration(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, \Search $search = new \Search(), int $precision = 0): array {
+	public static function getVatDataDeclaration(\farm\Farm $eFarm, \Search $search = new \Search(), int $precision = 0): array {
 
 		$checkData = self::getForCheck($eFarm, $search);
 		$sales = $checkData['sales'];
@@ -529,7 +529,7 @@ Class VatLib {
 	 * puis ajuster 44562 / 44566 / 445662 par 658 ou 758
 	 *
 	 */
-	public static function generateOperationsFromDeclaration(\farm\Farm $eFarm, \vat\Declaration $eDeclaration, \account\FinancialYear $eFinancialYear): array {
+	public static function generateOperationsFromDeclaration(\farm\Farm $eFarm, \vat\Declaration $eDeclaration): array {
 
 		$cOperation = new \Collection();
 
@@ -540,7 +540,7 @@ Class VatLib {
 			'maxDate' => $eDeclaration['to'],
 		]);
 
-		$cerfaFromOperations = self::getVatDataDeclaration($eFarm, $eFinancialYear, $search, precision: 2);
+		$cerfaFromOperations = self::getVatDataDeclaration($eFarm, $search, precision: 2);
 
 		// On récupère les données de la déclaration
 		$cerfa = $eDeclaration['data'];
@@ -787,9 +787,9 @@ Class VatLib {
 	}
 	public static function createOperations(\farm\Farm $eFarm, \vat\Declaration $eDeclaration, \account\FinancialYear $eFinancialYear): void {
 
-		$data = self::generateOperationsFromDeclaration($eFarm, $eDeclaration, $eFinancialYear);
+		$data = self::generateOperationsFromDeclaration($eFarm, $eDeclaration);
+		$today = date('Y-m-d');
 
-		$eFinancialYear['status'] = \account\FinancialYear::OPEN; // pour pouvoir gérer les écritures
 		$input = [
 			'financialYear' => $eFinancialYear['id'],
 			'account' => [],
@@ -799,6 +799,8 @@ Class VatLib {
 			'type' => [],
 			'document' => [],
 			'vatRate' => [],
+			'vatValue' => [],
+			'vatRule' => [],
 			'comment' => [],
 			'thirdParty' => [],
 		];
@@ -808,8 +810,10 @@ Class VatLib {
 
 			$input['account'][$index] = $eOperation['account']['id'];
 			$input['thirdParty'][$index] = $eOperation['thirdParty']['id'];
-			$input['date'][$index] = $eFinancialYear['endDate'];
-			$input['paymentDate'][$index] = $eFinancialYear['endDate'];
+			$input['date'][$index] = $today;
+			$input['paymentDate'][$index] = $today;
+			$input['vatRule'][$index] = \journal\Operation::VAT_HC;
+			$input['vatValue'][$index] = NULL;
 
 			foreach(['accountLabel', 'description', 'amount', 'type', 'document'] as $field) {
 				$input[$field][$index] = $eOperation[$field];
@@ -836,6 +840,7 @@ Class VatLib {
 
 			\vat\Declaration::model()
 				->update($eDeclaration, [
+					'status' => Declaration::ACCOUNTED,
 					'accountedAt' => new \Sql('NOW()'),
 					'accountedBy' => \user\ConnectionLib::getOnline(),
 					'updatedAt' => new \Sql('NOW()'),

@@ -83,7 +83,7 @@ new Page(function($data) {
 						'maxDate' => $data->vatParameters['to'],
 						'financialYear' => new \account\FinancialYear(),
 					]);
-					$data->cerfa = \vat\VatLib::getVatDataDeclaration($data->eFarm, $data->eFarm['eFinancialYear'], $search, precision: $data->precision);
+					$data->cerfa = \vat\VatLib::getVatDataDeclaration($data->eFarm, $search, precision: $data->precision);
 
 				}
 
@@ -126,7 +126,9 @@ new Page(function($data) {
 			throw new NotExistsAction('Unknown declaration');
 		}
 
-		$dataFromDeclaration = \vat\VatLib::generateOperationsFromDeclaration($data->eFarm, $data->eDeclaration, $data->eFarm['eFinancialYear']);
+		$data->eFinancialYearOperations = \account\FinancialYearLib::getNextOpenFinancialYearByDate(date('Y-m-d', strtotime($data->eDeclaration['to'].' + 1 DAY')));
+
+		$dataFromDeclaration = \vat\VatLib::generateOperationsFromDeclaration($data->eFarm, $data->eDeclaration);
 		$data->cerfaCalculated = $dataFromDeclaration['cerfaCalculated'];
 		$data->cerfaDeclared = $dataFromDeclaration['cerfaDeclared'];
 		$data->cOperation = $dataFromDeclaration['cOperation'];
@@ -167,8 +169,12 @@ new \vat\DeclarationPage(function($data) {
 	})
 	->write('/vat/doCreateOperations', function($data) {
 
-		// TODO : savoir dans quel financial year écrire
-		\vat\VatLib::createOperations($data->eFarm, $data->e, $data->eFarm['eFinancialYear']);
+		$eFinancialYear = \account\FinancialYearLib::getNextOpenFinancialYearByDate(date('Y-m-d', strtotime($data->e['to'].' + 1 DAY')));
+		if($eFinancialYear->empty()) {
+			throw new FailAction('vat\Vat::createOperations.noFinancialYear');
+		}
+
+		\vat\VatLib::createOperations($data->eFarm, $data->e, $eFinancialYear);
 
 		throw new ReloadAction('vat', 'Declaration::operationsCreated');
 

@@ -6,6 +6,8 @@ Class AlertUi {
 
 		return match($fqn) {
 
+			'Vat::createOperations.noFinancialYear' => s("Il n'y a pas d'exercice comptable ouvert où écrire les opérations."),
+
 			default => null
 
 		};

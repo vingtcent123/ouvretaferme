@@ -9,7 +9,7 @@ abstract class DeclarationElement extends \Element {
 
 	const DRAFT = 'draft';
 	const DECLARED = 'declared';
-	const DELETED = 'deleted';
+	const ACCOUNTED = 'accounted';
 
 	const CA3 = 'ca3';
 	const CA12 = 'ca12';
@@ -51,7 +51,7 @@ class DeclarationModel extends \ModuleModel {
 			'from' => ['date', 'cast' => 'string'],
 			'to' => ['date', 'cast' => 'string'],
 			'limit' => ['date', 'cast' => 'string'],
-			'status' => ['enum', [\vat\Declaration::DRAFT, \vat\Declaration::DECLARED, \vat\Declaration::DELETED], 'cast' => 'enum'],
+			'status' => ['enum', [\vat\Declaration::DRAFT, \vat\Declaration::DECLARED, \vat\Declaration::ACCOUNTED], 'cast' => 'enum'],
 			'associates' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'cerfa' => ['enum', [\vat\Declaration::CA3, \vat\Declaration::CA12], 'cast' => 'enum'],
 			'data' => ['json', 'null' => TRUE, 'cast' => 'array'],

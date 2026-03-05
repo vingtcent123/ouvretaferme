@@ -659,6 +659,8 @@ class VatUi {
 
 	public function getCerfa(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, array $cerfaData, int $precision, array $vatParameters, bool $hasData, float $adarBase): string {
 
+		$eDeclaration = $cerfaData['eDeclaration'] ?? new Declaration(['from' => $vatParameters['from'], 'to' => $vatParameters['to']]);
+
 		$h = '<div class="tab-panel selected" data-tab="cerfa">';
 
 			$h .= '<div class="util-warning">';
@@ -673,7 +675,7 @@ class VatUi {
 					$h .= s("La déclaration sera ouverte à compter du <b>{value}</b>", \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['to'].' + 1 day'))));
 				$h .= '</div>';
 
-			} else if(date('Y-m-d') <= date('Y-m-d', strtotime($vatParameters['limit'].' + '.\vat\VatSetting::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days'))) {
+			} else if(date('Y-m-d') <= date('Y-m-d', strtotime($vatParameters['limit'].' + '.\vat\VatSetting::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days')) and ($eDeclaration->exists() === FALSE or $eDeclaration['status'] !== Declaration::ACCOUNTED)) {
 
 				$h .= '<div class="util-info">';
 					$h .= s("La déclaration est encore ouverte jusqu'au <b>{value}</b>. Vous pouvez reporter les informations que vous avez télédéclarées ici afin d'en conserver une trace.", \util\DateUi::numeric(date('Y-m-d', strtotime($vatParameters['limit'].' + '.\vat\VatSetting::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' days'))));
@@ -784,18 +786,14 @@ class VatUi {
 				if($eDeclaration['accountedAt'] !== NULL) {
 
 					$h .= '<div class="util-info">'.s("Déclaration faite le {date} et enregistrée en comptabilité le {accountedAt}.", [
-						'date' => \util\DateUi::numeric($eDeclaration['declaredAt']),
-						'from' => \util\DateUi::numeric($eDeclaration['from']),
-						'to' => \util\DateUi::numeric($eDeclaration['to']),
-						'accountedAt' => \util\DateUi::numeric($eDeclaration['accountedAt']),
+						'date' => \util\DateUi::numeric($eDeclaration['declaredAt'], \util\DateUi::DATE_HOUR_MINUTE),
+						'accountedAt' => \util\DateUi::numeric($eDeclaration['accountedAt'], \util\DateUi::DATE_HOUR_MINUTE),
 					]).'</div>';
 
 				} else {
 
 					$h .= '<div class="util-info">'.s("Déclaration faite le {date}.", [
-						'date' => \util\DateUi::numeric($eDeclaration['declaredAt']),
-						'from' => \util\DateUi::numeric($eDeclaration['from']),
-						'to' => \util\DateUi::numeric($eDeclaration['to']),
+						'date' => \util\DateUi::numeric($eDeclaration['declaredAt'], \util\DateUi::DATE_HOUR_MINUTE),
 					]).'</div>';
 
 				}
@@ -5280,14 +5278,18 @@ class VatUi {
 
 	}
 
-	public function showSuggestedOperations(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Declaration $eDeclaration, \Collection $cOperation, array $cerfaCalculated, array $cerfaDeclared): \Panel {
+	public function showSuggestedOperations(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Declaration $eDeclaration, \Collection $cOperation, array $cerfaCalculated, array $cerfaDeclared, \account\FinancialYear $eFinancialYearOperations): \Panel {
 
-		$title = s("Créer les écritures suite à une déclaration de TVA");
+		if($eDeclaration->acceptAccount()) {
+			$title = s("Créer les écritures suite à une déclaration de TVA");
+		} else {
+			$title = s("Consulter les écritures proposées suite à la déclaration de TVA");
+		}
 		$panelId = 'panel-create-operations-from-vat-declaration';
 
-		if($eDeclaration['status'] !== Declaration::DECLARED) {
+		if($eDeclaration['declaredAt'] === NULL) {
 
-			$h = '<div class="util-warning-outline">'.s("Marquez d'abord votre déclaration comme déclarée.").'</div>';
+			$h = '<div class="util-warning-outline">'.s("Enregistrez d'abord que vous avez rempli votre déclaration.").'</div>';
 
 			return new \Panel(
 				id: $panelId,
@@ -5433,7 +5435,28 @@ class VatUi {
 
 		}
 
-		$saveButton = '<div class="text-end">'.$form->button(s("Bien compris"), ['class' => 'btn btn-outline-secondary mr-2', 'onclick' => 'Lime.Panel.closeLast()']).$form->submit(s("Créer les écritures en {value}", \Asset::icon('1-circle'))).'</div>';
+		if($eDeclaration->acceptAccount()) {
+			$h .= '<h3 class="mt-2">'.\Asset::icon('3-circle').' '.s("Exercice comptable").'</h3>';
+
+			if($eFinancialYearOperations->empty()) {
+				$h .= '<div class="util-warning-outline">'.s("Il n'y a pas d'exerice comptable qui peut recevoir ces écritures. Veuillez le créer ou enregistrer les écritures vous-même dans le bon exercice.").'</div>';
+				$canCreate = FALSE;
+			} else {
+				$h .= '<p>'.s("L'exercice comptable dans lequel seront enregistrées ces écritures est l'<b>exercice {value}</b>.", \account\FinancialYearUi::getYear($eFinancialYearOperations)).'</p>';
+				$h .= '<p>'.s("Si cela ne correspond pas à ce que vous souhaitez faire, enregistrez plutôt les écritures vous-même, à l'aide des écritures suggérées ci-dessus.").'</p>';
+				$canCreate = TRUE;
+			}
+		}
+
+		$saveButton = '<div class="text-end">';
+
+			$saveButton .= $form->button(s("Bien compris"), ['class' => 'btn btn-outline-secondary mr-2', 'onclick' => 'Lime.Panel.closeLast()']);
+
+			if($eDeclaration->acceptAccount()) {
+				$saveButton .= $form->submit(s("Créer les écritures de l'étape {value}", \Asset::icon('1-circle')), $canCreate ? [] : ['class' => 'btn btn-primary disabled', 'disabled' => 'disabled']);
+			}
+
+		$saveButton .= '</div>';
 
 		return new \Panel(
 			id         : $panelId,

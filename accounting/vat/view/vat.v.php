@@ -57,7 +57,15 @@ new AdaptativeView('/declaration-de-tva', function($data, FarmTemplate $t) {
 				break;
 
 			case 'cerfa':
-				echo new \vat\VatUi()->getCerfa($data->eFarm, $data->eFarm['eFinancialYear'], $data->cerfa, $data->precision, $data->vatParameters, hasData: empty($data->check['sales']) === FALSE and empty($data->check['taxes']) === FALSE, adarBase: $data->adarBase);
+				echo new \vat\VatUi()->getCerfa(
+					$data->eFarm,
+					$data->eFarm['eFinancialYear'],
+					$data->cerfa,
+					$data->precision,
+					$data->vatParameters,
+					hasData: empty($data->check['sales']) === FALSE and empty($data->check['taxes']) === FALSE,
+					adarBase: $data->adarBase,
+				);
 				break;
 
 			case 'history':
@@ -80,7 +88,7 @@ new AdaptativeView('/declaration-de-tva', function($data, FarmTemplate $t) {
 new AdaptativeView('/etats-financiers/declaration-de-tva/operations', function($data, PanelTemplate $t) {
 
 	return new \vat\VatUi()->showSuggestedOperations(
-		$data->eFarm, $data->eFarm['eFinancialYear'], $data->eDeclaration, $data->cOperation, $data->cerfaCalculated, $data->cerfaDeclared,
+		$data->eFarm, $data->eFarm['eFinancialYear'], $data->eDeclaration, $data->cOperation, $data->cerfaCalculated, $data->cerfaDeclared, $data->eFinancialYearOperations
 	);
 
 });

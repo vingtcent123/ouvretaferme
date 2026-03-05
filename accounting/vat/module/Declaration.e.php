@@ -23,7 +23,7 @@ class Declaration extends DeclarationElement {
 
 		$this->expects(['data']);
 
-		return $this['data'] !== NULL;
+		return empty($this['data']) === FALSE;
 
 	}
 
@@ -42,7 +42,7 @@ class Declaration extends DeclarationElement {
 
 		$this->expects(['declaredAt', 'status']);
 
-		return $this['declaredAt'] !== NULL and $this['status'] !== Declaration::DECLARED;
+		return $this['declaredAt'] !== NULL and $this['status'] === Declaration::DECLARED;
 
 	}
 

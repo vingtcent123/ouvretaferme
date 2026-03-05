@@ -74,27 +74,6 @@ class FinancialYearLib extends FinancialYearCrud {
 
 	}
 
-	/**
-	 * Certains comptes doivent être soldés avant la clôture.
-	 */
-	public static function checkCanClose(FinancialYear $eFinancialYear): bool {
-
-		$waitingAccounts = \journal\OperationLib::getWaitingAccountValues($eFinancialYear);
-		if(array_reduce($waitingAccounts, fn($sum, $waitingAccount) => $waitingAccount['total'] + $sum, 0) !== 0.0) {
-			return FALSE;
-		}
-
-		if(empty(\journal\OperationLib::getInternalTransferAccountValues($eFinancialYear)) === FALSE) {
-			return FALSE;
-		}
-
-		if(empty(\journal\OperationLib::getFarmersAccountValue($eFinancialYear)) === FALSE) {
-			return FALSE;
-		}
-
-		return TRUE;
-
-	}
 
 	public static function getByDate(string $date, ?int $excludedId = NULL): FinancialYear {
 
@@ -131,6 +110,17 @@ class FinancialYearLib extends FinancialYearCrud {
 			->whereStatus(FinancialYearElement::OPEN)
 			->whereStartDate('<=', $date)
 			->whereEndDate('>=', $date)
+			->get();
+
+	}
+
+	public static function getNextOpenFinancialYearByDate(string $date): FinancialYear {
+
+		return FinancialYear::model()
+			->select(FinancialYear::getSelection())
+			->whereStatus(FinancialYearElement::OPEN)
+			->whereStartDate('>=', $date)
+			->sort(['startDate' => SORT_ASC])
 			->get();
 
 	}

@@ -29,7 +29,6 @@ Class DeclarationLib extends DeclarationCrud {
 		return Declaration::model()
 			->select(Declaration::getSelection())
 			->whereFinancialYear($eFinancialYear)
-			->whereStatus('IN', [Declaration::DRAFT, Declaration::DECLARED])
 			->sort(['updatedAt' => SORT_DESC])
 			->getCollection();
 
@@ -39,7 +38,6 @@ Class DeclarationLib extends DeclarationCrud {
 
 		return Declaration::model()
 			->select(Declaration::getSelection())
-			->whereStatus('IN', [Declaration::DRAFT, Declaration::DECLARED])
 			->whereFrom($from)
 			->whereTo($to)
 			->get();

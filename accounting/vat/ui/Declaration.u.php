@@ -42,7 +42,7 @@ class DeclarationUi {
 								if($eDeclaration->empty()) {
 									$h .= $text;
 								} else {
-									$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva?tab=cerfa&id='.$eDeclaration['id'].'">';
+									$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/declaration-de-tva?tab=cerfa&id='.$eDeclaration['id'].'">';
 										$h .= $text;
 									$h .= '</a>';
 								}
@@ -108,16 +108,15 @@ class DeclarationUi {
 							$h .= '<td class="text-center">';
 								if($eDeclaration->empty()) {
 									$h .= '-';
-								} else {
-									if($eDeclaration['accountedAt'] === NULL) {
-										$h .= s("Non");
-										if($eDeclaration['declaredAt'] !== NULL) {
-											$h .= '<br /><a class="font-sm" href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva/operations?id='.$eDeclaration['id'].'">'.s("Voir les écritures proposées").'</a>';
-										}
-									} else {
-										$h .= \util\DateUi::numeric($eDeclaration['accountedAt']);
-										$h .= '<div class="font-sm">('.s("par {value}", $eDeclaration['accountedBy']->getName()).')</div>';
+								} else if($eDeclaration['accountedAt'] === NULL) {
+									$h .= s("Non");
+									if($eDeclaration['declaredAt'] !== NULL) {
+										$h .= '<br /><a class="font-sm" href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva/operations?id='.$eDeclaration['id'].'">'.s("Voir les écritures proposées").'</a>';
 									}
+								} else {
+									$h .= \util\DateUi::numeric($eDeclaration['accountedAt']);
+									$h .= '<div class="font-sm">('.s("par {value}", $eDeclaration['accountedBy']->getName()).')</div>';
+										$h .= '<a class="font-sm" href="'.\farm\FarmUi::urlConnected($eFarm).'/etats-financiers/declaration-de-tva/operations?id='.$eDeclaration['id'].'">'.s("Revoir les écritures proposées").'</a>';
 								}
 							$h .= '</td>';
 						$h .= '</tr>';
@@ -158,6 +157,7 @@ class DeclarationUi {
 				$d->values = [
 					Declaration::DECLARED => s("Déclarée"),
 					Declaration::DRAFT => s("Créée"),
+					Declaration::ACCOUNTED => s("Comptabilisée"),
 				];
 				break;
 
