@@ -109,6 +109,7 @@ class AccountSetting extends \Settings {
 	const VAT_BUY_CLASS_ACCOUNT = '44566'; // TVA déductible s/ABS
 	const VAT_TO_REGULATE_CLASS = '4458'; // TVA à régulariser
 	const VAT_DEPOSIT_CLASS = '44581'; // Acompte de TVA (état)
+	const VAT_REIMBURSE_CLASS = '44583'; // Remboursement de TVA
 	const VAT_CHARGES_TO_PAY_CLASS = '44586'; // TVA à payer (FNP)
 	const VAT_CHARGES_TO_COLLECT_CLASS = '44587'; // TVA à payer (FAE
 	const VAT_ASSET_CLASS = '44562'; // TVA déductible s/immo
@@ -126,6 +127,7 @@ class AccountSetting extends \Settings {
 	// CHARGES
 	const CHARGE_BUY_ACCOUNT_CLASS = 60;
 	const SHIPPING_CHARGE_ACCOUNT_CLASS = '624';
+	const CHARGE_TURNOVER_UNRECUPERABLE_ACCOUNT_CLASS = 6352;
 	const CHARGES_OTHER_CLASS = '658'; // Pénalités et autres charges
 	const CHARGE_FINANCIAL_ACCOUNT_CLASS = 66;
 	const CHARGE_INSURANCE_ACCOUNT_CLASS = 616;

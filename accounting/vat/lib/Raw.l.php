@@ -6,6 +6,62 @@ namespace vat;
  */
 class RawLib {
 
+	public static function credit(\Search $search, int $precision): float {
+
+		return round(
+			\journal\OperationLib::applySearch($search)
+				->select([
+				'amount' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'float'),
+				])
+				->whereAccountLabel('LIKE', \account\AccountSetting::VAT_CREDIT_CLASS.'%')
+				->get()['amount'] ?? 0.0,
+			$precision
+		);
+
+	}
+
+	public static function deposit(\Search $search, int $precision): float {
+
+		return round(
+			\journal\OperationLib::applySearch($search)
+				->select([
+				'amount' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'float'),
+				])
+				->whereAccountLabel('LIKE', \account\AccountSetting::VAT_DEPOSIT_CLASS.'%')
+				->get()['amount'] ?? 0.0,
+			$precision
+		);
+
+	}
+
+	public static function dueTaxIntracom(\Search $search, int $precision): float {
+
+		return round(
+			\journal\OperationLib::applySearch($search)
+				->select([
+				'amount' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'float'),
+				])
+				->whereAccountLabel('LIKE', \account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS.'%')
+				->get()['amount'] ?? 0.0,
+			$precision
+		);
+
+	}
+
+	public static function deductibleTaxIntracom(\Search $search, int $precision): float {
+
+		return round(
+			\journal\OperationLib::applySearch($search)
+				->select([
+				'amount' => new \Sql('SUM(IF(type = "debit", amount, -1 * amount))', 'float'),
+				])
+				->whereAccountLabel('LIKE', \account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_CLASS.'%')
+				->get()['amount'] ?? 0.0,
+			$precision
+		);
+
+	}
+
 	public static function exportations(\Search $search, int $precision): float {
 
 		return round(

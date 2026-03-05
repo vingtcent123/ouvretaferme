@@ -2551,7 +2551,7 @@ class VatUi {
 						$h .= '<td class="vat-cerfa-number">'.s("54").'</td>';
 						$h .= '<td>'.s("TVA nette due (ligne 33 – ligne X5)").'</td>';
 						$h .= '<td class="vat-cerfa-identifier">'.s("8901").'</td>';
-						$h .= '<td class="vat-cerfa-input">'.$form->number('8901', $vatData['8901'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('8901', $data['8901'] ?? 0, $attributes).'</td>';
 
 					$h .= '</tr>';
 
@@ -3284,7 +3284,7 @@ class VatUi {
 
 							$h .= '<td class="vat-cerfa-number"></td>';
 							$h .= '<td></td>';
-							$h .= '<td class="vat-cerfa-number"><span class="vat-not-auto">'.s("17").'</span></td>';
+							$h .= '<td class="vat-cerfa-number">'.s("17").'</td>';
 							$h .= '<td>'.s("Dont TVA sur acquisitions intracommunautaires").'</td>';
 							$h .= '<td class="vat-cerfa-identifier">'.s("0035").'</td>';
 							$h .= '<td class="vat-cerfa-input">'.$form->number('0035', $data['0035'] ?? 0, $attributes).'</td>';
@@ -3628,7 +3628,7 @@ class VatUi {
 						$h .= '<td class="vat-cerfa-number">'.s("28").'</td>';
 						$h .= '<td>'.s("TVA nette due (ligne TD – ligne X5)").'</td>';
 						$h .= '<td class="vat-cerfa-identifier">'.s("8901").'</td>';
-						$h .= '<td class="vat-cerfa-input">'.$form->number('8901', $vatData['8901'] ?? 0, $attributes).'</td>';
+						$h .= '<td class="vat-cerfa-input">'.$form->number('8901', $data['8901'] ?? 0, $attributes).'</td>';
 
 					$h .= '</tr>';
 
@@ -5325,7 +5325,7 @@ class VatUi {
 				]);
 		$h .= '</div>';
 
-		$h .= '<h3 class="mt-2">'.s("Écritures comptables suggérées d'après vos écritures et votre déclaration").'</h3>';
+		$h .= '<h3 class="mt-2">'.\Asset::icon('1-circle').' '.s("Écritures comptables suggérées d'après vos écritures et votre déclaration").'</h3>';
 
 		$h .= '<table class="tr-even tr-hover">';
 			$h .= '<thead>';
@@ -5353,69 +5353,87 @@ class VatUi {
 			$h .= '</tbody>';
 		$h .= '</table>';
 
-		$h .= '<h3 class="mt-2">'.s("Et après ?").'</h3>';
+		$h .= '<h3 class="mt-2">'.\Asset::icon('2-circle').' ';
+			if($eDeclaration['data']['0705'] > 0) {
+				$h .= s("Écritures comptables de remboursement");
+			} else {
+				$h .= s("Écritures comptables de paiement");
+			}
+		$h .='</h3>';
 
-		if($cOperation->offsetExists(\account\AccountSetting::VAT_CREDIT_CLASS)) {
+		if($eDeclaration['data']['0705'] > 0) {
 
-			$h .= '<ul>';
+			$taxAssimileesCell = match($eDeclaration['cerfa']) {
+				\vat\Declaration::CA12 => '55-number',
+				\vat\Declaration::CA3 => '9979',
+			};
+			$taxAssimileesCellText = match($eDeclaration['cerfa']) {
+				\vat\Declaration::CA12 => s("ligne 55"),
+				\vat\Declaration::CA3 => s("ligne 29"),
+			};
+			$taxAssimileesValue = $eDeclaration['data'][$taxAssimileesCell];
+			if($taxAssimileesValue > 0) {
 
-				$h .= '<li>'.s("Comme vous avez un <b>crédit de TVA</b> (compte {account}), vous pouvez soit demander un remboursement (<link>voir les conditions {icon}</link>), soit le déduire dans votre prochaine déclaration.", [
-					'account' => \account\AccountSetting::VAT_CREDIT_CLASS,
-					'link' => '<a href="https://www.impots.gouv.fr/professionnel/remboursement-de-credit-de-tva-0" target="_blank">',
-					'icon' => \Asset::icon('box-arrow-up-right'),
-				]).'</li>';
+				$h .= '<p>'.s("Le montant des taxes assimilées à régler est indiqué <b>{cell}</b> : <b>{amount}</b>. Une fois le paiement effectué et visible sur votre compte bancaire, enregistrez le paiement en :", ['amount' => \util\TextUi::money($taxAssimileesValue), 'cell' => $taxAssimileesCellText]).'</p>';
+					$h .= '<ul>';
+						$h .= '<li>'.s("débitant le compte <b>{value}</b>", \account\AccountSetting::VAT_DEBIT_CLASS).'</li>';
+						$h .= '<li>'.s("créditant votre compte de banque <b>{value}</b>", \account\AccountSetting::BANK_ACCOUNT_CLASS).'</li>';
+					$h .= '</ul>';
 
-				if((int)$cerfaDeclared['8003'] > 0) { // Demande de remboursement
+			}
 
-					$h .= '<li>';
+			if((int)$eDeclaration['data'][8002] === 0 and (int)$eDeclaration['data'][8003] > 0) {
 
-						$h .= s("Vous avez demandé, d'après votre déclaration, un remboursement.");
+				$h .= '<p>'.s("Le crédit de TVA (compte <b>{account}</b>) d'un montant de <b>{amount}</b> sera automatiquement déduit de votre prochaine déclaration.", ['amount' => \util\TextUi::money($eDeclaration['data']['8003']), 'account' => \account\AccountSetting::VAT_CREDIT_CLASS]).'</p>';
 
-						if($eFinancialYear->isCashAccounting()) {
+			} else if((int)$eDeclaration['data'][8002] > 0 and (int)$eDeclaration['data'][8003] > 0) {
 
-							$h .= ' '.s("Lorsque celui-ci arrivera sur votre compte, vous pourrez l'enregistrer dans votre comptabilité en créditant le compte {account} pour le solder et en débitant votre compte bancaire {bankAccount} (ceci peut être fait plus facilement lorsque vous aurez importé votre relevé bancaire)", ['account' => \account\AccountSetting::VAT_CREDIT_CLASS, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
+				$h .= '<p>'.s("Vous avez fait une demande de remboursement partiel d'un montant de <b>{value}</b>. À réception du remboursement, vous pourrez le comptabiliser en :", \util\TextUi::money($eDeclaration['data'][8002])).'</p>';
 
-						} else {
+				$h .= '<ul>';
 
-							$h .= ' '.s("Vous pouvez déjà l'enregistrer dans votre comptabilité en créditant le compte {account} pour le solder et en débitant le compte de tiers Trésor Public. Il s'agira ensuite d'enregistrer le remboursement lorsque le mouvement apparaîtra sur votre relevé bancaire.", ['account' => \account\AccountSetting::VAT_CREDIT_CLASS]);
+					$h .= '<li>'.s("débitant votre compte de banque <b>{value}</b>", \account\AccountSetting::BANK_ACCOUNT_CLASS).'</li>';
+					$h .= '<li>'.s("créditant le compte <b>{value}</b>.", \account\AccountSetting::VAT_REIMBURSE_CLASS).'</li>';
 
-						}
+				$h .= '</ul>';
 
-					$h .= '</li>';
+				$h .= '<p>'.s("Le crédit de TVA (compte <b>{account}</b>) d'un montant de <b>{amount}</b> sera automatiquement déduit de votre prochaine déclaration.", ['amount' => \util\TextUi::money($eDeclaration['data']['8003']), 'account' => \account\AccountSetting::VAT_CREDIT_CLASS]).'</p>';
 
-				} else {
+			} else if((int)$eDeclaration['data'][8002] > 0 and (int)$eDeclaration['data'][8003] === 0) {
 
-					$h .= '<li>';
+				$h .= '<p>'.s("Vous avez fait une demande de remboursement total d'un montant de <b>{value}</b>. À réception du remboursement, vous pourrez le comptabiliser en :", \util\TextUi::money($eDeclaration['data'][8002])).'</p>';
 
-						$h .= s("D'après votre déclaration, vous n'avez pas demandé de remboursement. Ce montant sera donc automatiquement déduit lors de votre prochaine déclaration de TVA.");
+				$h .= '<ul>';
 
-					$h .= '</li>';
+					$h .= '<li>'.s("débitant votre compte de banque <b>{value}</b>", \account\AccountSetting::BANK_ACCOUNT_CLASS).'</li>';
+					$h .= '<li>'.s("créditant le compte <b>{value}</b>.", \account\AccountSetting::VAT_REIMBURSE_CLASS).'</li>';
 
-				}
+				$h .= '</ul>';
 
-			$h .= '</ul>';
+			}
 
 		} else if($cOperation->offsetExists(\account\AccountSetting::VAT_DEBIT_CLASS)) {
 
+			$h .= '<p>';
+				$h .= s("Le montant total à régler au <b>Trésor public</b> est indiqué <b>ligne 56 (case 9992)</b> de votre déclaration : {value}.", '<b>'.\util\TextUi::money($eDeclaration['data']['9992']).'</b>');
+			$h .= '</p>';
+
+			$h .= '<p>';
+				$h .= s("Une fois le paiement effectué, vous pouvez saisir les écritures suivantes : ");
+			$h .= '</p>';
+
 			$h .= '<ul>';
 
-				$h .= '<li>'.s("Comme vous avez de la <b>TVA à décaisser</b> (compte {account}), vous devez faire un télérèglement.", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS]).'</li>';
+				$h .= '<li>'.s("Pour la TVA nette due, débitez le compte <b>{vatAccount}</b> et créditez votre compte de banque <b>{bankAccount}</b>.", ['vatAccount' => \account\AccountSetting::VAT_DEBIT_CLASS, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</li>';
 
-				if($eFinancialYear->isCashAccounting()) {
-
-					$h .= '<li>'.s("Une fois que ce règlement apparaîtra dans votre compte bancaire, vous pourrez créditer le compte {account} (TVA à décaisser) pour le solder, et débiter votre compte bancaire (compte {bankAccount} ou l'un de ses sous-comptes si vous en avez créé).", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</li>';
-
-				} else {
-
-					$h .= '<li>'.s("Vous pouvez dès maintenant créditer le compte {account} (TVA à décaisser) pour le solder, et débiter le compte de tiers Trésor Public pour enregistrer l'opération dans votre comptabilité. Il s'agira ensuite d'enregistrer le règlement lorsque le mouvement aura été enregistré.", ['account' => \account\AccountSetting::VAT_DEBIT_CLASS]).'</li>';
-
-				}
+				$h .= '<li>'.s("Pour la taxe sur le chiffre d'affaires et toutes les autres taxes assimilées, débitez le compte  <b>{vatAccount}</b> du montant de la taxe et créditez votre compte de banque <b>{bankAccount}</b>.", ['vatAccount' => \account\AccountSetting::VAT_DEBIT_CLASS, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]).'</li>';
 
 			$h .= '</ul>';
+			$h .= '<div class="util-info">'.\Asset::icon('exclamation-triangle').' '.s("Pensez à comptabiliser chaque taxe assimilée séparément.").'</div>';
 
 		}
 
-		$saveButton = '<div class="text-end">'.$form->button(s("Bien compris, je créerai les écritures moi-même"), ['class' => 'btn btn-outline-secondary mr-2', 'onclick' => 'Lime.Panel.closeLast()']).$form->submit(s("Créer les écritures")).'</div>';
+		$saveButton = '<div class="text-end">'.$form->button(s("Bien compris"), ['class' => 'btn btn-outline-secondary mr-2', 'onclick' => 'Lime.Panel.closeLast()']).$form->submit(s("Créer les écritures en {value}", \Asset::icon('1-circle'))).'</div>';
 
 		return new \Panel(
 			id         : $panelId,
@@ -5429,13 +5447,21 @@ class VatUi {
 
 	}
 
-	public static function getTranslations(string $code, array $params = []): string {
+	public static function getTranslations(string|int $code, array $params = []): string {
 
 		return match($code) {
-			'tva-versee' => s("TVA versée"),
-			'tva-sur-ventes' => s("TVA sur ventes"),
-			'tva-credit' => s("Crédit de TVA"),
-			'tva-debit' => s("TVA à décaisser"),
+			\account\AccountSetting::VAT_ASSET_CLASS => s("TVA déductible sur immobilisations"),
+			\account\AccountSetting::VAT_DEDUCTIBLE_INTRACOM_CLASS => s("TVA déductible intracommunautaire"),
+			\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT => s("TVA déductible sur achats"),
+			\account\AccountSetting::VAT_DEPOSIT_CLASS => s("Acompte de TVA"),
+			\account\AccountSetting::VAT_REIMBURSE_CLASS => s("Remboursement de TVA"),
+			\account\AccountSetting::PRODUCT_OTHER_CLASS => s("Arrondi déclaration de TVA"),
+			\account\AccountSetting::CHARGES_OTHER_CLASS => s("Arrondi déclaration de TVA"),
+			\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT => s("TVA collectée"),
+			\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS => s("TVA due intracommunautaire"),
+			\account\AccountSetting::VAT_CREDIT_CLASS => s("Crédit de TVA"),
+			\account\AccountSetting::VAT_DEBIT_CLASS => s("TVA à décaisser"),
+			\account\AccountSetting::CHARGE_TURNOVER_UNRECUPERABLE_ACCOUNT_CLASS => s("Taxe sur le chiffre d'affaires non récupérable"),
 			'document' => s("Déclaration TVA du {from} au {to}", $params),
 			'tresor-public' => s("Trésor public"),
 		};
