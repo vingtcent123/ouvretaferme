@@ -1060,10 +1060,6 @@ class FarmUi {
 				'icon' => \Asset::icon('journal-text'),
 				'label' => s("Journaux de caisse")
 			],
-			'receipts' => [
-				'icon' => \Asset::icon('journal-plus'),
-				'label' => s("Livre des recettes")
-			],
 			'invoicing' => [
 				'icon' => \Asset::icon('receipt'),
 				'label' => s("Facturation électronique")
@@ -1113,7 +1109,6 @@ class FarmUi {
 			'bank' => \farm\FarmUi::urlConnected($eFarm).'/banque/operations',
 			'preaccounting' => \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite:verifier',
 			'cash' => \farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse',
-			'receipts' => \farm\FarmUi::urlConnected($eFarm).'/livre-des-recettes',
 			'accounting' => match($name) {
 				'preaccounting' => \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite',
 				'operations' => \company\CompanyUi::urlJournal($eFarm).'/livre-journal',
@@ -1434,9 +1429,6 @@ class FarmUi {
 
 				$h .= $this->getNav('cash', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse');
 
-				/*if(LIME_ENV === 'dev')
-					$h .= $this->getNav('receipts', $nav, link: \farm\FarmUi::urlConnected($eFarm).'/livre-des-recettes');
-*/
 			$h .= '</div>';
 
 			$h .= '<div class="farm-tab-wrapper farm-nav-preaccounting">';

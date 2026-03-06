@@ -379,7 +379,6 @@ class FarmTemplate extends MainTemplate {
 			case 'cash' :
 			case 'invoicing' :
 			case 'accounting' :
-			case 'receipts' :
 			case 'settings-accounting' :
 				$this->section = 'accounting';
 				$this->template .= ' farm-accounting ';

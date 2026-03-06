@@ -28,7 +28,6 @@ Package::setList([
 	'pdp' => 'accounting',
 	'plant' => 'production',
 	'preaccounting' => 'accounting',
-	'receipts' => 'accounting',
 	'securing' => 'base',
 	'selling' => 'commercialisation',
 	'sequence' => 'production',

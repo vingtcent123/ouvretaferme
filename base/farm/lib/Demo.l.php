@@ -32,8 +32,6 @@ class DemoLib {
 		'pdp\Address',
 		'pdp\Company',
 		'preaccounting\Suggestion',
-		'receipts\Book',
-		'receipts\Line',
 		'securing\Signature',
 		'selling\Grid',
 		'selling\History',

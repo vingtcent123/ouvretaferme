@@ -453,11 +453,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['journal', 'operation', '{id}', 'update'],
 		],
-		'/livre-des-recettes' => [
-			'request' => 'receipts/index',
-			'priority' => 5,
-			'route' => ['livre-des-recettes'],
-		],
 		'/minify/{version}/{filename}' => [
 			'request' => 'dev/minify',
 			'priority' => 5,
