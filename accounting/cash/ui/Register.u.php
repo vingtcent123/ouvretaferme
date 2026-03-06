@@ -142,7 +142,7 @@ class RegisterUi {
 							$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
 
 								$h .= '<dt>'.s("Solde").'</dt>';
-								$h .= '<dd>'.$eRegister['balance'].'</dd>';
+								$h .= '<dd>'.\util\TextUi::money($eRegister['balance']).'</dd>';
 
 								$h .= '<dt>'.s("Opérations").'</dt>';
 								$h .= '<dd>'.$eRegister['operations'].'</dd>';
