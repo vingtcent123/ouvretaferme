@@ -73,7 +73,7 @@ Class PreaccountingUi {
 
 						} else if($eRegister['closedAt'] < first($dates).'-01') {
 
-							$count = '<a class="btn btn-sm btn-danger" title="'.s("Le journal de caisse n'est pas clôturé").'" href="'.\farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse?id='.$eRegister['id'].'">'.\Asset::icon('exclamation-triangle').'</a>';
+							$count = '<a class="btn btn-sm btn-danger" title="'.s("Le journal de caisse n'est pas clôturé").'" href="'.\farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse?register='.$eRegister['id'].'">'.\Asset::icon('exclamation-triangle').'</a>';
 
 						} else {
 

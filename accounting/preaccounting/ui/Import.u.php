@@ -274,7 +274,7 @@ Class ImportUi {
 										if($eOperation['invoice']->notEmpty() or $eOperation['sale']->notEmpty()) {
 											$link = LIME_REQUEST_PATH.'?from='.$search->get('from');
 										} else if($eOperation instanceof \cash\Cash) {
-											$link = \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/journal-de-caisse?id='.$eOperation['register']['id'].'&position='.$eOperation['position'];
+											$link = \farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/journal-de-caisse?register='.$eOperation['register']['id'].'&position='.$eOperation['position'];
 										} else {
 											$link = NULL;
 										}

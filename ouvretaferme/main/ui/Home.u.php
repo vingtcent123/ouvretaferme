@@ -272,7 +272,7 @@ class HomeUi {
 					$h .= '<div class="home-feature-icon">'.\Asset::icon('journal-text').'</div>';
 					$h .= s("Journal de caisse");
 				$h .= '</h2>';
-				$h .= '<h4>'.s("Ouvretaferme vous permet de tenir votre journal de caisse en ligne pour gérer les espèces liées à votre activité et être en règle vis-à-vis de l'administration fiscale.").'</h4>';
+				$h .= '<h4>'.s("Ouvretaferme vous permet de tenir votre journal de caisse en ligne pour gérer les encaissements liés à votre activité et être en règle vis-à-vis de l'administration fiscale.").'</h4>';
 				$h .= '<h5 style="padding-right: 5rem">'.s("Le journal de caisse peut être importé en un clic dans votre comptabilité !").'</h5>';
 			$h .= '</div>';
 			$h .= '<div class="home-feature">';
@@ -288,8 +288,8 @@ class HomeUi {
 					$h .= '<div class="home-feature-icon">'.\Asset::icon('journal-plus').'</div>';
 					$h .= s("Livre des recettes");
 				$h .= '</h2>';
-				$h .= '<h4 style="padding-right: 5rem">'.s("Vous pouvez utiliser Ouvretaferme comme pour tenir le livre des recettes de votre ferme. Le livre des recettes est une obligation légale pour votre activité si vous êtes au micro-BA.").'</h4>';
-				$h .= '<h5>'.s("Disponible au printemps 2026").'</h5>';
+				$h .= '<h4 style="padding-right: 5rem">'.s("Même si vous ne tenez pas de comptabilité selon le plan comptable agricole, vous pouvez utiliser le logiciel de comptabilité de Ouvretaferme pour tenir le livre des recettes de votre ferme. Le livre des recettes est une obligation légale pour votre activité si vous êtes au micro-BA.").'</h4>';
+				$h .= '<h5>'.s("Disponible en version beta uniquement").'</h5>';
 			$h .= '</div>';
 		$h .= '</div>';
 
