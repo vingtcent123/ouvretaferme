@@ -33,9 +33,9 @@ class RegisterUi {
 
 	}
 
-	public function getHeader(Register $eRegisterCurrent, \Collection $cRegister): string {
+	public function getHeader(Register $eRegisterCurrent, \Collection $ccRegister): string {
 
-		if($cRegister->empty()) {
+		if($ccRegister->empty()) {
 			return '<h1>'.s("Journaux de caisse").'</h1>';
 		}
 
@@ -48,18 +48,19 @@ class RegisterUi {
 				$h .= '<div class="dropdown-list bg-secondary">';
 					$h .= '<div class="dropdown-title">'.s("Mes journaux de caisse").'</div>';
 
-					$hasOld = FALSE;
+					foreach($ccRegister as $status => $cRegister) {
 
-					foreach($cRegister as $eRegister) {
-
-						if($hasOld === FALSE and $eRegister['status'] === Register::INACTIVE) {
+						if($status === Register::INACTIVE) {
 							$h .= '<div class="dropdown-subtitle">'.s("Anciens journaux").'</div>';
-							$hasOld = TRUE;
 						}
 
-						$h .= '<a href="'.\farm\FarmUi::urlCash($eRegister).'" class="dropdown-item '.($eRegister['id'] === $eRegisterCurrent['id'] ? 'selected' : '').'">';
-							$h .= self::getName($eRegister);
-						$h .= '</a> ';
+						foreach($cRegister as $eRegister) {
+
+							$h .= '<a href="'.\farm\FarmUi::urlCash($eRegister).'" class="dropdown-item '.($eRegister['id'] === $eRegisterCurrent['id'] ? 'selected' : '').'">';
+								$h .= self::getName($eRegister);
+							$h .= '</a> ';
+						}
+
 					}
 
 					$eFarm = \farm\Farm::getConnected();
@@ -108,6 +109,66 @@ class RegisterUi {
 
 			$h .= '</div>';
 		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getList(\Collection $ccRegister): string {
+
+		$h = '';
+
+		foreach($ccRegister as $status => $cRegister) {
+
+			if($status === Register::INACTIVE) {
+				$h .= '<h2>'.s("Anciens journaux").'</h2>';
+			}
+
+			$h .= '<div class="cash-list mb-2">';
+
+				foreach($cRegister as $eRegister) {
+
+					$h .= '<a href="'.\farm\FarmUi::urlCash($eRegister).'" class="cash-list-item util-block">';
+
+						$h .= '<div class="cash-list-item-header">';
+							$h .= '<h2>';
+								$h .= RegisterUi::getName($eRegister);
+							$h .= '</h2>';
+						$h .= '</div>';
+
+
+						$h .= '<div class="cash-list-item-content">';
+
+							$h .= '<dl class="util-presentation util-presentation-max-content util-presentation-2">';
+
+								$h .= '<dt>'.s("Solde").'</dt>';
+								$h .= '<dd>'.$eRegister['balance'].'</dd>';
+
+								$h .= '<dt>'.s("Opérations").'</dt>';
+								$h .= '<dd>'.$eRegister['operations'].'</dd>';
+
+								if($eRegister['closedAt']!== NULL) {
+
+									$h .= '<dt>'.s("Clôturé au").'</dt>';
+									$h .= '<dd>'.\util\DateUi::textual($eRegister['closedAt']).'</dd>';
+
+								}
+
+							$h .= '</dl>';
+
+							if($eRegister['operationsDraft']) {
+								$h .= '<div class="cash-list-item-draft">'.p("Il y a également {value} opération dans le brouillard de caisse.", "Il y a également {value} opérations dans le brouillard de caisse.", $eRegister['operationsDraft']).'</div>';
+							}
+
+						$h .= '</div>';
+
+
+					$h .= '</a>';
+
+				}
+			$h .= '</div>';
+
+		}
 
 		return $h;
 

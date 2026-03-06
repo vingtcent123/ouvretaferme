@@ -31,7 +31,7 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Cash::created' => s("L'opération a bien été ajoutée"),
+			'Cash::created' => s("L'opération a bien été ajoutée dans le brouillard de caisse"),
 			'Cash::updated' => s("L'opération a bien été mise à jour"),
 			'Cash::updatedBalance' => s("Le solde du journal de caisse a bien été mis à jour"),
 			'Cash::validated' => s("Les opérations ont bien été validées"),

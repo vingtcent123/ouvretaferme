@@ -1,14 +1,19 @@
 <?php
 new AdaptativeView('/journal-de-caisse', function($data, FarmTemplate $t) {
 
-	$t->title = s("Journal de caisse de {value}", $data->eFarm['name']);
+	$t->title = s("Journaux de caisse de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/journal-de-caisse';
 
 	$t->nav = 'cash';
 
-	$t->mainTitle = new \cash\RegisterUi()->getHeader($data->eRegisterCurrent, $data->cRegister);
+	$h = '<div class="util-action">';
+		$h .= '<h1>'.s("Journaux de caisse").'</h1>';
+		$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/register:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau journal").'</a>';
+	$h .= '</div>';
 
-	if($data->cRegister->empty()) {
+	$t->mainTitle = $h;
+
+	if($data->ccRegister->empty()) {
 
 		echo '<h3>'.s("Configurer mon journal de caisse").'</h3>';
 
@@ -16,18 +21,30 @@ new AdaptativeView('/journal-de-caisse', function($data, FarmTemplate $t) {
 
 	} else {
 
+		echo new \cash\RegisterUi()->getList($data->ccRegister);
 
-		if($data->eRegisterCurrent['operations'] > 0) {
+	}
 
-			echo new \cash\CashUi()->getChoice($data->eRegisterCurrent, $data->cCashflow, $data->cInvoice, $data->cSale);
-			echo new \cash\CashUi()->getSearch($data->eRegisterCurrent, $data->search);
-			echo new \cash\CashUi()->getList($data->eRegisterCurrent, $data->ccCash, $data->search, $data->page);
+});
 
-		} else {
+new AdaptativeView('get', function($data, FarmTemplate $t) {
 
-			echo new \cash\CashUi()->start($data->eRegisterCurrent);
+	$t->title = strip_tags(\cash\RegisterUi::getName($data->eRegisterCurrent));
+	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/journal-de-caisse';
 
-		}
+	$t->nav = 'cash';
+
+	$t->mainTitle = new \cash\RegisterUi()->getHeader($data->eRegisterCurrent, $data->ccRegister);
+
+	if($data->eRegisterCurrent['operations'] > 0) {
+
+		echo new \cash\CashUi()->getChoice($data->eRegisterCurrent, $data->cCashflow, $data->cInvoice, $data->cSale);
+		echo new \cash\CashUi()->getSearch($data->eRegisterCurrent, $data->search);
+		echo new \cash\CashUi()->getList($data->eRegisterCurrent, $data->ccCash, $data->search, $data->page);
+
+	} else {
+
+		echo new \cash\CashUi()->start($data->eRegisterCurrent);
 
 	}
 

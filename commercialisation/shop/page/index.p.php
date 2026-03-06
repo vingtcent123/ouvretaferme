@@ -8,8 +8,6 @@ new \farm\FarmPage()
 		$eShop = GET('shop', 'shop\Shop');
 		$data->eShop = $data->ccShop['selling'][$eShop['id']] ?? $data->ccShop['admin'][$eShop['id']] ?? throw new NotExistsAction();
 
-		\farm\FarmerLib::setView('viewShopCurrent', $data->e, $data->eShop);
-
 		$data->eShop['cGroupLimit'] = \selling\CustomerGroupLib::getByIds($data->eShop['limitGroups'], sort: ['name' => SORT_ASC]);
 		$data->eShop['cCustomerLimit'] = \selling\CustomerLib::getByIds($data->eShop['limitCustomers'], sort: ['lastName' => SORT_ASC, 'firstName' => SORT_ASC]);
 

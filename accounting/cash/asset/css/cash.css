@@ -1,3 +1,66 @@
+.cash-list {
+	display: grid;
+	grid-gap: 1rem;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto auto;
+}
+
+@media (max-width: 767px) {
+
+	.cash-list {
+		grid-template-columns: 1fr;
+	}
+
+}
+
+.cash-list-item {
+	margin-bottom: 0;
+	display: grid;
+	grid-template-rows: auto auto;
+	grid-gap: 1rem;
+	color: var(--text);
+}
+
+@supports (grid-template-rows: subgrid) {
+
+	.cash-list-item {
+		grid-template-rows: subgrid;
+		grid-row: span 2;
+	}
+
+}
+
+.cash-list-item:hover {
+	text-decoration: none;
+}
+
+.cash-list-item h2 {
+	align-self: center;
+	color: var(--secondary);
+	margin-bottom: 0;
+	font-size: 1.5rem;
+}
+
+.cash-list-item-header {
+	grid-column: span 2;
+}
+
+.cash-list-item-content {
+	grid-column: span 2;
+	border-top: 1px solid var(--border);
+	padding-top: 1rem;
+	margin-left: -1rem;
+	margin-right: -1rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.cash-list-item-draft {
+	margin-top: 0.5rem;
+	color: var(--muted);
+	font-size: 0.9rem;
+}
+
 .cash-register-accounting:has(input[name="hasAccounts"][value="0"]:checked) [data-wrapper="account"],
 .cash-register-accounting:has(input[name="hasAccounts"][value="0"]:checked) [data-wrapper="bankAccount"] {
 	display: none;

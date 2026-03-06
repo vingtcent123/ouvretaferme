@@ -13,6 +13,22 @@ class RegisterLib extends RegisterCrud {
 
 	}
 
+	public static function getList(): \Collection {
+
+		return Register::model()
+			->select(Register::getSelection() + [
+				'operationsDraft' => Cash::model()
+					->whereStatus(Cash::DRAFT)
+					->group('register')
+					->delegateProperty('register', new \Sql('COUNT(*)', 'int'), fn($value) => $value ?? 0)
+			])
+			->sort([
+				'id' => SORT_ASC
+			])
+			->getCollection(index: ['status', 'id']);
+
+	}
+
 	public static function getAll(?string $closedBefore = NULL, bool $onlyActive = FALSE): \Collection {
 
 		return Register::model()

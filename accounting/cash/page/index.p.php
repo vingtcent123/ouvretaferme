@@ -2,10 +2,10 @@
 new Page()
 	->get('/journal-de-caisse', function($data) {
 
-		$data->cRegister = \cash\RegisterLib::getAll();
+		$data->ccRegister = \cash\RegisterLib::getList();
 		$data->eRegisterCurrent = new \cash\Register();
 
-		if($data->cRegister->empty()) {
+		if($data->ccRegister->empty()) {
 
 			$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-cash');
 			$data->tipNavigation = 'inline';
@@ -14,25 +14,29 @@ new Page()
 				'cPaymentMethod' => \payment\MethodLib::getForCash($data->eFarm)
 			]);
 
+			throw new ViewAction($data);
+
 		} else {
 
 			$register = GET('register', '?int');
 
-			if(
-				$register !== NULL and
-				$data->cRegister->offsetExists($register)
-			) {
-
-				$data->eRegisterCurrent = $data->cRegister[$register];
-
-				\farm\FarmerLib::setView('viewAccountingCashRegister', $data->eFarm, $data->eRegisterCurrent);
-
-			} else if($data->eFarm->getView('viewAccountingCashRegister')->notEmpty()) {
-
-				$data->eRegisterCurrent = $data->cRegister[$data->eFarm->getView('viewAccountingCashRegister')['id']] ?? $data->cRegister->first();
-
+			if($register === NULL) {
+				$data->eRegisterCurrent = new \cash\Register();
 			} else {
-				$data->eRegisterCurrent = $data->cRegister->first();
+
+				$data->eRegisterCurrent = $data->ccRegister->find(fn($eRegister) => $eRegister['id'] === $register, depth: 2, limit: 1);
+
+			}
+
+			if($data->eRegisterCurrent->empty()) {
+
+				if($data->ccRegister->countByDepth(2) === 1) {
+					$data->eRegisterCurrent = $data->ccRegister->find(fn($eRegister) => TRUE, depth: 2, limit: 1);
+				} else {
+					throw new ViewAction($data);
+				}
+
+
 			}
 
 			if($data->eRegisterCurrent['operations'] > 0) {
@@ -53,9 +57,9 @@ new Page()
 
 			}
 
-		}
+			throw new ViewAction($data, ':get');
 
-		throw new ViewAction($data);
+		}
 
 	});
 ?>
