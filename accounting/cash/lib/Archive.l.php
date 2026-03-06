@@ -28,9 +28,11 @@ class ArchiveLib extends ArchiveCrud {
 
 		$cCash = Cash::model()
 			->select(CashElement::getSelection() + [
-				'register' => Register::getSelection(),
-					'sale' => ['document'],
-					'invoice' => ['number']
+				'register' => [
+					'paymentMethod' => ['name']
+				],
+				'sale' => ['document'],
+				'invoice' => ['number']
 			])
 			->whereDate('BETWEEN', new \Sql(Cash::model()->format($e['from']).' AND '.Cash::model()->format($e['to'])))
 			->whereStatus(Cash::VALID)
