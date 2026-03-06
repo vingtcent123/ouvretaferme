@@ -1756,11 +1756,22 @@ class SaleUi {
 
 			if($eSale['preparationStatus'] === Sale::CONFIRMED) {
 
-				$h .= '<div class="util-block color-white bg-selling mb-2">';
-					$h .= '<h4>'.s("Votre vente va démarrer ?").'</h4>';
-					$h .= '<p>'.s("Vous pouvez commencer à prendre les commandes avec la caisse virtuelle !").'<br/>'.s("Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro.").'</p>';
-					$h .= '<a data-ajax="/selling/sale:doUpdateSellingCollection" post-ids="'.$eSale['id'].'" class="btn btn-transparent" data-confirm="'.s("C'est parti ?").'">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';
-				$h .= '</div>';
+				if($eSale['deliveredAt'] > currentDate()) {
+
+					$h .= '<div class="util-block color-white bg-selling mb-2">';
+						$h .= '<h4>'.s("Votre vente aura lieu le {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</h4>';
+						$h .= '<p>'.s("Vous pourrez accéder au logiciel de caisse à partir de ce jour là, mais vous pouvez toujours paraméter les produits disponibles dans la caisse.").'</p>';
+					$h .= '</div>';
+
+				} else {
+
+					$h .= '<div class="util-block color-white bg-selling mb-2">';
+						$h .= '<h4>'.s("Votre vente va démarrer ?").'</h4>';
+						$h .= '<p>'.s("Vous pouvez commencer à prendre les commandes avec la caisse virtuelle !").'<br/>'.s("Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro.").'</p>';
+						$h .= '<a data-ajax="/selling/sale:doUpdateSellingCollection" post-ids="'.$eSale['id'].'" class="btn btn-transparent" data-confirm="'.s("C'est parti ?").'">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';
+					$h .= '</div>';
+
+				}
 
 			} else if($eSale['preparationStatus'] === Sale::SELLING) {
 				$h .= '<a href="'.SaleUi::urlMarket($eSale).'" class="btn btn-xl btn-selling mb-2" style="width: 100%">'.\Asset::icon('cart4').'  '.s("Ouvrir le logiciel de caisse").'</a>';

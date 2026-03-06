@@ -786,7 +786,8 @@ class Sale extends SaleElement {
 		return (
 			$this['closed'] === FALSE and
 			$this->isMarket() and
-			in_array($this['preparationStatus'], [Sale::CONFIRMED, Sale::DELIVERED])
+			in_array($this['preparationStatus'], [Sale::CONFIRMED, Sale::DELIVERED]) and
+			$this['deliveredAt'] <= currentDate()
 		);
 
 	}
