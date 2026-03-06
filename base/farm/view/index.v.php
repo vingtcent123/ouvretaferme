@@ -834,6 +834,20 @@ new AdaptativeView('/ferme/{id}/etiquettes', function($data, FarmTemplate $t) {
 
 });
 
+new AdaptativeView('/ferme/{id}/archives', function($data, FarmTemplate $t) {
+
+	$t->nav = 'selling';
+	$t->subNav = 'sale';
+
+	$t->title = s("Archivage des ventes pour {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlSellingSalesArchives($data->eFarm);
+
+	$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, \farm\Farmer::ARCHIVES);
+
+	echo new \selling\ArchiveUi()->getList($data->cArchive);
+
+});
+
 new AdaptativeView('analyzeReport', function($data, FarmTemplate $t) {
 
 	$t->nav = 'analyze-commercialisation';

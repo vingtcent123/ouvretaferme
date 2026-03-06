@@ -1,3 +1,13 @@
+Archive:
+  id: serial32
+  farm: farm\Farm
+  from: date
+  to: date
+  sha256: textFixed(64, 64)
+  csv: text24
+  createdAt: datetime = SPECIAL(now)
+  createdBy: user\User = SPECIAL(user)
+
 Category:
   id: serial32
   name: text8(1, null) @collate(general)

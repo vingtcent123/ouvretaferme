@@ -9,11 +9,7 @@ class ArchiveLib extends ArchiveCrud {
 
 	public static function create(Archive $e): void {
 
-		$output = array_merge(
-			[new ArchiveUi()->getCsvHeader()],
-			self::getCsv($e)
-		);
-
+		$output = self::getCsv($e);
 		$csv = \util\CsvLib::toCsv($output);
 		$csv = trim($csv);
 
@@ -42,7 +38,9 @@ class ArchiveLib extends ArchiveCrud {
 			])
 			->getCollection();
 
-		$output = [];
+		$output = [
+			new ArchiveUi()->getCsvHeader()
+		];
 
 		foreach($cCash as $eCash) {
 

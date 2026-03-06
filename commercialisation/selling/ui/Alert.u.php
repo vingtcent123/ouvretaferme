@@ -148,6 +148,8 @@ class AlertUi {
 
 		return match($fqn) {
 
+			'Archive::created' => s("L'archive a bien été générée."),
+
 			'Customer::created' => s("Le client a bien été ajouté."),
 			'Customer::updated' => s("Le client a bien été mis à jour."),
 			'Customer::deleted' => s("Le client a bien été supprimé."),

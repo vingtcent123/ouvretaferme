@@ -53,6 +53,7 @@ abstract class FarmerElement extends \Element {
 	const PRO = 'pro';
 	const MARKET = 'market';
 	const LABEL = 'label';
+	const ARCHIVES = 'archives';
 
 	const PRODUCT = 'product';
 	const CATEGORY = 'category';
@@ -130,7 +131,7 @@ class FarmerModel extends \ModuleModel {
 			'viewSoilColor' => ['enum', [\farm\Farmer::WHITE, \farm\Farmer::BLACK, \farm\Farmer::PLANT], 'cast' => 'enum'],
 			'viewSoilOverlay' => ['bool', 'cast' => 'bool'],
 			'viewSoilTasks' => ['bool', 'cast' => 'bool'],
-			'viewSellingSales' => ['enum', [\farm\Farmer::ALL, \farm\Farmer::PRIVATE, \farm\Farmer::PRO, \farm\Farmer::MARKET, \farm\Farmer::LABEL], 'cast' => 'enum'],
+			'viewSellingSales' => ['enum', [\farm\Farmer::ALL, \farm\Farmer::PRIVATE, \farm\Farmer::PRO, \farm\Farmer::MARKET, \farm\Farmer::LABEL, \farm\Farmer::ARCHIVES], 'cast' => 'enum'],
 			'viewSellingProducts' => ['enum', [\farm\Farmer::PRODUCT, \farm\Farmer::CATEGORY], 'cast' => 'enum'],
 			'viewSellingCustomers' => ['enum', [\farm\Farmer::CUSTOMER, \farm\Farmer::GROUP], 'cast' => 'enum'],
 			'viewSellingCategory' => ['enum', [\farm\Farmer::ITEM, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::PERIOD], 'cast' => 'enum'],

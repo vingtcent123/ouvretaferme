@@ -266,7 +266,7 @@ new \selling\SalePage()
 		$data->cHistory = \selling\HistoryLib::getBySale($data->e);
 		$data->ccPdf = \selling\PdfLib::getBySale($data->e);
 
-		$data->e['invoice'] = \selling\InvoiceLib::getById($data->e['invoice'], properties: \selling\InvoiceElement::getSelection());
+		$data->e['invoice'] = \selling\InvoiceLib::getById($data->e['invoice']);
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
 
 		if($data->e->isMarket()) {

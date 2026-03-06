@@ -1687,7 +1687,11 @@ class SaleUi {
 				if($eSale->isMarket() === FALSE) {
 					$h .= '<dt>'.s("Moyen de paiement").'</dt>';
 					$h .= '<dd>';
-						$h .= PaymentTransactionUi::getPaymentBox($eSale, optimize: TRUE);
+						if($eSale['invoice']->empty()) {
+							$h .= PaymentTransactionUi::getPaymentBox($eSale, optimize: TRUE);
+						} else {
+							$h .= PaymentTransactionUi::getPaymentBox($eSale['invoice'], optimize: TRUE);
+						}
 					$h .= '</dd>';
 				}
 

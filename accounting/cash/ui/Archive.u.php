@@ -113,7 +113,8 @@ class ArchiveUi {
 
 			$h .= $form->group(
 				content: $form->submit(
-					s("Créer l'archive")
+					s("Créer l'archive"),
+					['data-waiter' => s("Création en cours")]
 				)
 			);
 
@@ -121,7 +122,7 @@ class ArchiveUi {
 
 		return new \Panel(
 			id: 'panel-archive-create',
-			title: s("Créer une archive"),
+			title: s("Créer une archive des journaux de caisse"),
 			body: $h
 		);
 

@@ -390,6 +390,17 @@ new Page(function($data) {
 		throw new ViewAction($data);
 
 	})
+	->get('/ferme/{id}/archives', function($data) {
+
+		$data->eFarm->validate('canSelling');
+
+		\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::ARCHIVES);
+
+		$data->cArchive = \selling\ArchiveLib::getList($data->eFarm);
+
+		throw new ViewAction($data);
+
+	})
 	->get(['/ferme/{id}/planning/{view}', '/ferme/{id}/planning/{view}/{period}', '/ferme/{id}/planning/{view}/{period}/{subPeriod}'], function($data) {
 
 		$data->eFarm->validate('canPlanning');

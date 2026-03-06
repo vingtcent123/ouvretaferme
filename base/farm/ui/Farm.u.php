@@ -240,6 +240,7 @@ class FarmUi {
 			Farmer::PRO => self::urlSellingSalesPro($eFarm),
 			Farmer::MARKET => self::urlSellingSalesMarket($eFarm),
 			Farmer::LABEL => self::urlSellingSalesLabel($eFarm),
+			Farmer::ARCHIVES => self::urlSellingSalesArchives($eFarm),
 		};
 
 	}
@@ -266,6 +267,10 @@ class FarmUi {
 
 	public static function urlSellingSalesLabel(Farm $eFarm): string {
 		return self::url($eFarm).'/etiquettes';
+	}
+
+	public static function urlSellingSalesArchives(Farm $eFarm): string {
+		return self::url($eFarm).'/archives';
 	}
 
 	public static function urlShop(Farm $eFarm, string $view): string {
@@ -2089,13 +2094,17 @@ class FarmUi {
 					case Farmer::ALL :
 					case Farmer::PRIVATE :
 					case Farmer::PRO :
-							$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-							$h .= '<a href="/selling/sale:createCollection?farm='.$eFarm['id'].'&view='.$selectedView.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
+						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+						$h .= '<a href="/selling/sale:createCollection?farm='.$eFarm['id'].'&view='.$selectedView.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
 						break;
 
 					case Farmer::MARKET :
-							$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-							$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&type='.\selling\Sale::PRIVATE.'&market=1" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
+						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+						$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&type='.\selling\Sale::PRIVATE.'&market=1" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
+						break;
+
+					case Farmer::ARCHIVES :
+						$h .= '<a href="/selling/archives:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouvelle archive").'</a>';
 						break;
 
 				}
@@ -2116,6 +2125,8 @@ class FarmUi {
 			Farmer::MARKET => s("Logiciel de caisse"),
 			NULL,
 			Farmer::LABEL => s("Étiquettes de colisage"),
+			NULL,
+			Farmer::ARCHIVES => s("Archivage"),
 		];
 	}
 

@@ -198,6 +198,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'analyses', 'ventes', '{year}', '{category}', 'compare', '{compare}'],
 		],
+		'/ferme/{id}/archives' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'archives'],
+		],
 		'/ferme/{id}/assolement' => [
 			'request' => 'farm/index',
 			'priority' => 5,
