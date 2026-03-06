@@ -262,6 +262,8 @@ class VatUi {
 
 							if($eDeclaration->isOpenPeriod() and $eDeclaration['updatedAt'] === NULL) {
 								$h .= '<span class="util-badge color-primary bg-info ml-1">'.s("Étape en cours").'</span>';
+							} else if($eDeclaration->exists() and $eDeclaration['updatedAt'] !== NULL) {
+								$h .= '<span class="util-badge color-white bg-success ml-1">'.s("Déclaration enregistrée").'</span>';
 							} else if($eDeclaration->exists() and $eDeclaration->isClosedPeriod()) {
 								$h .= '<span class="util-badge color-white bg-success ml-1">'.s("Étape terminée").'</span>';
 							} else if($eDeclaration['to'] > date('Y-m-d')) {
@@ -333,14 +335,18 @@ class VatUi {
 
 							$h .= '<div class="vat-timeline-action-info">';
 
-								$h .= s("Une fois télédéclarée, enregistrez sur {siteName} que la télédéclaration est faite.");
+								if($eDeclaration->acceptDeclare()) {
+									$h .= s("Une fois télédéclarée, <link>enregistrez sur {siteName}</link> que la télédéclaration est faite (ou cliquez sur le bouton ci-dessous).", ['link' => '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/declaration-de-tva?from='.$vatParameters['from'].'&tab=cerfa">']);
+								} else {
+									$h .= s("Une fois télédéclarée, enregistrez sur {siteName} que la télédéclaration est faite.");
+								}
 								$h .= '<br />';
 								$h .= \Asset::icon('exclamation-triangle').' '.s("Vérifiez que la déclaration sur {siteName} et votre télédéclaration sont bien identiques pour que les écritures comptables de déclaration soient correctes.");
 								$h .= '<br />';
 
 								if($eDeclaration->acceptDeclare()) {
 
-									$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/vat/declaration:doUpdateDeclareStatus" post-id="'.$eDeclaration['id'].'" class="btn btn-xs btn-secondary mt-1" data-confirm="'.s("Vous avez bien tout vérifié, on valide ?").'">'.s("J'ai télédéclaré").'</a>';
+									$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/vat/declaration:doUpdateDeclareStatus" post-id="'.$eDeclaration['id'].'" class="btn btn-xs btn-outline-secondary mt-1" data-confirm="'.s("Vous avez bien tout vérifié, on valide ?").'">'.s("J'ai télédéclaré").'</a>';
 
 								}
 
@@ -411,7 +417,7 @@ class VatUi {
 									if($eDeclaration->acceptPay()) {
 
 										$h .= '<br />';
-										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/vat/declaration:doUpdatePaymentStatus" post-id="'.$eDeclaration['id'].'" class="btn btn-xs btn-secondary mt-1" data-confirm="'.s("Vous avez bien tout vérifié, on valide ?").'">';
+										$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected($eFarm).'/vat/declaration:doUpdatePaymentStatus" post-id="'.$eDeclaration['id'].'" class="btn btn-xs btn-outline-secondary mt-1" data-confirm="'.s("Vous avez bien tout vérifié, on valide ?").'">';
 										if($eDeclaration->isCredit()) {
 											$h .= s("J'ai comptabilisé le remboursement");
 										} else {

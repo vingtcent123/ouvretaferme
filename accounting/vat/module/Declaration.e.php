@@ -139,7 +139,7 @@ class Declaration extends DeclarationElement {
 
 		$this->expects(['to']);
 
-		return date('Y-m-d') > date('Y-m-d', strtotime($this['to'].' + '.\vat\VatSetting::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' DAYS'));
+		return date('Y-m-d') > date('Y-m-d', strtotime($this['limit'].' + '.\vat\VatSetting::DELAY_UPDATABLE_AFTER_LIMIT_IN_DAYS.' DAYS'));
 	}
 	public function isDeclarationOpenPeriod(): bool {
 
