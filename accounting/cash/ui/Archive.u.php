@@ -46,7 +46,12 @@ class ArchiveUi {
 			return '<div class="util-empty">'.s("Vous n'avez pas encore généré d'archive de vos journaux de caisse.").'</div>';
 		}
 
-		$h = '<div class="util-overflow-md">';
+		$h = '<div class="util-block-info">';
+			$h .= \Asset::icon('info', ['class' => 'util-block-icon']);
+			$h .= '<p>'.s("Les archives de vos données des journaux de caisse peuvent être communiquées à l'administration fiscale en cas de contrôle ou être utilisées pour vos analyses personnelles. Ces archives viennent en complément des <link>archives que vous pouvez réaliser à partir de vos ventes</link>.", ['link' => '<a href="/selling/archives?id='.\farm\Farm::getConnected()['id'].'">']).'</p>';
+		$h .= '</div>';
+
+		$h .= '<div class="util-overflow-md">';
 
 			$h .= '<table class="tr-even">';
 				$h .= '<thead>';
@@ -94,7 +99,7 @@ class ArchiveUi {
 
 	}
 
-	public function create(\cash\Archive $eArchive, bool $start = FALSE): \Panel {
+	public function create(\cash\Archive $eArchive): \Panel {
 
 
 		$form = new \util\FormUi();
