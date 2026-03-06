@@ -1,9 +1,9 @@
 Archive:
   id: serial32
-  start: date
-  stop: date
-  hash: textFixed(20, 20)
-  data: text
+  from: date
+  to: date
+  sha256: textFixed(64, 64)
+  csv: text24
   createdAt: datetime = SPECIAL(now)
   createdBy: user\User = SPECIAL(user)
 

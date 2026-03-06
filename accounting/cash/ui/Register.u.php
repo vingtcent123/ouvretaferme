@@ -71,6 +71,12 @@ class RegisterUi {
 							$h .= \Asset::icon('plus-circle').' '.s("Nouveau journal de caisse");
 						$h .= '</a> ';
 					}
+
+					$h .= '<div class="dropdown-divider"></div>';
+					$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/archives" class="dropdown-item">';
+						$h .= \Asset::icon('archive').' '.s("Archivage des journaux de caisse");
+					$h .= '</a> ';
+
 				$h .= '</div>';
 			$h .= '</h1>';
 			$h .= '<div>';

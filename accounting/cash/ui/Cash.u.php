@@ -285,28 +285,57 @@ class CashUi {
 
 		return match($source) {
 
-			Cash::INITIAL => s("Solde initial de la caisse"),
-			Cash::BALANCE => \Asset::icon('plus-slash-minus').'  '.s("Écart de caisse"),
+			Cash::INITIAL => self::getText($source, $type),
+			Cash::BALANCE => \Asset::icon('plus-slash-minus').'  '.self::getText($source, $type),
 
 			Cash::PRIVATE => match($type) {
-				Cash::CREDIT => \Asset::icon('person-fill').'  '.s("Apport de l'exploitant à la caisse"),
-				Cash::DEBIT => \Asset::icon('person-fill').'  '.s("Prélèvement par l'exploitant dans la caisse"),
+				Cash::CREDIT => \Asset::icon('person-fill').'  '.self::getText($source, $type),
+				Cash::DEBIT => \Asset::icon('person-fill').'  '.self::getText($source, $type),
 			},
 
 			Cash::BANK_MANUAL, Cash::BANK_CASHFLOW => match($type) {
-				Cash::CREDIT => \Asset::icon('bank').'  '.s("Retrait depuis la banque"),
-				Cash::DEBIT => \Asset::icon('bank').'  '.s("Dépôt à la banque"),
+				Cash::CREDIT => \Asset::icon('bank').'  '.self::getText($source, $type),
+				Cash::DEBIT => \Asset::icon('bank').'  '.self::getText($source, $type),
 			},
 
 			Cash::OTHER => match($type) {
-				Cash::CREDIT => \Asset::icon('three-dots').'  '.s("Autre opération créditrice"),
-				Cash::DEBIT => \Asset::icon('three-dots').'  '.s("Autre opération débitrice"),
+				Cash::CREDIT => \Asset::icon('three-dots').'  '.self::getText($source, $type),
+				Cash::DEBIT => \Asset::icon('three-dots').'  '.self::getText($source, $type),
 			},
 
-			Cash::BUY_MANUAL => \Asset::icon('wallet').'  '.s("Achat à un fournisseur"),
-			Cash::SELL_MANUAL => \Asset::icon('wallet').'  '.s("Vente à un client"),
+			Cash::BUY_MANUAL => \Asset::icon('wallet').'  '.self::getText($source, $type),
+			Cash::SELL_MANUAL => \Asset::icon('wallet').'  '.self::getText($source, $type),
 			Cash::SELL_INVOICE => \Asset::icon('wallet').'  <u class="mr-1">'.encode($e['customer']->getName()).'</u><a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$e['invoice']['id'].'" class="btn btn-outline-primary btn-xs">'.\selling\InvoiceUi::getName($e['invoice']).'</a>',
 			Cash::SELL_SALE => \Asset::icon('wallet').'  <u class="mr-1">'.encode($e['customer']->getName()).'</u><a href="'.\selling\SaleUi::url($e['sale']).'" class="btn btn-outline-primary btn-xs">'.\selling\SaleUi::getName($e['sale']).'</a>'
+
+		};
+
+	}
+
+	public static function getText(string $source, ?string $type = NULL): string {
+
+		return match($source) {
+
+			Cash::INITIAL => s("Solde initial de la caisse"),
+			Cash::BALANCE => s("Écart de caisse"),
+
+			Cash::PRIVATE => match($type) {
+				Cash::CREDIT => s("Apport de l'exploitant à la caisse"),
+				Cash::DEBIT => s("Prélèvement par l'exploitant dans la caisse"),
+			},
+
+			Cash::BANK_MANUAL, Cash::BANK_CASHFLOW => match($type) {
+				Cash::CREDIT => s("Retrait depuis la banque"),
+				Cash::DEBIT => s("Dépôt à la banque"),
+			},
+
+			Cash::OTHER => match($type) {
+				Cash::CREDIT => s("Autre opération créditrice"),
+				Cash::DEBIT => s("Autre opération débitrice"),
+			},
+
+			Cash::BUY_MANUAL => s("Achat à un fournisseur"),
+			Cash::SELL_MANUAL, Cash::SELL_INVOICE, Cash::SELL_SALE => s("Vente à un client")
 
 		};
 

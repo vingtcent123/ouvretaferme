@@ -21,6 +21,9 @@ class AlertUi {
 			'Cash::amountConsistency' => s("Le total HT + TVA doit être égal au total TTC"),
 			'Cash::balance.negative' => s("Le nouveau solde ne peut pas être négatif"),
 
+			'Archive::to.consistency' => s("La date de fin ne peut pas être antérieure à la date de début"),
+			'Archive::to.interval' => s("Vous ne pouvez pas gérer d'archive sur une période supérieure à un an"),
+
 			default => null
 
 		};
@@ -30,6 +33,8 @@ class AlertUi {
 	public static function getSuccess(string $fqn, array $options = []): ?string {
 
 		return match($fqn) {
+
+			'Archive::created' => s("L'archive a bien été générée."),
 
 			'Cash::created' => s("L'opération a bien été ajoutée dans le brouillard de caisse"),
 			'Cash::updated' => s("L'opération a bien été mise à jour"),

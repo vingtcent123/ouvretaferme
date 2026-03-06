@@ -17,7 +17,7 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 
 	if($data->eFarm->isMembership()) {
 
-		echo '<div class="util-association">';
+		echo '<div class="util-block-side">';
 			echo '<h4>'.s("Vous êtes adhérent à l'association et donc éligible à l'utilisation du module de comptabilité.").'</h4>';
 			echo '<div>';
 				echo '<a class="btn btn-primary btn-xl" data-option="no" data-waiter="'.s("Activation en cours").'" data-ajax="/company/public:doInitialize" post-farm="'.$data->eFarm['id'].'">';
@@ -29,7 +29,7 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 
 	} else {
 
-		echo '<div class="util-association">';
+		echo '<div class="util-block-side">';
 			echo '<h4>'.s("Le module de gestion est accessible pour les fermes qui ont adhéré à notre association.").'</h4>';
 			echo '<p>'.s("Les fonctionnalités de ce module sont pleinement intégrées avec le reste du logiciel pour que la comptabilité devienne presque un plaisir 🏖️").'</p>';
 			echo '<a href="'.\association\AssociationUi::url($this->data->eFarm).'" class="btn btn-primary btn-xl">';

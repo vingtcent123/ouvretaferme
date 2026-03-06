@@ -8,6 +8,7 @@ abstract class Action extends \Exception {
 
 	const JSON = 'application/json; charset=utf-8';
 	const HTML = 'text/html; charset=utf-8';
+	const CSV = 'application/csv; charset=utf-8';
 
 	/**
 	 * Enable/disable Gzip compression

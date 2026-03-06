@@ -7,8 +7,8 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Absence::to.consistency' => s("La date de fin ne peut pas être postérieure à la date de début"),
-			'Presence::to.consistency' => s("La date de fin ne peut pas être postérieure à la date de début"),
+			'Absence::to.consistency' => s("La date de fin ne peut pas être antérieure à la date de début"),
+			'Presence::to.consistency' => s("La date de fin ne peut pas être antérieure à la date de début"),
 			'Presence::to.present' => s("L'utilisateur est déjà présent au moins partiellement à la ferme à cette période"),
 
 			default => NULL
