@@ -401,7 +401,7 @@ class PaymentTransactionLib {
 
 
 			if($recalculate) {
-				PaymentTransactionLib::recalculate($e, new \Collection());
+				PaymentTransactionLib::recalculate($e);
 			}
 
 		Payment::model()->commit();

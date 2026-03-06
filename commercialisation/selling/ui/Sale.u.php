@@ -1439,9 +1439,14 @@ class SaleUi {
 					break;
 
 				case Sale::CONFIRMED :
-					$to = $button(Sale::SELLING, s("Vous allez commencer votre vente avec le logiciel de caisse ! Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro et vous pourrez commencer à enregistrer les commandes des clients. C'est parti ?"));
-					if($eSale->acceptStatusCanceled()) {
+					$to = '';
+					if($eSale->acceptStatusSelling()) {
+						$to .= $button(Sale::SELLING, s("Vous allez commencer votre vente avec le logiciel de caisse ! Les quantités des produits que vous avez saisies pour préparer cette vente seront remises à zéro et vous pourrez commencer à enregistrer les commandes des clients. C'est parti ?"));
+					}
+					if($eSale->acceptStatusSelling() and $eSale->acceptStatusCanceled()) {
 						$to .= '<div class="dropdown-divider"></div>';
+					}
+					if($eSale->acceptStatusCanceled()) {
 						$to .= $button(Sale::CANCELED);
 					}
 					$h = $link($to);
