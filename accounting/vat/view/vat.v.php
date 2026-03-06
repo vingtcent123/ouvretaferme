@@ -9,9 +9,13 @@ new AdaptativeView('/declaration-de-tva', function($data, FarmTemplate $t) {
 	$t->canonical = \farm\FarmUi::urlConnected($data->eFarm).'/declaration-de-tva';
 
 	$title = '<div class="util-action">';
-		$title .= '<h1>';
+		$title .= '<h1 class="flex-justify-space-between">';
 			$title .= '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
-			$title .= s("La TVA");
+			$title .= '<div style="line-height: 1">';
+				$title .= s("Déclaration de TVA");
+				$title .= '<br />';
+				$title .= '<span class="font-md">'.s("Période du {from} au {to}", ['from' => \util\DateUi::numeric($data->vatParameters['from']), 'to' => \util\DateUi::numeric($data->vatParameters['to'])]).'</span>';
+			$title .= '</div>';
 		$title .= '</h1>';
 		$title .= '<div>';
 			$title .= '<a href="/farm/configuration:updateVat?id='.$data->eFarm['id'].'" class="btn btn-primary">'.Asset::icon('gear-fill').'</a>';
