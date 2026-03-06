@@ -39,9 +39,17 @@ new Page(function($data) {
 		$search->set('minDate', $data->vatParameters['from']);
 		$search->set('maxDate', $data->vatParameters['to']);
 
+		// On tente par l'ID
+		$eDeclaration = \vat\DeclarationLib::getById(GET('id'));
+		if($eDeclaration->hasData() === FALSE) {
+			// On tente par les dates
+			$eDeclaration = \vat\DeclarationLib::getByDates($data->vatParameters['from'], $data->vatParameters['to']);
+		}
+
 		switch($tab) {
 
 			case NULL:
+				$data->eDeclaration = $eDeclaration;
 				break;
 
 			case 'journal-buy':
@@ -58,13 +66,6 @@ new Page(function($data) {
 			case 'cerfa':
 				$data->check = \vat\VatLib::getForCheck($data->eFarm, $search);
 				$data->precision = 0;
-
-				// On tente par l'ID
-				$eDeclaration = \vat\DeclarationLib::getById(GET('id'));
-				if($eDeclaration->hasData() === FALSE) {
-					// On tente par les dates
-					$eDeclaration = \vat\DeclarationLib::getByDates($data->vatParameters['from'], $data->vatParameters['to']);
-				}
 				// On a trouvé
 				if($eDeclaration->hasData()) {
 
@@ -137,46 +138,4 @@ new Page(function($data) {
 
 	})
 ;
-
-new \vat\DeclarationPage(function($data) {
-
-	if($data->eFarm->usesAccounting() === FALSE) {
-		throw new RedirectAction('/comptabilite/parametrer?farm='.$data->eFarm['id']);
-	}
-
-	if(\company\CompanySetting::BETA and in_array($data->eFarm['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA) === FALSE) {
-		throw new RedirectAction('/comptabilite/beta?farm='.$data->eFarm['id']);
-	}
-
-	if($data->eFarm['eFinancialYear']['hasVatAccounting'] === FALSE) {
-		throw new NotExistsAction();
-	}
-
-})
-	->write('/vat/doDeclare', function($data) {
-
-		\vat\DeclarationLib::declare($data->e);
-
-		throw new ReloadAction('vat', 'Declaration::declared');
-
-	}, validate: ['acceptDeclare'])
-	->write('/vat/doReset', function($data) {
-
-		\vat\DeclarationLib::delete($data->e);
-
-		throw new ReloadAction('vat', 'Declaration::reset');
-
-	})
-	->write('/vat/doCreateOperations', function($data) {
-
-		$eFinancialYear = \account\FinancialYearLib::getNextOpenFinancialYearByDate(date('Y-m-d', strtotime($data->e['to'].' + 1 DAY')));
-		if($eFinancialYear->empty()) {
-			throw new FailAction('vat\Vat::createOperations.noFinancialYear');
-		}
-
-		\vat\VatLib::createOperations($data->eFarm, $data->e, $eFinancialYear);
-
-		throw new ReloadAction('vat', 'Declaration::operationsCreated');
-
-	}, validate: ['acceptAccount'])
 ?>

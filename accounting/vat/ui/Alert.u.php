@@ -22,6 +22,9 @@ Class AlertUi {
 			'Declaration::reset' => s("Votre déclaration a bien été réinitialisée aux valeurs calculées par {siteName}."),
 			'Declaration::declared' => s("Votre déclaration a bien été enregistrée comme déclarée."),
 			'Declaration::operationsCreated' => s("Les écritures ont bien été créées !"),
+			'Declaration::status.declared' => s("La déclaration a bien été enregistrée déclarée !"),
+			'Declaration::status.accounted' => s("La déclaration a bien été enregistrée comptabilisée !"),
+			'Declaration::status.paid' => s("Le paiement de la déclaration a bien été enregistré. La déclaration est maintenant close."),
 
 			default => null
 

@@ -15,15 +15,7 @@ Class DeclarationLib extends DeclarationCrud {
 			->getCollection(index: 'from');
 
 	}
-	public static function declare(Declaration $eDeclaration): void {
 
-		Declaration::model()
-			->update(
-				$eDeclaration,
-				['status' => Declaration::DECLARED, 'declaredAt' => new \Sql('NOW()'), 'declaredBy' => \user\ConnectionLib::getOnline()],
-			);
-
-	}
 	public static function getHistory(\account\FinancialYear $eFinancialYear): \Collection {
 
 		return Declaration::model()
@@ -80,6 +72,51 @@ Class DeclarationLib extends DeclarationCrud {
 		]);
 
 		Declaration::model()->option('add-replace')->insert($eDeclaration);
+
+	}
+
+	public static function update(Declaration $e, array $properties): void {
+
+		Declaration::model()->beginTransaction();
+
+			if(in_array('status', $properties)) {
+
+				switch($e['status']) {
+
+					case Declaration::DECLARED:
+						$e['declaredAt'] = new \Sql('NOW()');
+						$e['declaredBy'] = \user\ConnectionLib::getOnline();
+						$properties[] = 'declaredAt';
+						$properties[] = 'declaredBy';
+						break;
+
+					case Declaration::ACCOUNTED:
+						$e['accountedAt'] = new \Sql('NOW()');
+						$e['accountedBy'] = \user\ConnectionLib::getOnline();
+						$properties[] = 'accountedAt';
+						$properties[] = 'accountedBy';
+						break;
+
+					case Declaration::PAID:
+						$e['paidAt'] = new \Sql('NOW()');
+						$e['paidBy'] = \user\ConnectionLib::getOnline();
+						$properties[] = 'paidAt';
+						$properties[] = 'paidBy';
+						break;
+
+				}
+
+			}
+
+			$e['updatedAt'] = new \Sql('NOW()');
+			$e['updatedBy'] = \user\ConnectionLib::getOnline();
+			$properties[] = 'updatedAt';
+			$properties[] = 'updatedBy';
+
+
+			parent::update($e, $properties);
+
+		Declaration::model()->commit();
 
 	}
 

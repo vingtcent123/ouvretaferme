@@ -149,8 +149,6 @@ table.no-border-bottom td {
   padding: 0.25rem 0.5rem;
 }
 .vat-period-details .vat-period-value {
-	display: flex;
-	align-items: center;
 	gap: 0.25rem;
 }
 

@@ -1,13 +1,13 @@
 // Calculs automatiques via la base imposable
-document.delegateEventListener('input', '#cerfa-3 table[data-chapter="B"] input[name$="base"], #cerfa-3 table[data-chapter="annexe"] input[name$="base"]', function(e) {
+document.delegateEventListener('input', '#cerfa-3 table[data-chapter="B"] input[name$="base"], #cerfa-3 table[data-chapter="annexe"] input[name$="base"]', function() {
 
 	const name = this.getAttribute('name').slice(0, this.getAttribute('name').indexOf('-'));
-	qs('#cerfa-12 [name="' + name + '"]').value = Vat.computeWithPrecision(parseFloat(this.dataset.rate) * this.value / 100);
+	qs('#cerfa-3 [name="' + name + '"]').value = Vat.computeWithPrecision(parseFloat(this.dataset.rate) * this.value / 100);
 
 	VatCa3.recalculateAll();
 });
 
-document.delegateEventListener('input', '#cerfa-3 input', function(e) {
+document.delegateEventListener('input', '#cerfa-3 input', function() {
 
 	VatCa3.recalculateAll();
 
@@ -157,45 +157,11 @@ class VatCa3 {
 			qs('#cerfa-3 [name="4300"]').value = Vat.computeWithPrecision(ligne_133_a + ligne_133_b - ligne_133_c);
 		}
 
-		const totalAnnexe = Vat.getValue('3', '4213') +
-			Vat.getValue('3', '4215') + Vat.getValue('3', '4238') +
-			Vat.getValue('3', '4220') + Vat.getValue('3', '4334') +
-			Vat.getValue('3', '4207') + Vat.getValue('3', '4328') +
-			Vat.getValue('3', '4329') + Vat.getValue('3', '58a') +
-			Vat.getValue('3', '58b') + Vat.getValue('3', '4332') +
-			Vat.getValue('3', '4333') + Vat.getValue('3', '60a') +
-			Vat.getValue('3', '60b') + Vat.getValue('3', '4314') +
-			Vat.getValue('3', '4315') + Vat.getValue('3', '4206') +
-			Vat.getValue('3', '4226') + Vat.getValue('3', '4324') +
-			Vat.getValue('3', '4325') + Vat.getValue('3', '4217') +
-			Vat.getValue('3', '4239') + Vat.getValue('3', '4326') +
-			Vat.getValue('3', '4236') + Vat.getValue('3', '4243') +
-			Vat.getValue('3', '4244') + Vat.getValue('3', '4252') +
-			Vat.getValue('3', '4253') + Vat.getValue('3', '4254') +
-			Vat.getValue('3', '4247') + Vat.getValue('3', '4248') +
-			Vat.getValue('3', '4249') + Vat.getValue('3', '4250') +
-			Vat.getValue('3', '4273') + Vat.getValue('3', '4274') +
-			Vat.getValue('3', '4321') + Vat.getValue('3', '4268') +
-			Vat.getValue('3', '4270') + Vat.getValue('3', '4269') +
-			Vat.getValue('3', '4271') + Vat.getValue('3', '4272') +
-			Vat.getValue('3', '4256') + Vat.getValue('3', '4259') +
-			Vat.getValue('3', '4255') + Vat.getValue('3', '4336') +
-			Vat.getValue('3', '4266') + Vat.getValue('3', '4267') +
-			Vat.getValue('3', '4309') + Vat.getValue('3', '4310') +
-			Vat.getValue('3', '4311') + Vat.getValue('3', '4306') +
-			Vat.getValue('3', '4307') + Vat.getValue('3', '4308') +
-			Vat.getValue('3', '4258') + Vat.getValue('3', '4261') +
-			Vat.getValue('3', '4312') + Vat.getValue('3', '4304') +
-			Vat.getValue('3', '4337') + Vat.getValue('3', '4283') +
-			Vat.getValue('3', '4284') + Vat.getValue('3', '4285') +
-			Vat.getValue('3', '4277') + Vat.getValue('3', '4303') +
-			Vat.getValue('3', '4313[value]') + Vat.getValue('3', '4335') +
-			Vat.getValue('3', '4291') + Vat.getValue('3', '4294') +
-			Vat.getValue('3', '4296') + Vat.getValue('3', '4295') +
-			Vat.getValue('3', '4293') + Vat.getValue('3', '4322') +
-			Vat.getValue('3', '4301') + Vat.getValue('3', '4300');
-		qs('#cerfa-3 [name="total-3310A"]').value = Vat.computeWithPrecision(totalAnnexe);
-		qs('#cerfa-3 [name="9979"]').value = Vat.computeWithPrecision(totalAnnexe);
+		const inputsArray = Array.from(qsa('#cerfa-3 table[data-chapter="annexe"] input', value => value.getAttribute('name')));
+		const inputsTaxes = inputsArray.filter(input => input.getAttribute('name').indexOf('-') === -1);
+		const taxesSum = inputsTaxes.map(input => parseInt(input.value || 0)).reduce((acc, value) => acc + value || 0, 0);
+		qs('#cerfa-3 [name="total-3310A"]').value = Vat.computeWithPrecision(taxesSum);
+		qs('#cerfa-3 [name="9979"]').value = Vat.computeWithPrecision(taxesSum);
 	}
 
 	static updateDetermination() {

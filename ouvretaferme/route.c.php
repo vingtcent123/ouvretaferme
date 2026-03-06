@@ -1042,21 +1042,6 @@ Route::register([
 			'priority' => 5,
 			'route' => ['shop', 'public', '{fqn}', '{date}', 'paiement'],
 		],
-		'/vat/doCreateOperations' => [
-			'request' => 'vat/vat',
-			'priority' => 5,
-			'route' => ['vat', 'doCreateOperations'],
-		],
-		'/vat/doDeclare' => [
-			'request' => 'vat/vat',
-			'priority' => 5,
-			'route' => ['vat', 'doDeclare'],
-		],
-		'/vat/doReset' => [
-			'request' => 'vat/vat',
-			'priority' => 5,
-			'route' => ['vat', 'doReset'],
-		],
 		'/vat/saveCerfa' => [
 			'request' => 'vat/vat',
 			'priority' => 5,

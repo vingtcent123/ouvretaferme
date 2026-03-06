@@ -10,6 +10,7 @@ abstract class DeclarationElement extends \Element {
 	const DRAFT = 'draft';
 	const DECLARED = 'declared';
 	const ACCOUNTED = 'accounted';
+	const PAID = 'paid';
 
 	const CA3 = 'ca3';
 	const CA12 = 'ca12';
@@ -51,7 +52,7 @@ class DeclarationModel extends \ModuleModel {
 			'from' => ['date', 'cast' => 'string'],
 			'to' => ['date', 'cast' => 'string'],
 			'limit' => ['date', 'cast' => 'string'],
-			'status' => ['enum', [\vat\Declaration::DRAFT, \vat\Declaration::DECLARED, \vat\Declaration::ACCOUNTED], 'cast' => 'enum'],
+			'status' => ['enum', [\vat\Declaration::DRAFT, \vat\Declaration::DECLARED, \vat\Declaration::ACCOUNTED, \vat\Declaration::PAID], 'cast' => 'enum'],
 			'associates' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'cerfa' => ['enum', [\vat\Declaration::CA3, \vat\Declaration::CA12], 'cast' => 'enum'],
 			'data' => ['json', 'null' => TRUE, 'cast' => 'array'],
@@ -64,10 +65,13 @@ class DeclarationModel extends \ModuleModel {
 			'declaredBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'accountedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'accountedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
+			'accountedWithOperations' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
+			'paidAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
+			'paidBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'from', 'to', 'limit', 'status', 'associates', 'cerfa', 'data', 'financialYear', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'declaredAt', 'declaredBy', 'accountedAt', 'accountedBy'
+			'id', 'from', 'to', 'limit', 'status', 'associates', 'cerfa', 'data', 'financialYear', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'declaredAt', 'declaredBy', 'accountedAt', 'accountedBy', 'accountedWithOperations', 'paidAt', 'paidBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -76,6 +80,7 @@ class DeclarationModel extends \ModuleModel {
 			'updatedBy' => 'user\User',
 			'declaredBy' => 'user\User',
 			'accountedBy' => 'user\User',
+			'paidBy' => 'user\User',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -225,6 +230,18 @@ class DeclarationModel extends \ModuleModel {
 
 	public function whereAccountedBy(...$data): DeclarationModel {
 		return $this->where('accountedBy', ...$data);
+	}
+
+	public function whereAccountedWithOperations(...$data): DeclarationModel {
+		return $this->where('accountedWithOperations', ...$data);
+	}
+
+	public function wherePaidAt(...$data): DeclarationModel {
+		return $this->where('paidAt', ...$data);
+	}
+
+	public function wherePaidBy(...$data): DeclarationModel {
+		return $this->where('paidBy', ...$data);
 	}
 
 

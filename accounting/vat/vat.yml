@@ -5,7 +5,7 @@ Declaration:
   from: date
   to: date
   limit: date
-  status: enum(DRAFT, DECLARED, ACCOUNTED) = DRAFT
+  status: enum(DRAFT, DECLARED, ACCOUNTED, PAID) = DRAFT
   associates: ?int(0, null)
   # Type de formulaire
   cerfa: enum(CA3, CA12)
@@ -19,6 +19,9 @@ Declaration:
   declaredBy: ?user\User
   accountedAt: ?datetime
   accountedBy: ?user\User
+  accountedWithOperations: ?bool
+  paidAt: ?datetime
+  paidBy: ?user\User
   UNIQUE: [
     ["from", "to"],
   ]

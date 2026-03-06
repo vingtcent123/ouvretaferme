@@ -395,26 +395,26 @@ Class VatLib {
 
 			$vatData['0979'] = round($sales['20']['amount'] ?? 0 + $sales['5.5']['amount'] ?? 0 + $sales['10']['amount'] ?? 0, $precision);
 			$vatData['0035'] = round(
-				$taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS]['20']['amount'] ?? 0
-				+ $taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS]['5.5']['amount'] ?? 0
-				+ $taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS]['10']['amount'] ?? 0,
+				($taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS]['20']['amount'] ?? 0)
+				+ ($taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS]['5.5']['amount'] ?? 0)
+				+ ($taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS]['10']['amount'] ?? 0),
 				$precision
 			);
 
 		}
 
 		// 0207 => Ventes à 20%
-		$vatData['0207-base'] = round($sales['20']['amount'] ?? 0, $precision);
+		$vatData['0207-base'] = round(($sales['20']['amount'] ?? 0), $precision);
 		$vatData['0207'] = round($taxes[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]['20']['amount'] ?? 0, $precision)
 			+ round($taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS]['20']['amount'] ?? 0, $precision);
 
 			// 0105 => Ventes à 5.5%
-		$vatData['0105-base'] = round($sales['5.5']['amount'] ?? 0, $precision);
+		$vatData['0105-base'] = round(($sales['5.5']['amount'] ?? 0), $precision);
 		$vatData['0105'] = round($taxes[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]['5.5']['amount'] ?? 0, $precision)
 			+ round($taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS]['5.5']['amount'] ?? 0, $precision);
 
 		// 0151 => Ventes à 10%
-		$vatData['0151-base'] = round($sales['10']['amount'] ?? 0, $precision);
+		$vatData['0151-base'] = round(($sales['10']['amount'] ?? 0), $precision);
 		$vatData['0151'] = round($taxes[\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]['10']['amount'] ?? 0, $precision)
 			+ round($taxes[\account\AccountSetting::VAT_TO_PAY_INTRACOM_CLASS]['10']['amount'] ?? 0, $precision);
 
@@ -560,6 +560,11 @@ Class VatLib {
 			->getCollection(index: 'class');
 
 		$eThirdParty = \account\ThirdPartyLib::getByName(VatUi::getTranslations('tresor-public'));
+		if($eThirdParty->empty()) {
+			$eThirdParty = new \account\ThirdParty(['name' => VatUi::getTranslations('tresor-public')]);
+			\account\ThirdPartyLib::create($eThirdParty);
+		}
+
 		$document = VatUi::getTranslations('document', ['from' => \util\DateUi::numeric($eDeclaration['from']), 'to' => \util\DateUi::numeric($eDeclaration['to'])]);
 
 		// Étape 1
@@ -757,26 +762,30 @@ Class VatLib {
 
 		// Ajout de la taxe adar
 		$adarTax = $cerfa['4220'];
-		$eOperationAdar = new \journal\Operation([
-			'account' => $cAccount[\account\AccountSetting::CHARGE_TURNOVER_UNRECUPERABLE_ACCOUNT_CLASS],
-			'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::CHARGE_TURNOVER_UNRECUPERABLE_ACCOUNT_CLASS),
-			'amount' => round($adarTax, 2),
-			'type' => \journal\Operation::DEBIT,
-			'description' => VatUi::getTranslations(\account\AccountSetting::CHARGE_TURNOVER_UNRECUPERABLE_ACCOUNT_CLASS),
-			'thirdParty' => $eThirdParty,
-			'document' => $document,
-		]);
-		$cOperation->append($eOperationAdar);
-		$eOperationVatAdar = new \journal\Operation([
-			'account' => $cAccount[\account\AccountSetting::VAT_DEBIT_CLASS],
-			'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_DEBIT_CLASS),
-			'amount' => round($adarTax, 2),
-			'type' => \journal\Operation::CREDIT,
-			'description' => VatUi::getTranslations(\account\AccountSetting::CHARGE_TURNOVER_UNRECUPERABLE_ACCOUNT_CLASS),
-			'thirdParty' => $eThirdParty,
-			'document' => $document,
-		]);
-		$cOperation->append($eOperationVatAdar);
+		if($adarTax > 0) {
+
+			$eOperationAdar = new \journal\Operation([
+				'account' => $cAccount[\account\AccountSetting::CHARGE_TURNOVER_UNRECUPERABLE_ACCOUNT_CLASS],
+				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::CHARGE_TURNOVER_UNRECUPERABLE_ACCOUNT_CLASS),
+				'amount' => round($adarTax, 2),
+				'type' => \journal\Operation::DEBIT,
+				'description' => VatUi::getTranslations(\account\AccountSetting::CHARGE_TURNOVER_UNRECUPERABLE_ACCOUNT_CLASS),
+				'thirdParty' => $eThirdParty,
+				'document' => $document,
+			]);
+			$cOperation->append($eOperationAdar);
+			$eOperationVatAdar = new \journal\Operation([
+				'account' => $cAccount[\account\AccountSetting::VAT_DEBIT_CLASS],
+				'accountLabel' => \account\AccountLabelLib::pad(\account\AccountSetting::VAT_DEBIT_CLASS),
+				'amount' => round($adarTax, 2),
+				'type' => \journal\Operation::CREDIT,
+				'description' => VatUi::getTranslations(\account\AccountSetting::CHARGE_TURNOVER_UNRECUPERABLE_ACCOUNT_CLASS),
+				'thirdParty' => $eThirdParty,
+				'document' => $document,
+			]);
+			$cOperation->append($eOperationVatAdar);
+
+		}
 
 		return [
 			'cerfaCalculated' => $cerfaFromOperations,
@@ -838,14 +847,9 @@ Class VatLib {
 
 		if($fw->ok()) {
 
-			\vat\Declaration::model()
-				->update($eDeclaration, [
-					'status' => Declaration::ACCOUNTED,
-					'accountedAt' => new \Sql('NOW()'),
-					'accountedBy' => \user\ConnectionLib::getOnline(),
-					'updatedAt' => new \Sql('NOW()'),
-					'updatedBy' => \user\ConnectionLib::getOnline()
-				]);
+			$eDeclaration['status'] = Declaration::ACCOUNTED;
+			$eDeclaration['accountedWithOperations'] = TRUE;
+			DeclarationLib::update($eDeclaration, ['status', 'accountedWithOperations']);
 
 		}
 

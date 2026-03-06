@@ -158,6 +158,7 @@ class DeclarationUi {
 					Declaration::DECLARED => s("Déclarée"),
 					Declaration::DRAFT => s("Créée"),
 					Declaration::ACCOUNTED => s("Comptabilisée"),
+					Declaration::PAID => s("Payée"),
 				];
 				break;
 

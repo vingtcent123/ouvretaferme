@@ -38,7 +38,7 @@ new AdaptativeView('/declaration-de-tva', function($data, FarmTemplate $t) {
 		switch($data->tab) {
 
 			case NULL:
-				echo new \vat\VatUi()->getGeneralTab($data->eFarm, $data->eFarm['eFinancialYear'], $data->vatParameters);
+				echo new \vat\VatUi()->getGeneralTab($data->eFarm, $data->eFarm['eFinancialYear'], $data->vatParameters, $data->eDeclaration);
 				break;
 
 			case 'journal-buy':
@@ -71,7 +71,7 @@ new AdaptativeView('/declaration-de-tva', function($data, FarmTemplate $t) {
 			case 'history':
 				if($data->cDeclaration->empty()) {
 					echo '<div class="util-empty">';
-						echo s("Il n'y a aucune déclaration de TVA à afficher pour la période du {from} au {to}.", ['from' => \util\DateUi::numeric($data->vatParameters['from']), 'to' => \util\DateUi::numeric($data->vatParameters['to'])]);
+						echo s("Il n'y a aucune déclaration de TVA enregistrée à afficher pour la période du {from} au {to}.", ['from' => \util\DateUi::numeric($data->vatParameters['from']), 'to' => \util\DateUi::numeric($data->vatParameters['to'])]);
 					echo '</div>';
 				} else {
 					echo new \vat\DeclarationUi()->getHistory($data->eFarm, $data->eFarm['eFinancialYear'], $data->cDeclaration, $data->allPeriods);
