@@ -1345,7 +1345,9 @@ class OperationLib extends OperationCrud {
 				continue;
 			}
 			$hashTreated[] = $eOperation['hash'];
-			Operation::model()->select('number')->whereHash($eOperation['hash'])->update(['number' => ++$number]);
+			Operation::model()
+				->whereHash($eOperation['hash'])
+				->update(['number' => ++$number, 'validatedAt' => new \Sql('NOW()'), 'updatedAt' => new \Sql('NOW()')]);
 
 		}
 
@@ -1488,7 +1490,6 @@ class OperationLib extends OperationCrud {
 
 				$hashTreated[] = $eOperationToNumber['hash'];
 				Operation::model()
-					->select('number')
 					->whereHash($eOperationToNumber['hash'])
 					->update(['number' => ++$number, 'validatedAt' => new \Sql('NOW()'), 'updatedAt' => new \Sql('NOW()')]);
 
