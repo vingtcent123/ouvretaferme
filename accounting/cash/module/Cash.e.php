@@ -256,7 +256,7 @@ class Cash extends CashElement {
 			})
 			->setCallback('date.year', function(string $date) {
 
-				return ($date >= date('Y-01-01'));
+				return ($date >= CashUi::getFirstDate());
 
 			})
 			->setCallback('description.empty', function(?string $description = NULL) {

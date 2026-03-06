@@ -12,6 +12,10 @@ class CashUi {
 
 	}
 
+	public static function getFirstDate(): string {
+		return date('Y-01-01', strtotime(date('Y-m-d').' - 5 years'));
+	}
+
 	public function getSearch(Register $eRegister, \Search $search): string {
 
 		$h = '<div id="cash-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
@@ -648,7 +652,7 @@ class CashUi {
 
 			$h .= '<div class="util-block-info">';
 				$h .= '<p>'.s("Le solde initial marque le point de départ de votre caisse. Choisissez bien la date du solide initial car toutes les opérations que vous enregistrerez ultérieurement dans votre journal devront être postérieures à cette date.").'</p>';
-				$h .= '<p>'.s("Votre journal de caisse peut commencer au plus tôt le {value}.", \util\DateUi::numeric(date('Y-01-01'))).'</p>';
+				$h .= '<p>'.s("Votre journal de caisse peut commencer au plus tôt le {value}.", \util\DateUi::numeric(CashUi::getFirstDate())).'</p>';
 			$h .= '</div>';
 
 			$form = new \util\FormUi();
