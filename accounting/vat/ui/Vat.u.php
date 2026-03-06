@@ -392,7 +392,11 @@ class VatUi {
 				$h .= '<div class="vat-timeline vat-timeline-only">';
 					$h .= '<div class="vat-timeline-item">';
 						$h .= '<div class="vat-timeline-circle">';
-							$h .= s("après l'opération bancaire de paiement ou remboursement");
+							if($eDeclaration->isCredit()) {
+								$h .= s("après l'opération bancaire de remboursement");
+							} else {
+								$h .= s("après l'opération bancaire de paiement");
+							}
 						$h .= '</div>';
 					$h .= '</div>';
 					$h .= '<div class="vat-timeline-action">';
