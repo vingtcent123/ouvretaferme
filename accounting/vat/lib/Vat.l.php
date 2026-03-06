@@ -256,13 +256,13 @@ Class VatLib {
 
 			$currentMonth = $month;
 
-			if($currentMonth < 3) {
+			if($currentMonth <= 3) {
 				$trimester = 1;
-			} else if($currentMonth < 6) {
+			} else if($currentMonth <= 6) {
 				$trimester = 2;
-			} else if($currentMonth < 9) {
+			} else if($currentMonth <= 9) {
 				$trimester = 3;
-			} else if($currentMonth < 12) {
+			} else if($currentMonth <= 12) {
 				$trimester = 4;
 			}
 
