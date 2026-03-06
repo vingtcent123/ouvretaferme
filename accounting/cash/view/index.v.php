@@ -25,7 +25,7 @@ new AdaptativeView('/journal-de-caisse', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-block-side">';
 			echo '<h3>'.Asset::icon('archive').'  '.s("Archivage des données").'</h3>';
-			echo '<p>'.s("la fonction d'archivage vis à assurer la conformité fiscale vis-à-vis de l'article 286 du code général des impôts.").'</p>';
+			echo '<p>'.s("la fonction d'archivage vise à assurer la conformité fiscale vis-à-vis de l'article 286 du code général des impôts.").'</p>';
 			echo '<a href="'.\farm\FarmUi::urlConnected().'/cash/archives" class="btn btn-primary">'.s("Accéder à l'archivage").'</a>';
 		echo '</div>';
 
