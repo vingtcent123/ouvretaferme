@@ -508,6 +508,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['presentation', 'afocg'],
 		],
+		'/presentation/conformite' => [
+			'request' => 'main/index',
+			'priority' => 5,
+			'route' => ['presentation', 'conformite'],
+		],
 		'/presentation/faq' => [
 			'request' => 'main/index',
 			'priority' => 5,

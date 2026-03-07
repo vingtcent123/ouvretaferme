@@ -416,9 +416,23 @@ new AdaptativeView('/presentation/service', function($data, MainTemplate $t) {
 
 	Asset::css('main', 'home.css');
 
-	$t->header = '<h1>'.s("Conditions d'utilisation de Ouvretaferme").'</h1>';
+	$t->header = '<h1>'.$t->title.'</h1>';
 
 	echo new \main\LegalUi()->tos();
+
+});
+
+new AdaptativeView('/presentation/conformite', function($data, MainTemplate $t) {
+
+	$t->title = s("Conformité légale des fonctionnalités de Ouvretaferme");
+	$t->metaNoindex = TRUE;
+	$t->template = 'home-legal';
+
+	Asset::css('main', 'home.css');
+
+	$t->header = '<h1>'.$t->title.'</h1>';
+
+	echo new \main\LegalUi()->legal();
 
 });
 

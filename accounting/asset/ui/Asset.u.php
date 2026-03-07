@@ -77,7 +77,7 @@ Class AssetUi {
 					$h .= '<tr>';
 						$h .= '<th>'.s("Numéro de compte").'</th>';
 						$h .= '<th class="text-center">'.s("Date d'acquisition").'</th>';
-						$h .= '<th class="text-center">'.s("Date de de mise en service").'</th>';
+						$h .= '<th class="text-center">'.s("Date de mise en service").'</th>';
 						$h .= '<th>'.s("Libellé").'</th>';
 						$h .= '<th class="t-highlight text-end">'.s("Valeur d'acquisition (HT)").'</th>';
 						$h .= '<th class="text-center">'.s("Durée éco").'</th>';

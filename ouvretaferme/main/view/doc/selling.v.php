@@ -31,10 +31,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 		echo Asset::image('main', 'doc/market-example.png');
 
 		echo '<p>';
-			echo s("Le logiciel de caisse est conforme à la réglementation sur les logiciels de caisse (inaltérabilité, sécurisation, conservation et archivage des données). Un audit de conformité a été engagé auprès de LNE conformément à la loi. Si cette fonctionnalité vous plait, nous vous invitons à <link>adhérer à notre association</link> pour nous aider à financer cet audit dont le coût s'élève 11 000 €.", ['link' => '<a href="/adherer">']);
-		echo '</p>';
-		echo '<p>';
-			echo s("Conformément à la loi, vous pouvez fournir en cas de contrôle <link>l'attestation ci-jointe</link>, valable jusqu'au 31 août 2026.", ['link' => '<a href="'.Asset::getPath('association', 'document/attestation-logiciel-caisse.pdf').'" data-ajax-navigation="never">']);
+			echo s("Conformément à la loi, vous pouvez fournir en cas de contrôle <link>une attestation à télécharger et à compléter</link>.", ['link' => '<a href="/presentation/conformite">']);
 		echo '</p>';
 
 	echo '</div>';

@@ -3,6 +3,64 @@ namespace main;
 
 class LegalUi {
 
+	public function legal() : string {
+
+		$h = '<div class="util-block-gradient">';
+			$h .= '<h3>'.s("Préambule").'</h3>';
+			$h .= '<p>'.s("Plusieurs fonctionnalités de {siteName} sont concernées par des dispositions légales qui visent notamment à permettre à l'administration fiscale de sécuriser le logiciel et d'accéder à certaines données dans un objectif de contrôle.").'</p>';
+			$h .= '<p><b>'.s("{siteName} est conforme vis-à-vis de ces dispositions légales pour les utilisateurs ayant leur siège social en <b>FRANCE</b>.").'</b></p>';
+		$h .= '</div>';
+
+		$h .= '<h2>'.s("Sécurisation des systèmes de caisse").'</h2>';
+		$h .= '<p>'.s("Le 3° bis de l'article 286 du code général des impôts précise que si votre société effectue des livraisons de biens et des prestations de services ne donnant pas lieu à facturation conformément à l'article 289 du présent code et enregistre ces opérations au moyen d'un logiciel ou d'un système de caisse, elle doit utiliser un logiciel ou un système satisfaisant à des conditions d'inaltérabilité, de sécurisation, de conservation et d'archivage des données en vue du contrôle de l'administration fiscale, attestées par un certificat délivré par un organisme accrédité dans les conditions prévues à l'article L. 433-4 du code de la consommation ou par une attestation individuelle de l'éditeur, conforme à un modèle fixé par l'administration.").'</p>';
+		$h .= '<div class="util-block">';
+			$h .= '<p>'.s("Les fonctionnalités proposées par Ouvretaferme satisfont aux conditions d'inaltérabilité, de sécurisation, de conservation et d'archivage des données exigées par l'administration fiscale. L'attestation individuelle que nous fournissons ci-dessous est à compléter avec les informations de votre structure et peut être communiquée au besoin à l'administration fiscale.").'</p>';
+			$h .= '<p>';
+				$h .= '<a href="'.\Asset::getPath('association', 'document/2026-03-07-Attestation-individuelle-du-logiciel-de-caisse.pdf').'" class="btn btn-primary" data-ajax-navigation="never">'.s("Télécharger l'attestation individuelle").'</a>';
+			$h .= '</p>';
+		$h .= '</div>';
+
+		$h .= '<h3>'.s("Sources").'</h3>';
+
+		$h .= '<ul class="mb-1">';
+			$h .= '<li><a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000051764897/2026-03-07">'.s("Article 286 du code général des impôts").'</a></li>';
+			$h .= '<li><a href="https://bofip.impots.gouv.fr/bofip/10691-PGP.html/identifiant%3DBOI-TVA-DECLA-30-10-30-20251001">'.s("Règlementation relatives à la sécurisation des systèmes de caisse").'</a></li>';
+			$h .= '<li><a href="https://bofip.impots.gouv.fr/bofip/10692-PGP.html/identifiant%3DBOI-LETTRE-000242-20201230">'.s("Règlementation liée au modèle d'attestation individuelle").'</a></li>';
+		$h .= '</ul>';
+
+		$h .= '<h3>'.s("Notice d'utilisation des fichiers d'archivage").'</h3>';
+
+		$h .= '<h4>'.s("Archivage des données des journaux de caisse").'</h4>';
+
+		$h .= '<p>'.s("L'archive générée pour les journaux de caisse contient chaque ligne de l'ensemble de vos journaux de caisse pour la période sélectionnée au format ouvert CSV. Le détail des transactions peut être retrouvé à partir de l'archive générée pour les données de ventes.").'</p>';
+
+		$h .= '<h4>'.s("Archivage des données des ventes").'</h4>';
+
+		$h .= '<p>'.s("L'archive générée pour les données de ventes contient les données de toutes les ventes de la période sélectionnée au format ouvert CSV, dès lors que l'émission d'un justificatif est possible pour les ventes en question.").'</p>';
+		$h .= '<p>'.s("Les données sont séparées en trois sections dans l'archive :").'</p>';
+
+		$h .= '<ul>';
+			$h .= '<li>'.s("<b>Section 1</b> : les données de chaque transaction contenant les numéros de justificatifs ainsi que les données liées à la vente").'</li>';
+			$h .= '<li>'.s("<b>Section 2</b> : les données de paiement (moyen et date de paiement notamment) pour les transactions générées dans la <b>section 1</b>").'</li>';
+			$h .= '<li>'.s("<b>Section 3</b> : les données des articles vendus (libellé, quantité, prix) pour les transactions générées dans la <b>section 1</b>").'</li>';
+		$h .= '</ul>';
+
+		$h .= '<br/>';
+		$h .= '<h2>'.s("Tenue d'une comptabilité informatisée").'</h2>';
+		$h .= '<p>'.s("Le cadre juridique du contrôle des comptabilités informatisées est défini par l'article L. 13 du livre des procédures fiscales (LPF), l'article L. 47 A du LPF, l'article L. 57 du LPF, l'article L. 74 du LPF et l'article L. 102 B du LPF.").'</p>';
+		$h .= '<p><b>'.s("{siteName} est conforme vis-à-vis de ces dispositions légales pour les utilisateurs ayant leur siège social en <b>FRANCE</b>.").'</b></p>';
+
+		$h .= '<h3>'.s("Sources").'</h3>';
+
+		$h .= '<ul>';
+			$h .= '<li>'.s("Légifrance pour l'article L. 13 du livre des procédures fiscales (LPF), l'article L. 47 A du LPF, l'article L. 57 du LPF, l'article L. 74 du LPF et l'article L. 102 B du LPF.").'</li>';
+			$h .= '<li><a href="https://bofip.impots.gouv.fr/bofip/2899-PGP.html/identifiant=BOI-BIC-DECLA-30-10-20-40-20180720">'.s("Conservation et représentation des livres, documents et pièces comptables dans le cadre d'une comptabilité informatisée").'</a></li>';
+		$h .= '</ul>';
+
+		return $h;
+
+	}
+
 	public function tos() : string {
 
 		$h = '<h2>'.s("Fonctionnalités").'</h2>';

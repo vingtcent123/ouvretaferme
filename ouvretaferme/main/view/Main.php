@@ -232,11 +232,12 @@ class MainTemplate extends BaseTemplate {
 								$h .= '<a href="https://discord.gg/bdSNc3PpwQ" target="_blank">'.s("Recevoir une invitation").'</a>';
 							$h .= '</div>';
 							$h .= '<div>';
-								$h .= '<h4>'.s("Usage").'</h4>';
+								$h .= '<h4>'.s("Utilisation").'</h4>';
 								$h .= '<a href="'.\association\AssociationSetting::URL.'">'.s("Qui sommes-nous ?").'</a><br/>';
 								$h .= '<a href="'.\association\AssociationSetting::URL.'/mentions-legales">'.s("Mentions légales").'</a><br/>';
 								$h .= '<a href="'.\association\AssociationSetting::URL.'/nous-contacter">'.s("Nous contacter").'</a><br/>';
 								$h .= '<a href="/presentation/service">'.s("Conditions d'utilisation").'</a><br/>';
+								$h .= '<a href="/presentation/conformite">'.s("Conformité légale").'</a><br/>';
 						$h .= '</div>';
 					$h .= '</div>';
 				$h .= '</div>';
