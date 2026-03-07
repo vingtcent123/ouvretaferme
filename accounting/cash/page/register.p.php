@@ -2,6 +2,8 @@
 new \cash\RegisterPage()
 	->getCreateElement(function($data) {
 
+		$data->eFarm->validate('isLegal');
+
 		$eFinancialYear = \account\FinancialYearLib::getByDate(currentDate());
 
 		return new \cash\Register([

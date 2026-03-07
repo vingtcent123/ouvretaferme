@@ -172,14 +172,6 @@ class SuggestionLib {
 
 			$eCash->merge($eCashImport);
 
-			$eCash['financialYear'] = \account\FinancialYearLib::getByDate($eCash['date']);
-
-			if($eCash['financialYear']->empty()) {
-				Cash::model()->rollBack();
-				Cash::fail('date.financialYear');
-				return;
-			}
-
 			switch($source) {
 
 				case Cash::SELL_INVOICE :

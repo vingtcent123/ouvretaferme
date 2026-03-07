@@ -297,6 +297,22 @@ class Farm extends FarmElement {
 
 	}
 
+	public function isIndividual() {
+
+		$this->expects(['legalCategory']);
+
+		return $this['legalCategory'] === \farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL;
+
+	}
+
+	public function isCompany() {
+
+		$this->expects(['legalCategory']);
+
+		return $this['legalCategory'] !== \farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL;
+
+	}
+
 	public function isMembership(): bool {
 
 		return ($this['membership'] === TRUE);

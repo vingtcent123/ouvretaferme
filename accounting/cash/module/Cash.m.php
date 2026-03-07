@@ -77,7 +77,6 @@ class CashModel extends \ModuleModel {
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'payment' => ['element32', 'selling\Payment', 'null' => TRUE, 'cast' => 'element'],
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
-			'financialYear' => ['element32', 'account\FinancialYear', 'null' => TRUE, 'cast' => 'element'],
 			'accountingHash' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'accountingReady' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
 			'status' => ['enum', [\cash\Cash::DRAFT, \cash\Cash::VALID, \cash\Cash::DELETED], 'cast' => 'enum'],
@@ -85,7 +84,7 @@ class CashModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'position', 'type', 'hasVat', 'vat', 'vatRate', 'description', 'source', 'cashflow', 'invoice', 'sale', 'customer', 'payment', 'account', 'financialYear', 'accountingHash', 'accountingReady', 'status', 'createdAt'
+			'id', 'register', 'date', 'balance', 'amountIncludingVat', 'amountExcludingVat', 'position', 'type', 'hasVat', 'vat', 'vatRate', 'description', 'source', 'cashflow', 'invoice', 'sale', 'customer', 'payment', 'account', 'accountingHash', 'accountingReady', 'status', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -96,7 +95,6 @@ class CashModel extends \ModuleModel {
 			'customer' => 'selling\Customer',
 			'payment' => 'selling\Payment',
 			'account' => 'account\Account',
-			'financialYear' => 'account\FinancialYear',
 		];
 
 		$this->indexConstraints = array_merge($this->indexConstraints, [
@@ -227,10 +225,6 @@ class CashModel extends \ModuleModel {
 
 	public function whereAccount(...$data): CashModel {
 		return $this->where('account', ...$data);
-	}
-
-	public function whereFinancialYear(...$data): CashModel {
-		return $this->where('financialYear', ...$data);
 	}
 
 	public function whereAccountingHash(...$data): CashModel {

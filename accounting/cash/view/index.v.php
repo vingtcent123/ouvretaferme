@@ -8,26 +8,37 @@ new AdaptativeView('/journal-de-caisse', function($data, FarmTemplate $t) {
 
 	$h = '<div class="util-action">';
 		$h .= '<h1>'.s("Journaux de caisse").'</h1>';
-		$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/register:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau journal").'</a>';
+		if($data->eFarm->isLegal()) {
+			$h .= '<a href="'.\farm\FarmUi::urlConnected().'/cash/register:create" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Nouveau journal").'</a>';
+		}
 	$h .= '</div>';
 
 	$t->mainTitle = $h;
 
-	if($data->ccRegister->empty()) {
+	if($data->eFarm->isLegal() === FALSE) {
 
-		echo '<h3>'.s("Configurer mon journal de caisse").'</h3>';
-
-		echo new \cash\RegisterUi()->create($data->eRegisterCreate, start: TRUE)->body;
+		echo '<h3>'.s("Informations requises sur votre ferme").'</h3>';
+		echo new \farm\FarmUi()->getLegalForm($data->eFarm);
 
 	} else {
 
-		echo new \cash\RegisterUi()->getList($data->ccRegister);
+		if($data->ccRegister->empty()) {
 
-		echo '<div class="util-block-side">';
-			echo '<h3>'.Asset::icon('archive').'  '.s("Archivage des données").'</h3>';
-			echo '<p>'.s("La fonction d'archivage vise à assurer la conformité fiscale vis-à-vis de l'article 286 du code général des impôts.").'</p>';
-			echo '<a href="'.\farm\FarmUi::urlConnected().'/cash/archives" class="btn btn-primary">'.s("Accéder à l'archivage").'</a>';
-		echo '</div>';
+			echo '<h3>'.s("Configurer mon journal de caisse").'</h3>';
+
+			echo new \cash\RegisterUi()->create($data->eRegisterCreate, start: TRUE)->body;
+
+		} else {
+
+			echo new \cash\RegisterUi()->getList($data->ccRegister);
+
+			echo '<div class="util-block-side">';
+				echo '<h3>'.Asset::icon('archive').'  '.s("Archivage des données").'</h3>';
+				echo '<p>'.s("La fonction d'archivage vise à assurer la conformité fiscale vis-à-vis de l'article 286 du code général des impôts.").'</p>';
+				echo '<a href="'.\farm\FarmUi::urlConnected().'/cash/archives" class="btn btn-primary">'.s("Accéder à l'archivage").'</a>';
+			echo '</div>';
+
+		}
 
 	}
 

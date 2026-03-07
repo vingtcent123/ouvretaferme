@@ -258,6 +258,19 @@ body[data-template~="farm"] .container {
 	text-align: center;
 }
 
+.farm-nav-join-block {
+	margin: 0.5rem 1rem;
+	padding: 0.5rem;
+	border-radius: var(--radius);
+	font-size: .9rem;
+	line-height: 1.4;
+	background-color: var(--background-body);
+}
+
+.farm-nav-join-block a:not(.btn):hover {
+	color: var(--text);
+}
+
 @media (min-width: 1100px) and (min-height: 600px) {
 
 	:root {
@@ -781,6 +794,10 @@ body[data-template~="farm"] .container {
 
 	}
 
+	.farm-nav-join {
+		grid-area: join;
+	}
+
 	.farm-nav-planning {
 		grid-area: planning;
 	}
@@ -807,6 +824,13 @@ body[data-template~="farm"] .container {
 				"cultivation analyze settings" 1fr / 1fr 1fr 1fr;
 		}
 
+		.farm-section-production:has(.farm-nav-join) {
+			grid-template:
+				"join join join" auto
+				"planning planning planning" auto
+				"cultivation analyze settings" 1fr / 1fr 1fr 1fr;
+		}
+
 
 	}
 
@@ -820,6 +844,13 @@ body[data-template~="farm"] .container {
 				"cultivation analyze settings" 1fr / 1fr 1fr 1fr;
 		}
 
+		.farm-section-production:has(.farm-nav-join) {
+			grid-template:
+				"join join join" auto
+				"planning planning planning" auto
+				"cultivation analyze settings" 1fr / 1fr 1fr 1fr;
+		}
+
 
 	}
 
@@ -829,6 +860,14 @@ body[data-template~="farm"] .container {
 			display: grid;
 			align-items: start;
 			grid-template:
+				"planning planning" auto
+				"cultivation analyze" auto
+				"cultivation settings" auto / 1fr 1fr;
+		}
+
+		.farm-section-production:has(.farm-nav-join) {
+			grid-template:
+				"join join" auto
 				"planning planning" auto
 				"cultivation analyze" auto
 				"cultivation settings" auto / 1fr 1fr;
@@ -865,6 +904,11 @@ body[data-template~="farm"] .container {
 			grid-template: "selling shop communication analyze settings" auto / auto auto auto auto auto;
 		}
 
+		.farm-section-commercialisation:has(.farm-nav-join) {
+			grid-template:
+					"join join join join join" auto
+					"selling shop communication analyze settings" auto / auto auto auto auto auto;
+		}
 
 	}
 
@@ -874,6 +918,13 @@ body[data-template~="farm"] .container {
 			display: grid;
 			align-items: start;
 			grid-template:
+				"selling shop communication analyze" auto
+				"selling shop communication settings" 1fr / auto auto auto auto;
+		}
+
+		.farm-section-commercialisation:has(.farm-nav-join) {
+			grid-template:
+				"join join join join" auto
 				"selling shop communication analyze" auto
 				"selling shop communication settings" 1fr / auto auto auto auto;
 		}
@@ -892,6 +943,14 @@ body[data-template~="farm"] .container {
 				"selling communication settings" 1fr / auto auto auto;
 		}
 
+		.farm-section-commercialisation:has(.farm-nav-join) {
+			grid-template:
+				"join join join" auto
+				"selling shop analyze" auto
+				"selling shop settings" auto
+				"selling communication settings" 1fr / auto auto auto;
+		}
+
 
 	}
 
@@ -901,6 +960,14 @@ body[data-template~="farm"] .container {
 			display: grid;
 			align-items: start;
 			grid-template:
+				"selling shop" auto
+				"selling communication" auto
+				"analyze settings" auto / auto auto;
+		}
+
+		.farm-section-commercialisation:has(.farm-nav-join) {
+			grid-template:
+				"join join" auto
 				"selling shop" auto
 				"selling communication" auto
 				"analyze settings" auto / auto auto;

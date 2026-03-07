@@ -202,7 +202,7 @@ class CashLib extends CashCrud {
 
 		$e->expects([
 			'register',
-			'type', 'source', 'date', 'financialYear'
+			'type', 'source', 'date'
 		]);
 
 		Cash::model()->beginTransaction();
@@ -299,7 +299,7 @@ class CashLib extends CashCrud {
 		$e['vatRate'] = NULL;
 		$e['status'] = Cash::DRAFT;
 
-		if($e['financialYear']->isAccounting()) {
+		if($e['register']['hasAccounts']) {
 
 			$e['account'] = \account\AccountLib::getByClass(match($e['type']) {
 				Cash::DEBIT => \account\AccountSetting::CHARGES_OTHER_CLASS,
@@ -314,7 +314,7 @@ class CashLib extends CashCrud {
 
 		self::createWithoutVat($e);
 
-		if($e['financialYear']->isIndividual()) {
+		if(\farm\Farm::getConnected()->isIndividual()) {
 			$e['account'] = \account\AccountLib::getByClass(\account\AccountSetting::FARMER_S_ACCOUNT_CLASS);
 		}
 
@@ -421,10 +421,6 @@ class CashLib extends CashCrud {
 	}
 
 	public static function update(Cash $e, array $properties): void {
-
-		if(in_array('date', $properties)) {
-			$properties[] = 'financialYear';
-		}
 
 		Cash::model()->beginTransaction();
 

@@ -528,12 +528,12 @@ class FarmUi {
 				$eFarm['legalName'] ??= $eFarm['name'];
 
 				$h .= $form->dynamicGroup($eFarm, 'legalName*');
-				$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm, ['country' => FALSE]);
 				$h .= $form->dynamicGroup($eFarm, 'legalCategory*');
+				$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm, ['country' => FALSE]);
 
 			}
 
-			$confirm = $eFarm->isVerified() ? [] : ['data-confirm' =>s("Le choix du pays est définitif et vous ne pourrez plus le modifier pour cette ferme. Validez-vous votre choix ?") ];
+			$confirm = $eFarm->isVerified() ? [] : ['data-confirm' => s("Le choix du pays est définitif et vous ne pourrez plus le modifier pour cette ferme. Validez-vous votre choix ?") ];
 
 			$h .= $form->group(
 				content: $form->submit(s("Valider"), $confirm)
@@ -1206,9 +1206,62 @@ class FarmUi {
 
 	}
 
+	protected function getJoin(Farm $eFarm): string {
+
+		if(
+			$eFarm->canManage() and
+			$eFarm->isMembership() === FALSE and
+			(int)substr($eFarm['createdAt'], 0, 4) < 2025
+		) {
+
+			$messages = [
+				[
+					s("Vous utilisez Ouvretaferme depuis {value}, soutenez le projet !", substr($eFarm['createdAt'], 0, 4)),
+					s("J'adhère pour seulement 100 €")
+				],
+				[
+					s("Même en adhérant à l'association, Ouvretaferme restera 5 fois moins cher que les services équivalents !"),
+					s("Aidez-nous à pérenniser le logiciel")
+				],
+				[
+					s("Vous utilisez Ouvretaferme tous les jours ou presque ? Pensez à soutenir notre travail."),
+					s("Rejoindre l'association")
+				],
+				[
+					s("Ce sont déjà {value} fermes qui soutiennent le développement de Ouvretaferme.", ['value' => fn() => \association\MembershipLib::count()]),
+					s("Ajoutez +1 au compteur")
+				],
+				[
+					s("Vous avez hâte de voir de <link>nouvelles fonctionnalités</link> arriver sur le logiciel ?", ['link' => '<a href="https://blog.ouvretaferme.org/feuille-de-route">']),
+					s("Donnez-nous les moyens de recruter !")
+				],
+				[
+					s("Vous pensez que le travail que nous réalisons sur Ouvretaferme a la même valeur que votre travail de producteur ?"),
+					s("Soutenez-nous financièrement")
+				]
+			];
+			static $message = $messages[array_rand($messages)];
+
+			$h = '<div class="farm-tab-wrapper farm-nav-join">';
+
+				$h .= '<div class="farm-tab-wrapper farm-nav-join-block">';
+					$h .= '<span style="margin-right: 0.5rem">'.$message[0].'</span><br/>';
+					$h .= '<a href="'.\association\AssociationUi::url($eFarm).'" class="btn btn-primary btn-xs" style="margin-top: 0.25rem">'.$message[1].'</a>';
+				$h .= '</div>';
+
+			$h .= '</div>';
+
+			return $h;
+
+		} else {
+			return '';
+		}
+
+	}
+
 	protected function getProductionSection(Farm $eFarm, ?string $nav, ?string $subNav): string {
 
-		$h = '';
+		$h = $this->getJoin($eFarm);
 
 		if($eFarm->canPlanning()) {
 
@@ -1276,7 +1329,7 @@ class FarmUi {
 
 	protected function getCommercialisationSection(Farm $eFarm, ?string $nav, ?string $subNav): string {
 
-		$h = '';
+		$h = $this->getJoin($eFarm);
 
 		if($eFarm->canSelling()) {
 
@@ -1312,75 +1365,6 @@ class FarmUi {
 			}
 
 		}
-
-		if($eFarm->canAnalyze()) {
-
-			$h .= '<div class="farm-tab-wrapper farm-nav-analyze-commercialisation">';
-
-				$h .= $this->getAnalyzeTab(
-					$eFarm,
-					$nav,
-					$subNav,
-					'commercialisation'
-				);
-
-			$h .= '</div>';
-
-		}
-
-		if($eFarm->canManage()) {
-
-			$h .= '<div class="farm-tab-wrapper farm-nav-settings-commercialisation">';
-
-				$h .= $this->getSettingsTab(
-					$eFarm,
-					$nav,
-					'commercialisation',
-					FarmUi::urlSettingsCommercialisation($eFarm)
-				);
-
-			$h .= '</div>';
-
-		}
-		return $h;
-
-	}
-
-	protected function getGameSection(Farm $eFarm, ?string $nav, ?string $subNav): string {
-
-		$h = '';
-
-		$h .= '<div class="farm-tab-wrapper farm-nav-selling">';
-
-			$h .= $this->getNav('selling', $nav);
-
-			$h .= $this->getSellingMenu($eFarm, subNav: $subNav);
-
-		$h .= '</div>';
-		$h .= '<div class="farm-tab-wrapper farm-nav-shop">';
-
-			if($eFarm['hasShops']) {
-
-				$h .= $this->getNav('shop', $nav);
-
-				$h .= $this->getShopMenu($eFarm, subNav: $subNav);
-
-			} else {
-
-				$h .= $this->getNav('shop', $nav);
-				$h .= $this->getEmptyShopMenu($eFarm, subNav: $subNav);
-
-			}
-
-		$h .= '</div>';
-
-		$h .= '<div class="farm-tab-wrapper farm-nav-communication">';
-
-			$h .= $this->getNav('game-ranking', $nav);
-			$h .= $this->getCommunicationsMenu($eFarm, subNav: $subNav);
-
-		$h .= '</div>';
-
 
 		if($eFarm->canAnalyze()) {
 

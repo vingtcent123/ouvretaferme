@@ -2,8 +2,6 @@
 namespace cash;
 
 /**
- * Tous
- * > financialYear
  *
  * BANK_MANUAL
  * > account (si accountingMode = ACCOUNTING)
@@ -44,7 +42,6 @@ class Cash extends CashElement {
 		return parent::getSelection() + [
 			'register' => RegisterElement::getSelection(),
 			'account' => \account\Account::getSelection(),
-			'financialYear' => \account\FinancialYear::getSelection(),
 			'customer' => \selling\CustomerElement::getSelection(),
 			'sale' => \selling\SaleElement::getSelection(),
 			'invoice' => \selling\InvoiceElement::getSelection(),
@@ -123,19 +120,15 @@ class Cash extends CashElement {
 		]);
 
 		if(
+			$this['register']['hasAccounts'] === FALSE or
 			in_array($this['source'], CashSetting::SOURCE_PRIVATE_ACCOUNTS) === FALSE or
 			$this['date'] === NULL
 		) {
 			return FALSE;
 		}
 
-		$this->expects([
-			'financialYear'
-		]);
-
 		return (
-			$this['financialYear']->isCompany() and
-			$this['financialYear']->isAccounting()
+			\farm\Farm::getConnected()->isCompany()
 		);
 
 	}
@@ -167,13 +160,7 @@ class Cash extends CashElement {
 			return FALSE;
 		}
 
-		$this->expects([
-			'financialYear'
-		]);
-
-		return (
-			$this['financialYear']->isAccounting()
-		);
+		return $this['register']['hasAccounts'];
 
 	}
 
@@ -186,11 +173,7 @@ class Cash extends CashElement {
 			return FALSE;
 		}
 
-		$this->expects([
-			'financialYear'
-		]);
-
-		return \farm\ConfigurationLib::getConfigurationForDate(\farm\Farm::getConnected(), 'hasVat', $this['date']);
+		return \farm\Farm::getConnected()->getConf('hasVat');
 
 	}
 
@@ -213,32 +196,6 @@ class Cash extends CashElement {
 				} else {
 					return in_array($type, [Cash::DEBIT, Cash::CREDIT]);
 				}
-
-			})
-			->setCallback('date.financialYear', function(string $date) use ($p) {
-
-				if($p->isInvalid('date')) {
-
-					$this['financialYear'] = new \account\FinancialYear();
-					return TRUE;
-
-				}
-
-				$this->expects(['source']);
-
-				if($this['source'] === Cash::INITIAL) {
-
-					$this['financialYear'] = new \account\FinancialYear();
-					return TRUE;
-
-				} else {
-
-					$this['financialYear'] = \account\FinancialYearLib::getByDate($date);
-					return $this['financialYear']->notEmpty();
-
-				}
-
-
 
 			})
 			->setCallback('date.past', function(string $date) {

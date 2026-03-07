@@ -51,7 +51,7 @@ class MembershipUi {
 				$h .= '<div class="home-point">'.\Asset::icon('bank').'<h4>'.s("L'accès au module de gestion").'</h4></div>';
 				$h .= '<div class="home-point">'.\Asset::icon('envelope').'<h4>'.s("Envoyer {value} e-mails par semaine avec les campagnes e-mailing", \farm\Farm::getCampaignMemberLimit()).'</h4></div>';
 			$h .= '</div>';
-			$h .= '<p class="mt-1">'.s("Adhérer à l'association Ouvretaferme ne vous engage en rien à consacrer du temps pour participer à la vie de l'association ou au développement du logiciel (à moins que vous ne le souhaitiez !). Il s'agit simplement de nous aider à poursuivre son développement !").'</p>';
+			$h .= '<p class="mt-1">'.s("Adhérer à l'association Ouvretaferme ne vous engage en rien à consacrer du temps pour participer à la vie de l'association ou au développement du logiciel. Il s'agit simplement de nous aider à poursuivre son développement !").'</p>';
 		$h .= '</div>';
 
 		return $h;
