@@ -745,7 +745,6 @@ Class AccountingLib {
 					$items[] = [
 						'account' => $eAccount['id'],
 						'accountReference' => NULL,
-						//'ratio' => $amountExcludingVat / $totalByVatRateExcludingVat,
 						'amount' => $amountExcludingVat,
 						'vatRate' => $eItem['vatRate'],
 					];
@@ -769,7 +768,6 @@ Class AccountingLib {
 					$items[] = [
 						'account' => $eAccountVat['id'],
 						'accountReference' => $eAccount['id'],
-						//'ratio' => $amountVat / $eElement['vatByRate'][$keyForTotal]['vat'],
 						'amount' => $amountVat,
 						'vatRate' => $eItem['vatRate'],
 					];
@@ -798,6 +796,9 @@ Class AccountingLib {
 			if($eSale['shippingExcludingVat'] !== NULL) {
 
 				$eAccountShipping = $cAccount->find(fn($e) => (int)$e['class'] === (int)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS)->first();
+				if($eAccountShipping === NULL) {
+					$eAccountShipping = $eAccountDefault;
+				}
 
 				if($hasVat === FALSE) {
 
@@ -810,8 +811,6 @@ Class AccountingLib {
 					$shippingVatRate = $eSale['shippingVatRate'];
 
 				}
-
-				$keyForTotal = array_find_key($eElement['vatByRate'], fn($vatByRate) => ($vatByRate['vatRate'] === $eSale['shippingVatRate']));
 
 				$key = array_find_key($items, fn($item) => ($item['vatRate'] === $shippingVatRate and $item['account'] === $eAccountShipping['id'] and $item['accountReference'] === NULL));
 
