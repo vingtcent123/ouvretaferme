@@ -13,6 +13,12 @@ class FarmSetting extends \Settings {
 
 	const CALENDAR_LIMIT = 20;
 
+
+	const CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL = 1000;
+	const CATEGORIE_JURIDIQUE_SOCIETE_ANONYME = ['from' => 5410, 'to' => 5710];
+	const CATEGORIE_GAEC = 6533;
+
+
 	public static $mainActions;
 
 	public static $featureTime;

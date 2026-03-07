@@ -143,7 +143,7 @@ Class AccountingLib {
 			$eFinancialYear = \account\FinancialYearLib::getFinancialYearForDate($eCash['date'], new \Collection());
 			if($eFinancialYear->notEmpty()) {
 
-				if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) {
+				if($eFinancialYear['legalCategory'] === \farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) {
 
 					$eAccount = $cAccount->find(fn($e) => $e['class'] === \account\AccountSetting::FARMER_S_ACCOUNT_CLASS)->first();
 

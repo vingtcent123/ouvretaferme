@@ -1127,7 +1127,7 @@ class FinancialYearUi {
 							$h .= s("{value}", '<b>'.self::p('legalCategory')->values[$eFinancialYear['legalCategory']].'</b>');
 						$h .= '</li>';
 
-						if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_GAEC) {
+						if($eFinancialYear['legalCategory'] === \farm\FarmSetting::CATEGORIE_GAEC) {
 
 							$h .= '<li>';
 
@@ -1299,20 +1299,8 @@ class FinancialYearUi {
 				break;
 
 			case 'legalCategory':
-				$d->field = 'select';
-				$d->values = [
-					\company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL => s("Entreprise individuelle"),
-					6598 => s("Exploitation agricole à responsabilité limitée (EARL)"),
-					\company\CompanySetting::CATEGORIE_GAEC => s("Groupement agricole d'exploitation en commun (GAEC)"),
-					5500 => s("Société Anonyme"),
-					5710 => s("SAS"),
-					6597 => s("Société civile d'exploitation agricole (SCEA)"),
-					6317 => s("Société coopérative agricole (SCA)"),
-					2200 => s("Société de fait"),
-					2300 => s("Société en participation"),
-					6318 => s("Union de sociétés coopératives agricoles"),
-					9999 => s("Autre structure juridique"),
-				];
+				$d->field = \farm\FarmUi::p($property)->field;
+				$d->values = \farm\FarmUi::p($property)->values;
 				$d->attributes['onchange'] = 'FinancialYear.changeLegalCategory(this)';
 				break;
 
@@ -1322,7 +1310,7 @@ class FinancialYearUi {
 					FinancialYear::PARTIAL => s("GAEC partiel"),
 					FinancialYear::TOTAL => s("GAEC total"),
 				];
-				$d->group = fn(FinancialYear $e) => (($e['legalCategory'] ?? NULL) === \company\CompanySetting::CATEGORIE_GAEC) ? [] : ['class' => 'hide'];
+				$d->group = fn(FinancialYear $e) => (($e['legalCategory'] ?? NULL) === \farm\FarmSetting::CATEGORIE_GAEC) ? [] : ['class' => 'hide'];
 				$d->after = \util\FormUi::info(s("Un GAEC <b>total</b> est un GAEC constitué d'associés dont <b>aucun</b> n'exerce à titre individuel d'activité agricole.<br />Un GAEC <b>partiel</b> est un GAEC dont <b>tous</b> des associés exercent à titre individuel une activité agricole."));
 				break;
 
@@ -1333,7 +1321,7 @@ class FinancialYearUi {
 				for($i = 1; $i < 10; $i++) {
 					$d->values[$i] = $i;
 				}
-				$d->group = fn(FinancialYear $e) => (($e['legalCategory'] ?? NULL) === \company\CompanySetting::CATEGORIE_GAEC) ? [] : ['class' => 'hide'];
+				$d->group = fn(FinancialYear $e) => (($e['legalCategory'] ?? NULL) === \farm\FarmSetting::CATEGORIE_GAEC) ? [] : ['class' => 'hide'];
 				$d->after = \util\FormUi::info(s("Nombre d'associé·e·s au 1<sup>er</sup> janvier de l'année, utilisé pour le calcul de la taxe sur le chiffre d'affaires des exploitations agricoles."));
 				break;
 

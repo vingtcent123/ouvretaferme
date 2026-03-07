@@ -50,10 +50,6 @@ class CompanySetting extends \Settings {
 		3717, // 6 mars
 	];
 
-	const CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL = 1000;
-	const CATEGORIE_JURIDIQUE_SOCIETE_ANONYME = ['from' => 5410, 'to' => 5710];
-	const CATEGORIE_GAEC = 6533;
-
 	// Est-ce qu'on exclut les autoconso des bilans et CdR (pour le micro BA) ?
 	const FEATURE_SELF_CONSUMPTION = FALSE;
 

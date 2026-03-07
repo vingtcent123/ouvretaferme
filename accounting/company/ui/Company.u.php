@@ -64,7 +64,15 @@ class CompanyUi {
 
 		$h .= $form->hidden('farm', $eFarm['id']);
 
-		$h .= $form->dynamicGroups(new \account\FinancialYear(), ['startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'legalCategory*', 'associates*']);
+		$h .= $form->dynamicGroups(
+			new \account\FinancialYear(),
+			['startDate*', 'endDate*', 'taxSystem*', 'accountingMode', 'accountingType', 'legalCategory*', 'associates*'],
+			['legalCategory*' => function($d) use($eFarm) {
+				$d->default = $eFarm['legalCategory'];
+				$d->after = \util\FormUi::info('<div class="color-warning">'.s("Attention, la forme juridique choisie est différente de <link>celle paramétrée pour votre ferme</link>. Veuillez vous assurer que ces deux informations soient cohérentes.", ['link' => '<a href="/farm/farm:update?id='.$eFarm['id'].'">']).'</div>', 'hide');
+				$d->attributes['onchange'] = 'FinancialYear.checkLegalCategory(this, '.$eFarm['legalCategory'].')';
+			},]
+		);
 
 		$h .= $form->group(
 			content: $form->submit(s("Enregistrer"))

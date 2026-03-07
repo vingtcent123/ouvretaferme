@@ -320,13 +320,13 @@ Class VatLib {
 				$firstLetter = mb_strtolower(mb_substr($eFarm['legalName'], 0, 1));
 
 				if($isRegionParisienne) {
-					if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) { // Entrepreneur individuel
+					if($eFinancialYear['legalCategory'] === \farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) { // Entrepreneur individuel
 						if($firstLetter <= 'h') {
 							$day = 15;
 						} else {
 							$day = 17;
 						}
-					} else if($eFinancialYear['legalCategory'] >= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['from'] and $eFinancialYear['legalCategory'] <= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['to']) { // Société anonyme
+					} else if($eFinancialYear['legalCategory'] >= \farm\FarmSetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['from'] and $eFinancialYear['legalCategory'] <= \farm\FarmSetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['to']) { // Société anonyme
 						if((int)mb_substr($eFarm['siret'], 0, 2) <= 74) {
 							$day = 23;
 						} else {
@@ -342,13 +342,13 @@ Class VatLib {
 						}
 					} // Autres redevables : 24 (qui ?)
 				} else { // Autres départements
-					if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) { // Entrepreneur individuel
+					if($eFinancialYear['legalCategory'] === \farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) { // Entrepreneur individuel
 						if($firstLetter <= 'h') {
 							$day = 16;
 						} else {
 							$day = 19;
 						}
-					} else if($eFinancialYear['legalCategory'] >= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['from'] and $eFinancialYear['legalCategory'] <= \company\CompanySetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['to']) { // Société anonyme
+					} else if($eFinancialYear['legalCategory'] >= \farm\FarmSetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['from'] and $eFinancialYear['legalCategory'] <= \farm\FarmSetting::CATEGORIE_JURIDIQUE_SOCIETE_ANONYME['to']) { // Société anonyme
 						$day = 24;
 					} else { // Autres sociétés
 						$day = 21;

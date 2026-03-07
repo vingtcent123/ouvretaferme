@@ -529,6 +529,7 @@ class FarmUi {
 
 				$h .= $form->dynamicGroup($eFarm, 'legalName*');
 				$h .= $form->addressGroup(s("Siège social de la ferme").\util\FormUi::asterisk(), 'legal', $eFarm, ['country' => FALSE]);
+				$h .= $form->dynamicGroup($eFarm, 'legalCategory*');
 
 			}
 
@@ -573,6 +574,7 @@ class FarmUi {
 
 					$h .= $form->dynamicGroup($eFarm, 'legalName');
 					$h .= $form->addressGroup(s("Adresse du siège social de la ferme"), 'legal', $eFarm, ['country' => FALSE]);
+					$h .= $form->dynamicGroup($eFarm, 'legalCategory');
 
 				}
 
@@ -3226,6 +3228,7 @@ class FarmUi {
 			'legalCountry' => s("Pays de la ferme"),
 			'legalName' => s("Raison sociale de la ferme"),
 			'legalEmail' => s("Adresse e-mail de la ferme"),
+			'legalCategory' => s("Forme juridique"),
 			'siret' => s("Numéro d'immatriculation SIRET de la ferme"),
 			'vignette' => s("Photo de présentation"),
 			'description' => s("Présentation de la ferme"),
@@ -3335,6 +3338,24 @@ class FarmUi {
 				$d->attributes = [
 					'onrender' => 'this.focus();'
 				];
+				break;
+
+			case 'legalCategory':
+				$d->field = 'select';
+				$d->values = [
+					\farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL => s("Entreprise individuelle"),
+					6598 => s("Exploitation agricole à responsabilité limitée (EARL)"),
+					\farm\FarmSetting::CATEGORIE_GAEC => s("Groupement agricole d'exploitation en commun (GAEC)"),
+					5500 => s("Société Anonyme"),
+					5710 => s("SAS"),
+					6597 => s("Société civile d'exploitation agricole (SCEA)"),
+					6317 => s("Société coopérative agricole (SCA)"),
+					2200 => s("Société de fait"),
+					2300 => s("Société en participation"),
+					6318 => s("Union de sociétés coopératives agricoles"),
+					9999 => s("Autre structure juridique"),
+				];
+				$d->attributes['onchange'] = 'FinancialYear.changeLegalCategory(this)';
 				break;
 
 		}

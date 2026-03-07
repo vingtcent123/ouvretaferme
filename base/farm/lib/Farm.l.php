@@ -19,7 +19,7 @@ class FarmLib extends FarmCrud {
 
 				if($e->isLegal()) {
 
-					$properties = array_merge($properties, ['legalName', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity']);
+					$properties = array_merge($properties, ['legalName', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'legalCategory']);
 
 					if($e->isFR()) {
 						$properties[] = 'siret';
@@ -45,7 +45,7 @@ class FarmLib extends FarmCrud {
 
 	public static function getPropertiesLegal(Farm $e): array {
 
-		$properties = ['legalName', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity'];
+		$properties = ['legalName', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'legalCategory'];
 
 		if($e->isVerified() === FALSE) {
 			$properties[] = 'legalCountry';

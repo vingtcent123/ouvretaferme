@@ -1,5 +1,15 @@
 class FinancialYear {
 
+	static checkLegalCategory(target, legalCategoryFarm) {
+
+		if(parseInt(target.value) !==  parseInt(legalCategoryFarm)) {
+			target.firstParent('.form-control-field').qs('.form-info ').removeHide();
+		} else {
+			target.firstParent('.form-control-field').qs('.form-info ').hide();
+		}
+
+	}
+
 	static changeLegalCategory(target) {
 
 		const category = parseInt(target.value);

@@ -539,6 +539,11 @@ class Farm extends FarmElement {
 				return \user\Country::model()->exists($eCountry);
 
 			})
+			->setCallback('legalCategory.check', function(?int $category): bool {
+
+				return $category !== NULL;
+
+			})
 			->setCallback('rotationExclude.prepare', function(mixed &$plants): bool {
 
 				$this->expects(['id']);

@@ -112,7 +112,7 @@ Class OpeningLib {
 			return $cOperation;
 		}
 
-		if($eFinancialYear['legalCategory'] === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) {
+		if($eFinancialYear['legalCategory'] === \farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) {
 
 			$retainedClass = AccountSetting::FARMER_S_ACCOUNT_CLASS;
 

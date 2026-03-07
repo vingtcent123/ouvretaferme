@@ -96,6 +96,7 @@ Farm:
   legalStreet2: ?text8
   legalPostcode: ?text8
   legalCity: ?text8
+  legalCategory: ?int16(1000, 9999) # Catégorie juridique (au sens INSEE) sur 4 chiffres
   vignette: ?textFixed(30, 30) @charset(ascii)
   url: ?url
   description: ?editor24

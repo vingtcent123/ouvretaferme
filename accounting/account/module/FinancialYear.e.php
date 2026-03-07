@@ -55,7 +55,7 @@ class FinancialYear extends FinancialYearElement {
 
 		$this->expects(['legalCategory']);
 
-		return $this['legalCategory'] === \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL;
+		return $this['legalCategory'] === \farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL;
 
 	}
 
@@ -63,7 +63,7 @@ class FinancialYear extends FinancialYearElement {
 
 		$this->expects(['legalCategory']);
 
-		return $this['legalCategory'] !== \company\CompanySetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL;
+		return $this['legalCategory'] !== \farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL;
 
 	}
 
@@ -271,7 +271,7 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('associates.check', function(?int $associates) use ($p): bool {
 
-				if($p->isBuilt('legalCategory') === FALSE or $this['legalCategory'] !== \company\CompanySetting::CATEGORIE_GAEC) {
+				if($p->isBuilt('legalCategory') === FALSE or $this['legalCategory'] !== \farm\FarmSetting::CATEGORIE_GAEC) {
 					return TRUE;
 				}
 
@@ -280,7 +280,7 @@ class FinancialYear extends FinancialYearElement {
 			})
 			->setCallback('gaecFormat.check', function(?string &$gaecFormat) use ($p): bool {
 
-				if($p->isBuilt('legalCategory') === FALSE or $this['legalCategory'] !== \company\CompanySetting::CATEGORIE_GAEC) {
+				if($p->isBuilt('legalCategory') === FALSE or $this['legalCategory'] !== \farm\FarmSetting::CATEGORIE_GAEC) {
 					return TRUE;
 				}
 
