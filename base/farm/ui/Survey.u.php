@@ -35,7 +35,7 @@ class SurveyUi {
 
 
 			$h .= $form->group(
-				content: $form->submit(s("Envoyer"))
+				content: $form->submit(s("Envoyer"), ['data-confirm' => s("Envoyer vos réponses maintenant ? Vous ne pourrez pas les modifier par la suite.")])
 			);
 
 		$h .= $form->close();
