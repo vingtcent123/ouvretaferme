@@ -263,7 +263,7 @@ new AdaptativeView('surveyFarm', function($data, FarmTemplate $t) {
 		echo '<div class="util-block">';
 			echo '<h3>'.s("Notice d'utilisation du formulaire").'</h3>';
 			echo '<ul>';
-				echo '<li>'.s("Les formulaires dont tout ou partie des réponses sortent du cadre défini ci-dessus ne seront pas pris en compte").'<br/><span class="color-muted font-sm">'.s("Exemple : si vous demandez une fonctionnalité sans rapport avec nos thématiques de travail, aucune de vos réponses ne sera pas du tout pris en compte dans l'analyse de l'enquête.").'</span></li>';
+				echo '<li>'.s("Les formulaires dont tout ou partie des réponses sortent du cadre défini ci-dessus ne seront pas pris en compte").'<br/><span class="color-muted font-sm">'.s("Exemple : si vous demandez une fonctionnalité sans rapport avec nos thématiques de travail, aucune de vos réponses ne sera prise en compte dans l'analyse de l'enquête.").'</span></li>';
 				echo '<li>'.s("Ne faites pas de propositions d'interface sur le logiciel et restez centrés sur votre besoin, c'est ce dont nous avons besoin pour bien comprendre les usages.").'<br/><span class="color-muted font-sm">'.s("Exemple : si vous nous demandez d'ajouter un bouton à tel endroit sur le site, nous ne tiendrons pas compte de vos réponses.").'</span></li>';
 				echo '<li>'.s("N'hésitez pas à joindre des images à vos commentaires pour nous permettre de bien comprendre vos besoins !").'</li>';
 			echo '</ul>';
