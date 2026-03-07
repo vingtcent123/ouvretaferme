@@ -1281,6 +1281,7 @@ class FarmUi {
 			$h .= '<div class="farm-tab-wrapper farm-nav-selling">';
 
 				$h .= $this->getNav('selling', $nav);
+				$h .= $this->getSellingMenu($eFarm, subNav: $subNav);
 
 			$h .= '</div>';
 			$h .= '<div class="farm-tab-wrapper farm-nav-shop">';
