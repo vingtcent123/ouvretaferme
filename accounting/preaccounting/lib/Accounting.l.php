@@ -830,7 +830,7 @@ Class AccountingLib {
 				if($hasVat and $eSale['shippingVatRate'] !== 0.0 and $eSale['shipping'] !== $eSale['shippingExcludingVat']) {
 
 					$eAccountVat = $eAccountShipping['vatAccount'];
-					if($eAccountVat->empty()) {
+					if($eAccountVat === NULL or $eAccountVat->empty()) {
 						$eAccountVat = $eAccountVatDefault;
 					}
 
