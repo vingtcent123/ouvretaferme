@@ -50,7 +50,7 @@ class SurveyUi {
 			'achatRevente' => s("Si vous vendez une partie de votre production en achat / revente, indiquez votre mode de fonctionnement présent et ce qui vous manque actuellement sur Ouvretaferme."),
 			'depotVente' => s("Si vous vendez une partie de votre production en dépôt-vente, indiquez votre mode de fonctionnement présent et ce qui vous manque actuellement sur Ouvretaferme."),
 			'autofacturation' => s("Si vous vendez une partie de votre production en autofacturation, indiquez votre mode de fonctionnement présent et ce qui vous manque actuellement sur Ouvretaferme."),
-			'caisse' => s("Si vous demandez à vos clients de payer en avance et permettez de déduire leurs achats d'une cagnotte, indiquez votre mode de fonctionnement présent et ce qui vous manque actuellement sur Ouvretaferme."),
+			'cagnotte' => s("Si vous demandez à vos clients de payer en avance et permettez de déduire leurs achats d'une cagnotte, indiquez votre mode de fonctionnement présent et ce qui vous manque actuellement sur Ouvretaferme."),
 		]);
 
 		switch($property) {
