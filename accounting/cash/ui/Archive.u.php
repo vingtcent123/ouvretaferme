@@ -44,7 +44,7 @@ class ArchiveUi {
 
 		$h = '<div class="util-block-info">';
 		$h .= \Asset::icon('info', ['class' => 'util-block-icon']);
-		$h .= '<p>'.s("Les archives de vos données des journaux de caisse peuvent être communiquées à l'administration fiscale en cas de contrôle ou être utilisées pour vos analyses personnelles. Ces archives viennent en complément des <link>archives que vous pouvez réaliser à partir de vos ventes</link>.", ['link' => '<a href="/selling/archives?id='.\farm\Farm::getConnected()['id'].'">']).'</p>';
+		$h .= '<p>'.s("Les archives de vos données des journaux de caisse peuvent être communiquées à l'administration fiscale en cas de contrôle ou être utilisées pour vos analyses personnelles. Ces archives viennent en complément des <link>archives que vous pouvez réaliser à partir de vos ventes</link>.", ['link' => '<a href="'.\farm\FarmUi::urlSellingSalesArchives(\farm\Farm::getConnected()).'">']).'</p>';
 		$h .= '</div>';
 
 		if($cArchive->empty()) {

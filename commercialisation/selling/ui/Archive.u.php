@@ -82,7 +82,7 @@ class ArchiveUi {
 
 		$h = '<div class="util-block-info">';
 		$h .= \Asset::icon('info', ['class' => 'util-block-icon']);
-		$h .= '<p>'.s("Les archives de vos données de vente contiennent l'intégralité de vos ventes destinées aux clients particuliers pour lesquelles un paiement a été enregistré ou marquées comme livrées. Elles peuvent être communiquées à l'administration fiscale en cas de contrôle ou être utilisées pour vos analyses personnelles.").'</p>';
+		$h .= '<p>'.s("Les archives de vos données de vente contiennent l'intégralité de vos ventes destinées aux clients particuliers pour lesquelles un paiement a été enregistré ou qui ont marquées comme livrées. Elles peuvent être communiquées à l'administration fiscale en cas de contrôle ou être utilisées pour vos analyses personnelles.").'</p>';
 		$h .= '</div>';
 
 		if($cArchive->empty()) {

@@ -2118,7 +2118,7 @@ class FarmUi {
 			NULL,
 			Farmer::LABEL => s("Étiquettes de colisage"),
 			NULL,
-			Farmer::ARCHIVES => s("Archivage"),
+			Farmer::ARCHIVES => s("Archivage des données de vente"),
 		];
 	}
 
