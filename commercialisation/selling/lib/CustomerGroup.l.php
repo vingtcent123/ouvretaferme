@@ -129,6 +129,10 @@ class CustomerGroupLib extends CustomerGroupCrud {
 					'groups' => new \Sql(\sequence\Flow::model()->pdo()->api->jsonRemove('groups', $e['id']))
 				]);
 
+			Grid::model()
+				->whereGroup($e)
+				->delete();
+
 			parent::delete($e);
 
 		CustomerGroup::model()->commit();
