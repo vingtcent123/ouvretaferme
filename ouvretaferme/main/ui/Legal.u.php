@@ -7,7 +7,7 @@ class LegalUi {
 
 		$h = '<div class="util-block-gradient">';
 			$h .= '<h3>'.s("Préambule").'</h3>';
-			$h .= '<p>'.s("Plusieurs fonctionnalités de {siteName} sont concernées par des dispositions légales qui visent notamment à permettre à l'administration fiscale de sécuriser le logiciel et d'accéder à certaines données dans un objectif de contrôle.").'</p>';
+			$h .= '<p>'.s("Plusieurs fonctionnalités de {siteName} sont concernées par des dispositions légales qui visent notamment à sécuriser le logiciel et permettre à l'administration fiscale d'accéder à certaines données dans un objectif de contrôle.").'</p>';
 			$h .= '<p><b>'.s("{siteName} est conforme vis-à-vis de ces dispositions légales pour les utilisateurs ayant leur siège social en <b>FRANCE</b>.").'</b></p>';
 		$h .= '</div>';
 

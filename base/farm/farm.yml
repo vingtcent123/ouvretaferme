@@ -211,24 +211,10 @@ Survey:
   id: serial32
   farm: farm\Farm
   createdAt: date = SPECIAL(now)
-  number: int(1, NULL)
-  why: ?text16
-  feedback: ?text16
-  formation: ?text16
-  productionFeature: ?text16
-  productionResearch: ?bool
-  sellingFeature: ?text16
-  accounting: enum(CERFRANCE, AFOCG, AUTONOME, OTHER, NONE)
-  accountingType: enum(REEL, MICROBA, OTHER)
-  accountingAutonomy: bool
-  accountingOtf: bool
-  accountingInfo: ?text16
-  coopTroc: ?bool
-  coopMercuriale: ?bool
-  coopItk: ?bool
-  coopOther: ?text16
-  coopCommandes: ?bool
-  other: ?text16
+  achatRevente: ?editor24
+  depotVente: ?editor24
+  autofacturation: ?editor24
+  cagnotte: ?editor24
   UNIQUE: [
     ["farm"]
   ]

@@ -17,6 +17,18 @@ class SurveyLib extends SurveyCrud {
 
 	}
 
+	public static function getAll(): \Collection {
+
+		return Survey::model()
+			->select(Survey::getSelection() + [
+				'farm' => FarmElement::getSelection()
+			])
+			->sort([
+				'id' => SORT_ASC
+			])
+			->getCollection();
+	}
+
 	public static function existsByFarm(Farm $eFarm): bool {
 
 		return Survey::model()

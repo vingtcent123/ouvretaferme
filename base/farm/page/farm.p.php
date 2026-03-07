@@ -134,43 +134,56 @@ new \farm\FarmPage()
 
 	}, validate: ['canPersonalData']);
 
+new Page()
+	->get('surveyAnalyze', function($data) {
+
+		if(
+			$data->eUserOnline->empty() or
+			$data->eUserOnline['id'] !== 1
+		) {
+			throw new NotAllowedAction();
+		}
+
+		$data->cSurvey = \farm\SurveyLib::getAll();
+
+		throw new ViewAction($data);
+
+	});
+
 new \farm\SurveyPage()
 	->getCreateElement(function($data) {
 
-		$eFarm = \farm\FarmLib::getById(INPUT('farm'));
+		$data->eFarm = \farm\FarmLib::getById(INPUT('farm'));
 
-		if(in_array($data->eUserOnline['id'], [1140, 1]) === FALSE) {
-			throw new NotExpectedAction();
+		if($data->eFarm->notEmpty()) {
+			$data->eFarm->validate('isMembership', 'canManage');
 		}
-/*
-		$eFarm = \farm\FarmLib::getById(INPUT('farm'))->validate('canManage');
 
-		if(in_array($eFarm['id'], \farm\Survey::getFarms()) === FALSE) {
-			throw new NotExpectedAction();
-		}
-*/
 		return new \farm\Survey([
-			'farm' => $eFarm,
+			'farm' => $data->eFarm,
 		]);
 
 	})
 	->create(function($data) {
 
-		$analyze = ($data->eUserOnline['id'] === 1140 or $data->eUserOnline['id'] === 1);
+		if($data->eFarm->empty()) {
 
-		$data->eFarm = $data->e['farm'];
-		$data->hasSurvey = ($analyze === FALSE);// and \farm\SurveyLib::existsByFarm($data->eFarm));
+			$data->cFarm = \farm\FarmLib::getOnline()->find(fn($eFarm) => (
+				$eFarm->canManage()
+			));
 
-		if(get_exists('id')) {
-			\farm\Survey::model()
-				->select(\farm\Survey::getSelection() + [
-					'farm' => ['name']
-				])
-				->whereId(GET('id'))
-				->get($data->e);
+			throw new \ViewAction($data, ':surveyMain');
+
+		} else {
+
+			$data->hasSurvey = \farm\Survey::model()
+				->whereFarm($data->eFarm)
+				->exists();
+
+			throw new \ViewAction($data, ':surveyFarm');
+
 		}
 
-		throw new \ViewAction($data);
 
 	}, page: 'survey')
 	->doCreate(function($data) {

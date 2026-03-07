@@ -7,15 +7,6 @@ abstract class SurveyElement extends \Element {
 
 	private static ?SurveyModel $model = NULL;
 
-	const CERFRANCE = 'cerfrance';
-	const AFOCG = 'afocg';
-	const AUTONOME = 'autonome';
-	const OTHER = 'other';
-	const NONE = 'none';
-
-	const REEL = 'reel';
-	const MICROBA = 'microba';
-
 	public static function getSelection(): array {
 		return Survey::model()->getProperties();
 	}
@@ -52,28 +43,14 @@ class SurveyModel extends \ModuleModel {
 			'id' => ['serial32', 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'unique' => TRUE, 'cast' => 'element'],
 			'createdAt' => ['date', 'cast' => 'string'],
-			'number' => ['int32', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
-			'why' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'feedback' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'formation' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'productionFeature' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'productionResearch' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
-			'sellingFeature' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'accounting' => ['enum', [\farm\Survey::CERFRANCE, \farm\Survey::AFOCG, \farm\Survey::AUTONOME, \farm\Survey::OTHER, \farm\Survey::NONE], 'cast' => 'enum'],
-			'accountingType' => ['enum', [\farm\Survey::REEL, \farm\Survey::MICROBA, \farm\Survey::OTHER], 'cast' => 'enum'],
-			'accountingAutonomy' => ['bool', 'cast' => 'bool'],
-			'accountingOtf' => ['bool', 'cast' => 'bool'],
-			'accountingInfo' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'coopTroc' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
-			'coopMercuriale' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
-			'coopItk' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
-			'coopOther' => ['text16', 'null' => TRUE, 'cast' => 'string'],
-			'coopCommandes' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
-			'other' => ['text16', 'null' => TRUE, 'cast' => 'string'],
+			'achatRevente' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
+			'depotVente' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
+			'autofacturation' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
+			'cagnotte' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'createdAt', 'number', 'why', 'feedback', 'formation', 'productionFeature', 'productionResearch', 'sellingFeature', 'accounting', 'accountingType', 'accountingAutonomy', 'accountingOtf', 'accountingInfo', 'coopTroc', 'coopMercuriale', 'coopItk', 'coopOther', 'coopCommandes', 'other'
+			'id', 'farm', 'createdAt', 'achatRevente', 'depotVente', 'autofacturation', 'cagnotte'
 		]);
 
 		$this->propertiesToModule += [
@@ -100,23 +77,6 @@ class SurveyModel extends \ModuleModel {
 
 	}
 
-	public function encode(string $property, $value) {
-
-		switch($property) {
-
-			case 'accounting' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			case 'accountingType' :
-				return ($value === NULL) ? NULL : (string)$value;
-
-			default :
-				return parent::encode($property, $value);
-
-		}
-
-	}
-
 	public function select(...$fields): SurveyModel {
 		return parent::select(...$fields);
 	}
@@ -137,76 +97,20 @@ class SurveyModel extends \ModuleModel {
 		return $this->where('createdAt', ...$data);
 	}
 
-	public function whereNumber(...$data): SurveyModel {
-		return $this->where('number', ...$data);
+	public function whereAchatRevente(...$data): SurveyModel {
+		return $this->where('achatRevente', ...$data);
 	}
 
-	public function whereWhy(...$data): SurveyModel {
-		return $this->where('why', ...$data);
+	public function whereDepotVente(...$data): SurveyModel {
+		return $this->where('depotVente', ...$data);
 	}
 
-	public function whereFeedback(...$data): SurveyModel {
-		return $this->where('feedback', ...$data);
+	public function whereAutofacturation(...$data): SurveyModel {
+		return $this->where('autofacturation', ...$data);
 	}
 
-	public function whereFormation(...$data): SurveyModel {
-		return $this->where('formation', ...$data);
-	}
-
-	public function whereProductionFeature(...$data): SurveyModel {
-		return $this->where('productionFeature', ...$data);
-	}
-
-	public function whereProductionResearch(...$data): SurveyModel {
-		return $this->where('productionResearch', ...$data);
-	}
-
-	public function whereSellingFeature(...$data): SurveyModel {
-		return $this->where('sellingFeature', ...$data);
-	}
-
-	public function whereAccounting(...$data): SurveyModel {
-		return $this->where('accounting', ...$data);
-	}
-
-	public function whereAccountingType(...$data): SurveyModel {
-		return $this->where('accountingType', ...$data);
-	}
-
-	public function whereAccountingAutonomy(...$data): SurveyModel {
-		return $this->where('accountingAutonomy', ...$data);
-	}
-
-	public function whereAccountingOtf(...$data): SurveyModel {
-		return $this->where('accountingOtf', ...$data);
-	}
-
-	public function whereAccountingInfo(...$data): SurveyModel {
-		return $this->where('accountingInfo', ...$data);
-	}
-
-	public function whereCoopTroc(...$data): SurveyModel {
-		return $this->where('coopTroc', ...$data);
-	}
-
-	public function whereCoopMercuriale(...$data): SurveyModel {
-		return $this->where('coopMercuriale', ...$data);
-	}
-
-	public function whereCoopItk(...$data): SurveyModel {
-		return $this->where('coopItk', ...$data);
-	}
-
-	public function whereCoopOther(...$data): SurveyModel {
-		return $this->where('coopOther', ...$data);
-	}
-
-	public function whereCoopCommandes(...$data): SurveyModel {
-		return $this->where('coopCommandes', ...$data);
-	}
-
-	public function whereOther(...$data): SurveyModel {
-		return $this->where('other', ...$data);
+	public function whereCagnotte(...$data): SurveyModel {
+		return $this->where('cagnotte', ...$data);
 	}
 
 

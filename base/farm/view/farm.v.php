@@ -178,7 +178,62 @@ new AdaptativeView('export', function($data, PanelTemplate $t) {
 
 });
 
-new AdaptativeView('survey', function($data, FarmTemplate $t) {
+new AdaptativeView('surveyAnalyze', function($data, MainTemplate $t) {
+
+	$t->title = s("Enquête auprès des fermes adhérentes");
+
+
+	foreach($data->cSurvey as $eSurvey) {
+
+		echo '<h3>'.\farm\FarmUi::getVignette($eSurvey['farm'], '2rem').' '.$eSurvey['farm']['id'].' / '.encode($eSurvey['farm']['name']).'</h3>';
+
+		echo '<div style="max-width: 50rem">';
+
+		foreach(['achatRevente', 'depotVente', 'autofacturation', 'cagnotte'] as $property) {
+
+			echo '<h5>'.\farm\SurveyUi::p($property)->label.'</h5>';
+			echo new \editor\EditorUi()->value($eSurvey[$property]);
+
+		}
+
+		echo '</div>';
+
+	}
+
+
+});
+
+new AdaptativeView('surveyMain', function($data, MainTemplate $t) {
+
+	$t->title = s("Enquête auprès des fermes adhérentes");
+
+	if($data->cFarm->empty()) {
+		echo '<p>'.s("Vous n'êtes exploitant d'aucune ferme sur {siteName}.").'</p>';
+	} else {
+
+		echo '<table>';
+			echo '<tbody>';
+				foreach($data->cFarm as $eFarm) {
+					echo '<tr>';
+						echo '<td class="td-min-content">'.\farm\FarmUi::getVignette($eFarm, '3rem').'</td>';
+						echo '<td>'.encode($eFarm['name']).'</td>';
+						echo '<td>';
+							if($eFarm->isMembership()) {
+								echo '<a href="/farm/farm:survey?farm='.$eFarm['id'].'" class="btn btn-outline-primary">'.s("Répondre à l'enquête").'</a>';
+							} else {
+								echo Asset::icon('x-lg').' '.s("Adhérez à l'association pour répondre à cette enquête");
+							}
+						echo '</td>';
+					echo '</tr>';
+				}
+			echo '</tbody>';
+		echo '</table>';
+
+	}
+
+});
+
+new AdaptativeView('surveyFarm', function($data, FarmTemplate $t) {
 
 	$t->title = s("Enquête auprès des fermes adhérentes");
 
@@ -187,16 +242,31 @@ new AdaptativeView('survey', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = '<h1>'.$t->title.'</h1>';
 
-	if($data->hasSurvey) {
+	if($data->hasSurvey === NULL) {
+
+	} else if($data->hasSurvey) {
 		echo '<div class="util-block">';
 			echo '<h3>'.s("Merci pour votre participation !").'</h3>';
-			echo '<p>'.s("Nous analyserons les réponses dans les semaines à venir.").'</p>';
+			echo '<p>'.s("Nous analyserons les réponses dans les semaines à venir avant de travailler sur de nouvelles fonctionnalités.").'</p>';
 		echo '</div>';
 	} else {
-		echo '<div class="util-block mb-2">';
-			echo '<h3>'.s("Nous menons une enquête auprès de toutes les fermes qui ont adhéré à l'association Ouvretaferme avant le 24 décembre 2025.").'</h3>';
-			echo '<p>'.s("Vous faites partie des 105 fermes qui ont adhéré à l'association pour soutenir notre travail.<br/>Nous vous sollicitons afin de nous aider à mieux choisir nos priorités de travail pour 2026.").'</p>';
-			echo '<p>'.s("Si vous souhaitez répondre à cette enquête, vous pouvez remplir le formulaire ci-dessous. La plupart des questions sont facultatives.").'</p>';
+		echo '<div class="util-block-gradient mb-2">';
+			echo '<p>'.s("En vue d'améliorer le logiciel dans les semaines à venir, nous menons une enquête jusqu'au 15 mars auprès de toutes les fermes qui ont adhéré à l'association Ouvretaferme pour comprendre vos besoins sur les sujets suivants :").'</p>';
+			echo '<ul>';
+				echo '<li>'.s("Achat / revente").'</li>';
+				echo '<li>'.s("Dépôt / vente").'</li>';
+				echo '<li>'.s("Autofacturation").'</li>';
+				echo '<li>'.s("Encours clients").'</li>';
+			echo '</ul>';
+		echo '<p>'.s("Si vous souhaitez répondre à cette enquête, vous pouvez remplir le formulaire ci-dessous. La plupart des questions sont facultatives.").'</p>';
+		echo '</div>';
+		echo '<div class="util-block">';
+			echo '<h3>'.s("Notice d'utilisation du formulaire").'</h3>';
+			echo '<ul>';
+				echo '<li>'.s("Les formulaires dont tout ou partie des réponses sortent du cadre défini ci-dessus ne seront pas pris en compte").'<br/><span class="color-muted font-sm">'.s("Exemple : si vous demandez une fonctionnalité sans rapport avec nos thématiques de travail, aucune de vos réponses ne sera pas du tout pris en compte dans l'analyse de l'enquête.").'</span></li>';
+				echo '<li>'.s("Ne faites pas de propositions d'interface sur le logiciel et restez centrés sur votre besoin, c'est ce dont nous avons besoin pour bien comprendre les usages.").'<br/><span class="color-muted font-sm">'.s("Exemple : si vous nous demandez d'ajouter un bouton à tel endroit sur le site, nous ne tiendrons pas compte de vos réponses.").'</span></li>';
+				echo '<li>'.s("N'hésitez pas à joindre des images à vos commentaires pour nous permettre de bien comprendre vos besoins !").'</li>';
+			echo '</ul>';
 		echo '</div>';
 		echo new \farm\SurveyUi()->create($data->e);
 	}
