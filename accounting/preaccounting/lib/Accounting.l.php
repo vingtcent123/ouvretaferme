@@ -936,7 +936,7 @@ Class AccountingLib {
 					$vatByRates[] = [
 						'amountWithoutRatio' => $vatByRate['amount'], // HT
 						'amount' => round($vatByRate['amount'] * $paymentRatio, 2), // HT
-						'amountIncludingVat' => round($vatByRate['amount'] * (1 + $vatByRate['vatRate'] / 100), 2), // TTC
+						'amountIncludingVat' => round($vatByRate['amount'] * (1 + $vatByRate['vatRate'] / 100) * $paymentRatio, 2), // TTC
 						'vatRate' => (float)$vatByRate['vatRate']
 					];
 				}
