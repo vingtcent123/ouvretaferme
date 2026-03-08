@@ -1021,6 +1021,11 @@ class SaleLib extends SaleCrud {
 
 		foreach($cItem as $eItem) {
 
+			// On ne garde pas les frais de livraison (recalculés automatiquement)
+			if($eItem['product']->notEmpty() and $eItem['product']['profile'] === Product::SHIPPING) {
+				continue;
+			}
+
 			$eItemCreate = new Item(
 				$eItem->extracts(['name', 'product', 'customer', 'additional', 'origin', 'quality', 'nature', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'vatRate'])
 			);
