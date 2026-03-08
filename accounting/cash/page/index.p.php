@@ -2,9 +2,6 @@
 new Page()
 	->get('/journal-de-caisse', function($data) {
 
-		if(getIp() !== '92.157.177.72') {
-			exit('correction de bug en cours ! Excusez-nous pour la gêne occasionnée.');
-		}
 		$data->ccRegister = \cash\RegisterLib::getList();
 		$data->eRegisterCurrent = new \cash\Register();
 
