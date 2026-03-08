@@ -149,7 +149,7 @@ class Product extends ProductElement {
 		return (preg_match('/^[A-Z0-9\-\_]+$/s', $reference) > 0);
 	}
 
-	public function isManipulable(): array {
+	public function isManipulable(): bool {
 		return in_array($this['status'], self::getManipulable());
 	}
 
