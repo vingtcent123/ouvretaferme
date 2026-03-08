@@ -2,6 +2,7 @@
 new Page()
 	->get('/journal-de-caisse', function($data) {
 
+		exit('correction de bug en cours ! Excusez-nous pour la gêne occasionnée.');
 		$data->ccRegister = \cash\RegisterLib::getList();
 		$data->eRegisterCurrent = new \cash\Register();
 
