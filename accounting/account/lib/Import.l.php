@@ -547,9 +547,6 @@ Class ImportLib extends ImportCrud {
 					AccountLabelLib::isFromClass($compteNum, $eAccount['class']) === FALSE and
 					AccountLabelLib::isFromClass(preg_replace('/[^0-9.]+/', '', $compteNum), $eAccount['class']) === FALSE
 				) {
-					$compteNum = preg_replace('/[^0-9.]+/', '', $compteNum);
-					dd($compteNum, $eAccount['class'], str_starts_with($compteNum, $eAccount['class']));
-					dd($compteNum, $eAccount, preg_replace('/[^0-9.]+/', '', $compteNum), AccountLabelLib::isFromClass(preg_replace('/[^0-9.]+/', '', $compteNum), $eAccount['class']));
 					throw new \Exception('Consistency issue between FEC account and account class for import #'.$eImport['id'].' and farm '.$eFarm['id']);
 				}
 
