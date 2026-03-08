@@ -43,6 +43,7 @@
 	--processed-food: #b17e2f;
 	--processed-product: var(--prepared);
 	--composition: var(--order);
+	--shipping: black;
 	--service: #5a720e;
 	--other: black;
 

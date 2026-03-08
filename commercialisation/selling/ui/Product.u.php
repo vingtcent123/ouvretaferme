@@ -89,12 +89,9 @@ class ProductUi {
 
 		$h = '<div class="dropdown-list">';
 
-			foreach(self::p('profile')->values as $profile => $value) {
+			foreach($eProduct->getWriteProfiles() as $profile) {
 
-				if($profile === Product::COMPOSITION and $eProduct->exists()) {
-					continue;
-				}
-
+				$label = self::p('profile')->values[$profile];
 				$examples = self::p('profile')->examples[$profile];
 
 				if($profile === Product::SERVICE) {
@@ -104,7 +101,7 @@ class ProductUi {
 				$h .= '<a '.$destination($profile).' class="dropdown-item dropdown-item-icon" data-profile="'.$profile.'">';
 					$h .= self::getProfileIcon($profile);
 					$h .= '<div>';
-						$h .= '<span class="product-profile-name">'.$value.'</span>';
+						$h .= '<span class="product-profile-name">'.$label.'</span>';
 						if($examples) {
 							$h .= '<br/><small style="color: #fff8">'.$examples.'</small>';
 						}
@@ -621,7 +618,10 @@ class ProductUi {
 		if($eProduct['vignette'] === NULL) {
 
 			$class .= ' media-vignette-default';
-			$content = \Asset::icon('box');
+			$content = match($eProduct['profile']) {
+				Product::SHIPPING => \Asset::icon('truck'),
+				default => \Asset::icon('box')
+			};
 
 		} else {
 
@@ -707,6 +707,10 @@ class ProductUi {
 
 	public function display(Product $eProduct): string {
 
+		if($eProduct->isManipulable() === FALSE) {
+			return '';
+		}
+
 		$h = '<div class="util-block stick-xs">';
 			$h .= '<dl class="util-presentation util-presentation-2">';
 
@@ -788,7 +792,9 @@ class ProductUi {
 				if($eProduct['profile'] === Product::COMPOSITION) {
 					$h .= '<a class="tab-item '.($eProduct['profile'] === Product::COMPOSITION ? 'selected' : '').'" data-tab="product-composition" onclick="Lime.Tab.select(this)">'.s("Composition").'</a>';
 				}
-				$h .= '<a class="tab-item '.($eProduct['profile'] === Product::COMPOSITION ? '' : 'selected').'" data-tab="product-grid" onclick="Lime.Tab.select(this)">'.s("Prix").'</a>';
+				if($eProduct->isManipulable()) {
+					$h .= '<a class="tab-item '.($eProduct['profile'] === Product::COMPOSITION ? '' : 'selected').'" data-tab="product-grid" onclick="Lime.Tab.select(this)">'.s("Prix").'</a>';
+				}
 				$h .= '<a class="tab-item" data-tab="product-sales" onclick="Lime.Tab.select(this)">'.s("Dernières ventes").'</a>';
 			$h .= '</div>';
 
@@ -802,10 +808,12 @@ class ProductUi {
 				$h .= '</div>';
 			}
 
-			$h .= '<div class="tab-panel '.($eProduct['profile'] === Product::COMPOSITION ? '' : 'selected').'" data-tab="product-grid">';
-				$h .= $this->getBaseGrid($eProduct);
-				$h .= new \selling\GridUi()->getGridByProduct($eProduct, $cGrid);
-			$h .= '</div>';
+			if($eProduct->isManipulable()) {
+				$h .= '<div class="tab-panel '.($eProduct['profile'] === Product::COMPOSITION ? '' : 'selected').'" data-tab="product-grid">';
+					$h .= $this->getBaseGrid($eProduct);
+					$h .= new \selling\GridUi()->getGridByProduct($eProduct, $cGrid);
+				$h .= '</div>';
+			}
 
 			$h .= '<div class="tab-panel" data-tab="product-sales">';
 				$h .= new \selling\ItemUi()->getByProduct($cItemLast);
@@ -1528,6 +1536,7 @@ class ProductUi {
 					Product::COMPOSITION => s("Produit composé"),
 					Product::OTHER => s("Autre produit"),
 					Product::SERVICE => s("Prestation de service"),
+					Product::SHIPPING => s("Frais de livraison"),
 				];
 
 				$d->examples = [
@@ -1538,6 +1547,7 @@ class ProductUi {
 					Product::COMPOSITION => s("Panier de légumes, bouquet de fleurs..."),
 					Product::OTHER => NULL,
 					Product::SERVICE => NULL,
+					Product::SHIPPING => NULL,
 				];
 
 				$d->icons = [
@@ -1548,6 +1558,7 @@ class ProductUi {
 					Product::COMPOSITION => \Asset::icon('puzzle-fill'),
 					Product::OTHER => \Asset::icon('three-dots'),
 					Product::SERVICE => \Asset::icon('hand-thumbs-up-fill'),
+					Product::SHIPPING => \Asset::icon('truck'),
 				];
 				break;
 

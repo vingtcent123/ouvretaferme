@@ -28,7 +28,6 @@ class ArchiveLib extends ArchiveCrud {
 				'invoice' => ['number'],
 				'priceIncludingVat', 'priceExcludingVat', 'discount',
 				'preparationStatus', 'paymentStatus',
-				'shipping', 'shippingExcludingVat', 'shippingVatRate',
 				'createdAt'
 			])
 			->whereFarm($e['farm'])
@@ -86,45 +85,27 @@ class ArchiveLib extends ArchiveCrud {
 
 		}
 
-		$ccItem = Item::model()
+		$cItem = Item::model()
 			->select(['sale', 'name', 'number', 'packaging', 'vatRate', 'unitPrice', 'price'])
 			->whereIngredientOf(NULL)
 			->whereFarm($e['farm'])
 			->whereSale('IN', $cSale->getIds())
 			->sort(['id' => SORT_ASC])
-			->getCollection(index: ['sale', NULL]);
+			->getCollection();
 
 		$output = array_merge($output, new ArchiveUi()->getCsvItemHeader());
 
-		foreach($cSale as $eSale) {
+		foreach($cItem as $eItem) {
 
-			foreach($ccItem[$eSale['id']] ?? new \Collection() as $eItem) {
-
-				$output[] = [
-					ArchiveUi::getSaleReference($eSale),
-					$eItem['name'],
-					$eItem['number'] * ($eItem['packaging'] ?? 1),
-					\util\TextUi::csvNumber($eItem['unitPrice']),
-					\util\TextUi::csvNumber($eItem['price']),
-					\util\TextUi::csvNumber(\util\AmountUi::fromIncluding($eItem['price'], $eItem['vatRate'])),
-					\util\TextUi::csvNumber($eItem['vatRate']),
-				];
-
-			}
-
-			if($eSale['shipping'] !== NULL) {
-
-				$output[] = [
-					ArchiveUi::getSaleReference($eSale),
-					SaleUi::getShippingName(),
-					1,
-					\util\TextUi::csvNumber($eSale['shipping']),
-					\util\TextUi::csvNumber($eSale['shipping']),
-					\util\TextUi::csvNumber($eSale['shippingExcludingVat']),
-					\util\TextUi::csvNumber($eSale['shippingVatRate']),
-				];
-
-			}
+			$output[] = [
+				ArchiveUi::getSaleReference($cSale[$eItem['sale']['id']]),
+				$eItem['name'],
+				$eItem['number'] * ($eItem['packaging'] ?? 1),
+				\util\TextUi::csvNumber($eItem['unitPrice']),
+				\util\TextUi::csvNumber($eItem['price']),
+				\util\TextUi::csvNumber(\util\AmountUi::fromIncluding($eItem['price'], $eItem['vatRate'])),
+				\util\TextUi::csvNumber($eItem['vatRate']),
+			];
 
 		}
 

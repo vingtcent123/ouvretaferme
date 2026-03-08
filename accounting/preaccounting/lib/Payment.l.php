@@ -43,7 +43,7 @@ Class PaymentLib {
 			'invoice' => \selling\Invoice::getSelection() + [
 				'cSale' => \selling\Sale::model()
 					->select([
-						'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate',
+						'id', 'shipping', 'shippingVatRate',
 						'cItem' => \selling\Item::model()
 							->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 							->delegateCollection('sale')

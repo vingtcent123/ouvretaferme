@@ -74,6 +74,7 @@ class Grid extends GridElement {
 							->select(ProductElement::getSelection())
 							->whereStatus(Product::ACTIVE)
 							->get($eProduct) and
+						$eProduct->isManipulable() and
 						$eProduct->validateProperty('farm', $this['farm'])
 					);
 

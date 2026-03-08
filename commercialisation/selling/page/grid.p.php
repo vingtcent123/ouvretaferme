@@ -12,7 +12,7 @@ new \selling\GridPage()
 	->create(function($data) {
 
 		$data->e['product'] = get_exists('product') ?
-			\selling\ProductLib::getById(GET('product'))->validateProperty('farm', $data->eFarm):
+			\selling\ProductLib::getById(GET('product'))->validateProperty('farm', $data->eFarm)->validate('isManipulable') :
 			new \selling\Product();
 
 		$data->e['group'] = new \selling\CustomerGroup();

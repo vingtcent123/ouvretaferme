@@ -312,7 +312,6 @@ class AnalyzeLib {
 		return Sale::model()
 			->select([
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'shipping' => new \Sql('SUM(shippingExcludingVat)', 'float'),
 				'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
 			])
 			->whereFarm($eFarm)
@@ -332,7 +331,6 @@ class AnalyzeLib {
 		return Sale::model()
 			->select([
 				'turnover' => new \Sql('SUM(priceExcludingVat)', 'float'),
-				'shipping' => new \Sql('SUM(shippingExcludingVat)', 'float'),
 				'year' => new \Sql('EXTRACT(YEAR FROM deliveredAt)', 'int'),
 			])
 			->whereShop($eShop)
@@ -485,33 +483,6 @@ class AnalyzeLib {
 		self::filterItemStats(TRUE);
 
 		return self::getProducts($eCustomer['farm'], $year, $month, $week);
-
-	}
-
-	public static function addShipping(\Collection $cSaleTurnover, \Collection $cItemProduct, int $year) {
-
-		if(
-			$cSaleTurnover->offsetExists($year) and
-			$cSaleTurnover[$year]['shipping'] !== NULL
-		) {
-			$cItemProduct[] = new \selling\Item([
-				'product' => new \selling\Product([
-					'id' => NULL,
-					'name' => \selling\SaleUi::getShippingName(),
-					'unprocessedVariety' => NULL,
-					'mixedFrozen' => FALSE
-				]),
-				'turnover' => $cSaleTurnover[$year]['shipping'],
-				'unit' => new Unit(),
-				'quantity' => NULL,
-				'average' => NULL,
-				'containsComposition' => FALSE,
-				'containsIngredient' => FALSE,
-			]);
-			$cItemProduct->sort([
-				'turnover' => SORT_DESC
-			]);
-		}
 
 	}
 
@@ -1030,47 +1001,6 @@ class AnalyzeLib {
 
 				return $data;
 			});
-
-		// Ajout des frais de livraison
-		self::filterSaleStats();
-
-		foreach(Sale::model()
-			->select([
-				'invoice' => ['number'],
-				'document', 'type',
-				'customer' => ['type', 'name'],
-				'shippingExcludingVat',
-				'deliveredAt'
-			])
-			->whereFarm($eFarm)
-			->where('shipping IS NOT NULL')
-			->where('EXTRACT(YEAR FROM deliveredAt) = '.$year)
-			->getCollection() as $eSale) {
-
-			$data[] = [
-				$eSale['document'],
-				$eSale['invoice']['number'] ?? '',
-				'',
-				SaleUi::getShippingName(),
-				$eSale['customer']->getName(),
-				CustomerUi::getType($eSale),
-				\util\DateUi::numeric($eSale['deliveredAt']),
-				'',
-				'',
-				\util\TextUi::csvNumber($eSale['shippingExcludingVat'])
-			];
-
-		}
-
-		usort($data, function($a, $b) {
-
-			if($a[0] !== $b[0]) {
-				return $a[0] < $b[0] ? -1 : 1;
-			}
-
-			return strcmp($a[3], $b[3]);
-
-		});
 
 		return $data;
 

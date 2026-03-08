@@ -21,6 +21,7 @@ class ProductLib extends ProductCrud {
 			'name' => SaleUi::getShippingName(),
 			'farm' => $eFarm,
 			'profile' => Product::SHIPPING,
+			'unit' => NULL,
 			'private' => TRUE,
 			'pro' => TRUE,
 			'vat' => SellingSetting::VAT_UNKNOWN,
@@ -271,6 +272,20 @@ class ProductLib extends ProductCrud {
 			->whereStatus('IN', Product::getManipulable())
 			->sort($search->buildSort())
 			->getCollection();
+
+	}
+
+	public static function getShippingByFarm(\farm\Farm $eFarm): Product {
+
+		return \Cache::redis()->query('product-shipping-'.$eFarm['id'], function() use ($eFarm) {
+
+			return Product::model()
+				->select(ProductElement::getSelection())
+				->whereFarm($eFarm)
+				->whereProfile(Product::SHIPPING)
+				->get();
+
+		}, 86400);
 
 	}
 

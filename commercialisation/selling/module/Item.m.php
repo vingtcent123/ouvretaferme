@@ -17,6 +17,7 @@ abstract class ItemElement extends \Element {
 
 	const GOOD = 'good';
 	const SERVICE = 'service';
+	const SILENT = 'silent';
 
 	const NO = 'no';
 	const ORGANIC = 'organic';
@@ -84,7 +85,7 @@ class ItemModel extends \ModuleModel {
 			'product' => ['element32', 'selling\Product', 'null' => TRUE, 'cast' => 'element'],
 			'composition' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'ingredientOf' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
-			'nature' => ['enum', [\selling\Item::GOOD, \selling\Item::SERVICE], 'cast' => 'enum'],
+			'nature' => ['enum', [\selling\Item::GOOD, \selling\Item::SERVICE, \selling\Item::SILENT], 'cast' => 'enum'],
 			'quality' => ['enum', [\selling\Item::NO, \selling\Item::ORGANIC, \selling\Item::NATURE_PROGRES, \selling\Item::CONVERSION], 'cast' => 'enum'],
 			'parent' => ['element32', 'selling\Item', 'null' => TRUE, 'cast' => 'element'],
 			'packaging' => ['decimal', 'digits' => 6, 'decimal' => 2, 'min' => 0.01, 'max' => 9999.99, 'null' => TRUE, 'cast' => 'float'],

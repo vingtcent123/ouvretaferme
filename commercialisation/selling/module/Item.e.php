@@ -33,6 +33,12 @@ class Item extends ItemElement {
 
 	}
 
+	public function acceptWrite(): bool {
+
+		return $this->isShipping() === FALSE;
+
+	}
+
 	public function canWrite(): bool {
 
 		$this->expects([
@@ -93,6 +99,25 @@ class Item extends ItemElement {
 			);
 
 		}
+
+	}
+
+	public function isShipping(): bool {
+		return (
+			$this['product']->notEmpty() and
+			$this['product']['profile'] === Product::SHIPPING
+		);
+	}
+
+	public function fillFromProduct(Product $eProduct, \farm\Farm $eFarm): self {
+
+		return $this->merge([
+			'product' => $eProduct,
+			'name' => $eProduct->getName(),
+			'quality' => $eProduct['quality'],
+			'unit' => $eProduct['unit'],
+			'vatRate' => \selling\SellingSetting::getVatRate($eFarm, $eProduct['vat']),
+		]);
 
 	}
 

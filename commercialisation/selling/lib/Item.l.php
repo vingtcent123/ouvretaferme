@@ -601,6 +601,30 @@ class ItemLib extends ItemCrud {
 
 	}
 
+	public static function createShipping(Item $e, Product $eProduct): void {
+
+		$e->expects([
+			'sale' => ['shipping', 'shippingVatRate'],
+			'farm'
+		]);
+
+		$e->fillFromProduct($eProduct, $e['farm']);
+
+		$e['locked'] = \selling\Item::PRICE;
+		$e['number'] = 1;
+		$e['packaging'] = NULL;
+		$e['unitPrice'] = $e['sale']['shipping'];
+		$e['unitPriceInitial'] = NULL;
+		$e['vatRate'] = $e['sale']['shippingVatRate'];
+
+		\selling\ItemLib::create($e);
+
+	}
+
+	public static function deleteShipping(Item $e): void {
+		parent::delete($e);
+	}
+
 	public static function delete(Item $e): void {
 
 		/* Cette méthode ne remet pas à jour le disponible sur les boutiques */
@@ -696,6 +720,7 @@ class ItemLib extends ItemCrud {
 
 			$e['nature'] = match($e['product']['profile']) {
 				Product::SERVICE => Item::SERVICE,
+				Product::SHIPPING => Item::SILENT,
 				default => Item::GOOD
 			};
 			$e['additional'] = $e['product']['additional'];
@@ -720,7 +745,7 @@ class ItemLib extends ItemCrud {
 		$e->expects([
 			'sale' => ['farm', 'taxes', 'profile'],
 			'locked',
-			'unitPrice', 'number', 'packaging', 'vatRate', 'discount'
+			'unitPrice', 'unitPriceInitial', 'number', 'packaging', 'vatRate', 'discount'
 		]);
 
 		if($e['sale']->isMarket()) {
@@ -806,17 +831,19 @@ class ItemLib extends ItemCrud {
 
 	}
 
+	public static function recalculateShipping(Item $e): void {
+
+		$e->expects(['vatRate', 'sale']);
+
+		ItemLib::recalculateStatsPricing($e);
+
+		Item::model()
+			->select('vatRate', 'priceStats')
+			->update($e);
+
+	}
+
 	public static function recalculatePricing(Item $e): void {
-
-		$priceStats = match($e['sale']['taxes']) {
-			Sale::INCLUDING => $e['price'] / (1 + $e['vatRate'] / 100),
-			Sale::EXCLUDING => $e['price'],
-			NULL => $e['price']
-		};
-
-		if($e['discount'] > 0) {
-			$priceStats *= (100 - $e['discount']) / 100;
-		}
 
 		if($e['unitPriceInitial'] === NULL) {
 			$priceInitial = NULL;
@@ -827,6 +854,22 @@ class ItemLib extends ItemCrud {
 			}
 		}
 		$e['priceInitial'] = $priceInitial;
+
+		self::recalculateStatsPricing($e);
+
+	}
+
+	public static function recalculateStatsPricing(Item $e): void {
+
+		$priceStats = match($e['sale']['taxes']) {
+			Sale::INCLUDING => $e['price'] / (1 + $e['vatRate'] / 100),
+			Sale::EXCLUDING => $e['price'],
+			NULL => $e['price']
+		};
+
+		if($e['discount'] > 0) {
+			$priceStats *= (100 - $e['discount']) / 100;
+		}
 
 		$e['priceStats'] = round($priceStats, 2);
 

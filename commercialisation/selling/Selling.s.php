@@ -51,6 +51,7 @@ class SellingSetting extends \Settings {
 				2 => 5.5,
 				3 => 10,
 				4 => 20,
+				self::VAT_UNKNOWN => NULL,
 			];
 
 		} else if($eCountry['id'] === \user\UserSetting::BE) {
@@ -60,6 +61,7 @@ class SellingSetting extends \Settings {
 				101 => 6,
 				102 => 12,
 				103 => 21,
+				self::VAT_UNKNOWN => NULL,
 			];
 
 		} else {
@@ -72,8 +74,16 @@ class SellingSetting extends \Settings {
 
 	}
 
-	public static function getVatRate(\farm\Farm $eFarm, int $rate): float {
-		return SellingSetting::getVatRates($eFarm)[$rate] ?? throw new \Exception('Unknown rate '.$rate.' for farm '.$eFarm['id']);
+	public static function getVatRate(\farm\Farm $eFarm, int $rate): ?float {
+
+		$rates = SellingSetting::getVatRates($eFarm);
+
+		if(array_key_exists($rate, $rates) === FALSE) {
+			throw new \Exception('Unknown rate '.$rate.' for farm '.$eFarm['id']);
+		}
+
+		return $rates[$rate];
+
 	}
 
 	public static function getStartVat(\user\Country $eCountry): int {

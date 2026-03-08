@@ -242,9 +242,7 @@ new AdaptativeView('surveyFarm', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = '<h1>'.$t->title.'</h1>';
 
-	if($data->hasSurvey === NULL) {
-
-	} else if($data->hasSurvey) {
+	if($data->hasSurvey) {
 		echo '<div class="util-block">';
 			echo '<h3>'.s("Merci pour votre participation !").'</h3>';
 			echo '<p>'.s("Nous analyserons les réponses dans les semaines à venir avant de travailler sur de nouvelles fonctionnalités.").'</p>';

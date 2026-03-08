@@ -291,22 +291,6 @@ class PdfUi {
 
 						}
 
-						if($eSale['shipping']) {
-
-							$h .= '<tr>';
-								$h .= '<td colspan="'.($withPackaging ? 5 : 4).'">'.SaleUi::getShippingName().'</td>';
-								$h .= '<td class="pdf-document-price">';
-									$h .= \util\TextUi::money($eSale['shipping']);
-								$h .= '</td>';
-								if($eSale['hasVat'] and $type !== Pdf::DELIVERY_NOTE) {
-									$h .= '<td class="pdf-document-vat">';
-										$h .= s("{value} %", $eSale['shippingVatRate']);
-									$h .= '</td>';
-								}
-							$h .= '</tr>';
-
-						}
-
 						$h .= $this->getDocumentTotal($type, $eFarm, $eSale, $withPackaging ? 3 : 2, 2, $type === Pdf::INVOICE);
 
 					$h .= '</tbody>';
@@ -938,14 +922,24 @@ class PdfUi {
 			}
 			$unit = \selling\UnitUi::getBy($eItem['unit'], short: TRUE);
 			$h .= '<td class="pdf-document-number">';
-				$h .= \selling\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1), $eItem['unit'], TRUE);
+				if(
+					$eItem['product']->empty() or
+					$eItem['product']['profile'] !== Product::SHIPPING
+				) {
+					$h .= \selling\UnitUi::getValue($eItem['number'] * ($eItem['packaging'] ?? 1), $eItem['unit'], TRUE);
+				}
 			$h .= '</td>';
 			$h .= '<td class="pdf-document-unit-price">';
-				if($eItem['unitPriceInitial'] !== NULL) {
-					$h .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], unit: $unit);
+				if(
+					$eItem['product']->empty() or
+					$eItem['product']['profile'] !== Product::SHIPPING
+				) {
+					if($eItem['unitPriceInitial'] !== NULL) {
+						$h .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], unit: $unit);
+					}
+					$h .= \util\TextUi::money($eItem['unitPrice']);
+					$h .= $unit;
 				}
-				$h .= \util\TextUi::money($eItem['unitPrice']);
-				$h .= $unit;
 			$h .= '</td>';
 			$h .= '<td class="pdf-document-price">';
 				$h .= \util\TextUi::money($eItem['price']);

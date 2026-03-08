@@ -447,41 +447,6 @@ class OrderUi {
 
 			$h .= $this->getItemsBody($eSale, $cItem, $columns, $withPackaging, $withApproximate);
 
-			if($eSale['shipping'] !== NULL) {
-
-				$h .= '<tbody>';
-					$h .= '<tr>';
-
-						$h .= '<td></td>';
-						$h .= '<td>';
-							$h .= SaleUi::getShippingName();
-						$h .= '</td>';
-
-						if($withPackaging) {
-
-							$h .= '<td></td>';
-
-						}
-
-						$h .= '<td colspan="3"></td>';
-
-						$h .= '<td class="item-item-price text-end">';
-							$h .= \util\TextUi::money($eSale['shipping']);
-						$h .= '</td>';
-
-						if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
-
-							$h .= '<td class="item-item-vat text-center">';
-								$h .= s('{value} %', $eSale['shippingVatRate']);
-							$h .= '</td>';
-
-						}
-
-					$h .= '</tr>';
-
-				$h .= '</tbody>';
-
-			}
 			$h .= '<tbody>';
 
 				if(

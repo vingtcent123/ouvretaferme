@@ -286,17 +286,14 @@ class SaleLib {
 			$eItem = new \selling\Item([
 				'farm' => $eFarm,
 				'shopProduct' => $eProduct,
-				'product' => $eProductSelling,
-				'name' => $eProductSelling->getName(),
-				'quality' => $eProductSelling['quality'],
 				'packaging' => $eProduct['packaging'],
 				'locked' => \selling\Item::PRICE,
-				'unit' => $eProductSelling['unit'],
 				'unitPrice' => $eProduct['price'],
 				'unitPriceInitial' => $eProduct['priceInitial'],
 				'number' => $number,
-				'vatRate' => \selling\SellingSetting::getVatRate($eFarm, $eProductSelling['vat']),
 			]);
+
+			$eItem->fillFromProduct($eProductSelling, $eFarm);
 
 			$total += $number * ($eProduct['packaging'] ?? 1) * $eProduct['price'];
 

@@ -46,6 +46,12 @@ class Product extends ProductElement {
 		return $this['farm']->canManage();
 	}
 
+	public function acceptUpdate(): bool {
+
+		return $this->isManipulable();
+
+	}
+
 	public function acceptEnableStock(): bool {
 
 		return ($this['stock'] === NULL);
@@ -67,6 +73,24 @@ class Product extends ProductElement {
 	public function acceptDuplicate(): bool {
 
 		return ($this['profile'] !== Product::COMPOSITION);
+
+	}
+
+	public function getWriteProfiles(): array {
+
+		return array_merge(
+			[
+				Product::UNPROCESSED_PLANT,
+				Product::UNPROCESSED_ANIMAL,
+				Product::PROCESSED_FOOD,
+				Product::PROCESSED_PRODUCT,
+			],
+			($this->exists() === FALSE) ? [Product::COMPOSITION] : [],
+			[
+				Product::OTHER,
+				Product::SERVICE,
+			]
+		);
 
 	}
 
@@ -259,7 +283,13 @@ class Product extends ProductElement {
 			})
 			->setCallback('profile.consistency', function(?string $profile) use ($p): bool {
 
-				return ($p->for === 'create' or $profile !== Product::COMPOSITION);
+				if(in_array($profile, $this->getWriteProfiles())) {
+					return TRUE;
+				} else {
+					// Requis pour que les vérifications suivantes puissent s'exécuter
+					$this['profile'] = NULL;
+					return FALSE;
+				}
 
 			})
 			->setCallback('mixedFrozen.prepare', function(?bool &$frozen): bool {
@@ -301,7 +331,7 @@ class Product extends ProductElement {
 				);
 
 			})
-			->setCallback('compositionVisibility.check', function(?string &$visibility): bool {
+			->setCallback('compositionVisibility.check', function(?string &$visibility) use ($p): bool {
 
 				if(in_array($this['profile'], Product::getProfiles('compositionVisibility')) === FALSE) {
 					$visibility = NULL;

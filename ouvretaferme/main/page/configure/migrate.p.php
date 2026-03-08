@@ -3,37 +3,36 @@ new Page()
 	->cli('index', function($data) {
 
 		$c = \selling\Sale::model()
-			->select([
-				'id',
-				'customer' => ['user'],
-				'shop' => ['shared', 'farm']
-			])
-			->whereShop('!=', NULL)
-			->whereShopSharedCustomer(NULL)
+			->select(\selling\SaleElement::getSelection())
+			->whereShipping('!=', NULL)
 			->getCollection();
 
 		foreach($c as $e) {
 
-			if($e['shop']['shared'] === FALSE) {
-				continue;
-			}
+			$eFarm = \farm\FarmLib::getById($e['farm']);
+			$e['farm'] = $eFarm;
 
-			$eb = \selling\Customer::model()
-				->select('id')
-				->whereFarm($e['shop']['farm'])
-				->whereUser($e['customer']['user'])
-				->get();
+			$eProduct = \selling\ProductLib::getShippingByFarm($eFarm);
 
-			if($eb->empty()) {
-				echo $e['customer']['user']['id'];
-				echo '!';
-			} else {
-				$e['shopSharedCustomer'] = $eb;
-				\selling\Sale::model()
-					->select('shopSharedCustomer')
-					->update($e);
-				echo '.';
-			}
+			$eItem = new \selling\Item([
+				'sale' => $e,
+				'farm' => $e['farm']
+			]);
+
+			$eItem->fillFromProduct($eProduct, $eFarm);
+
+			$eItem['locked'] = \selling\Item::PRICE;
+			$eItem['number'] = 1;
+			$eItem['packaging'] = NULL;
+			$eItem['unitPrice'] = $e['shipping'];
+			$eItem['unitPriceInitial'] = NULL;
+			$eItem['vatRate'] = $e['shippingVatRate'];
+
+			echo $e['id']."\n";
+
+			\selling\ItemLib::create($eItem);
+
+			dd('ok');
 
 		}
 

@@ -151,7 +151,7 @@ new AdaptativeView('series', function($data, DocTemplate $t) {
 		],
 		[
 			s("Objectif de longueur de planches en mL"),
-			'bed_area',
+			'bed_length',
 			s("Pris en compte uniquement dans le cas de culture sur planches"),
 			'100'
 		],

@@ -232,6 +232,7 @@ class SaleLib extends SaleCrud {
 					->select(Item::getSelection())
 					->whereIngredientOf(NULL)
 					->sort([
+						new \Sql('nature = "'.Item::SILENT.'"'),
 						'name' => SORT_ASC,
 						'id' => SORT_ASC
 					])
@@ -248,6 +249,7 @@ class SaleLib extends SaleCrud {
 				'ccItem' => Item::model()
 					->select(Item::getSelection())
 					->sort([
+						new \Sql('nature = "'.Item::SILENT.'"'),
 						'name' => SORT_ASC,
 						'id' => SORT_ASC
 					])
@@ -836,8 +838,6 @@ class SaleLib extends SaleCrud {
 			\selling\ItemLib::createCollection($e, $e['cItemCreate']);
 		}
 
-		$ePaymentMethod = new \payment\Method();
-
 		if($e->isSale()) {
 
 			$e->expects(['shop']);
@@ -1218,6 +1218,10 @@ class SaleLib extends SaleCrud {
 			parent::update($e, $properties);
 		}
 
+		if(array_intersect(['shipping', 'shippingVatRate'], $properties)) {
+			self::updateShipping($e);
+		}
+
 		$newItems = [];
 
 		if($updatePreparationStatus) {
@@ -1478,6 +1482,7 @@ class SaleLib extends SaleCrud {
 			->whereIngredientOf(NULL, if: $withIngredients === FALSE)
 			->sort([
 				new \Sql('ingredientOf IS NOT NULL'),
+				new \Sql('nature = "'.Item::SILENT.'"'),
 				'name' => SORT_ASC,
 				'id' => SORT_ASC
 			])
@@ -1561,6 +1566,50 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function updateShipping(Sale $e): void {
+
+		$eProductShipping = ProductLib::getShippingByFarm($e['farm']);
+		$eItemShipping = Item::model()
+			->select(ItemElement::getSelection())
+			->whereSale($e)
+			->whereProduct($eProductShipping)
+			->get();
+
+		if($e['shipping'] === NULL) {
+
+			if($eItemShipping->notEmpty()) {
+				ItemLib::deleteShipping($eItemShipping);
+			}
+
+		} else {
+
+			if($eItemShipping->empty()) {
+
+				$eItemShipping = new \selling\Item([
+					'sale' => $e,
+					'farm' => $e['farm']
+				]);
+
+				ItemLib::createShipping($eItemShipping, $eProductShipping);
+
+			} else {
+
+				if($e['shippingVatFixed']) {
+
+					$eItemShipping['sale'] = $e;
+					$eItemShipping['vatRate'] = $e['shippingVatRate'];
+
+					ItemLib::recalculateShipping($eItemShipping);
+
+				}
+
+
+			}
+
+		}
+
+	}
+
 	/**
 	 * Recalculer la TVA et les prix de la vente en fonction des items
 	 */
@@ -1568,7 +1617,8 @@ class SaleLib extends SaleCrud {
 
 		$e->expects([
 			'farm' => ['legalCountry'],
-			'discount', 'taxes', 'shippingVatRate', 'shippingVatFixed'
+			'discount', 'taxes',
+			'shipping', 'shippingVatRate', 'shippingVatFixed'
 		]);
 
 		$cItem = Item::model()
@@ -1624,11 +1674,44 @@ class SaleLib extends SaleCrud {
 			'priceExcludingVat' => 0.0,
 		];
 
-		if($e['shippingVatFixed'] === FALSE) {
+		// Update shipping
+		if(
+			$e['shipping'] !== NULL and
+			$e['shippingVatFixed'] === FALSE and
+			$e['farm']->getConf('defaultVatShipping') === NULL
+		) {
 
 			$newValues += [
-				'shippingVatRate' => ($e['shipping'] === NULL) ? NULL : SellingSetting::getStandardVatRate($e['farm']),
+				'shippingVatRate' => SellingSetting::getStandardVatRate($e['farm'])
 			];
+
+			$eProductShipping = ProductLib::getShippingByFarm($e['farm']);
+
+			foreach($cItem as $eItem) {
+
+				if($eItem['product']->is($eProductShipping)) {
+					$eItemShipping = $eItem;
+				} else {
+					$newValues['shippingVatRate'] = min($newValues['shippingVatRate'], $eItem['vatRate']);
+				}
+
+			}
+
+			if($eItemShipping->notEmpty()) {
+
+				// Le taux de TVA a changé sur la livraison
+				if($newValues['shippingVatRate'] !== $eItemShipping['vatRate']) {
+
+					$eItemShipping['sale'] = $e;
+					$eItemShipping['vatRate'] = $newValues['shippingVatRate'];
+
+					ItemLib::recalculateShipping($eItemShipping);
+
+				}
+
+			} else {
+				throw new \Exception('Missing shipping item in sale '.$e['id']);
+			}
 
 		}
 
@@ -1640,28 +1723,20 @@ class SaleLib extends SaleCrud {
 			$vatList[(string)$eItem['vatRate']] ??= 0;
 			$vatList[(string)$eItem['vatRate']] += $eItem['price'];
 
-			if($e['shippingVatFixed'] === FALSE and $e['shipping'] !== NULL) {
-				$newValues['shippingVatRate'] ??= $eItem['vatRate'];
-				$newValues['shippingVatRate'] = min($newValues['shippingVatRate'], $eItem['vatRate']);
-			}
-
 			if($eItem['quality'] === \farm\Farm::ORGANIC) {
 				$newValues['organic'] = TRUE;
 			} else if($eItem['quality'] === \farm\Farm::CONVERSION) {
 				$newValues['conversion'] = TRUE;
 			}
 
-			if($eItem['nature'] !== Sale::MIXED) {
-
-				if($eItem['nature'] === Item::GOOD) {
-					$newValues['nature'] = ($newValues['nature'] === Sale::SERVICE) ? Sale::MIXED : Sale::GOOD;
-				} else{
-					$newValues['nature'] = ($newValues['nature'] === Sale::GOOD) ? Sale::MIXED : Sale::SERVICE;
-				}
-
+			if($eItem['nature'] === Item::GOOD) {
+				$newValues['nature'] = ($newValues['nature'] === Sale::SERVICE) ? Sale::MIXED : Sale::GOOD;
+			} else if($eItem['nature'] === Item::SERVICE) {
+				$newValues['nature'] = ($newValues['nature'] === Sale::GOOD) ? Sale::MIXED : Sale::SERVICE;
 			}
 
 		}
+
 
 		// On applique la remise commerciale
 		if($e['discount'] > 0) {
@@ -1688,39 +1763,6 @@ class SaleLib extends SaleCrud {
 
 		} else {
 			$newValues['priceInitial'] = NULL;
-		}
-
-		if($e['shipping'] !== NULL) {
-
-			if($e['shippingVatFixed'] === FALSE) {
-
-				// On écrase le taux de TVA calculé
-				$eConfiguration = \farm\ConfigurationLib::getByFarm($e['farm']);
-
-				if($eConfiguration['defaultVatShipping'] !== NULL) {
-					$newValues['shippingVatRate'] = SellingSetting::getVatRate($e['farm'], $eConfiguration['defaultVatShipping']);
-				}
-
-				$shippingVatRate = $newValues['shippingVatRate'];
-
-			} else {
-				$shippingVatRate = $e['shippingVatRate'];
-			}
-
-			$newValues['shippingExcludingVat'] = match($e['taxes']) {
-				Sale::INCLUDING => round($e['shipping'] / (1 + $shippingVatRate / 100), 2),
-				Sale::EXCLUDING => $e['shipping']
-			};
-
-			$vatList[(string)$shippingVatRate] ??= 0;
-			$vatList[(string)$shippingVatRate] += $e['shipping'];
-
-			if($newValues['priceInitial'] !== NULL) {
-				$newValues['priceInitial'] += $e['shipping'];
-			}
-
-		} else {
-			$newValues['shippingExcludingVat'] = NULL;
 		}
 
 		foreach($vatList as $vatRate => $amount) {

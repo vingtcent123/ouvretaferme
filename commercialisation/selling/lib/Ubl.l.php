@@ -382,6 +382,7 @@ class UblLib {
 		$sum = 0;
 
 		foreach($eInvoice['cSale'] as $eSale) {
+
 			foreach($eSale['cItem'] as $eItem) {
 
 				$priceField = $eItem['priceInitial'] === NULL ? 'price' : 'priceInitial';
@@ -392,9 +393,7 @@ class UblLib {
 				};
 
 			}
-			if($eSale['shipping']) {
-				$sum += $eSale['shippingExcludingVat'];
-			}
+
 		}
 
 		return $sum;

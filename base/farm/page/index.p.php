@@ -993,8 +993,6 @@ new Page(function($data) {
 					$data->cItemProduct = \selling\AnalyzeLib::getFarmProducts($data->eFarm, $data->year, $data->month, $data->week, $data->search);
 					$data->cPlant = \selling\AnalyzeLib::getFarmPlants($data->eFarm, $data->year, $data->month, $data->week, $data->search);
 
-					\selling\AnalyzeLib::addShipping($data->cSaleTurnover, $data->cItemProduct, $data->year);
-
 					$data->cItemProductCompare = new Collection();
 					$data->cPlantCompare = new Collection();
 
@@ -1005,8 +1003,6 @@ new Page(function($data) {
 							$data->cItemProductCompare = \selling\AnalyzeLib::getFarmProducts($data->eFarm, $data->yearCompare, $data->month, $data->week ? str_replace($data->year, $data->yearCompare, $data->week) : NULL, $data->search);
 
 							$data->cPlantCompare = \selling\AnalyzeLib::getFarmPlants($data->eFarm, $data->yearCompare, $data->month, $data->week ? str_replace($data->year, $data->yearCompare, $data->week) : NULL, $data->search);
-
-							\selling\AnalyzeLib::addShipping($data->cSaleTurnover, $data->cItemProductCompare, $data->yearCompare);
 
 						} else {
 							$data->yearCompare = NULL;
@@ -1071,8 +1067,6 @@ new Page(function($data) {
 							$data->cItemProductMonthly = new Collection();
 							$data->cccItemPlantMonthly = new Collection();
 						}
-
-						\selling\AnalyzeLib::addShipping($data->cSaleTurnover, $data->cItemProduct, $data->year);
 
 					}
 

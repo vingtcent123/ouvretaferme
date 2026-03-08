@@ -81,6 +81,10 @@ class GridUi {
 
 	public function getGridByProduct(Product $eProduct, \Collection $cGrid): string {
 
+		if($eProduct->isManipulable() === FALSE) {
+			return '';
+		}
+
 		$h = '<div class="util-title">';
 			$h .= '<h3>'.s("Prix personnalisés par client").'</h3>';
 			$h .= '<div>';

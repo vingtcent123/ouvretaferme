@@ -114,7 +114,7 @@ class ItemUi {
 						$articles = $cItem->find(fn($eItem) => $eItem['prepared'] === FALSE)->count();
 					} else {
 						$h .= s("Articles");
-						$articles = $cItem->count() + ($eSale['shipping'] !== NULL ? 1 : 0);
+						$articles = $cItem->count();
 					}
 
 
@@ -230,38 +230,6 @@ class ItemUi {
 					$h .= '</thead>';
 
 					$h .= $this->getItemsBody($eSale, $cItem, $isPreparing, $columns, $withPackaging, $withVat);
-
-					if($eSale['shipping'] !== NULL) {
-
-						$h .= '<tbody>';
-							$h .= '<tr>';
-								$h .= '<td class="item-item-vignette">'.\Asset::icon('truck').'</td>';
-								$h .= '<td colspan="'.(2 + (int)$withPackaging).'">'.SaleUi::getShippingName().'</td>';
-								$h .= '<td class="hide-sm-down" colspan="2"></td>';
-
-								$h .= '<td class="item-item-price text-end">';
-									$shipping = \util\TextUi::money($eSale['shipping']);
-
-									if($eSale->isLocked() === FALSE) {
-										$h .= $eSale->quick('shipping', $shipping);
-									} else {
-										$h .= $shipping;
-									}
-								$h .= '</td>';
-
-								if($withVat) {
-									$h .= '<td class="item-item-vat text-center hide-sm-down">';
-										$h .= s("{value} %", $eSale['shippingVatRate']);
-									$h .= '</td>';
-								}
-
-								$h .= '<td class="text-end">';
-									$h .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
-								$h .= '</td>';
-							$h .= '</tr>';
-						$h .= '</tbody>';
-
-					}
 
 			$h .= '</table>';
 
@@ -421,17 +389,24 @@ class ItemUi {
 
 					$h .= '<td class="item-item-number text-end">';
 
-						if($eItem['packaging']) {
-							$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.\selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
-						} else {
-							$value = \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
+						if(
+							$eItem['product']->empty() or
+							$eItem['product']['profile'] !== Product::SHIPPING
+						) {
 
-							if($eItem['locked'] === Item::NUMBER) {
-								$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
-							} else if($eItem->canUpdate() === FALSE) {
-								$h .= $value;
+							if($eItem['packaging']) {
+								$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.\selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
 							} else {
-								$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="number">'.$value.'</a>';
+								$value = \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
+
+								if($eItem['locked'] === Item::NUMBER) {
+									$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+								} else if($eItem->canUpdate() === FALSE) {
+									$h .= $value;
+								} else {
+									$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="number">'.$value.'</a>';
+								}
+
 							}
 
 						}
@@ -440,36 +415,43 @@ class ItemUi {
 
 					$h .= '<td class="item-item-unit-price text-end">';
 
-						if($eItem['unit']) {
-							$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
-						} else {
-							$unit = '';
-						}
-
-						$value = '';
-						if($eItem['unitPriceInitial'] !== NULL) {
-							$value .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], unit: ' '.$unit);
-						}
-						$value .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
-
-						if($eItem['locked'] === Item::UNIT_PRICE) {
-							$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
-						} else if($eItem->canUpdate() === FALSE) {
-							$h .= $value;
-						} else {
-							$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="unit-price">'.$value.'</a>';
-						}
-
 						if(
-							$eSale->isMarket() and
-							$eItem['number'] and
-							$eItem['price']
+							$eItem['product']->empty() or
+							$eItem['product']['profile'] !== Product::SHIPPING
 						) {
 
-							$realUnitPrice = round($eItem['price'] / $eItem['number'], 2);
+							if($eItem['unit']) {
+								$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
+							} else {
+								$unit = '';
+							}
 
-							if(abs($realUnitPrice - $eItem['unitPrice']) > 0.1) {
-								$h .= '<div class="color-muted text-sm">'.s("({value} en réel)", \util\TextUi::money($realUnitPrice).' '.$unit).'</div>';
+							$value = '';
+							if($eItem['unitPriceInitial'] !== NULL) {
+								$value .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], unit: ' '.$unit);
+							}
+							$value .= \util\TextUi::money($eItem['unitPrice']).' '.$unit;
+
+							if($eItem['locked'] === Item::UNIT_PRICE) {
+								$h .= '<span class="item-item-locked">'.\Asset::icon('lock-fill').'</span> '.$value;
+							} else if($eItem->canUpdate() === FALSE) {
+								$h .= $value;
+							} else {
+								$h .= '<a onclick="Merchant.show(this)" class="util-quick" data-item="'.$eItem['id'].'" data-property="unit-price">'.$value.'</a>';
+							}
+
+							if(
+								$eSale->isMarket() and
+								$eItem['number'] and
+								$eItem['price']
+							) {
+
+								$realUnitPrice = round($eItem['price'] / $eItem['number'], 2);
+
+								if(abs($realUnitPrice - $eItem['unitPrice']) > 0.1) {
+									$h .= '<div class="color-muted text-sm">'.s("({value} en réel)", \util\TextUi::money($realUnitPrice).' '.$unit).'</div>';
+								}
+
 							}
 
 						}
@@ -860,11 +842,29 @@ class ItemUi {
 
 	protected function getUpdate(Item $eItem): string {
 
+		if(
+			$eItem->isShipping() and
+			$eItem['sale']->acceptUpdate()
+		) {
+			return '<a href="/selling/sale:update?id='.$eItem['sale']['id'].'" class="btn btn-sm btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
+		}
+
+		if(
+			$eItem->acceptUpdate() === FALSE or
+			$eItem->acceptDelete() === FALSE
+		) {
+			return '';
+		}
+
 		$h = '<a data-dropdown-id="item-update-'.$eItem['id'].'" data-dropdown="bottom-end" class="dropdown-toggle btn btn-sm btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div data-dropdown-id="item-update-'.$eItem['id'].'-list" class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eItem['name']).'</div>';
-			$h .= '<a href="/selling/item:update?id='.$eItem['id'].'" class="dropdown-item">'.s("Modifier l'article").'</a>';
-			$h .= '<a data-ajax="/selling/item:doDelete" post-id="'.$eItem['id'].'" class="dropdown-item" data-confirm="'.s("Supprimer l'article de la vente ?").'">'.s("Supprimer l'article").'</a>';
+			if($eItem->acceptUpdate()) {
+				$h .= '<a href="/selling/item:update?id='.$eItem['id'].'" class="dropdown-item">'.s("Modifier l'article").'</a>';
+			}
+			if($eItem->acceptDelete()) {
+				$h .= '<a data-ajax="/selling/item:doDelete" post-id="'.$eItem['id'].'" class="dropdown-item" data-confirm="'.s("Supprimer l'article de la vente ?").'">'.s("Supprimer l'article").'</a>';
+			}
 		$h .= '</div>';
 
 		return $h;
