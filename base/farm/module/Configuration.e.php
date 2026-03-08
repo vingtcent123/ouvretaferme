@@ -176,6 +176,25 @@ class Configuration extends ConfigurationElement {
 				return $p->isBuilt('electronicScheme') and $p->isBuilt(('electronicAddress')) ;
 
 			})
+			->setCallback('profileAccount.check', function(array &$profileAccount) {
+
+				foreach($profileAccount as $profile => &$accounts) {
+
+					foreach($accounts as $type => $value) {
+						if(empty($value)) {
+							unset($accounts[$type]);
+						}
+					}
+
+					if(empty($accounts)) {
+						unset($profileAccount[$profile]);
+					}
+
+				}
+
+				return TRUE;
+
+			})
 		;
 	
 		parent::build($properties, $input, $p);

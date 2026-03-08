@@ -408,17 +408,17 @@ class ConfigurationUi {
 
 		$h .= $form->group(
 			content: '<h3>'.s("Numéros de compte par défaut").'</h3>'.
-			'<div class="util-info">'.s("Ces numéros de compte seront automatiquement attribués aux futures produits que vous créerez.").'</div>'
+			'<div class="util-info">'.s("Ces numéros de compte seront automatiquement attribués aux futurs produits que vous créerez.").'</div>'
 		);
 
 
 		foreach($profiles as $key => $profile) {
 
 			$e = new \selling\Product(['farm' => $eFarm]);
-			if(($eConfiguration['profileAccount'][$key]['privateAccount'] ?? '') !== '') {
+			if(isset($eConfiguration['profileAccount'][$key]['privateAccount'])) {
 				$e['privateAccount'] = $cAccount->offsetGet($eConfiguration['profileAccount'][$key]['privateAccount']);
 			}
-			if(($eConfiguration['profileAccount'][$key]['proAccount'] ?? '') !== '') {
+			if(isset($eConfiguration['profileAccount'][$key]['proAccount'])) {
 				$e['proAccount'] = $cAccount->offsetGet($eConfiguration['profileAccount'][$key]['proAccount']);
 				$hasProAccount = TRUE;
 			} else {
