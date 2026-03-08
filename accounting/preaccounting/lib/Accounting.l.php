@@ -934,14 +934,15 @@ Class AccountingLib {
 
 				foreach($eElement['vatByRate'] as $vatByRate) {
 					$vatByRates[] = [
-						'amountWithoutRatio' => $vatByRate['amount'], // TTC
-						'amount' => round($vatByRate['amount'] * $paymentRatio, 2), // TTC
-						'vatRate' => $vatByRate['vatRate']
+						'amountWithoutRatio' => $vatByRate['amount'], // HT
+						'amount' => round($vatByRate['amount'] * $paymentRatio, 2), // HT
+						'amountIncludingVat' => round($vatByRate['amount'] * (1 + $vatByRate['vatRate'] / 100), 2), // TTC
+						'vatRate' => (float)$vatByRate['vatRate']
 					];
 				}
 
 				// S'il y a un écart dans les montants ventilés par TVA => corriger maintenant
-				$totalByVat = array_sum(array_column($vatByRates, 'amount'));
+				$totalByVat = array_sum(array_column($vatByRates, 'amountIncludingVat'));
 
 				if($totalByVat !== $ePayment['amountIncludingVat']) {
 
@@ -966,9 +967,8 @@ Class AccountingLib {
 				if($hasVat) {
 
 					// TVA
-					$amountExcludingVat = round($vatByRate['amount'] / (1 + $vatByRate['vatRate'] / 100), 2);
-					$amountVat = round($vatByRate['amount'] - $amountExcludingVat, 2);
-					$amountIncludingVat = $vatByRate['amount'];
+					$amountExcludingVat = $vatByRate['amount'];
+					$amountVat = $vatByRate['amountIncludingVat'] - $vatByRate['amount'];
 
 				} else {
 
@@ -985,6 +985,7 @@ Class AccountingLib {
 					if($amountRatio['accountReference'] !== NULL or $amountRatio['vatRate'] !== $vatByRate['vatRate']) {
 						continue;
 					}
+
 					$ratioItems[] = [
 						'payment' => $ePayment['status'] === \selling\Payment::PAID ? $ePayment['id'] : '',
 						'vatRate' => $vatByRate['vatRate'],
