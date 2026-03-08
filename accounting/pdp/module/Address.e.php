@@ -23,6 +23,10 @@ class Address extends AddressElement {
 
 		preg_match('/([0-9]{9})(\_[a-zA-Z0-9]+)?(\_[a-zA-Z0-9]+)?/m', $address, $matches);
 
+		if(count($matches) < 1) {
+			return FALSE;
+		}
+
 		$parts = str_contains($address, '_') + 1;
 
 		if($parts === 1) {
