@@ -173,6 +173,21 @@ class FarmLib extends FarmCrud {
 
 	}
 
+	public static function runAll(\Closure $closure): void {
+
+		$cFarm = \farm\Farm::model()
+			->select('id', 'hasAccounting')
+			->getCollection();
+
+		foreach($cFarm as $eFarm) {
+
+			\farm\FarmLib::connectDatabase($eFarm);
+			$closure($eFarm);
+
+		}
+
+	}
+
 	public static function create(Farm $e): void {
 
 		Farm::model()->beginTransaction();
@@ -209,6 +224,8 @@ class FarmLib extends FarmCrud {
 			\plant\PlantLib::duplicateForFarm($e);
 			\selling\UnitLib::duplicateForFarm($e);
 			\payment\MethodLib::duplicateForFarm($e);
+
+			\selling\ProductLib::createForFarm($e);
 
 		Farm::model()->commit();
 

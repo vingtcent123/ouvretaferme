@@ -13,6 +13,8 @@ class SellingSetting extends \Settings {
 	const EXAMPLE_SALE_PRO = 1736;
 	const EXAMPLE_SALE_PRIVATE = 3133;
 
+	const VAT_UNKNOWN = 999;
+
 	public static function getStandardVat(\farm\Farm $eFarm): float {
 
 		$eFarm->expects(['legalCountry']);
@@ -24,7 +26,7 @@ class SellingSetting extends \Settings {
 		} else if($eCountry['id'] === \user\UserSetting::BE) {
 			return 103;
 		} else {
-			return 999;
+			return self::VAT_UNKNOWN;
 		}
 
 	}
@@ -63,7 +65,7 @@ class SellingSetting extends \Settings {
 		} else {
 
 			return [
-				9999 => 0
+				self::VAT_UNKNOWN => 0
 			];
 
 		}
@@ -81,7 +83,7 @@ class SellingSetting extends \Settings {
 		} else if($eCountry['id'] === \user\UserSetting::BE) {
 			return 101;
 		} else {
-			return 9999;
+			return self::VAT_UNKNOWN;
 		}
 
 	}

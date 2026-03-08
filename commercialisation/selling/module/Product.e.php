@@ -37,7 +37,7 @@ class Product extends ProductElement {
 
 		return (
 			$this['farm']->canManage() and
-			$this['status'] !== Product::DELETED
+			$this['status']->isManipulable()
 		);
 
 	}
@@ -147,6 +147,14 @@ class Product extends ProductElement {
 
 	public static function checkReference(string $reference): bool {
 		return (preg_match('/^[A-Z0-9\-\_]+$/s', $reference) > 0);
+	}
+
+	public function isManipulable(): array {
+		return in_array($this['status'], self::getManipulable());
+	}
+
+	public static function getManipulable(): array {
+		return [Product::ACTIVE, Product::INACTIVE];
 	}
 
 	public static function getProfiles(string $property): array {

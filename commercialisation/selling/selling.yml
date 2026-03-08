@@ -268,7 +268,7 @@ Product:
   additional: ?text8(1, null) @collate(general)
   description: ?editor24
   vignette: ?textFixed(30, 30) @charset(ascii)
-  profile: enum(COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER, SERVICE)
+  profile: enum(COMPOSITION, UNPROCESSED_PLANT, UNPROCESSED_ANIMAL, PROCESSED_FOOD, PROCESSED_PRODUCT, OTHER, SERVICE, SHIPPING)
   category: ?selling\Category
   reference: ?text8(1, null) @charset(ascii)
   unprocessedPlant: ?plant\Plant
@@ -298,7 +298,7 @@ Product:
   createdAt: datetime = SPECIAL(now)
   privateAccount: ?account\Account
   proAccount: ?account\Account
-  status: enum(ACTIVE, INACTIVE, DELETED) = ACTIVE
+  status: enum(ACTIVE, INACTIVE, SPECIAL, DELETED) = ACTIVE
   INDEX: [
     ["farm"],
     ["unprocessedPlant"]

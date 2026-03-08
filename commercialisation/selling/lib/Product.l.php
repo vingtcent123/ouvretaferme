@@ -15,6 +15,23 @@ class ProductLib extends ProductCrud {
 		];
 	}
 
+	public static function createForFarm(\farm\Farm $eFarm): void {
+
+		$eProduct = new Product([
+			'name' => SaleUi::getShippingName(),
+			'farm' => $eFarm,
+			'profile' => Product::SHIPPING,
+			'private' => TRUE,
+			'pro' => TRUE,
+			'vat' => SellingSetting::VAT_UNKNOWN,
+			'quality' => Product::NO,
+			'status' => Product::SPECIAL
+		]);
+
+		self::create($eProduct);
+
+	}
+
 	public static function create(Product $e): void {
 
 		if($e['farm']->hasAccounting()) {
@@ -202,6 +219,7 @@ class ProductLib extends ProductCrud {
 				'count' => new \Sql('COUNT(*)', 'int')
 			])
 			->whereFarm($eFarm)
+			->whereStatus('IN', Product::getManipulable())
 			->group('category')
 			->getCollection()
 			->toArray(fn($eProduct) => [$eProduct['category']->empty() ? NULL : $eProduct['category']['id'], $eProduct['count']], TRUE);
@@ -213,7 +231,7 @@ class ProductLib extends ProductCrud {
 		return Product::model()
 			->select(Product::getSelection())
 			->whereFarm($eFarm)
-			->whereStatus('!=', Product::DELETED)
+			->whereStatus('IN', Product::getManipulable())
 			->whereReference('!=', NULL)
 			->getCollection();
 
@@ -250,7 +268,7 @@ class ProductLib extends ProductCrud {
 			->select(Product::getSelection())
 			->whereCategory($eCategory, if: $eCategory !== NULL)
 			->whereFarm($eFarm)
-			->whereStatus('!=', Product::DELETED)
+			->whereStatus('IN', Product::getManipulable())
 			->sort($search->buildSort())
 			->getCollection();
 

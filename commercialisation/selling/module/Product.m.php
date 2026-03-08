@@ -14,6 +14,7 @@ abstract class ProductElement extends \Element {
 	const PROCESSED_PRODUCT = 'processed-product';
 	const OTHER = 'other';
 	const SERVICE = 'service';
+	const SHIPPING = 'shipping';
 
 	const PUBLIC = 'public';
 	const PRIVATE = 'private';
@@ -25,6 +26,7 @@ abstract class ProductElement extends \Element {
 
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
+	const SPECIAL = 'special';
 	const DELETED = 'deleted';
 
 	public static function getSelection(): array {
@@ -65,7 +67,7 @@ class ProductModel extends \ModuleModel {
 			'additional' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'description' => ['editor24', 'null' => TRUE, 'cast' => 'string'],
 			'vignette' => ['textFixed', 'min' => 30, 'max' => 30, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
-			'profile' => ['enum', [\selling\Product::COMPOSITION, \selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT, \selling\Product::OTHER, \selling\Product::SERVICE], 'cast' => 'enum'],
+			'profile' => ['enum', [\selling\Product::COMPOSITION, \selling\Product::UNPROCESSED_PLANT, \selling\Product::UNPROCESSED_ANIMAL, \selling\Product::PROCESSED_FOOD, \selling\Product::PROCESSED_PRODUCT, \selling\Product::OTHER, \selling\Product::SERVICE, \selling\Product::SHIPPING], 'cast' => 'enum'],
 			'category' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'reference' => ['text8', 'min' => 1, 'max' => NULL, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
 			'unprocessedPlant' => ['element32', 'plant\Plant', 'null' => TRUE, 'cast' => 'element'],
@@ -95,7 +97,7 @@ class ProductModel extends \ModuleModel {
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'privateAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'proAccount' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
-			'status' => ['enum', [\selling\Product::ACTIVE, \selling\Product::INACTIVE, \selling\Product::DELETED], 'cast' => 'enum'],
+			'status' => ['enum', [\selling\Product::ACTIVE, \selling\Product::INACTIVE, \selling\Product::SPECIAL, \selling\Product::DELETED], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [

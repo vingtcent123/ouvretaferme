@@ -35,7 +35,7 @@ Class ProductLib {
 
 		return \selling\Product::model()
 			->whereId('IN', $ids)
-			->whereStatus('!=', \selling\Product::DELETED);
+			->whereStatus('IN', \selling\Product::getManipulable());
 
 	}
 	/**
