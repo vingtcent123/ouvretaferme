@@ -590,7 +590,24 @@ class CashUi {
 											}
 											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doValidate" post-id="'.$eCash['id'].'" data-confirm="'.s("Cette opération ainsi que toutes les opérations antérieures seront définitivement validées, et vous ne pourrez ajouter, modifier ou supprimer d'opération datée avant le {value}. Voulez-vous continuer ?", \util\DateUi::numeric($eCashLast['date'])).'" class="dropdown-item '.($eCash['balanceNegative'] ? 'disabled' : '').'">'.s("Valider les opérations jusqu'à celle-ci").'</a>';
 											$h .= '<div class="dropdown-divider"></div>';
-											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doDelete" data-confirm="'.s("Vous allez supprimer cette opération. Continuer ?").'" post-id="'.$eCash['id'].'" class="dropdown-item">'.s("Supprimer l'opération").'</a>';
+
+											switch($eCash['source']) {
+												case Cash::SELL_INVOICE:
+													$confirm = s("Vous allez supprimer toutes les opérations liées à la {value}. Continuer ?", \selling\InvoiceUi::getName($eCash['invoice']));
+													$dropdownItem = s("Supprimer les opérations liées à la {value}", \selling\InvoiceUi::getName($eCash['invoice']));
+													break;
+
+												case Cash::SELL_SALE:
+													$confirm = s("Vous allez supprimer toutes les opérations liées à la {value}. Continuer ?", \selling\SaleUi::getName($eCash['sale']));
+													$dropdownItem = s("Supprimer les opérations liées à la {value}", \selling\SaleUi::getName($eCash['sale']));
+													break;
+
+												default:
+													$confirm = s("Vous allez supprimer cette opération. Continuer ?");
+													$dropdownItem = s("Supprimer l'opération");
+											}
+
+											$h .= '<a data-ajax="'.\farm\FarmUi::urlConnected().'/cash/cash:doDelete" data-confirm="'.$confirm.'" post-id="'.$eCash['id'].'" class="dropdown-item">'.$dropdownItem.'</a>';
 										$h .= '</div>';
 										break;
 

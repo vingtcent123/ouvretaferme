@@ -459,18 +459,29 @@ class CashLib extends CashCrud {
 						->whereCash($e)
 						->update([
 							'cash' => new Cash(),
-							'cashStatus' => \selling\Payment::WAITING
+							'cashStatus' => \selling\Payment::IGNORED
 						]);
 					break;
 
 				case Cash::SELL_INVOICE :
+					\selling\Payment::model()
+						->whereFarm(\farm\Farm::getConnected())
+						->whereInvoice($e['invoice'])
+						->whereMethod($e['register']['paymentMethod'])
+						->update([
+							'cash' => new Cash(),
+							'cashStatus' => \selling\Payment::IGNORED
+						]);
+					break;
+
 				case Cash::SELL_SALE :
 					\selling\Payment::model()
 						->whereFarm(\farm\Farm::getConnected())
-						->whereCash($e)
+						->whereSale($e['sale'])
+						->whereMethod($e['register']['paymentMethod'])
 						->update([
 							'cash' => new Cash(),
-							'cashStatus' => \selling\Payment::WAITING
+							'cashStatus' => \selling\Payment::IGNORED
 						]);
 					break;
 
@@ -478,7 +489,14 @@ class CashLib extends CashCrud {
 
 			$affected = Cash::model()
 				->whereStatus(Cash::DRAFT)
-				->update($e, [
+				->or(
+					fn() => $this->whereId($e['id']),
+					fn() => $this
+						->whereInvoice($e['invoice'])
+						->whereSale($e['sale'])
+				)
+				->whereRegister($e['register'])
+				->update([
 					'status' => Cash::DELETED
 				]);
 

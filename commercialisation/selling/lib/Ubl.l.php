@@ -263,35 +263,6 @@ class UblLib {
 	</cac:InvoiceLine>';
 				$lineNumber++;
 			}
-		if($eSale['shipping'] !== NULL) {
-      $xml .= '
-	<cac:InvoiceLine><!--BG-25-->
-		<cbc:ID>'.$lineNumber.'</cbc:ID><!--BT-126-->
-		<cbc:InvoicedQuantity unitCode="C62">1</cbc:InvoicedQuantity><!--BT-129--><!--BT-130-->
-		<cbc:LineExtensionAmount currencyID="EUR">'.$eSale['shippingExcludingVat'].'</cbc:LineExtensionAmount><!--BT-131 (prix non remisé)-->
-		<cac:InvoicePeriod><!--BG-26-->
-			<cbc:StartDate>'.$eSale['deliveredAt'].'</cbc:StartDate><!--BT-134-->
-			<cbc:EndDate>'.$eSale['deliveredAt'].'</cbc:EndDate><!--BT-135-->
-		</cac:InvoicePeriod>
-		<cac:Item>
-			<cbc:Name>'.s("Frais de livraison").'</cbc:Name><!--BT-153-->
-			<cac:ClassifiedTaxCategory><!--BG-30-->
-				<cbc:ID>'.self::getVatCode().'</cbc:ID><!--BT-151-->
-				<cbc:Percent>'.$eSale['shippingVatRate'].'</cbc:Percent><!--BT-152-->
-				<cac:TaxScheme><!--BT-151-1-->
-					<cbc:ID>VAT</cbc:ID><!--BT-151-2-->
-				</cac:TaxScheme>
-			</cac:ClassifiedTaxCategory>
-		</cac:Item>
-		<cac:Price><!--BG-29-->
-		<cbc:PriceAmount currencyID="EUR">'.$eSale['shippingExcludingVat'].'</cbc:PriceAmount><!--BT-146-->
-		<cbc:BaseQuantity unitCode="C62">1</cbc:BaseQuantity>';
-		$xml .= '
-		</cac:Price>
-	</cac:InvoiceLine>';
-				$lineNumber++;
-
-		}
 		}
     $xml .= '
 </Invoice>

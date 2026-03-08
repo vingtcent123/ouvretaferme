@@ -86,7 +86,7 @@ Class SaleLib {
 			'id', 'customer' => ['name', 'type', 'destination', 'user', 'document'], 'preparationStatus',
 			'deliveredAt', 'document', 'farm', 'profile', 'createdAt', 'taxes',
 			'hasVat', 'priceExcludingVat', 'priceIncludingVat', 'vat', 'vatByRate',
-			'shipping', 'shippingExcludingVat', 'shippingVatRate',
+			'shipping', 'shippingVatRate',
 			'paymentStatus', 'closed', 'invoice',
 			'marketParent' => ['customer' => ['name', 'type', 'destination']],
 			'shopDate' => ['id', 'deliveryDate', 'status', 'orderStartAt', 'orderEndAt'], 'createdBy',
@@ -113,7 +113,7 @@ Class SaleLib {
 
 		return \selling\Sale::model()
 			->select([
-				'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',
+				'id', 'shipping', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',
 				'cItem' => \selling\Item::model()
 					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 					->delegateCollection('sale'),

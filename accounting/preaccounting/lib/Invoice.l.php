@@ -51,7 +51,7 @@ Class InvoiceLib {
 					->delegateCollection('invoice', 'id'),
 				'cSale' => \selling\Sale::model()
 					->select([
-						'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',
+						'id', 'shipping', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',
 						'cItem' => \selling\Item::model()
 							->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 							->delegateCollection('sale'),
@@ -78,7 +78,7 @@ Class InvoiceLib {
 			->select(\selling\Payment::getSelection() + [
 				'sale' => [
 					'id', 'document',
-					'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'shippingExcludingVat', 'shippingVatRate',
+					'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'shippingVatRate',
 					'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
 					'cItem' => \selling\Item::model()
 						->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
@@ -93,7 +93,7 @@ Class InvoiceLib {
 					'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
 					'cSale' => \selling\Sale::model()
 						->select([
-							'id', 'shipping', 'shippingExcludingVat', 'shippingVatRate',
+							'id', 'shipping', 'shippingVatRate',
 							'cItem' => \selling\Item::model()
 								->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 								->delegateCollection('sale')
