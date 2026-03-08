@@ -17,6 +17,7 @@ class AlertUi {
 
 			'Method::excludeCustomers.consistency' => s("Vous ne pouvez pas à la fois autoriser et interdire un moyen de paiement à certains clients."),
 			'Method::deleteUsed' => s("Ce moyen de paiement ne peut pas être supprimé car il est utilisée dans une vente."),
+			'Method::deleteCashUsed' => s("Ce moyen de paiement ne peut pas être supprimé car il est utilisée dans un journal de caisse."),
 
 			default => null
 

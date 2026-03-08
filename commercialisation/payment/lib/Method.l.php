@@ -128,6 +128,26 @@ class MethodLib extends MethodCrud {
 			return;
 		}
 
+		$hasAccounting = \farm\Farm::model()
+			->whereId($e['farm']['id'])
+			->getValue('hasAccounting');
+
+		if($hasAccounting) {
+
+			\farm\FarmLib::connectDatabase($e['farm']);
+
+			if(
+				\cash\Register::model()
+				->wherePaymentMethod($e)
+				->exists()
+			) {
+				Method::fail('deleteCashUsed');
+				return;
+
+			};
+
+		}
+
 		parent::delete($e);
 
 	}
