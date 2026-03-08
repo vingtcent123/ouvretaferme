@@ -1841,7 +1841,7 @@ class SaleUi {
 
 		$hasRegister = (
 			$eSale['cRegister']->notEmpty() or
-			$eSale['cPayment']->contains(fn($ePayment) => $ePayment['cashStatus'] !== Payment::VALID)
+			$eSale['cPayment']->contains(fn($ePayment) => $ePayment['cashStatus'] === Payment::VALID)
 		);
 
 		$h = '<h3>'.s("Moyens de paiement").'</h3>';
