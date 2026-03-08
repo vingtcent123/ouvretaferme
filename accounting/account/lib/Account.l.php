@@ -332,6 +332,17 @@ class AccountLib extends AccountCrud {
 
 	public static function delete(Account $e): void {
 
+		$e->expects(['id']);
+
+		if(
+			\cash\Register::model()
+				->whereBankAccount($e)
+				->exists()
+		) {
+			Account::fail('deleteCashUsed');
+			return;
+		}
+
 		Account::model()->beginTransaction();
 
 			Account::model()->delete($e);

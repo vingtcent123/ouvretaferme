@@ -8,6 +8,9 @@ class AlertUi {
 		return match($fqn) {
 
 			'Account::class.duplicate' => s("Cet numéro de compte existe déjà."),
+
+			'Account::deleteCashUsed' => s("Ce numéro ne peut pas être supprimé car il est utilisé dans un journal de caisse."),
+
 			'Account::class.unknown' => s("Le premier numéro de ce compte n'est pas dans le plan comptable. Le compte doit commencer par un chiffre de 1 à 7."),
 			'Account::class.size' => s("Le numéro de compte doit contenir entre 4 et 8 chiffres."),
 			'Account::class.numeric' => s("Le numéro de compte doit être composé de chiffres uniquement."),
