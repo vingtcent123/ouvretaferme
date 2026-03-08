@@ -78,6 +78,10 @@ class LegalUi {
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Données personnelles").'</h2>';
 		$h .= '<p>'.s("Les données que vous saisissez sur {siteName} vous appartiennent et vous en avez seul la responsabilité. Elles ne sont ni analysées, ni réutilisées, ni revendues à des tiers. Il n'y a pas d'outil de mesure de trafic sur {siteName}. Les seuls cookies qui sont déposés dans votre navigateur sont ceux qui permettent de s'assurer que vous êtes bien connecté au site.").'</p>';
+		$h .= '<p>';
+			$h .= '<a data-ajax-navigation="never" target="_blank" class="btn btn-outline-primary" href="'.\Asset::getPath('association', 'document/politique-de-confidentialite.pdf').'">'.s("Voir la politique de confidentialité").'</a>';
+			$h .= '<a data-ajax-navigation="never" target="_blank" class="btn btn-outline-primary ml-1" href="'.\Asset::getPath('association', 'document/accord-de-traitement-des-donnees.pdf').'">'.s("Voir l'accord de traitement des données").'</a>';
+		$h .= '</p>';
 
 		$h .= '<br/>';
 		$h .= '<h2>'.s("Garanties").'</h2>';
