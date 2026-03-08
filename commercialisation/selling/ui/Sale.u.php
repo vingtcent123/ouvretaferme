@@ -1839,6 +1839,11 @@ class SaleUi {
 
 		});
 
+		$hasRegister = (
+			$eSale['cRegister']->notEmpty() or
+			$eSale['cPayment']->contains(fn($ePayment) => $ePayment['cashStatus'] !== Payment::VALID)
+		);
+
 		$h = '<h3>'.s("Moyens de paiement").'</h3>';
 		$h .= '<div class="util-overflow-xs stick-xs">';
 			$h .= '<table class="tbody-even mb-2">';
@@ -1851,7 +1856,7 @@ class SaleUi {
 						} else {
 							$h .= '<th class="text-end">'.s("Montant").'</th>';
 						}
-						if($eSale['cRegister']->notEmpty()) {
+						if($hasRegister) {
 							$h .= '<th>'.s("Journal de caisse").'</th>';
 						}
 					$h .= '</tr>';
@@ -1871,7 +1876,7 @@ class SaleUi {
 							$h .= '<td class="text-center">'.$sales[$ePayment['method']['id']].'</td>';
 							$h .= '<td class="text-end">'.\util\TextUi::money($ePayment['amountIncludingVat']).'</td>';
 
-							if($eSale['cRegister']->notEmpty()) {
+							if($hasRegister) {
 								$h .= '<td>';
 
 									switch($ePayment['cashStatus']) {
