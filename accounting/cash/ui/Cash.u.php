@@ -106,7 +106,7 @@ class CashUi {
 		if($eRegister['operations'] === 1) {
 			$h .= '<div class="util-block-info">';
 				$h .= '<h4>'.s("Bienvenue sur votre nouveau journal de caisse").'</h4>';
-				$h .= '<p>'.s("Ce journal vous permet de répondre à une obligation légale de traçabilité des espèces et est par conséquent soumis à des contraintes réglementaires d’inaltérabilité, de sécurisation, de conservation et d’archivage des données. Nous vous conseillons d'être rigoureux dans la saisie de vos données pour qu'elles reflètent précisément la situation de votre ferme.").'</p>';
+				$h .= '<p>'.s("Ce journal vous permet de répondre à une obligation légale de traçabilité des mouvements financiers et est par conséquent soumis à des contraintes réglementaires d’inaltérabilité, de sécurisation, de conservation et d’archivage des données. Nous vous conseillons d'être rigoureux dans la saisie de vos données pour qu'elles reflètent précisément la situation de votre ferme.").'</p>';
 				$h .= '<p>'.s("Notez bien qu'une fois validée, une opération de caisse devient inaltérable et ne peut donc plus être modifiée.").'</p>';
 			$h .= '</div>';
 		}
