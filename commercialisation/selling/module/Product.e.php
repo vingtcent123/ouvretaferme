@@ -37,7 +37,7 @@ class Product extends ProductElement {
 
 		return (
 			$this['farm']->canManage() and
-			$this['status']->isManipulable()
+			$this->isManipulable()
 		);
 
 	}
