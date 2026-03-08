@@ -3,9 +3,6 @@ namespace vat;
 
 Class DeclarationLib extends DeclarationCrud {
 
-	/**
-	 * @return \Collection<Declaration>
-	 */
 	public static function getAll(array $froms): \Collection {
 
 		if(empty($froms)) {
@@ -19,9 +16,6 @@ Class DeclarationLib extends DeclarationCrud {
 
 	}
 
-	/**
-	 * @return \Collection<Declaration>
-	 */
 	public static function getHistory(\account\FinancialYear $eFinancialYear): \Collection {
 
 		return Declaration::model()
