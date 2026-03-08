@@ -13,6 +13,8 @@ class WebsiteSetting extends \Settings  {
 
 	const DESIGN_DEFAULT_ID = 1;
 
+	const KEEP_CONTACT_IN_DAYS = 365;
+
 	const CUSTOM_FONTS = [
 		['label' => 'Cairo', 'value' => "'Cairo', sans-serif"],
 		['label' =>'Figtree', 'value' => "'Figtree', serif"],

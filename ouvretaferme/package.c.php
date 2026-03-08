@@ -60,7 +60,7 @@ Package::setObservers([
 			'logOut' => ['session'],
 		],
 		'lime' => [
-			'loadConf' => ['dev', 'media'],
+			'loadConf' => ['media'],
 		],
 		'shop' => [
 			'saleConfirmed' => ['shop'],

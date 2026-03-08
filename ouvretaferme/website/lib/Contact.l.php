@@ -41,5 +41,15 @@ class ContactLib extends ContactCrud {
 
 	}
 
+	public static function clean(): void {
+
+		$until = date('Y-m-d 00:00:00', strtotime(date('Y-m-d').' - '.WebsiteSetting::KEEP_CONTACT_IN_DAYS.' DAYS'));
+
+		Contact::model()
+			->whereCreatedAt('<', $until)
+			->delete();
+
+	}
+
 }
 ?>
