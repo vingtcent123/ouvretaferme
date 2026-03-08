@@ -35,6 +35,9 @@ class PresenceLib extends PresenceCrud {
 
 	}
 
+	/**
+	 * @return \Collection<Presence>
+	 */
 	public static function getByUser(\farm\Farm $eFarm, \user\User $eUser): \Collection {
 
 		return Presence::model()
@@ -71,6 +74,9 @@ class PresenceLib extends PresenceCrud {
 
 	}
 
+	/**
+	 * @return \Collection<Presence>
+	 */
 	public static function getBetween(\farm\Farm $eFarm, string $start, string $stop): \Collection {
 
 		return Presence::model()

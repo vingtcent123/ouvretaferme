@@ -5,6 +5,9 @@ Class DataLib extends DataCrud {
 
 	use \ModuleDeferred;
 
+	/**
+	 * @return \Collection<Data>
+	 */
 	public static function deferred(): \Collection {
 
 		$callback = fn() => Data::model()
