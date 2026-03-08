@@ -339,7 +339,7 @@ class JournalUi {
 		\Asset::js('journal', 'journal.js');
 
 		$canUpdateFinancialYear = ($readonly === FALSE and $selectedJournalCode !== JournalSetting::JOURNAL_CODE_BANK);
-		$showLockColumn = ($eFinancialYearSelected->isClosed() === FALSE and $cOperation->find(fn($e) => ($e['number'] ?? NULL) !== NULL)->count() > 0);
+		$showLockColumn = ($eFinancialYearSelected->isClosed() === FALSE and $cOperation->contains(fn($e) => ($e['number'] ?? NULL) !== NULL));
 
 		$columns = 5;
 		if($canUpdateFinancialYear) {

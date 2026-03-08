@@ -335,8 +335,8 @@ Class AccountingLib {
 
 				if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccount['class'])) {
 
-					if($eSale['cPayment']->find(fn($e) => ($e['id'] === $item['payment'] and $e['status'] === \selling\Payment::PAID))->count() > 0) {
-						$ePayment = $eSale['cPayment']->find(fn($e) => $e['id'] === $item['payment'])->first();
+					if($eSale['cPayment']->contains(fn($e) => ($e['id'] === $item['payment'] and $e['status'] === \selling\Payment::PAID)) > 0) {
+						$ePayment = $eSale['cPayment']->find(fn($e) => $e['id'] === $item['payment'] and $e['status'] === \selling\Payment::PAID)->first();
 						if($ePayment['paidAt'] !== NULL) {
 							$date = $ePayment['paidAt'];
 						} else {

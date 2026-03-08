@@ -74,7 +74,7 @@ new \journal\OperationPage(function($data) {
 
 	} else {
 
-		$hasMissingAsset = $cOperation->find(fn($e) => $e->acceptNewAsset())->notEmpty();
+		$hasMissingAsset = $cOperation->contains(fn($e) => $e->acceptNewAsset());
 
 		if($hasMissingAsset) {
 			$data->url = \farm\FarmUi::urlConnected($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal\\'.$success.'CreateAsset';
@@ -239,7 +239,7 @@ new \journal\OperationPage(function($data) {
 
 		$success = $cOperation->count() > 1 ? 'Operation::createdSeveral' : 'Operation::created';
 
-		$hasMissingAsset = $cOperation->find(fn($e) => $e->acceptNewAsset())->notEmpty();
+		$hasMissingAsset = $cOperation->contains(fn($e) => $e->acceptNewAsset());
 		if($hasMissingAsset) {
 			throw new RedirectAction(\farm\FarmUi::urlConnected($data->eFarm).'/journal/livre-journal?hash='.$cOperation->first()['hash'].'&needsAsset=1&success=journal\\'.$success.'CreateAsset');
 		}

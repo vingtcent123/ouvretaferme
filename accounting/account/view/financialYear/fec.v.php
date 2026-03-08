@@ -9,7 +9,7 @@ new AdaptativeView('import', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = '<h1>'.'<a onclick="history.back();" class="h-back">'.\Asset::icon('arrow-left').'</a>'.s("Importer un fichier FEC").'</h1>';
 
-	$canImport = $data->eFarm['cFinancialYear']->find(fn($e) => $e['nOperation'] === 0)->notEmpty();
+	$canImport = $data->eFarm['cFinancialYear']->contains(fn($e) => $e['nOperation'] === 0);
 
 	if($data->eImport->notEmpty()) {
 

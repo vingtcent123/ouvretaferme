@@ -94,7 +94,7 @@ class AssetLib extends \asset\AssetCrud {
 
 		$cOperation = \journal\OperationLib::getByIds(POST('operations', 'array'));
 
-		if($cOperation->notEmpty() and $cOperation->find(fn($e) => $e['asset']->notEmpty())->count() > 0) {
+		if($cOperation->contains(fn($e) => $e['asset']->notEmpty())) {
 			throw new \FailAction('asset\Asset::Operation.alreadyLinked');
 		}
 
@@ -115,10 +115,10 @@ class AssetLib extends \asset\AssetCrud {
 					throw new \FailAction('Asset::account.check');
 				}
 			} else if($cOperation->count() > 1) {
-				if($cOperation->find(fn($eOperation) => $eOperation['accountLabel'] !== $e['accountLabel'])->count() > 0) {
+				if($cOperation->contains(fn($eOperation) => $eOperation['accountLabel'] !== $e['accountLabel'])) {
 					throw new \FailAction('Asset::accountLabels.check');
 				}
-				if($cOperation->find(fn($eOperation) => $eOperation['account']['id'] !== $e['account']['id'])->count() > 0) {
+				if($cOperation->contains(fn($eOperation) => $eOperation['account']['id'] !== $e['account']['id'])) {
 					throw new \FailAction('Asset::accounts.check');
 				}
 			}

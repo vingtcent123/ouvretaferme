@@ -28,7 +28,7 @@ Class FinancialYearDocumentUi {
 
 		\Asset::js('account', 'financialYearDocument.js');
 
-		$hasDocumentGenerating = ($eFinancialYear['cDocument']->notEmpty() and $eFinancialYear['cDocument']->find(fn($e) => $e->isProcessing())->notEmpty());
+		$hasDocumentGenerating = ($eFinancialYear['cDocument']->notEmpty() and $eFinancialYear['cDocument']->contains(fn($e) => $e->isProcessing()));
 
 		$bilanDocuments = [];
 		if($eFinancialYear->isClosed() === FALSE) {

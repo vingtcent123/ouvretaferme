@@ -46,7 +46,7 @@ Class VatUi {
 
 			$showInitialColumns = FALSE;
 			foreach($ccOperation as $cOperation) {
-				$showInitialColumns = ($showInitialColumns or $cOperation->find(fn($e) => $e['operation']->notEmpty())->notEmpty());
+				$showInitialColumns = ($showInitialColumns or $cOperation->contains(fn($e) => $e['operation']->notEmpty()));
 			}
 
 			if($lastAccountLabel === NULL or $currentAccountLabel !== $lastAccountLabel) {

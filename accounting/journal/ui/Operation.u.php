@@ -486,7 +486,7 @@ class OperationUi {
 			$h .= $paymentMethod;
 		$h .= '</div>';
 
-		$isLinkedToAsset = $eOperation['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->notEmpty();
+		$isLinkedToAsset = $eOperation['cOperationHash']->getColumnCollection('asset')->contains(fn($e) => $e->notEmpty());
 		if($eOperation->acceptUpdate() and $eOperation->canUpdate() and $eOperation->acceptWrite() and $isLinkedToAsset === FALSE) {
 			$h .= '<div class="text-center"><a class="btn btn-outline-secondary" href="'.\company\CompanyUi::urlJournal($eFarm).'/operation/'.$eOperation['id'].'/update">'.s("Modifier").'</a></div>';
 		}
@@ -1249,7 +1249,7 @@ class OperationUi {
 
 		$index = 0;
 
-		$hasAsset = $cOperation->find(fn($e) => \asset\AssetLib::isAsset($e['accountLabel']))->count() > 0;
+		$hasAsset = $cOperation->contains(fn($e) => \asset\AssetLib::isAsset($e['accountLabel']));
 
 		$h = '';
 
@@ -1313,7 +1313,7 @@ class OperationUi {
 			$h .= new JournalUi()->list($eFarm, NULL, $cOperation, $eFarm['eFinancialYear'], readonly: TRUE, displayTotal: TRUE);
 		$h .= '</div>';
 
-		if($cOperation->find(fn($e) => \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS))->notEmpty()) {
+		if($cOperation->contains(fn($e) => \account\AccountLabelLib::isFromClass($e['accountLabel'], \account\AccountSetting::BANK_ACCOUNT_CLASS))) {
 			$h .= '<div class="color-warning">';
 				$h .= s("Attention, dans les écritures que vous avez sélectionnées, il y a déjà des écritures en compte de banques <b>{bankAccount}</b>.", ['bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]);
 			$h .= '</div>';
