@@ -750,9 +750,9 @@ class ProductUi {
 		$eProductSelling = $eProduct['product'];
 
 		if($eProductSelling['unprocessedPlant']->notEmpty()) {
-			return \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], match($eShop['type']) {
-				Shop::PRO => '4rem',
-				Shop::PRIVATE => '9rem'
+			return \plant\PlantUi::getVignette($eProductSelling['unprocessedPlant'], match($eShop['customDesign']) {
+				Shop::LINE => '4rem',
+				Shop::GRID => '9rem'
 			});
 		} else {
 			return \Asset::icon('camera', ['class' => 'shop-product-image-placeholder']);

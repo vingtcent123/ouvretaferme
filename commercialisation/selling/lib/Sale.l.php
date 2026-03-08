@@ -803,6 +803,8 @@ class SaleLib extends SaleCrud {
 
 		$e['document'] = \farm\ConfigurationLib::getNextDocumentSales($e['farm']);
 
+		$e['shipping'] ??= NULL;
+
 		try {
 
 			parent::create($e);
@@ -831,6 +833,10 @@ class SaleLib extends SaleCrud {
 				'hasSales' => TRUE
 			]);
 
+		}
+
+		if($e['shipping'] !== NULL) {
+			self::updateShipping($e);
 		}
 
 		// Ajouter des produits
@@ -1686,6 +1692,7 @@ class SaleLib extends SaleCrud {
 			];
 
 			$eProductShipping = ProductLib::getShippingByFarm($e['farm']);
+			$eItemShipping = new Item();
 
 			foreach($cItem as $eItem) {
 

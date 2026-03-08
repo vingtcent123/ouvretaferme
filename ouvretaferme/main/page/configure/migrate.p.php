@@ -2,6 +2,10 @@
 new Page()
 	->cli('index', function($data) {
 
+		\selling\Item::model()
+			->whereNature(\selling\Item::SILENT)
+			->delete();
+
 		$c = \selling\Sale::model()
 			->select(\selling\SaleElement::getSelection())
 			->whereShipping('!=', NULL)
@@ -28,11 +32,20 @@ new Page()
 			$eItem['unitPriceInitial'] = NULL;
 			$eItem['vatRate'] = $e['shippingVatRate'];
 
-			echo $e['id']."\n";
-
 			\selling\ItemLib::create($eItem);
 
-			dd('ok');
+			$calc = \selling\Item::model()
+				->whereIngredientOf(NULL)
+				->whereSale($e)
+				->getValue(new Sql('SUM(priceStats)', 'float'));
+
+			$p = $e['type'] === 'pro' ? $e['priceExcludingVat'] : $e['priceExcludingVat'];
+
+			if(abs($calc - $p) > 0.02) {
+				echo $e['id'].': '.$calc.' / '.$p."\n";
+			} else {
+				echo $e['id']."\n";
+			}
 
 		}
 

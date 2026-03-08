@@ -531,35 +531,48 @@ class OrderUi {
 						$h .= '<td class="text-end">';
 							if($eItem['packaging']) {
 								$h .= \selling\UnitUi::getValue($eItem['packaging'], $eItem['unit'], TRUE);
-							} else {
-								$h .= '-';
 							}
 						$h .= '</td>';
 
 					}
 
 					$h .= '<td class="item-item-number text-end">';
-						if($eItem['packaging']) {
-							$h .= \selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
-						} else {
-							$h .= \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
+
+						if(
+							$eItem['product']->empty() or
+							$eItem['product']['profile'] !== Product::SHIPPING
+						) {
+							if($eItem['packaging']) {
+								$h .= \selling\UnitUi::getValue($eItem['number'] * $eItem['packaging'], $eItem['unit'], TRUE);
+							} else {
+								$h .= \selling\UnitUi::getValue($eItem['number'], $eItem['unit'], TRUE);
+							}
 						}
 					$h .= '</td>';
 
 					$h .= '<td class="item-item-unit-price text-end">';
-						if($eItem['unit']) {
-							$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
-						} else {
-							$unit = '';
+
+						if(
+							$eItem['product']->empty() or
+							$eItem['product']['profile'] !== Product::SHIPPING
+						) {
+
+							if($eItem['unit']) {
+								$unit = '<span class="util-annotation">'.\selling\UnitUi::getBy($eItem['unit'], short: TRUE).'</span>';
+							} else {
+								$unit = '';
+							}
+							if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
+								$unit = $eSale->getTaxes().' '.$unit;
+							}
+							if($eItem['unitPriceInitial'] !== NULL) {
+								$h .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], unit: $unit);
+							}
+							$h .= \util\TextUi::money($eItem['unitPrice']);
+							$h .= ' '.$unit;
+
 						}
-						if($eSale['hasVat'] and $eSale['type'] === Customer::PRO) {
-							$unit = $eSale->getTaxes().' '.$unit;
-						}
-						if($eItem['unitPriceInitial'] !== NULL) {
-							$h .= new PriceUi()->priceWithoutDiscount($eItem['unitPriceInitial'], unit: $unit);
-						}
-						$h .= \util\TextUi::money($eItem['unitPrice']);
-						$h .= ' '.$unit;
+
 					$h .= '</td>';
 
 					$h .= '<td class="item-item-price text-end">';
