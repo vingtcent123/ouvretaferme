@@ -581,7 +581,7 @@ class PaymentTransactionLib {
 	}
 
 	public static function getRatios(Sale|Invoice $e, Payment $ePayment): array {
-
+dd(new \preaccounting\RatioLib($e, \account\AccountLib::getAll())->getByVat());
 		$ratios = \preaccounting\AccountingLib::computeRatios(
 			$e,
 			new \Collection(),

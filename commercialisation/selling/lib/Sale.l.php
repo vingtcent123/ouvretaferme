@@ -1229,7 +1229,7 @@ class SaleLib extends SaleCrud {
 			parent::update($e, $properties);
 		}
 
-		if(array_intersect(['shipping', 'shippingVatRate'], $properties)) {
+		if(in_array('shipping', $properties)) {
 			self::updateShipping($e);
 		}
 
@@ -1608,9 +1608,11 @@ class SaleLib extends SaleCrud {
 				if($e['shippingVatFixed']) {
 
 					$eItemShipping['sale'] = $e;
+					$eItemShipping['farm'] = $e['farm'];
+					$eItemShipping['unitPrice'] = $e['shipping'];
 					$eItemShipping['vatRate'] = $e['shippingVatRate'];
 
-					ItemLib::recalculateShipping($eItemShipping);
+					\selling\ItemLib::update($eItemShipping, ['unitPrice', 'vatRate']);
 
 				}
 
@@ -1820,7 +1822,7 @@ class SaleLib extends SaleCrud {
 
 		if(
 			$e['paymentStatus'] === Sale::PARTIAL_PAID and
-			$e['priceIncludingVat'] === $e['paymentAmount']
+			$e['priceIncludingVat'] <= $e['paymentAmount']
 		) {
 			$newValues['paymentStatus'] = Sale::PAID;
 		}
