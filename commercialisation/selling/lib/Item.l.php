@@ -510,7 +510,7 @@ class ItemLib extends ItemCrud {
 		foreach($cItemCopy as $eItemCopy) {
 
 			$copyPrice = ($ratio !== NULL) ? $eItemCopy['price'] * $ratio : $eItemComposition['price'] / $cItemCopy->count();
-			$copyPriceStats = ($ratio !== NULL) ? $eItemCopy['priceStats'] * $ratio : $eItemComposition['priceStats'] / $cItemCopy->count();
+			$copyNetPriceExcludingVat = ($ratio !== NULL) ? $eItemCopy['netPriceExcludingVat'] * $ratio : $eItemComposition['netPriceExcludingVat'] / $cItemCopy->count();
 			$copyPackaging = $eItemCopy['packaging'];
 			$copyNumber = $eItemCopy['number'] * $eItemComposition['number'] * ($eItemComposition['packaging'] ?? 1);
 
@@ -529,7 +529,7 @@ class ItemLib extends ItemCrud {
 			  'unitPrice' => ($copyNumber > 0 and $copyPackaging > 0) ? $copyPrice / $copyNumber / $copyPackaging : $eItemCopy['unitPrice'],
 			  'number' => $copyNumber,
 			  'price' => $copyPrice,
-			  'priceStats' => $copyPriceStats,
+			  'netPriceExcludingVat' => $copyNetPriceExcludingVat,
 			  'vatRate' => $eItemCopy['vatRate'],
 			  'stats' => $eItemComposition['stats']
 			]);
@@ -754,17 +754,17 @@ class ItemLib extends ItemCrud {
 			if($e['sale']['preparationStatus'] === Sale::SELLING) {
 				$e['price'] = 0.0;
 				$e['priceInitial'] = NULL;
-				$e['priceStats'] = 0.0;
+				$e['netPriceExcludingVat'] = 0.0;
 				$e['number'] = 0.0;
 			} else {
 				$e['price'] = NULL;
 				$e['priceInitial'] = NULL;
-				$e['priceStats'] = NULL;
+				$e['netPriceExcludingVat'] = NULL;
 			}
 
 			$properties[] = 'price';
 			$properties[] = 'priceInitial';
-			$properties[] = 'priceStats';
+			$properties[] = 'netPriceExcludingVat';
 
 		} else {
 
@@ -825,7 +825,7 @@ class ItemLib extends ItemCrud {
 			self::recalculatePricing($e);
 
 			$properties[] = 'priceInitial';
-			$properties[] = 'priceStats';
+			$properties[] = 'netPriceExcludingVat';
 
 		}
 
@@ -835,10 +835,10 @@ class ItemLib extends ItemCrud {
 
 		$e->expects(['vatRate', 'sale']);
 
-		ItemLib::recalculateStatsPricing($e);
+		ItemLib::recalculateNetPricing($e);
 
 		Item::model()
-			->select('vatRate', 'priceStats')
+			->select('vatRate', 'netPriceExcludingVat')
 			->update($e);
 
 	}
@@ -855,23 +855,28 @@ class ItemLib extends ItemCrud {
 		}
 		$e['priceInitial'] = $priceInitial;
 
-		self::recalculateStatsPricing($e);
+		self::recalculateNetPricing($e);
 
 	}
 
-	public static function recalculateStatsPricing(Item $e): void {
+	public static function recalculateNetPricing(Item $e): void {
 
-		$priceStats = match($e['sale']['taxes']) {
+		if($e['price'] === NULL) {
+			$e['netPriceExcludingVat'] = NULL;
+			return;
+		}
+
+		$netPriceExcludingVat = match($e['sale']['taxes']) {
 			Sale::INCLUDING => $e['price'] / (1 + $e['vatRate'] / 100),
 			Sale::EXCLUDING => $e['price'],
 			NULL => $e['price']
 		};
 
 		if($e['discount'] > 0) {
-			$priceStats *= (100 - $e['discount']) / 100;
+			$netPriceExcludingVat *= (100 - $e['discount']) / 100;
 		}
 
-		$e['priceStats'] = round($priceStats, 2);
+		$e['netPriceExcludingVat'] = round($netPriceExcludingVat, 4);
 
 	}
 

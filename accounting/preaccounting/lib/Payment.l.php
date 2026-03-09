@@ -37,7 +37,7 @@ Class PaymentLib {
 		return \selling\Payment::getSelection() + [
 			'sale' => \selling\Sale::getSelection() + [
 				'cItem' => \selling\Item::model()
-					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+					->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 					->delegateCollection('sale')
 			],
 			'invoice' => \selling\Invoice::getSelection() + [
@@ -45,7 +45,7 @@ Class PaymentLib {
 					->select([
 						'id', 'shipping', 'shippingVatRate',
 						'cItem' => \selling\Item::model()
-							->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+							->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 							->delegateCollection('sale')
 					])
 					->delegateCollection('invoice')

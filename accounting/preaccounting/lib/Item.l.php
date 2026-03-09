@@ -38,7 +38,7 @@ Class ItemLib {
 	public static function getBySaleForFec(\selling\Sale $eSale): \Collection {
 
 		return \selling\Item::model()
-			->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+			->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 			->whereSale($eSale)
 			->getCollection();
 

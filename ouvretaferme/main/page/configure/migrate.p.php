@@ -1,6 +1,38 @@
 <?php
 new Page()
-	->cli('index', function($data) {
+	->cli('netPrice', function($data) {
+
+		$c = \selling\Item::model()
+			->select([
+				'id',
+				'price', 'vatRate', 'discount',
+				'sale' => ['taxes']
+			])
+			->whereIngredientOf(NULL)
+			->getCollection();
+
+		$i = 1;
+
+		foreach($c as $e) {
+
+			\selling\ItemLib::recalculateNetPricing($e);
+
+			\selling\Item::model()
+				->select('netPriceExcludingVat')
+				->update($e);
+
+			$i++;
+
+			if($i % 100 === 0) {
+				echo $i."\r";
+			}
+
+		}
+
+		echo "\n";
+
+	})
+	->cli('shipping', function($data) {
 
 		\selling\Item::model()
 			->whereNature(\selling\Item::SILENT)
@@ -37,7 +69,7 @@ new Page()
 			$calc = \selling\Item::model()
 				->whereIngredientOf(NULL)
 				->whereSale($e)
-				->getValue(new Sql('SUM(priceStats)', 'float'));
+				->getValue(new Sql('ROUND(SUM(netPriceExcludingVat), 2)', 'float'));
 
 			$p = $e['type'] === 'pro' ? $e['priceExcludingVat'] : $e['priceExcludingVat'];
 

@@ -53,7 +53,7 @@ Class InvoiceLib {
 					->select([
 						'id', 'shipping', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',
 						'cItem' => \selling\Item::model()
-							->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+							->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 							->delegateCollection('sale'),
 					])
 					->delegateCollection('invoice'),
@@ -81,7 +81,7 @@ Class InvoiceLib {
 					'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'shippingVatRate',
 					'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
 					'cItem' => \selling\Item::model()
-						->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+						->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 						->delegateCollection('sale'),
 					'totalPaid' => new \selling\PaymentModel()
 						->select('amountIncludingVat')
@@ -95,7 +95,7 @@ Class InvoiceLib {
 						->select([
 							'id', 'shipping', 'shippingVatRate',
 							'cItem' => \selling\Item::model()
-								->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+								->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 								->delegateCollection('sale')
 						])
 						->delegateCollection('invoice'),

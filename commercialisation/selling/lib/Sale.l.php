@@ -1291,7 +1291,7 @@ class SaleLib extends SaleCrud {
 				NULL => 'price'
 			};
 
-			$newItems['priceStats'] = new \Sql('ROUND('.$priceExcludingVat.' * (100 - '.$e['discount'].') / 100 * 100) / 100');
+			$newItems['netPriceExcludingVat'] = new \Sql('ROUND('.$priceExcludingVat.' * (100 - '.$e['discount'].') / 100 * 100) / 100');
 
 		}
 

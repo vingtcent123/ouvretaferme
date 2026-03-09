@@ -96,7 +96,7 @@ class ItemModel extends \ModuleModel {
 			'number' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'price' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'priceInitial' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
-			'priceStats' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
+			'netPriceExcludingVat' => ['decimal', 'digits' => 10, 'decimal' => 4, 'min' => -999999.9999, 'max' => 999999.9999, 'null' => TRUE, 'cast' => 'float'],
 			'locked' => ['enum', [\selling\Item::UNIT_PRICE, \selling\Item::NUMBER, \selling\Item::PRICE], 'cast' => 'enum'],
 			'vatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'min' => 0.0, 'max' => 99.99, 'null' => TRUE, 'cast' => 'float'],
 			'vatCode' => ['enum', [\selling\Item::STANDARD, \selling\Item::ZERO, \selling\Item::EXEMPT, \selling\Item::AUTOLIQUIDATION, \selling\Item::INTRACOM_DELIVERY, \selling\Item::EXPORTATION, \selling\Item::OUT_OF_VAT], 'null' => TRUE, 'cast' => 'enum'],
@@ -109,7 +109,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'reference', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceInitial', 'priceStats', 'locked', 'vatRate', 'vatCode', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'reference', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceInitial', 'netPriceExcludingVat', 'locked', 'vatRate', 'vatCode', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -322,8 +322,8 @@ class ItemModel extends \ModuleModel {
 		return $this->where('priceInitial', ...$data);
 	}
 
-	public function wherePriceStats(...$data): ItemModel {
-		return $this->where('priceStats', ...$data);
+	public function whereNetPriceExcludingVat(...$data): ItemModel {
+		return $this->where('netPriceExcludingVat', ...$data);
 	}
 
 	public function whereLocked(...$data): ItemModel {

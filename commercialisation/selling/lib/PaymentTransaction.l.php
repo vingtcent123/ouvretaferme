@@ -582,7 +582,7 @@ class PaymentTransactionLib {
 
 	public static function getRatios(Sale|Invoice $e, Payment $ePayment): array {
 
-		$ratios = new \preaccounting\RatioLib($e)->filterByPayment($ePayment);
+		$ratios = new \preaccounting\RatioLib($e, \account\AccountLib::getAll())->filterByPayment($ePayment);
 
 		$amounts = [];
 

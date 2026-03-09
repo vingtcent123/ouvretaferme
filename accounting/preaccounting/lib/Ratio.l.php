@@ -27,8 +27,8 @@ class RatioLib {
 		$this->splitByPayments();
 		$this->splitByAccounts();
 
-		//$this->dump();
-
+		$this->dump();
+dd('ok');
 	}
 
 	public function getByVat(): array {
@@ -133,7 +133,7 @@ class RatioLib {
 				} else {
 
 					// La TVA restant à affecter
-					$vat = $vatValues['vat'] - $calculatedVat[$vatRate];
+					$vat = round($vatValues['vat'] - $calculatedVat[$vatRate], 2);
 
 				}
 
@@ -159,41 +159,76 @@ class RatioLib {
 			return;
 		}
 
-		$itemsByVat = [];
+		$accounts = $this->getAccounts();
+
+		$ratioSold = $this->getSoldRatio();
+
+		foreach($this->byVat as $vatRate => $vatValues) {
+
+			$vatAccounts = $accounts[$vatRate] ?? [];
+
+			foreach($vatAccounts as $accountId => $accountAmount) {
+
+				$accountAmount = round($accountAmount, 2);
+
+				dd($vatValues['amountExcludingVat'], $accountAmount);
+
+				$lastPayment = array_key_last($vatValues['splitByPayments']);
+				$calculated = 0.0;
+
+				foreach($vatValues['splitByPayments'] as $paymentId => $payment) {
+
+					$calculated += 0;
+
+				}
+
+				d($accountId, $accountAmount, $vatValues['splitByPayments']);
+
+			}
+
+
+		}
+
+dd($accounts);
+	}
+
+	protected function getAccounts(): array {
+
+		$accounts = [];
 
 		foreach($this->e['cItem'] as $eItem) {
 
 			$key = (string)$eItem['vatRate'];
 
-			$itemsByVat[$key] ??= [];
+			$accounts[$key] ??= [];
 
 			$eAccount = self::getAccountFromItem($eItem, $this->cAccount);
 			$accountId = $eAccount->empty() ? NULL : $eAccount['id'];
 
-			$itemsByVat[$key][$accountId] ??= 0.0;
-			$itemsByVat[$key][$accountId] = round($itemsByVat[$key][$accountId] + $eItem['priceStats'], 2);
-
-
+			$accounts[$key][$accountId] ??= 0.0;
+			$accounts[$key][$accountId] += $eItem['netPriceExcludingVat'];
 
 		}
-//dd($itemsByVat);
+
+		return $accounts;
+
 	}
 
 	protected function getPayments(): array {
-
-		$base = $this->e['priceIncludingVat'];
 
 		$payments = [];
 
 		$totalPaid = 0.0;
 		$totalSold = 0.0;
 
+		$ratioSold = $this->getSoldRatio();
+
 		$ePaymentLast = $this->cPayment->last();
 
 		foreach($this->cPayment as $ePayment) {
 
 			if($this->e['paymentAmount'] <= $this->e['priceIncludingVat']) {
-				$amountSold = $ePayment['amountIncludingVat'];
+				$amountSold = $ePayment['amountIncludingVat'] * $ratioSold;
 			} else {
 
 				if($ePayment->is($ePaymentLast)) {
@@ -202,7 +237,7 @@ class RatioLib {
 
 				} else {
 
-					$amountSold = round($ePayment['amountIncludingVat'] * ($this->e['priceIncludingVat'] / $this->e['paymentAmount']), 2);
+					$amountSold = round($ePayment['amountIncludingVat'] * $ratioSold, 2);
 					$totalSold += $amountSold;
 
 				}
@@ -210,7 +245,7 @@ class RatioLib {
 			}
 
 			$payments[$ePayment['id']] = [
-				'part' => $amountSold / $base,
+				'part' => $amountSold / $this->e['priceIncludingVat'],
 				'amount' => $ePayment['amountIncludingVat'],
 				'amountSold' => $amountSold,
 			];
@@ -227,7 +262,7 @@ class RatioLib {
 			$amount = round($this->e['priceIncludingVat'] - $totalPaid, 2);
 
 			$payments[NULL] = [
-				'part' => $amount / $base,
+				'part' => $amount / $this->e['priceIncludingVat'],
 				'amount' => $amount,
 				'amountSold' => $amount
 			];
@@ -235,6 +270,16 @@ class RatioLib {
 		}
 
 		return $payments;
+
+	}
+
+	private function getSoldRatio(): float {
+
+		if($this->e['paymentAmount'] <= $this->e['priceIncludingVat']) {
+			return 1;
+		} else {
+			return ($this->e['priceIncludingVat'] / $this->e['paymentAmount']);
+		}
 
 	}
 

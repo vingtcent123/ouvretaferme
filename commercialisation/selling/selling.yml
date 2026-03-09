@@ -187,7 +187,7 @@ Item:
   number: ?decimal(8, 2)
   price: ?decimal(8, 2)
   priceInitial: ?decimal(8, 2)
-  priceStats: ?decimal(8, 2)
+  netPriceExcludingVat: ?decimal(10, 4)
   locked: enum(UNIT_PRICE, NUMBER, PRICE) = PRICE
   vatRate: ?decimal(4, 2, 0.0, 100)
   vatCode: ?enum(STANDARD, ZERO, EXEMPT, AUTOLIQUIDATION, INTRACOM_DELIVERY, EXPORTATION, OUT_OF_VAT) = STANDARD

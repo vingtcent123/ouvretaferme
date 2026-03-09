@@ -95,7 +95,7 @@ Class SaleLib {
 				->whereStatus(\selling\Payment::PAID)
 				->delegateCollection('sale', 'id'),
 				'cItem' => \selling\Item::model()
-					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+					->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 					->delegateCollection('sale')
 		];
 
@@ -115,7 +115,7 @@ Class SaleLib {
 			->select([
 				'id', 'shipping', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',
 				'cItem' => \selling\Item::model()
-					->select(['id', 'price', 'priceStats', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+					->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
 					->delegateCollection('sale'),
 			])
 			->whereInvoice($eInvoice)

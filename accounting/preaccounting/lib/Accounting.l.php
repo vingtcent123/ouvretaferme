@@ -717,7 +717,7 @@ Class AccountingLib {
 
 			$eAccount = self::extractAccountFromItem($eItem, $cAccount, $eAccountDefault);
 
-			$amountExcludingVat = $eItem['priceStats'];
+			$amountExcludingVat = $eItem['netPriceExcludingVat'];
 
 			if(round($eItem['vatRate'], 2) !== 0.0) {
 				$amountVat = $amountExcludingVat * $eItem['vatRate'] / 100;

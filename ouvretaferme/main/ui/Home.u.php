@@ -299,7 +299,7 @@ class HomeUi {
 
 	public function getMission(): string {
 
-		$h = '<div class="home-highlight">';
+		$h = '<div class="home-highlight" style="background-color: lightsalmon">';
 
 			$h .= '<p>';
 				$h .= '<span class="font-xl mr-1" style="font-weight: bold">'.s("Vous êtes un organisme de formation à la comptabilité ou à la gestion ?").'</span><br/>';
