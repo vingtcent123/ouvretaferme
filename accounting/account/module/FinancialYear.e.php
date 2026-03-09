@@ -92,8 +92,7 @@ class FinancialYear extends FinancialYearElement {
 
 		return (
 			$this['closeDate'] === NULL and $this['status'] === FinancialYear::OPEN and
-			\journal\Operation::model()->whereFinancialYear($this)->count() === 0 and
-			\cash\Cash::model()->whereFinancialYear($this)->count() === 0
+			\journal\Operation::model()->whereFinancialYear($this)->count() === 0
 		);
 
 	}
