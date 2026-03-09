@@ -90,12 +90,13 @@ class RatioLib {
 
 		}
 
+		ksort($this->byVat);
+
 	}
 
 	protected function splitByPayments(): void {
 
 		$payments = $this->getPayments();
-
 
 		$lastPaymentId = array_key_last($payments);
 
@@ -136,6 +137,7 @@ class RatioLib {
 				}
 
 				$this->byVat[$vatRate]['splitByPayments'][$paymentId] = [
+					'method' => $payment['payment'],
 					'amountIncludingVat' => $amountIncludingVat,
 					'amountExcludingVat' => round($amountIncludingVat - $vat, 2),
 					'vat' => $vat,
@@ -251,6 +253,7 @@ class RatioLib {
 			}
 
 			$payments[$ePayment['id']] = [
+				'payment' => $ePayment,
 				'part' => $amountSold / $this->e['priceIncludingVat'],
 				'amount' => $ePayment['amountIncludingVat'],
 				'amountSold' => $amountSold,
