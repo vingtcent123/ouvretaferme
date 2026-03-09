@@ -90,7 +90,7 @@ class SaleModel extends \ModuleModel {
 			'priceIncludingVat' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'shippingVatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'min' => -99.99, 'max' => 99.99, 'null' => TRUE, 'cast' => 'float'],
 			'shippingVatFixed' => ['bool', 'cast' => 'bool'],
-			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => 0.01, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
+			'shipping' => ['decimal', 'digits' => 8, 'decimal' => 2, 'min' => -999999.99, 'max' => 999999.99, 'null' => TRUE, 'cast' => 'float'],
 			'secured' => ['bool', 'cast' => 'bool'],
 			'securedAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 			'closed' => ['bool', 'cast' => 'bool'],

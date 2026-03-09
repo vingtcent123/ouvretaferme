@@ -1199,7 +1199,7 @@ class Sale extends SaleElement {
 
 				return (
 					$shipping === NULL or
-					\Filter::check(['float32', 'min' => 0.1], $shipping)
+					\Filter::check(['float32'], $shipping)
 				);
 
 			})

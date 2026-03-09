@@ -331,7 +331,7 @@ Sale:
   priceIncludingVat: ?decimal(8, 2)
   shippingVatRate: ?decimal(4, 2)
   shippingVatFixed: bool = FALSE
-  shipping: ?decimal(8, 2, 0.01, null)
+  shipping: ?decimal(8, 2)
   secured: bool = FALSE
   securedAt: ?datetime
   closed: bool = FALSE
