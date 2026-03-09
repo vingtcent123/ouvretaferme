@@ -673,7 +673,7 @@ class Farm extends FarmElement {
 			$vat = preg_replace('/\s+/i', '', $vat ?? '');
 			$vat = strtoupper($vat);
 
-			if(preg_match('/^FR[0-9]{11}$/', $vat) === 0) {
+			if(preg_match('/^FR[0-9a-z]{2}[0-9]{9}$/i', $vat) === 0) {
 				\Fail::log($element.'::vatNumber.check', ['FR']);
 			}
 
