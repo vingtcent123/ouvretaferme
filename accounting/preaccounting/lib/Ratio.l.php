@@ -27,9 +27,6 @@ class RatioLib {
 		$this->splitByPayments();
 		$this->splitByAccounts();
 
-		$this->dump();
-		exit;
-
 	}
 
 	public function getByVat(): array {
