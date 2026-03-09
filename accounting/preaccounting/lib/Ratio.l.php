@@ -137,7 +137,7 @@ class RatioLib {
 				}
 
 				$this->byVat[$vatRate]['splitByPayments'][$paymentId] = [
-					'method' => $payment['payment'],
+					'payment' => $payment['payment'],
 					'amountIncludingVat' => $amountIncludingVat,
 					'amountExcludingVat' => round($amountIncludingVat - $vat, 2),
 					'vat' => $vat,
