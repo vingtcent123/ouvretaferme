@@ -161,8 +161,6 @@ dd('ok');
 
 		$accounts = $this->getAccounts();
 
-		$ratioSold = $this->getSoldRatio();
-
 		foreach($this->byVat as $vatRate => $vatValues) {
 
 			$vatAccounts = $accounts[$vatRate] ?? [];
@@ -171,25 +169,35 @@ dd('ok');
 
 				$accountAmount = round($accountAmount, 2);
 
-				dd($vatValues['amountExcludingVat'], $accountAmount);
+				$ratio = $accountAmount / $vatValues['amountExcludingVat'];
 
-				$lastPayment = array_key_last($vatValues['splitByPayments']);
+				$lastPaymentId = array_key_last($vatValues['splitByPayments']);
 				$calculated = 0.0;
 
 				foreach($vatValues['splitByPayments'] as $paymentId => $payment) {
 
-					$calculated += 0;
+					if($paymentId !== $lastPaymentId) {
+
+						$amount = round($payment['amountExcludingVat'] * $ratio, 2);
+						$calculated += $amount;
+
+					} else {
+
+						// La TVA restant à affecter
+						$amount = round($accountAmount - $calculated, 2);
+
+					}
+
+					$this->byVat[$vatRate]['splitByPayments'][$paymentId]['splitByAccounts'] ??= [];
+					$this->byVat[$vatRate]['splitByPayments'][$paymentId]['splitByAccounts'][$accountId] = $amount;
 
 				}
-
-				d($accountId, $accountAmount, $vatValues['splitByPayments']);
 
 			}
 
 
 		}
 
-dd($accounts);
 	}
 
 	protected function getAccounts(): array {
@@ -356,7 +364,7 @@ dd($accounts);
 
 							echo '<tr>';
 
-								echo '<td>';
+								echo '<td class="td-vertical-align-top">';
 									if($paymentId) {
 										echo $this->cPayment[$paymentId]['methodName'];
 									} else {
@@ -367,6 +375,22 @@ dd($accounts);
 								echo '<td>';
 									echo \util\TextUi::money($paymentValues['amountIncludingVat']).' TTC ';
 									echo '<small class="color-muted">('.\util\TextUi::money($paymentValues['amountExcludingVat']).' HT + '.\util\TextUi::money($paymentValues['vat']).' TVA)</small>';
+
+									if(
+										$this->cAccount->notEmpty() and
+										$paymentValues['splitByAccounts']
+									) {
+
+										echo '<ul style="font-size: 0.9rem; margin-top: 0.25rem; color: var(--secondary); margin-bottom: 0">';
+
+											foreach($paymentValues['splitByAccounts'] as $account => $amount) {
+												echo '<li>'.($account ? $this->cAccount[$account]['class'] : '?').' '.\Asset::icon('arrow-right-short').' '.\util\TextUi::money($amount).'</li>';
+											}
+
+										echo '</ul>';
+
+									}
+
 								echo '</td>';
 
 							echo '</tr>';
