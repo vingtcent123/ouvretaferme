@@ -27,6 +27,9 @@ class RatioLib {
 		$this->splitByPayments();
 		$this->splitByAccounts();
 
+		$this->dump();
+		exit;
+
 	}
 
 	public function getByVat(): array {
@@ -161,9 +164,11 @@ class RatioLib {
 
 		$accounts = $this->getAccounts();
 
+
 		foreach($this->byVat as $vatRate => $vatValues) {
 
 			$vatAccounts = $accounts[$vatRate] ?? [];
+			$lastAccountId = array_key_last($vatAccounts);
 
 			foreach($vatAccounts as $accountId => $accountAmount) {
 
@@ -172,24 +177,54 @@ class RatioLib {
 				$ratio = $accountAmount / $vatValues['amountExcludingVat'];
 
 				$lastPaymentId = array_key_last($vatValues['splitByPayments']);
-				$calculated = 0.0;
+
+				$calculatedAmountExcludingVat = 0.0;
 
 				foreach($vatValues['splitByPayments'] as $paymentId => $payment) {
 
 					if($paymentId !== $lastPaymentId) {
 
-						$amount = round($payment['amountExcludingVat'] * $ratio, 2);
-						$calculated += $amount;
+						$amountExcludingVat = round($payment['amountExcludingVat'] * $ratio, 2);
+						$calculatedAmountExcludingVat += $amountExcludingVat;
 
 					} else {
 
 						// La TVA restant à affecter
-						$amount = round($accountAmount - $calculated, 2);
+						$amountExcludingVat = round($accountAmount - $calculatedAmountExcludingVat, 2);
 
 					}
 
 					$this->byVat[$vatRate]['splitByPayments'][$paymentId]['splitByAccounts'] ??= [];
-					$this->byVat[$vatRate]['splitByPayments'][$paymentId]['splitByAccounts'][$accountId] = $amount;
+					$this->byVat[$vatRate]['splitByPayments'][$paymentId]['splitByAccounts'][$accountId] = [
+						'amountExcludingVat' => $amountExcludingVat
+					];
+
+				}
+
+			}
+
+			// Calcul de la TVA
+			foreach($this->byVat[$vatRate]['splitByPayments'] as $paymentId => $payment) {
+
+				$lastAccountId = array_key_last($payment['splitByAccounts']);
+				$calculatedVat = 0.0;
+
+				foreach($payment['splitByAccounts'] as $accountId => $account) {
+
+					if($accountId !== $lastAccountId) {
+
+						$vat = \util\AmountUi::vatFromExcluding($account['amountExcludingVat'], $vatValues['vatRate']);
+						$calculatedVat += $vat;
+
+					} else {
+
+						// La TVA restant à affecter
+						$vat = round($payment['vat'] - $calculatedVat, 2);
+
+					}
+
+					$this->byVat[$vatRate]['splitByPayments'][$paymentId]['splitByAccounts'][$accountId]['vat'] = $vat;
+
 
 				}
 
@@ -384,8 +419,8 @@ class RatioLib {
 
 										echo '<ul style="font-size: 0.9rem; margin-top: 0.25rem; color: var(--secondary); margin-bottom: 0">';
 
-											foreach($paymentValues['splitByAccounts'] as $account => $amount) {
-												echo '<li>'.($account ? $this->cAccount[$account]['class'] : '?').' '.\Asset::icon('arrow-right-short').' '.\util\TextUi::money($amount).'</li>';
+											foreach($paymentValues['splitByAccounts'] as $accountId => $amount) {
+												echo '<li>'.($accountId ? $this->cAccount[$accountId]['class'] : '?').' '.\Asset::icon('arrow-right-short').' '.\util\TextUi::money($amount['amountExcludingVat']).' HT + '.\util\TextUi::money($amount['vat']).' TVA</li>';
 											}
 
 										echo '</ul>';
