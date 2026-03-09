@@ -33,6 +33,10 @@ class ContactLib extends ContactCrud {
 
 		self::updateOptInByEmail($e['farm'], $e['email'], TRUE);
 
+		if($e['farm']['id'] === \association\AssociationSetting::FARM) {
+			return;
+		}
+
 		$farmEmail = $e['farm']['legalEmail'];
 
 		if($farmEmail === NULL) {
