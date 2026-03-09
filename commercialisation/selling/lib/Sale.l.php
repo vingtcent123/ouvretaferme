@@ -1013,6 +1013,10 @@ class SaleLib extends SaleCrud {
 			$eSaleNew['priceIncludingVat'] = 0;
 		}
 
+		if($credit and $eSale['shipping']) {
+			$eSaleNew['shipping'] = -1 * $eSale['shipping'];
+		}
+
 		self::create($eSaleNew);
 
 		// Dupliquer les items

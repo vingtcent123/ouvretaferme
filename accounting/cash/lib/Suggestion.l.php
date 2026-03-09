@@ -217,6 +217,12 @@ class SuggestionLib {
 
 		foreach($amounts as $amount) {
 
+			if($eCash['type'] === Cash::DEBIT) {
+				$amount['amountIncludingVat'] = abs($amount['amountIncludingVat']);
+				$amount['amountExcludingVat'] = abs($amount['amountExcludingVat']);
+				$amount['vat'] = abs($amount['vat']);
+			}
+
 			$eCashCreate = (clone $eCash)->merge($amount);
 
 			self::importCreate($eCashCreate);

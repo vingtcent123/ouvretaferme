@@ -598,8 +598,8 @@ class CashUi {
 													break;
 
 												case Cash::SELL_SALE:
-													$confirm = s("Vous allez supprimer toutes les opérations liées à la {value}. Continuer ?", \selling\SaleUi::getName($eCash['sale']));
-													$dropdownItem = s("Supprimer les opérations liées à la {value}", \selling\SaleUi::getName($eCash['sale']));
+													$confirm = s("Vous allez supprimer toutes les opérations liées à {value}. Continuer ?", \selling\SaleUi::getName($eCash['sale']));
+													$dropdownItem = s("Supprimer les opérations liées à {value}", \selling\SaleUi::getName($eCash['sale']));
 													break;
 
 												default:
