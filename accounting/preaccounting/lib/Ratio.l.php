@@ -12,7 +12,7 @@ class RatioLib {
 
 	public function __construct(
 		private \selling\Sale|\selling\Invoice $e,
-		private \Collection $cAccount
+		private \Collection $cAccount = new \Collection()
 	) {
 
 		$e->expects(['cItem', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat']);
@@ -27,12 +27,31 @@ class RatioLib {
 		$this->splitByPayments();
 		$this->splitByAccounts();
 
-		$this->dump();
+		//$this->dump();
 
 	}
 
 	public function getByVat(): array {
 		return $this->byVat;
+	}
+
+	public function filterByPayment(\selling\Payment $ePayment): array {
+
+		$ePayment->expects(['id']);
+
+		$ratiosByVat = [];
+
+		foreach($this->byVat as $rate => $byVat) {
+
+			$splitByPaymentFiltered = array_filter($byVat['splitByPayments'], fn($key) => $key === $ePayment['id'], ARRAY_FILTER_USE_KEY);
+
+			$byVat['splitByPayments'] = $splitByPaymentFiltered;
+
+			$ratiosByVat[$rate] = $byVat;
+
+		}
+		return $ratiosByVat;
+
 	}
 
 	protected function splitByVat(): void {
@@ -152,7 +171,7 @@ class RatioLib {
 			$accountId = $eAccount->empty() ? NULL : $eAccount['id'];
 
 			$itemsByVat[$key][$accountId] ??= 0.0;
-			$itemsByVat[$key][$accountId] = round($itemsByVat[$key][$accountId] + $eItem['price'], 2);
+			$itemsByVat[$key][$accountId] = round($itemsByVat[$key][$accountId] + $eItem['priceStats'], 2);
 
 
 
@@ -203,7 +222,7 @@ class RatioLib {
 
 		$totalPaid = round($totalPaid, 2);
 
-		if($totalPaid < $this->e['priceIncludingVat']) {
+		if($totalPaid < $this->e['priceIncludingVat']) { // PARTIAL_PAID
 
 			$amount = round($this->e['priceIncludingVat'] - $totalPaid, 2);
 

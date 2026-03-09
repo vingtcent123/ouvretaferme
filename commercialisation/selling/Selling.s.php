@@ -76,6 +76,10 @@ class SellingSetting extends \Settings {
 
 	public static function getVatRate(\farm\Farm $eFarm, int $rate): ?float {
 
+		if($eFarm->getConf('hasVat') === FALSE) {
+			return 0.0;
+		}
+
 		$rates = SellingSetting::getVatRates($eFarm);
 
 		if(array_key_exists($rate, $rates) === FALSE) {

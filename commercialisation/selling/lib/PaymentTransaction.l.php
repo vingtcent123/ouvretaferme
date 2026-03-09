@@ -581,28 +581,27 @@ class PaymentTransactionLib {
 	}
 
 	public static function getRatios(Sale|Invoice $e, Payment $ePayment): array {
-dd(new \preaccounting\RatioLib($e, \account\AccountLib::getAll())->getByVat());
-		$ratios = \preaccounting\AccountingLib::computeRatios(
-			$e,
-			new \Collection(),
-			$ePayment
-		);
+
+		$ratios = new \preaccounting\RatioLib($e)->filterByPayment($ePayment);
 
 		$amounts = [];
 
-		foreach($ratios['amountsExcludingVat'] as ['vatRate' => $vatRate, 'amount' => $amount]) {
+		foreach($ratios as $ratio) {
 
-			$amounts[(string)$vatRate] ??= [
+			$vatRate = (string)$ratio['vatRate'];
+
+			$amounts[$vatRate] ??= [
 				'amountExcludingVat' => 0.0,
 				'vat' => 0.0
 			];
 
-			$amounts[(string)$vatRate]['amountExcludingVat'] += $amount;
+			foreach($ratio['splitByPayments'] as $ratioByPayment) {
 
-		}
+				$amounts[$vatRate]['amountExcludingVat'] += $ratioByPayment['amountExcludingVat'];
+				$amounts[$vatRate]['vat'] += $ratioByPayment['vat'];
 
-		foreach($ratios['amountsVat'] as ['vatRate' => $vatRate, 'amount' => $amount]) {
-			$amounts[(string)$vatRate]['vat'] += $amount;
+			}
+
 		}
 
 		foreach($amounts as $vatRate => $amount) {
