@@ -157,7 +157,7 @@ class RatioLib {
 
 
 		}
-dd($itemsByVat);
+//dd($itemsByVat);
 	}
 
 	protected function getPayments(): array {
