@@ -28,7 +28,7 @@ class RatioLib {
 		$this->splitByAccounts();
 
 		$this->dump();
-dd('ok');
+
 	}
 
 	public function getByVat(): array {
