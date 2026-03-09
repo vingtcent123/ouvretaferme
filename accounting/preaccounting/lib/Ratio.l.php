@@ -165,7 +165,6 @@ class RatioLib {
 		foreach($this->byVat as $vatRate => $vatValues) {
 
 			$vatAccounts = $accounts[$vatRate] ?? [];
-			$lastAccountId = array_key_last($vatAccounts);
 
 			foreach($vatAccounts as $accountId => $accountAmount) {
 
