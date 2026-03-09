@@ -711,7 +711,7 @@ class CsvLib {
 				$import[$index] = [
 					'series' => [
 						'season' => $season,
-						'name' => NULL,
+						'name' => $seriesName,
 						'mode' => $line['mode'] ?: NULL,
 						'use' => $line['use'] ?: NULL,
 						'bed_length' => (int)round((float)$line['bed_length']) ?: NULL,
