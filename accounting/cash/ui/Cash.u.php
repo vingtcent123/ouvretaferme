@@ -351,6 +351,8 @@ class CashUi {
 			return '<div class="util-empty">'.s("Il n'y a aucune opération à afficher.").'</div>';
 		}
 
+		$eFarm = \farm\Farm::getConnected();
+
 		$h = '<div class="util-overflow-md">';
 			$h .= '<table class="cash-item-table tr-even">';
 
@@ -507,11 +509,19 @@ class CashUi {
 
 							$h .= '<td>';
 
-								$h .= CashUi::getOperation($eCash['source'], $eCash['type'], $eCash);
+								$h .= '<div style="display: flex; align-items: center;">';
 
-								if($eCash['status'] === Cash::DRAFT) {
-									$h .= '<span class="util-badge bg-muted ml-1">'.s("Non validé").'</span>';
-								}
+									$h .= CashUi::getOperation($eCash['source'], $eCash['type'], $eCash);
+
+									if($eCash['accountingHash'] !== NULL) {
+										$h .= '<a class="util-badge bg-accounting ml-1" title="'.s("Intégré en comptabilité").'" href="'.\farm\FarmUi::urlConnected($eFarm).'/journal/livre-journal?hash='.$eCash['accountingHash'].'&financialYearReset">'.\Asset::icon('journal-text').'</a>';
+									}
+
+									if($eCash['status'] === Cash::DRAFT) {
+										$h .= '<span class="util-badge bg-muted ml-1">'.s("Non validé").'</span>';
+									}
+
+								$h .= '</div>';
 
 								$h .= '<div class="cash-item-details">'.$this->getDetails($eCash).'</div>';
 

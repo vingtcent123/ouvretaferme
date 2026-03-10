@@ -84,6 +84,10 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 		}
 	}
 
+	if(get_exists('hash')) {
+		echo '<div class="util-block-help"><h4>'.s("Filtre de recherche").'</h4>'.s("Un filtre sur un groupe d'écritures est actuellement activé.").'</div>';
+	}
+
 	echo '<div class="tabs-h" id="journals"';
 		if($data->eOperationRequested->notEmpty()) {
 			echo ' onrender="Operation.open('.$data->eOperationRequested['id'].');"';
