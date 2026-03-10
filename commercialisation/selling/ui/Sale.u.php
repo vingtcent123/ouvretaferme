@@ -2267,9 +2267,11 @@ class SaleUi {
 		if($eSale['customer']->notEmpty()) {
 
 			if($eSale['customer']['destination'] === Customer::COLLECTIVE) {
+
 				$h .= '<div class="util-block util-block-dark sale-create-market bg-selling">';
 					$h .= $form->dynamicGroup($eSale, 'market');
 				$h .= '</div>';
+
 			}
 
 			if($eSale['shopDate']->empty()) {
@@ -2312,7 +2314,9 @@ class SaleUi {
 			}
 
 		} else {
+
 			$footer = NULL;
+
 		}
 
 		if($eSale['farm']['hasSales'] === FALSE) {
@@ -2420,18 +2424,7 @@ class SaleUi {
 			});
 
 			if($cCustomerGroup->notEmpty()) {
-
-				$h .= '<div class="text-end">';
-					$h .= '<a class="dropdown-toggle" data-dropdown="bottom-end">'.s("Créer une vente pour un groupe de clients").'</a>';
-					$h .= '<div class="dropdown-list bg-primary">';
-					foreach($cCustomerGroup as $eCustomerGroup) {
-						$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'group', $eCustomerGroup['id']).'" class="dropdown-item">';
-							$h .= '<span class="util-badge" style="background-color: '.$eCustomerGroup['color'].'">'.encode($eCustomerGroup['name']).'</span>';
-						$h .= '</a>';
-					}
-					$h .= '</div>';
-				$h .= '</div>';
-
+				$h .= $this->getCreateGroupDropdown($cCustomerGroup);
 			}
 
 			$footer = NULL;
@@ -2445,6 +2438,23 @@ class SaleUi {
 			body: $h,
 			footer: $footer
 		);
+
+	}
+
+	protected function getCreateGroupDropdown(\Collection $cCustomerGroup): string {
+
+		$h = '<div class="text-end">';
+			$h .= '<a class="dropdown-toggle" data-dropdown="bottom-end">'.s("Créer une vente pour un groupe de clients").'</a>';
+			$h .= '<div class="dropdown-list bg-primary">';
+			foreach($cCustomerGroup as $eCustomerGroup) {
+				$h .= '<a href="/selling/sale:createCollection'.\util\HttpUi::setArgument(LIME_REQUEST_ARGS, 'group', $eCustomerGroup['id']).'" class="dropdown-item">';
+					$h .= '<span class="util-badge" style="background-color: '.$eCustomerGroup['color'].'">'.encode($eCustomerGroup['name']).'</span>';
+				$h .= '</a>';
+			}
+			$h .= '</div>';
+		$h .= '</div>';
+
+		return $h;
 
 	}
 
