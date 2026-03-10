@@ -177,7 +177,6 @@ class RatioLib {
 
 		$accounts = $this->getAccounts();
 
-
 		foreach($this->byVat as $vatRate => $vatValues) {
 
 			$vatAccounts = $accounts[$vatRate] ?? [];
