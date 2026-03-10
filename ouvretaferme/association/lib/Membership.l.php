@@ -76,11 +76,10 @@ class MembershipLib {
 
 			$eUser = $eUserConnected;
 
-			if($eFarm['siret']) {
-				$eCustomer = \selling\CustomerLib::getBySiret($eFarmOtf, $eFarm['siret']);
-			} else {
-				$eCustomer = new \selling\Customer();
-			}
+			$eCustomer = History::model()
+				->select('customer')
+				->whereFarm($eFarm)
+				->getValue('customer', new \selling\Customer());
 
 		} else {
 
