@@ -447,16 +447,15 @@ class Customer extends CustomerElement {
 				}
 
 			})
-			->setCallback('selfBilling.empty', function(?bool &$billing): bool {
+			->setCallback('selfBilling.empty', function(bool &$billing): bool {
 
 				$this->expects(['user']);
 
 				if($this->isPro() === FALSE) {
-					$billing = NULL;
-					return TRUE;
+					$billing = FALSE;
 				}
 
-				return ($billing !== NULL);
+				return TRUE;
 
 			})
 			->setCallback('selfBillingVat.empty', function(?bool &$vat): bool {
