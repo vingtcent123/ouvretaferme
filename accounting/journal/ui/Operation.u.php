@@ -106,6 +106,18 @@ class OperationUi {
 
 		}
 
+		if($eOperation['cash']->notEmpty()) {
+			if($cOperation->notEmpty()) {
+
+				$h .= '<div class="util-block-warning">'.s("Ces opérations proviennent d'un import d'écritures de journal de caisse. En les supprimant, l'opération du journal de caisse ne sera plus en comptabilité. Il faudra la réimporter.").'</div>';
+
+			} else {
+
+				$h .= '<div class="util-block-warning">'.s("Cette opération provient d'un import d'écritures de journal de caisse. En la supprimant, l'opération du journal de caisse ne sera plus en comptabilité. Il faudra la réimporter.").'</div>';
+
+			}
+		}
+
 		$submit = s("Confirmer la suppression");
 		$waiter = s("Suppression en cours...");
 		$title = p("Suppression d'une écriture comptable", "Suppression d'écritures comptables", $cOperation->count());

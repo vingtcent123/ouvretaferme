@@ -202,6 +202,9 @@ class OperationLib extends OperationCrud {
 			->select(Operation::getSelection() + [
 				'cOperationCashflow' => OperationCashflowLib::delegateByOperation(),
 				'asset' => \asset\Asset::getSelection(),
+				'cash' => \cash\Cash::model()
+					->select(\cash\Cash::getSelection())
+					->delegateElement('accountingHash', propertyParent: 'hash'),
 			])
 			->whereHash($hash)
 			->sort(['id' => SORT_ASC])
@@ -250,7 +253,7 @@ class OperationLib extends OperationCrud {
 
 		$selection = array_merge(Operation::getSelection(),
 			['account' => ['class', 'description']],
-			['thirdParty' => ['id', 'name']]
+			['thirdParty' => ['id', 'name']],
 		);
 
 		self::applySearch($search)
@@ -869,6 +872,11 @@ class OperationLib extends OperationCrud {
 			->select('id')
 			->whereHash($hash)
 			->getCollection();
+
+		// Dissociation du cash si besoin
+		\cash\Cash::model()
+			->whereAccountingHash($hash)
+			->update(['accountingHash' => NULL]);
 
 		OperationCashflow::model()->whereOperation('IN', $cOperation->getIds())->delete();
 		Operation::model()->whereId('IN', $cOperation->getIds())->delete();
