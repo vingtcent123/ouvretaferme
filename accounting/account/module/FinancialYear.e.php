@@ -296,7 +296,7 @@ class FinancialYear extends FinancialYearElement {
 					$accountingMode = FinancialYear::ACCOUNTING;
 				}
 
-				return TRUE;
+				return $accountingMode != NULL;
 
 			})
 			->setCallback('accountingType.check', function(?string &$accountingType) use ($p): bool {
