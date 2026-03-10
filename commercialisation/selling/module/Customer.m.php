@@ -13,6 +13,9 @@ abstract class CustomerElement extends \Element {
 	const INDIVIDUAL = 'individual';
 	const COLLECTIVE = 'collective';
 
+	const CASH = 'cash';
+	const DEBIT = 'debit';
+
 	const ACTIVE = 'active';
 	const INACTIVE = 'inactive';
 
@@ -84,13 +87,17 @@ class CustomerModel extends \ModuleModel {
 			'deliveryCity' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'defaultPaymentMethod' => ['element32', 'payment\Method', 'null' => TRUE, 'cast' => 'element'],
+			'selfBilling' => ['bool', 'cast' => 'bool'],
+			'selfBillingDocument' => ['int32', 'min' => 1, 'max' => NULL, 'cast' => 'int'],
+			'selfBillingVat' => ['bool', 'null' => TRUE, 'cast' => 'bool'],
+			'selfBillingVatChargeability' => ['enum', [\selling\Customer::CASH, \selling\Customer::DEBIT], 'null' => TRUE, 'cast' => 'enum'],
 			'color' => ['color', 'null' => TRUE, 'cast' => 'string'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'status' => ['enum', [\selling\Customer::ACTIVE, \selling\Customer::INACTIVE], 'cast' => 'enum'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'document', 'number', 'electronicScheme', 'electronicAddress', 'email', 'phone', 'contactName', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'color', 'createdAt', 'status'
+			'id', 'name', 'firstName', 'lastName', 'commercialName', 'legalName', 'document', 'number', 'electronicScheme', 'electronicAddress', 'email', 'phone', 'contactName', 'farm', 'user', 'groups', 'type', 'destination', 'discount', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'invoiceStreet1', 'invoiceStreet2', 'invoicePostcode', 'invoiceCity', 'invoiceCountry', 'siret', 'vatNumber', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'defaultPaymentMethod', 'selfBilling', 'selfBillingDocument', 'selfBillingVat', 'selfBillingVatChargeability', 'color', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -122,6 +129,12 @@ class CustomerModel extends \ModuleModel {
 			case 'discount' :
 				return 0;
 
+			case 'selfBilling' :
+				return FALSE;
+
+			case 'selfBillingDocument' :
+				return 0;
+
 			case 'createdAt' :
 				return new \Sql('NOW()');
 
@@ -146,6 +159,9 @@ class CustomerModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'destination' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'selfBillingVatChargeability' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
@@ -318,6 +334,22 @@ class CustomerModel extends \ModuleModel {
 
 	public function whereDefaultPaymentMethod(...$data): CustomerModel {
 		return $this->where('defaultPaymentMethod', ...$data);
+	}
+
+	public function whereSelfBilling(...$data): CustomerModel {
+		return $this->where('selfBilling', ...$data);
+	}
+
+	public function whereSelfBillingDocument(...$data): CustomerModel {
+		return $this->where('selfBillingDocument', ...$data);
+	}
+
+	public function whereSelfBillingVat(...$data): CustomerModel {
+		return $this->where('selfBillingVat', ...$data);
+	}
+
+	public function whereSelfBillingVatChargeability(...$data): CustomerModel {
+		return $this->where('selfBillingVatChargeability', ...$data);
 	}
 
 	public function whereColor(...$data): CustomerModel {

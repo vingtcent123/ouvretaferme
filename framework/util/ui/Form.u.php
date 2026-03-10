@@ -446,6 +446,18 @@ class FormUi {
 			];
 		}
 
+		if(is_closure($d->required)) {
+			$required = ($d->required)($e);
+		} else {
+			$required = $d->required;
+		}
+
+		if($required) {
+			$attributes += [
+				'required' => $required
+			];
+		}
+
 		foreach($attributes as $key => $value) {
 			if(str_starts_with($key, 'callback') === FALSE and is_closure($value)) {
 				$attributes[$key] = call_user_func($value, $this, $e, $property, $attributes);
@@ -696,7 +708,7 @@ class FormUi {
 				$list[$enum] = $values[$enum] ?? '<i>'.$enum.'</i>';
 			}
 			if($m->hasProperty($property) and $m->isPropertyNull($property) === FALSE) {
-				$attributes += ['mandatory' => TRUE];
+				$attributes += ['required' => TRUE];
 			}
 
 			return $this->radios($name, $list, $default, $attributes);
@@ -704,7 +716,7 @@ class FormUi {
 		} else if($type === 'color') {
 
 			if($m->hasProperty($property) and $m->isPropertyNull($property) === FALSE) {
-				$attributes += ['mandatory' => TRUE];
+				$attributes += ['required' => TRUE];
 			}
 
 			return $this->color($name, $default, $attributes);
@@ -1032,7 +1044,7 @@ class FormUi {
 
 		$h = '<div class="form-control field-radio-group field-radio-group-'.$columns.'" '.attrs($attributes).' '.attr('data-field', $name).'>';
 
-			if(empty($attributes['mandatory'])) {
+			if(empty($attributes['required'])) {
 
 				$h .= '<label class="field-radio-group-item">';
 					$h .= $this->inputRadio($name, '', NULL, $selectedValue, call_user_func($callbackRadioAttributes, NULL, NULL));
@@ -1042,7 +1054,7 @@ class FormUi {
 				unset($attributes['placeholder']);
 
 			}
-			unset($attributes['mandatory']);
+			unset($attributes['required']);
 
 
 			foreach($values as $key => $option) {
@@ -1071,10 +1083,11 @@ class FormUi {
 	public function yesNo(?string $name, mixed $selectedValue = NULL, array $attributes = []): string {
 
 		$attributes += [
-			'mandatory' => TRUE,
+			'required' => TRUE,
 			'columns' => 2,
 			'yes' => s("oui"),
-			'no' => s("non")
+			'no' => s("non"),
+			'data-type' => s("yesNo")
 		];
 
 		$values = [
@@ -1659,7 +1672,7 @@ class FormUi {
 
 		$select = '';
 
-		if(empty($attributes['mandatory']) and empty($attributes['multiple'])) {
+		if(empty($attributes['required']) and empty($attributes['multiple'])) {
 
 			$select .= '<option value=""';
 
@@ -1674,7 +1687,7 @@ class FormUi {
 			unset($attributes['placeholder']);
 
 		}
-		unset($attributes['mandatory']);
+		unset($attributes['required']);
 
 		$select = '<select '.attrs($attributes).'>'.$select;
 
@@ -1750,12 +1763,12 @@ class FormUi {
 			throw new \Exception('Missing values');
 		}
 
-		$mandatory = !empty($attributes['mandatory']);
-		unset($attributes['mandatory']);
+		$required = !empty($attributes['required']);
+		unset($attributes['required']);
 
 		if($selection === NULL) {
 
-			if($mandatory) {
+			if($required) {
 				$selection = array_key_first($values);
 			}
 
@@ -1770,7 +1783,7 @@ class FormUi {
 
 		$placeholder = $attributes['placeholder'] ?? s("< Choisir >");
 
-		unset($attributes['mandatory']);
+		unset($attributes['required']);
 
 		$select = '<a data-dropdown="bottom-start" '.attrs($attributes).'>';
 			$select .= '<div class="form-dropdown-title">';
@@ -1786,7 +1799,7 @@ class FormUi {
 		$select .= '</a>';
 		$select .= '<div class="dropdown-list form-dropdown-list">';
 
-		if($mandatory === FALSE) {
+		if($required === FALSE) {
 
 			$selected = ($selection === NULL);
 
@@ -1992,18 +2005,18 @@ class FormUi {
 			$emptyColor = '#000000';
 		}
 
-		if(array_key_exists('mandatory', $attributes)) {
-			$mandatory = $attributes['mandatory'];
-			unset($attributes['mandatory']);
+		if(array_key_exists('required', $attributes)) {
+			$required = $attributes['required'];
+			unset($attributes['required']);
 		} else {
-			$mandatory = FALSE;
+			$required = FALSE;
 		}
 
 		$attributes['class'] = 'form-control form-color '.($attributes['class'] ?? '');
 
 		$h = '<div class="field-color">';
 			$h .= $this->input('color', $name.'Color', $value, ['oninput' => 'ColorField.update(this)'] + $attributes);
-			if($mandatory === FALSE) {
+			if($required === FALSE) {
 				$h .= '<label>'.$this->inputCheckbox($name.'Empty', TRUE, ['checked' => ($value === NULL), 'onclick' => 'ColorField.setEmpty(this, "'.$emptyColor.'")']).' '.($attributes['placeholder'] ?? s("Aucune")).'</label>';
 			}
 			$h .= $this->hidden($name, $value);

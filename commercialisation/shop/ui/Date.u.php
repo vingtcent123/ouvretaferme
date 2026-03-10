@@ -1443,13 +1443,13 @@ class DateUi {
 					'date-direct' => s("Choisir mes produits"),
 				];
 				$d->attributes = [
-					'mandatory' => TRUE,
 					'callbackRadioAttributes' => function() {
 						return [
 							'onchange' => 'DateManage.changeSource(this)',
 						];
 					}
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'description' ;

@@ -792,7 +792,7 @@ class FarmUi {
 				$h .= $form->hidden('id', $eFarm['id']);
 				$h .= $form->inputGroup(
 					$form->addon(s("Année")).
-					$form->rangeSelect('year', $eFarm['seasonLast'], $eFarm['seasonFirst'], -1, $year, ['mandatory' => TRUE])
+					$form->rangeSelect('year', $eFarm['seasonLast'], $eFarm['seasonFirst'], -1, $year, ['required' => TRUE])
 				);
 				$h .= $form->submit(s("Valider"));
 			$h .= '</div>';
@@ -1987,7 +1987,7 @@ class FarmUi {
 					$h .= $form->select('family', $search->get('cFamily'), $search->get('family'), ['onchange' => 'Farm.changeSearchFamily(this)']);
 					$h .= $form->inputGroup(
 						$form->addon(s("Cultivée")).
-						$form->select('seen', $seen, $search->get('seen', $lastSeason), ['mandatory' => TRUE]),
+						$form->select('seen', $seen, $search->get('seen', $lastSeason), ['required' => TRUE]),
 						['class' => 'bed-rotation-search-seen '.($search->get('family')->notEmpty() ? NULL : 'hide')]
 					);
 				$h .= '</fieldset>';
@@ -1996,7 +1996,7 @@ class FarmUi {
 					$h .= $form->select('bed', [
 						0 => s("Non"),
 						1 => s("Oui"),
-					], (int)$search->get('bed'), ['mandatory' => TRUE]);
+					], (int)$search->get('bed'), ['required' => TRUE]);
 				$h .= '</fieldset>';
 
 				$h .= '<div class="util-search-submit">';
@@ -3245,8 +3245,8 @@ class FarmUi {
 				$d->values = fn(Farm $e) => \user\Country::form();
 				$d->attributes = fn(\util\FormUi $form, Farm $e) => [
 					'group' => is_array(\user\Country::form()),
-					'mandatory' => TRUE
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'siret' :

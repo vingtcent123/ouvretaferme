@@ -170,7 +170,7 @@ Class ReconciliateUi {
 										$d->values = $cMethod;
 										$d->default = fn() => $eSuggestion['paymentMethod'];
 										if($eSuggestion['paymentMethod']->notEmpty()) {
-											$d->attributes['mandatory'] = TRUE;
+											$d->required = TRUE;
 										}
 									}).
 									$form->submit(s("Modifier"), ['class' => 'btn btn-outline-primary'])

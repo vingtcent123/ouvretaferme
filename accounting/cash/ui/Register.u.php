@@ -269,7 +269,7 @@ class RegisterUi {
 			case 'paymentMethod' :
 				$d->values = fn(\cash\Register $e) => $e['cPaymentMethod'] ?? $e->expects(['cPaymentMethod']);
 				$d->labelAfter = \util\FormUi::info(s("Un journal de caisse est toujours lié à un moyen de paiement, qui ne pourra pas être modifié par la suite."));
-				$d->attributes = ['mandatory' => TRUE];
+				$d->required = TRUE;
 				break;
 
 			case 'account':

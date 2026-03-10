@@ -33,7 +33,7 @@ class RepeatUi {
 					Repeat::W4 => s("Toutes les 4 semaines"),
 					Repeat::M1 => s("Chaque mois"),
 				];
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				break;
 
 		}

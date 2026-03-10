@@ -55,14 +55,14 @@ class AccountUi {
 					$h .= $form->select('vatFilter', [
 						0 => s("Peu importe"),
 						1 => s("Avec compte de TVA"),
-					], (int)$search->get('vatFilter'), ['mandatory' => TRUE]);
+					], (int)$search->get('vatFilter'), ['required' => TRUE]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
 					$h .= '<legend>'.s("Comptes personnalisés").'</legend>';
 					$h .= $form->select('customFilter', [
 						0 => s("Peu importe"),
 						1 => s("Uniquement ceux-là"),
-					], (int)$search->get('customFilter'), ['mandatory' => TRUE]);
+					], (int)$search->get('customFilter'), ['required' => TRUE]);
 				$h .= '</fieldset>';
 				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"));

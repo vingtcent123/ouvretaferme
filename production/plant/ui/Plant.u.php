@@ -538,9 +538,7 @@ class PlantUi {
 					Plant::ANNUAL => s("culture annuelle"),
 					Plant::PERENNIAL => s("culture pérenne"),
 				];
-				$d->attributes = [
-					'mandatory' => TRUE
-				];
+				$d->required = TRUE;
 				break;
 
 		}

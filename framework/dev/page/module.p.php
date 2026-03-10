@@ -21,14 +21,14 @@ new Page()
 				$selectedPackage === '' or
 				(ctype_alnum($selectedPackage) === FALSE and $selectedPackage !== '*')
 			) {
-				throw new LineAction("Error: Argument package=? is mandatory with flags B, T, D (type ".LIME_REQUEST_PATH.":help)");
+				throw new LineAction("Error: Argument package=? is required with flags B, T, D (type ".LIME_REQUEST_PATH.":help)");
 			}
 
 			if(
 				$selectedModule === '' or
 				(ctype_alnum($selectedModule) === FALSE and $selectedModule !== '*')
 			) {
-				throw new LineAction("Error: Argument module=? is mandatory with flags B, T, D (type ".LIME_REQUEST_PATH.":help)");
+				throw new LineAction("Error: Argument module=? is required with flags B, T, D (type ".LIME_REQUEST_PATH.":help)");
 			}
 
 		} else if($flags === 'E') {

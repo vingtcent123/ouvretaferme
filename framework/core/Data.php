@@ -2566,6 +2566,11 @@ class PropertyDescriber {
 	 */
 	public $asterisk = FALSE;
 
+	/**
+	 * Required field
+	 */
+	public bool $required = FALSE;
+
 	public function __construct(string $property, array $values = []) {
 
 		$this->property = $property;

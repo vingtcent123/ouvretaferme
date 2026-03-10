@@ -676,7 +676,7 @@ L'équipe");
 
 				};
 				$d->values = fn(User $e) => $e['cRole'] ?? $e->expects(['cRole']);
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				break;
 
 			case 'invoiceCountry' :
@@ -684,8 +684,8 @@ L'équipe");
 				$d->values = fn(User $e) => \user\Country::form();
 				$d->attributes = fn(\util\FormUi $form, User $e) => [
 					'group' => is_array(\user\Country::form()),
-					'mandatory' => TRUE
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'firstName' :

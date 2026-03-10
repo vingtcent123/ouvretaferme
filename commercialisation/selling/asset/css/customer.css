@@ -108,6 +108,14 @@ tr.customer-item-details {
 	vertical-align: middle;
 }
 
+.customer-form-pro:has([name="selfBilling"][value="1"]:not(:checked)) .customer-form-self-billing {
+	display: none !important;
+}
+
+.customer-form-pro:has([name="selfBillingVat"][value="1"]:not(:checked)) .customer-form-self-billing-vat {
+	display: none !important;
+}
+
 form.customer-form-unknown .customer-form-type {
 	display: none;
 }

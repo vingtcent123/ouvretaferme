@@ -359,7 +359,7 @@ class ActionUi {
 					return $h;
 
 				};
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				break;
 
 			case 'pace' :

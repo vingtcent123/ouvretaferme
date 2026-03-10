@@ -64,7 +64,7 @@ class ContactUi {
 						$h .= $form->select('newsletter', [
 							NULL => s("Pas de filtre"),
 							'yes' => s("Seulement ceux inscrits"),
-						], $search->get('newsletter'), ['mandatory' => TRUE]);
+						], $search->get('newsletter'), ['required' => TRUE]);
 					$h .= '</fieldset>';
 
 				}

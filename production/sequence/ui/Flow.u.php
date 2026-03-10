@@ -899,7 +899,7 @@ class FlowUi {
 			return $form->group(
 				$this->p('crop'),
 				$form->radios('crop', $values, $eFlow->empty() ? NULL : $eFlow['crop'], attributes: [
-					'mandatory' => TRUE,
+					'required' => TRUE,
 					'callbackRadioAttributes' => function() {
 						return [
 							'onclick' => 'Flow.createSelectCultivation(this)'
@@ -1055,7 +1055,6 @@ class FlowUi {
 				$d->field = 'radio';
 				$d->attributes = [
 					'columns' => 3,
-					'mandatory' => TRUE,
 					'callbackRadioAttributes' => function(\farm\Action $eAction) {
 						return [
 							'disabled' => ($eAction['disabled'] ?? FALSE) ? 'disabled' : NULL,
@@ -1065,6 +1064,7 @@ class FlowUi {
 						];
 					}
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'weekOnly' :
@@ -1078,7 +1078,7 @@ class FlowUi {
 			case 'yearStop' :
 				$d->field = 'select';
 				$d->values = self::getYearsSelect();
-				$d->attributes = ['mandatory' => TRUE];
+				$d->required = TRUE;
 				break;
 
 			case 'seasonOnly' :

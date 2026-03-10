@@ -1256,7 +1256,7 @@ class FinancialYearUi {
 					FinancialYear::ACCRUAL => $accrual,
 				];
 
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->group = fn(FinancialYear $e) => (($e['taxSystem'] ?? NULL) === FinancialYear::MICRO_BA) ? [] : ['class' => 'hide'];
 
 				break;
@@ -1278,7 +1278,7 @@ class FinancialYearUi {
 					FinancialYear::CASH_RECEIPTS => $cashReceipt,
 				];
 
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->group = fn(FinancialYear $e) => (($e['taxSystem'] ?? NULL) === FinancialYear::MICRO_BA) ? [] : ['class' => 'hide'];
 
 				break;
@@ -1294,7 +1294,7 @@ class FinancialYearUi {
 					FinancialYear::BA_REEL_SIMPLIFIE => s("Réel simplifié agricole"),
 					FinancialYear::BA_REEL_NORMAL => s("Réel normal agricole"),
 				];
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->attributes['onchange'] = 'FinancialYear.changeTaxSystem(this)';
 				break;
 
@@ -1305,7 +1305,7 @@ class FinancialYearUi {
 				break;
 
 			case 'gaecFormat':
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->values = [
 					FinancialYear::PARTIAL => s("GAEC partiel"),
 					FinancialYear::TOTAL => s("GAEC total"),
@@ -1316,7 +1316,7 @@ class FinancialYearUi {
 
 			case 'associates':
 				$d->field = 'select';
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->values = [];
 				for($i = 1; $i < 10; $i++) {
 					$d->values[$i] = $i;

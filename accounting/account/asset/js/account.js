@@ -5,9 +5,9 @@ class Account {
 		const name = qs('[name="class"]').value;
 
 		if(name.startsWith(classPrefix)) {
-			qs('[data-wrapper="thirdParty"]').classList.add('mandatory');
+			qs('[data-wrapper="thirdParty"]').classList.add('required');
 		} else {
-			qs('[data-wrapper="thirdParty"]').classList.remove('mandatory');
+			qs('[data-wrapper="thirdParty"]').classList.remove('required');
 		}
 
 	}

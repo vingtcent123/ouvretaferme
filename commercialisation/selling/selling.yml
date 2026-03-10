@@ -55,6 +55,10 @@ Customer:
   deliveryCity: ?text8
   deliveryCountry: ?user\Country
   defaultPaymentMethod: ?payment\Method
+  selfBilling: bool = FALSE
+  selfBillingDocument: int32(1, null) = 0
+  selfBillingVat: ?bool
+  selfBillingVatChargeability: ?enum(CASH, DEBIT)
   color: ?color
   createdAt: datetime = SPECIAL(now)
   status: enum(ACTIVE, INACTIVE) = ACTIVE

@@ -1709,7 +1709,7 @@ class ProductUi {
 			case 'quality' :
 				$d->field = 'select';
 				$d->values = \farm\FarmUi::getQualities();
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				break;
 
 			case 'compositionVisibility' :
@@ -1718,9 +1718,7 @@ class ProductUi {
 					Product::PRIVATE => s("Cachée").'  <span class="color-muted"><small>'.s("Les clients ne voient pas la composition du produit").'</small></span>'
 				];
 				$d->default = Product::PRIVATE;
-				$d->attributes = [
-					'mandatory' => TRUE
-				];
+				$d->required = TRUE;
 				break;
 
 			case 'origin' :
@@ -1734,9 +1732,7 @@ class ProductUi {
 				$d->values = function(Product $e) {
 					return SaleUi::getVat($e['farm']);
 				};
-				$d->attributes = [
-					'mandatory' => TRUE
-				];
+				$d->required = TRUE;
 				break;
 
 			case 'proAccount':

@@ -848,7 +848,7 @@ class CashUi {
 				}
 
 				$field = $form->radios('account', $eCash['cAccount'], $eCashDefault, attributes: [
-					'mandatory' => TRUE,
+					'required' => TRUE,
 					'callbackRadioContent' => fn($eAccount) => $eAccount['name']
 				]);
 

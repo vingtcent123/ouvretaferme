@@ -929,7 +929,7 @@ class CustomerUi {
 			$h .= '<div class="customer-form-category customer-form-collective">';
 				$h .= '<h3>'.s("Point de vente pour les particuliers").'</h3>';
 			$h .= '</div>';
-			$h .= '<div class="util-block bg-background-light">';
+			$h .= '<div class="util-block bg-background-light mb-2">';
 
 				$h .= '<div class="customer-form-category customer-form-pro">';
 					$h .= $form->dynamicGroup($eCustomer, match($action) {
@@ -991,27 +991,48 @@ class CustomerUi {
 			$h .= '</div>';
 
 			if($action === 'update') {
+
+				$eCustomer['selfBillingVat'] ??= TRUE;
+				$eCustomer['selfBillingVatChargeability'] ??= \farm\FarmSetting::VAT_CHARGEABILITY_DEFAULT;
+
+				$h .= '<div class="customer-form-category customer-form-pro">';
+					$h .= $form->dynamicGroup($eCustomer, 'selfBilling');
+					$h .= '<div class="customer-form-self-billing">';
+						$h .= '<h3>'.s("Auto-facturation").'</h3>';
+						$h .= '<div class="util-block bg-background-light mb-2">';
+							$h .= $form->dynamicGroup($eCustomer, 'selfBillingVat');
+							$h .= '<div class="customer-form-self-billing-vat">';
+								$h .= $form->dynamicGroup($eCustomer, 'selfBillingVatChargeability');
+							$h .= '</div>';
+						$h .= '</div>';
+					$h .= '</div>';
+				$h .= '</div>';
+
 				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
 					$h .= '<h3>'.s("Paramétrage du client").'</h3>';
 				$h .= '</div>';
-				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
-					$h .= $form->dynamicGroup($eCustomer, 'discount');
+				$h .= '<div class="util-block bg-background-light mb-2">';
+					$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
+						$h .= $form->dynamicGroup($eCustomer, 'discount');
+					$h .= '</div>';
+					$h .= '<div class="customer-form-category customer-form-pro">';
+						$h .= $form->group(
+							s("Personnaliser les adresses e-mail pour l'envoi de certains documents"),
+							$form->dynamicField($eCustomer, 'orderFormEmail').
+							$form->dynamicField($eCustomer, 'deliveryNoteEmail').
+							$form->dynamicField($eCustomer, 'invoiceEmail')
+						);
+					$h .= '</div>';
+					$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
+						$h .= $form->dynamicGroup($eCustomer, 'defaultPaymentMethod');
+					$h .= '</div>';
+					$h .= '<div class="customer-form-category customer-form-collective customer-form-pro">';
+						$h .= $form->dynamicGroup($eCustomer, 'color');
+					$h .= '</div>';
 				$h .= '</div>';
-				$h .= '<div class="customer-form-category customer-form-pro">';
-					$h .= $form->group(
-						s("Personnaliser les adresses e-mail pour l'envoi de certains documents"),
-						$form->dynamicField($eCustomer, 'orderFormEmail').
-						$form->dynamicField($eCustomer, 'deliveryNoteEmail').
-						$form->dynamicField($eCustomer, 'invoiceEmail')
-					);
-				$h .= '</div>';
-				$h .= '<div class="customer-form-category customer-form-private customer-form-pro">';
-					$h .= $form->dynamicGroup($eCustomer, 'defaultPaymentMethod');
-				$h .= '</div>';
-				$h .= '<div class="customer-form-category customer-form-collective customer-form-pro">';
-					$h .= $form->dynamicGroup($eCustomer, 'color');
-				$h .= '</div>';
+
 			}
+
 		$h .= '</div>';
 
 		return $h;
@@ -1158,6 +1179,9 @@ class CustomerUi {
 			'vatNumber' => s("Numéro de TVA intracommunautaire"),
 			'electronicScheme' => s("Identifiant"),
 			'eAddress' => s("Adresse de facturation électronique"),
+			'selfBilling' => s("Activer l'auto-facturation pour ce client"),
+			'selfBillingVat' => s("Ce client est-il redevable de la TVA ?"),
+			'selfBillingVatChargeability' => s("Quelle est l'exigibilité de la TVA chez ce client ?"),
 		]);
 
 		switch($property) {
@@ -1183,9 +1207,9 @@ class CustomerUi {
 				};
 				$d->after = fn(\util\FormUi $form, Customer $e) => $e->offsetExists('id') ? \util\FormUi::info(s("La modification de catégorie n'est pas rétroactive sur les ventes que vous auriez déjà créées pour ce client.")) : '';
 				$d->attributes = [
-					'mandatory' => TRUE,
 					'callbackRadioAttributes' => fn() => ['oninput' => 'Customer.changeCategory(this)']
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'siret' :
@@ -1250,6 +1274,19 @@ class CustomerUi {
 			case 'discount' :
 				$d->append = s("%");
 				$d->after = \util\FormUi::info(s("Si vous modifiez la remise commerciale, elle s'appliquera automatiquement à toutes les futures ventes créées pour ce client."));
+				break;
+
+			case 'selfBilling' :
+			case 'selfBillingVat' :
+				$d->field = 'yesNo';
+				break;
+
+			case 'selfBillingVatChargeability' :
+				$d->values = [
+					Customer::CASH => s("TVA sur les encaissements"),
+					Customer::DEBIT => s("TVA sur les débits")
+				];
+				$d->required = TRUE;
 				break;
 
 			case 'defaultPaymentMethod' :

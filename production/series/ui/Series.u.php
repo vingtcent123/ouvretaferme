@@ -150,7 +150,7 @@ class SeriesUi {
 							attributes: [
 								'id' => 'series-selector-filter',
 								'onchange' => 'SeriesSelector.filter()',
-								'mandatory' => TRUE,
+								'required' => TRUE,
 								'style' => 'letter-spacing: -0.3px'
 							]);
 					$h .= '</h3>';
@@ -991,7 +991,7 @@ class SeriesUi {
 
 				$h .= $form->group(
 					s("Année de démarrage"),
-					$form->select('startYear', [0 => $season, -1 => $season - 1], $startYear, ['mandatory' => TRUE])
+					$form->select('startYear', [0 => $season, -1 => $season - 1], $startYear, ['required' => TRUE])
 				);
 
 				$weeks = [];
@@ -1001,7 +1001,7 @@ class SeriesUi {
 
 				$h .= $form->group(
 					s("Semaine de démarrage"),
-					$form->select('startWeek', $weeks, $startWeek, ['mandatory' => TRUE])
+					$form->select('startWeek', $weeks, $startWeek, ['required' => TRUE])
 				);
 
 			$h .= '</div>';
@@ -1665,7 +1665,7 @@ class SeriesUi {
 						'farm' => ['seasonFirst', 'seasonLast']
 					]);
 
-					return $form->rangeSelect('season', $e['farm']['seasonLast'], $e['farm']['seasonFirst'], -1, $e['season'], ['mandatory' => TRUE] + $d->attributes);
+					return $form->rangeSelect('season', $e['farm']['seasonLast'], $e['farm']['seasonFirst'], -1, $e['season'], ['required' => TRUE] + $d->attributes);
 
 				};
 				break;
@@ -1677,9 +1677,9 @@ class SeriesUi {
 				];
 				$d->attributes = [
 					'columns' => 2,
-					'mandatory' => TRUE,
 					'onchange' => 'Series.updateArea(this)'
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'mode' :
@@ -1690,8 +1690,8 @@ class SeriesUi {
 				];
 				$d->attributes = [
 					'columns' => 3,
-					'mandatory' => TRUE
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'cycle' :
@@ -1702,8 +1702,8 @@ class SeriesUi {
 				$d->attributes = [
 					'data-action' => 'series-cycle-change',
 					'columns' => 2,
-					'mandatory' => TRUE
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'perennialLifetime' :

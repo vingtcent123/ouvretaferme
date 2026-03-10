@@ -222,7 +222,7 @@ Class AssetUi {
 			$h .= $form->dynamicGroups($eAsset, ['economicMode*', 'economicDuration'], [
 				'economicDuration' => function($d) use($form, $eAsset) {
 					$form = new \util\FormUi();
-					$d->append = $form->select('economicDurationScale', ['month' => s("mois"), 'year' => s("années")], $eAsset->exists() ? 'month' : 'year', ['mandatory' => TRUE]);
+					$d->append = $form->select('economicDurationScale', ['month' => s("mois"), 'year' => s("années")], $eAsset->exists() ? 'month' : 'year', ['required' => TRUE]);
 					$d->group += ['class' => 'company_form_group-with-tip'];
 
 					$append = '<a data-economic-duration-suggested class="btn btn-outline-warning hide" data-dropdown="bottom" data-dropdown-hover="true">';
@@ -260,7 +260,7 @@ Class AssetUi {
 				$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration'], [
 					'fiscalDuration' => function($d) use($form, $eAsset) {
 						$form = new \util\FormUi();
-						$d->append = $form->select('fiscalDurationScale', ['month' => s("mois"), 'year' => s("années")], $eAsset->exists() ? 'month' : 'year', ['mandatory' => TRUE]);
+						$d->append = $form->select('fiscalDurationScale', ['month' => s("mois"), 'year' => s("années")], $eAsset->exists() ? 'month' : 'year', ['required' => TRUE]);
 					}
 				]);
 			$h .= '</div>';

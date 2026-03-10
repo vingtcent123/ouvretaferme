@@ -1000,7 +1000,7 @@ class ReportUi {
 				$d->values = function(Report $e) {
 					return array_combine($e['farm']->getSeasons(), $e['farm']->getSeasons());
 				};
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->attributes['onchange'] = 'Report.refreshCreateSeries()';
 				break;
 
@@ -1054,7 +1054,7 @@ class ReportUi {
 					},
 					Report::RELATIVE => s("%")
 				];
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 		}
 
 		return $d;

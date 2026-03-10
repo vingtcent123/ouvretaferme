@@ -193,7 +193,7 @@ Attention : ce texte sera affiché à l'utilisateur.")])
 
 		$h = $form->group(
 			s("Durée"),
-			$form->select('duration', $list, NULL, ['mandatory' => TRUE])
+			$form->select('duration', $list, NULL, ['required' => TRUE])
 		);
 
 		return $h;

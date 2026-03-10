@@ -274,7 +274,7 @@ class SliceUi {
 					$d->attributes = [
 						'data-action' => 'slice-variety-change'
 					];
-					$d->attributes['mandatory'] = TRUE;
+					$d->required = TRUE;
 				});
 
 				$h .= '<div class="slice-item-create" style="display: none">';

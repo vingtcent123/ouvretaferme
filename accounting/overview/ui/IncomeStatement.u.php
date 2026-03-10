@@ -25,7 +25,7 @@ class IncomeStatementUi {
 				$h .= $form->select('type', [
 					IncomeStatementLib::VIEW_BASIC => s("Vue synthétique"),
 					IncomeStatementLib::VIEW_DETAILED => s("Vue détaillée"),
-				], $search->get('type'), ['mandatory' => TRUE]);
+				], $search->get('type'), ['required' => TRUE]);
 			$h .= '</fieldset>';
 
 			if($cFinancialYear->count() > 1) {

@@ -730,9 +730,7 @@ class ConfigurationUi {
 				$d->values = function(Configuration $e) {
 					return \selling\SaleUi::getVat($e['farm']);
 				};
-				$d->attributes = [
-					'mandatory' => TRUE
-				];
+				$d->required = TRUE;
 				break;
 
 			case 'defaultVatShipping' :
@@ -747,7 +745,7 @@ class ConfigurationUi {
 
 			case 'saleClosing' :
 				$d->field = 'select';
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->values = [
 					7 => s("Clôture automatique 7 jours après la vente"),
 					30 => s("Clôture automatique 30 jours après la vente"),
@@ -775,7 +773,7 @@ class ConfigurationUi {
 
 			case 'pdfGrid' :
 				$d->field = 'select';
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->values = [
 					Configuration::GRID_2X2 => s("Grille 2 x 2"),
 					Configuration::GRID_3X2 => s("Grille 3 x 2"),
@@ -807,7 +805,7 @@ class ConfigurationUi {
 				];
 
 				$d->field = 'select';
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 
 				$h = s("L'édition des factures reste toujours disponible pour tous les clients.");
 				$d->after = \util\FormUi::info($h);
@@ -863,7 +861,7 @@ class ConfigurationUi {
 					Configuration::QUARTERLY => s("Trimestrielle"),
 					Configuration::ANNUALLY => s("Annuelle"),
 				];
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->group = fn(Configuration $e) => ($e['hasVatAccounting'] ?? NULL) ? [] : ['class' => 'hide'];
 				break;
 
@@ -884,7 +882,7 @@ class ConfigurationUi {
 					Configuration::CASH => $cash,
 					Configuration::DEBIT => $debit,
 				];
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->group = fn(Configuration $e) => ($e['hasVatAccounting'] ?? NULL) ? [] : ['class' => 'hide'];
 				break;
 

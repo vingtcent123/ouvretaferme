@@ -1869,7 +1869,7 @@ class ProductUi {
 		switch($property) {
 
 			case 'promotion' :
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->field = 'select';
 				$d->prepend = \Asset::icon('star-fill');
 				$d->labelAfter = \util\FormUi::info(s("Les produits mis en avant sont affichés en tête de leur catégorie."));

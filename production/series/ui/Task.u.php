@@ -1672,7 +1672,7 @@ class TaskUi {
 				'data-action' => 'task-fertilizer-element',
 				'class' => 'task-fertilizer-field',
 				'onchange' => '',
-				'mandatory' => TRUE
+				'required' => TRUE
 			]);
 
 		} else {
@@ -2279,7 +2279,7 @@ class TaskUi {
 				}
 
 				$h .= $form->radios('cultivation['.$eSeries['id'].']', $values, $e['cultivation'], attributes: [
-					'mandatory' => TRUE,
+					'required' => TRUE,
 					'callbackRadioAttributes' => function() {
 						return [
 							'onclick' => 'Task.createSelectCultivation(this)'
@@ -2504,7 +2504,7 @@ class TaskUi {
 					}
 
 					$action = $form->radios('cultivation', $values, $eTask['cultivation'], attributes: [
-						'mandatory' => TRUE,
+						'required' => TRUE,
 						'callbackRadioAttributes' => function() {
 							return [
 								'onclick' => 'Task.updateSelectCultivation(this)'
@@ -2962,7 +2962,7 @@ class TaskUi {
 						});
 						asort($d->values);
 
-						$d->attributes['mandatory'] = TRUE;
+						$d->required = TRUE;
 
 
 					}),
@@ -3255,7 +3255,7 @@ class TaskUi {
 		}
 
 		return $form->radios('distribution', $values, $default, [
-			'mandatory' => TRUE,
+			'required' => TRUE,
 			'callbackRadioAttributes' => function($option, $key) use($byPlant, $byArea, $byHarvest) {
 				if(
 					($key === 'area' and $byArea !== NULL) or
@@ -3299,7 +3299,6 @@ class TaskUi {
 				$d->values = fn(Task $e) => $e['cAction'] ?? $e->expects(['cAction']);
 				$d->attributes = [
 					'columns' => 3,
-					'mandatory' => TRUE,
 					'callbackRadioAttributes' => function(\farm\Action $eAction) {
 						return [
 							'disabled' => ($eAction['disabled'] ?? FALSE) ? 'disabled' : NULL,
@@ -3309,6 +3308,7 @@ class TaskUi {
 						];
 					}
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'timeExpected' :
@@ -3443,9 +3443,9 @@ class TaskUi {
 			case 'harvestUnit' :
 				$d->field = 'select';
 				$d->attributes = [
-					'mandatory' => TRUE,
 					'onchange' => fn(\util\FormUi $form, Task $e) => 'Task.changeHarvestUnit('.$e['id'].', this)'
 				];
+				$d->required = TRUE;
 				$d->values = \selling\UnitUi::getBasicList();
 				$d->default = function(Task $e) {
 					if($e['cultivation']->notEmpty()) {

@@ -18,7 +18,7 @@ class CustomerLib extends CustomerCrud {
 				$e['farm']
 			),
 			match($e->getCategory()) {
-				Customer::PRO => ['discount', 'color', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'groups'],
+				Customer::PRO => ['discount', 'color', 'orderFormEmail', 'deliveryNoteEmail', 'invoiceEmail', 'groups', 'selfBilling', 'selfBillingVat', 'selfBillingVatChargeability'],
 				Customer::PRIVATE => ['discount', 'groups'],
 				Customer::COLLECTIVE => ['color'],
 			}

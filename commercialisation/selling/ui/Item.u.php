@@ -1355,7 +1355,7 @@ class ItemUi {
 			if($eItem['sale']['hasVat']) {
 				$h .= $form->dynamicGroup($eItem, 'vatRate');
 				$h .= $form->dynamicGroup($eItem, 'vatCode', function($d) use ($eItem) {
-					$d->attributes['mandatory'] = TRUE;
+					$d->required = TRUE;
 					if($eItem['farm']->getConf('hasVat')) {
 						unset($d->values[Item::EXEMPT]);
 					}
@@ -1523,7 +1523,7 @@ class ItemUi {
 			case 'quality' :
 				$d->field = 'select';
 				$d->values = \farm\FarmUi::getQualities();
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				break;
 
 			case 'packaging' :

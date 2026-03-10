@@ -557,7 +557,7 @@ class ShopUi {
 							NULL => s("Direct avec le producteur"),
 							\payment\MethodLib::ONLINE_CARD => s("Carte bancaire avec Stripe"),
 							\payment\MethodLib::TRANSFER => s("Virement bancaire")
-						], $eSaleExample['paymentMethod']->notEmpty() ? $eSaleExample['paymentMethod']['fqn'] : NULL, attributes: ['mandatory' => TRUE]).
+						], $eSaleExample['paymentMethod']->notEmpty() ? $eSaleExample['paymentMethod']['fqn'] : NULL, attributes: ['required' => TRUE]).
 						$form->submit(s("Afficher"))
 					);
 				$h .= $form->close();
@@ -1550,7 +1550,7 @@ class ShopUi {
 
 			case 'customDesign':
 				$d->field = 'select';
-				$d->attributes = ['mandatory' => TRUE];
+				$d->required = TRUE;
 				$d->values = [
 					Shop::GRID => s("Grille adaptée à la largeur de l'écran"),
 					Shop::LINE => s("Une ligne par produit"),
@@ -1562,9 +1562,7 @@ class ShopUi {
 				break;
 
 			case 'embedUrl':
-				$d->attributes = [
-					'mandatory' => TRUE
-				];
+				$d->required = TRUE;
 				$d->placeholder = 'https://www.lesitedemaferme.fr/';
 				break;
 
@@ -1574,9 +1572,7 @@ class ShopUi {
 					TRUE => s("Uniquement depuis votre site internet"),
 					FALSE => s("Depuis votre site internet et depuis {siteName}")
 				];
-				$d->attributes = [
-					'mandatory' => TRUE
-				];
+				$d->required = TRUE;
 				break;
 
 			case 'sharedCategory' :
@@ -1590,9 +1586,7 @@ class ShopUi {
 					Shop::PRODUCT => s("Ne pas grouper les produits")
 				];
 				$d->field = 'select';
-				$d->attributes = [
-					'mandatory' => TRUE
-				];
+				$d->required = TRUE;
 				break;
 
 			case 'sharedExport' :
@@ -1601,9 +1595,7 @@ class ShopUi {
 					Shop::CUSTOMER => s("Grouper les achats d'un client sur une même étiquette")
 				];
 				$d->field = 'select';
-				$d->attributes = [
-					'mandatory' => TRUE
-				];
+				$d->required = TRUE;
 				break;
 
 			case 'comment' :

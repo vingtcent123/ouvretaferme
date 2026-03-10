@@ -189,7 +189,7 @@ class MembershipUi {
 				$h .= $this->getAmountBlocks($form, [$fee, $fee + 50, $fee + 100], $fee);
 
 				$h .= $form->checkbox('terms', 'yes', [
-					'mandatory' => TRUE,
+					'required' => TRUE,
 					'callbackLabel' => fn($input) => $input.'  '.$form->addon(s("J'accepte les <linkStatus>statuts</linkStatus> et le <linkRules>règlement intérieur</linkRules> de l'association", ['linkStatus' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/statuts.pdf').'">', 'linkRules' => '<a data-ajax-navigation="never" target="_blank" href="'.\Asset::getPath('association', 'document/reglement_interieur.pdf').'">']))
 				]);
 

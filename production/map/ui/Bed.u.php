@@ -985,7 +985,7 @@ class BedUi {
 				break;
 
 			case 'plot' :
-				$d->attributes = ['mandatory' => TRUE];
+				$d->required = TRUE;
 				break;
 
 			case 'length' :

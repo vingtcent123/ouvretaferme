@@ -596,7 +596,7 @@ class CropUi {
 		$h = '<div class="flow-write-week">';
 			$h .= $form->week($prefix.'[week]', attributes: ['withYear' => FALSE]);
 			if($eCrop['sequence']['cycle'] === Sequence::ANNUAL) {
-				$h .= $form->select($prefix.'[year]', FlowUi::getYearsSelect(), 0, attributes: ['mandatory' => TRUE]);
+				$h .= $form->select($prefix.'[year]', FlowUi::getYearsSelect(), 0, attributes: ['required' => TRUE]);
 			}
 		$h .= '</div>';
 
@@ -715,9 +715,9 @@ class CropUi {
 				];
 				$d->attributes = [
 					'columns' => 2,
-					'mandatory' => TRUE,
 					'onchange' => 'Crop.changeSeedling(this)'
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'seedlingSeeds' :
@@ -748,7 +748,7 @@ class CropUi {
 
 			case 'mainUnit' :
 				$d->field = 'select';
-				$d->attributes = ['mandatory' => TRUE];
+				$d->required = TRUE;
 				$d->values = \selling\UnitUi::getBasicList();
 				break;
 

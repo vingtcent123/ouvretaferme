@@ -60,7 +60,7 @@ Class BalanceUi {
 				$h .= $form->select('summary', [
 					0 => s("Cacher"),
 					1 => s("Afficher"),
-				], (int)$search->get('summary'), ['mandatory' => TRUE]);
+				], (int)$search->get('summary'), ['required' => TRUE]);
 			$h .= '</fieldset>';
 			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"));

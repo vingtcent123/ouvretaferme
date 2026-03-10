@@ -143,7 +143,7 @@ class PlaceUi {
 						NULL => s("Plein champ et tunnel"),
 						\map\Plot::OPEN_FIELD => s("Plein champ"),
 						\map\Plot::GREENHOUSE => s("Tunnel"),
-					], $search->get('mode'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
+					], $search->get('mode'), ['required' => TRUE, 'onchange' => 'Place.search()']);
 				$h .= '</fieldset>';
 
 				if($search->get('canWidth')) {
@@ -153,7 +153,7 @@ class PlaceUi {
 						$h .= $form->select('width', [
 							0 => s("Toutes"),
 							1 => s("{value} cm", $eSeries['bedWidth']),
-						], (int)$search->get('width'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
+						], (int)$search->get('width'), ['required' => TRUE, 'onchange' => 'Place.search()']);
 					$h .= '</fieldset>';
 
 
@@ -171,7 +171,7 @@ class PlaceUi {
 							100 => s("Oui"),
 							1 => s("À ± 1 semaine"),
 							2 => s("À ± 2 semaines"),
-						], $search->get('available'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
+						], $search->get('available'), ['required' => TRUE, 'onchange' => 'Place.search()']);
 					} else {
 						$h .= $form->addon(\Asset::icon('exclamation-circle-fill'), ['title' => s("Indiquez les dates de semis direct, de plantation ou les périodes de récolte attendues sur cette séries pour utiliser ce filtre.")]);
 					}
@@ -185,7 +185,7 @@ class PlaceUi {
 						3 => s("3 ans"),
 						4 => s("4 ans"),
 						5 => s("5 ans")
-					], $search->get('rotation'), ['mandatory' => TRUE, 'onchange' => 'Place.search()']);
+					], $search->get('rotation'), ['required' => TRUE, 'onchange' => 'Place.search()']);
 				$h .= '</fieldset>';
 
 			$h .= $form->close();

@@ -225,7 +225,7 @@ class OperationUi {
 					'paymentMethod',
 					$cPaymentMethod,
 						$defaultValues['paymentMethod'] ?? '',
-					['mandatory' => TRUE] + ($hasPaymentMethod ? ['disabled' => 'disabled'] : []),
+					['required' => TRUE] + ($hasPaymentMethod ? ['disabled' => 'disabled'] : []),
 				);
 			}
 
@@ -966,7 +966,7 @@ class OperationUi {
 						'data-index' => $index,
 						'columns' => 2,
 						'data-field' => 'type',
-						'mandatory' => TRUE,
+						'required' => TRUE,
 					]);
 			$h .= '</div>';
 

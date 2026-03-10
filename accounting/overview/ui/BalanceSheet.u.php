@@ -26,7 +26,7 @@ class BalanceSheetUi {
 					$h .= $form->select('type', [
 						BalanceSheetLib::VIEW_BASIC => s("Vue synthétique"),
 						BalanceSheetLib::VIEW_DETAILED => s("Vue détaillée"),
-					], $search->get('type'), ['mandatory' => TRUE]);
+					], $search->get('type'), ['required' => TRUE]);
 				$h .= '</fieldset>';
 				if($cFinancialYear->count() > 1) {
 					$h .= '<fieldset>';
@@ -44,7 +44,7 @@ class BalanceSheetUi {
 					$h .= $form->select('netOnly', [
 						0 => s("Non"),
 						1 => s("Oui"),
-					], (int)$search->get('netOnly'), ['mandatory' => TRUE]);
+					], (int)$search->get('netOnly'), ['required' => TRUE]);
 				$h .= '</fieldset>';
 
 				$h .= '<div class="util-search-submit">';

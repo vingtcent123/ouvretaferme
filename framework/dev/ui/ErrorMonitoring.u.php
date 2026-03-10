@@ -39,7 +39,7 @@ class ErrorMonitoringUi {
 				$h .= $form->select('unexpected', [
 					0 => s("Non"),
 					1 => s("Oui")
-				], (int)$search->get('unexpected'), ['mandatory' => TRUE]);
+				], (int)$search->get('unexpected'), ['required' => TRUE]);
 			$h .= '</fieldset>';
 			$h .= '<div class="util-search-submit">';
 				$h .= $form->submit(s("Chercher"));

@@ -2466,7 +2466,7 @@ class SaleUi {
 
 		$h = $form->group(
 			s("État"),
-			$form->select('preparationStatus', $values, attributes: ['class' => 'sale-field-preparation-status', 'mandatory' => TRUE])
+			$form->select('preparationStatus', $values, attributes: ['class' => 'sale-field-preparation-status', 'required' => TRUE])
 		);
 
 		return $h;
@@ -2869,7 +2869,7 @@ class SaleUi {
 
 									$list .= $form->radios('shopDate', $cDate, $e['shopDate'] ?? new \shop\Date(), attributes: [
 										'callbackRadioContent' => fn($eDate) => s("Livraison du {value}", \util\DateUi::numeric($eDate['deliveryDate'])),
-										'mandatory' => TRUE,
+										'required' => TRUE,
 									]);
 									
 									$list .= '<br/>';
@@ -2939,8 +2939,8 @@ class SaleUi {
 				$d->values = fn(Sale $e) => \user\Country::form();
 				$d->attributes = fn(\util\FormUi $form, Sale $e) => [
 					'group' => is_array(\user\Country::form()),
-					'mandatory' => TRUE
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'deliveredAt' :

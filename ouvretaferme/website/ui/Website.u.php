@@ -187,7 +187,7 @@ class WebsiteUi {
 
 			case 'customDesign':
 				$d->values = fn(Website $e) => $e['cDesign'] ?? $e->expects(['cDesign']);
-				$d->attributes = ['mandatory' => TRUE];
+				$d->required = TRUE;
 				break;
 
 			case 'customWidth':
@@ -197,7 +197,7 @@ class WebsiteUi {
 
 			case 'customText':
 				$d->field = 'select';
-				$d->attributes = ['mandatory' => TRUE];
+				$d->required = TRUE;
 				$d->values = [
 					Website::BLACK => s("Noir"),
 					Website::WHITE => s("Blanc"),
@@ -206,7 +206,7 @@ class WebsiteUi {
 
 			case 'customFont':
 				$d->field = 'select';
-				$d->attributes = ['mandatory' => TRUE];
+				$d->required = TRUE;
 				$d->values = WebsiteSetting::CUSTOM_FONTS;
 				break;
 
@@ -221,7 +221,7 @@ class WebsiteUi {
 
 			case 'customTitleFont':
 				$d->field = 'select';
-				$d->attributes = ['mandatory' => TRUE];
+				$d->required = TRUE;
 				$d->values = WebsiteSetting::CUSTOM_TITLE_FONTS;
 				break;
 		}

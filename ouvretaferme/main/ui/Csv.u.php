@@ -49,7 +49,7 @@ class CsvUi {
 
 	public static function getDataList($data): string {
 
-		$mandatory = FALSE;
+		$required = FALSE;
 
 		$h = '<div class="util-overflow-lg">';
 			$h .= '<table class="tr-bordered mb-1">';
@@ -72,7 +72,7 @@ class CsvUi {
 
 							[$title, $column, $description, $example] = $row;
 
-							$mandatory = ($mandatory or str_contains($title, 'form-asterisk'));
+							$required = ($required or str_contains($title, 'form-asterisk'));
 
 							$h .= '<tr>';
 								$h .= '<td>'.$title.'</td>';
@@ -87,7 +87,7 @@ class CsvUi {
 			$h .= '</table>';
 		$h .= '</div>';
 
-		if($mandatory) {
+		if($required) {
 			$h .= \util\FormUi::asteriskInfo(NULL);
 		}
 

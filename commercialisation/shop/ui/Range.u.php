@@ -113,7 +113,7 @@ class RangeUi {
 
 			case 'status' :
 				$d->field = 'radio';
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				$d->values = [
 					Range::AUTO => s("<u>Automatique</u> → {value}", self::getStatusLabel(Range::AUTO)),
 					Range::MANUAL => s("<u>Manuelle</u> → {value}", self::getStatusLabel(Range::MANUAL)),

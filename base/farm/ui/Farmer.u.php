@@ -535,7 +535,7 @@ class FarmerUi {
 					Farmer::SEASONAL => s("Saisonnier"),
 					Farmer::OBSERVER => s("Observateur"),
 				];
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 				break;
 
 		}

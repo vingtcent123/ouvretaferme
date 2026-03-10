@@ -2884,7 +2884,7 @@ class CultivationUi {
 
 			case 'mainUnit' :
 				$d->field = 'select';
-				$d->attributes = ['mandatory' => TRUE];
+				$d->required = TRUE;
 				$d->values = \selling\UnitUi::getBasicList();
 				break;
 

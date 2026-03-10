@@ -1586,6 +1586,10 @@ a.util-block-close {
 	opacity: 0;
 }
 
+.field-toggle-wrapper:has([data-type="yesNo"] input[value="1"]:not(:checked)) .field-toggle {
+	display: none !important;
+}
+
 ul.util-summarize {
 	display: flex;
 	gap: 1rem;

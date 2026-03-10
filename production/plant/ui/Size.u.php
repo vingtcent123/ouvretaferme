@@ -167,9 +167,7 @@ class SizeUi {
 					TRUE => \Asset::icon('check-lg').' '.s("inclus"),
 					FALSE => \Asset::icon('x-lg').' '.s("exclu"),
 				];
-				$d->attributes = [
-					'mandatory' => TRUE
-				];
+				$d->required = TRUE;
 				break;
 
 		}

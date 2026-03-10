@@ -140,7 +140,7 @@ class JournalUi {
 						NULL => s("Toutes les écritures"),
 						0 => s("Immobilisation avec fiche"),
 						1 => s("Immobilisation sans fiche"),
-					],  $search->get('needsAsset'), ['mandatory' => TRUE]);
+					],  $search->get('needsAsset'), ['required' => TRUE]);
 				$h .= '</fieldset>';
 				$h .= '<fieldset>';
 				$h .= '<legend>'.s("Montant").'</legend>';

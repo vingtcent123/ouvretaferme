@@ -447,6 +447,42 @@ class Customer extends CustomerElement {
 				}
 
 			})
+			->setCallback('selfBilling.empty', function(?bool &$billing): bool {
+
+				$this->expects(['user']);
+
+				if($this->isPro() === FALSE) {
+					$billing = NULL;
+					return TRUE;
+				}
+
+				return ($billing !== NULL);
+
+			})
+			->setCallback('selfBillingVat.empty', function(?bool &$vat): bool {
+
+				$this->expects(['user']);
+
+				if($this['selfBilling'] !== TRUE) {
+					$vat = NULL;
+					return TRUE;
+				}
+
+				return ($vat !== NULL);
+
+			})
+			->setCallback('selfBillingVatChargeability.empty', function(?string &$vatChargeability): bool {
+
+				$this->expects(['user']);
+
+				if($this['selfBillingVat'] !== TRUE) {
+					$vatChargeability = NULL;
+					return TRUE;
+				}
+
+				return ($vatChargeability !== NULL);
+
+			})
 			->setCallback('electronicScheme.check', function(?string $electronicScheme) use ($p): bool {
 
 				if($p->isBuilt('type') === FALSE or $this['type'] === Customer::PRIVATE or \pdp\PdpLib::isActive($this['farm']) === FALSE) {

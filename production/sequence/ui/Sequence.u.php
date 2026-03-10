@@ -883,8 +883,8 @@ class SequenceUi {
 				$d->attributes = [
 					'data-action' => 'sequence-cycle-change',
 					'columns' => 2,
-					'mandatory' => TRUE
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'perennialLifetime' :
@@ -912,8 +912,8 @@ class SequenceUi {
 				$d->attributes = [
 					'data-action' => 'sequence-use-change',
 					'columns' => 2,
-					'mandatory' => TRUE
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'bedWidth' :
@@ -951,8 +951,8 @@ class SequenceUi {
 				];
 				$d->attributes = [
 					'columns' => 3,
-					'mandatory' => TRUE
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'plantsList' :

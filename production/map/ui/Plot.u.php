@@ -417,8 +417,8 @@ class PlotUi {
 				$d->attributes = [
 					'data-action' => 'plot-mode-change',
 					'columns' => 2,
-					'mandatory' => TRUE
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'seasonFirst' :

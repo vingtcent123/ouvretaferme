@@ -169,7 +169,7 @@ Class ImportUi {
 											}
 											$customer .= s("Traitement comptable de l'écart de {value}", \util\TextUi::money(round($difference, 2)));
 										$customer .= '</legend>';
-										$customer .= $form->select('accountingDifference', \selling\PaymentUi::p('accountingDifference')->values, $eOperation['accountingDifference'], attributes: ['onchange' => 'Import.submit(this);'] + ($eOperation['accountingDifference'] !== NULL ? ['mandatory' => TRUE] : []));
+										$customer .= $form->select('accountingDifference', \selling\PaymentUi::p('accountingDifference')->values, $eOperation['accountingDifference'], attributes: ['onchange' => 'Import.submit(this);'] + ($eOperation['accountingDifference'] !== NULL ? ['required' => TRUE] : []));
 									$customer .= '</fieldset>';
 								$customer .= $form->close();
 							$customer .= '</div>';

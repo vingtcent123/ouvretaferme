@@ -925,7 +925,7 @@ class InvoiceUi {
 			$form->radios('status', [
 				Invoice::CONFIRMED => $confirmed,
 				Invoice::DRAFT => $draft,
-			], Invoice::CONFIRMED, attributes: ['mandatory' => TRUE])
+			], Invoice::CONFIRMED, attributes: ['required' => TRUE])
 		);
 
 	}
@@ -1112,8 +1112,8 @@ class InvoiceUi {
 				$d->attributes = fn(\util\FormUi $form, Invoice $e) => [
 					'data-due-days' => $e['farm']->getConf('invoiceDueDays') ?? '',
 					'data-due-month' => (int)$e['farm']->getConf('invoiceDueMonth'),
-					'mandatory' => TRUE,
 				];
+				$d->required = TRUE;
 				break;
 
 			case 'paymentCondition' :

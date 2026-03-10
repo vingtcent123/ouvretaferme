@@ -88,7 +88,7 @@ class ImportUi {
 				}
 				$d->values = $values;
 				$d->default = $eFarm['eFinancialYear']['id'];
-				$d->attributes['mandatory'] = TRUE;
+				$d->required = TRUE;
 			});
 			$h .= $form->dynamicGroup($eImport, 'financialYearStatus*', function($d) {
 				$d->default = NULL;

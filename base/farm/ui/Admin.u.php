@@ -58,7 +58,7 @@ class AdminUi {
 				$h .= $form->select('membership', [
 					0 => s("Toutes les fermes"),
 					1 => s("Fermes adhérentes"),
-				], $search->get('membership'), ['mandatory' => TRUE]);
+				], $search->get('membership'), ['required' => TRUE]);
 			$h .= '</fieldset>';
 
 			$h .= '<div class="util-search-submit">';
