@@ -65,8 +65,13 @@ new Page()
 	$cThirdParty = account\ThirdPartyLib::getAll($data->search);
 
 	if(post_exists('cashflowId') === TRUE) {
+
 		$eCashflow = \bank\CashflowLib::getById(POST('cashflowId', 'int'));
-		$cThirdParty = account\ThirdPartyLib::filterByCashflow($cThirdParty, $eCashflow);
+
+		if($eCashflow->notEmpty()) {
+			$cThirdParty = account\ThirdPartyLib::filterByCashflow($cThirdParty, $eCashflow);
+		}
+
 	}
 
 
