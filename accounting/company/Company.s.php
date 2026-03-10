@@ -48,6 +48,7 @@ class CompanySetting extends \Settings {
 		3149,
 		1897, // 5 mars
 		3717, // 6 mars
+		559, 3760, // 10 mars
 	];
 
 	// Est-ce qu'on exclut les autoconso des bilans et CdR (pour le micro BA) ?
