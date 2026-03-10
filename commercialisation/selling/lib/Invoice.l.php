@@ -228,16 +228,6 @@ class InvoiceLib extends InvoiceCrud {
 			'status'
 		]);
 
-		if(\pdp\PdpLib::isActive($e['farm'])) {
-
-			$eCustomer = CustomerLib::getById($e['customer']['id']);
-
-			if($e['farm']->acceptElectronicInvoicing() === FALSE or $eCustomer->acceptCreateElectronicInvoice() === FALSE) {
-				throw new \NotExistsAction();
-			}
-
-		}
-
 		Invoice::model()->beginTransaction();
 
 			$e['document'] = NULL;

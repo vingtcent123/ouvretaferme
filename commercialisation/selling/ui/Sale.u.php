@@ -1045,13 +1045,7 @@ class SaleUi {
 				$eSale->canDocument(Pdf::INVOICE)
 			) {
 
-				if(\pdp\PdpLib::isActive($eSale['farm']) and $eSale['customer']->acceptCreateElectronicInvoice() === FALSE) {
-					$link = '/selling/customer:update?id='.$eSale['customer']['id'].'&for=e-invoicing';
-				} else if(\pdp\PdpLib::isActive($eSale['farm']) and ($eSale['farm']->hasLegalAddress() === FALSE or $eSale['farm']['siret'] === NULL)) {
-					$link = '/farm/farm:updateLegal?id='.$eSale['farm']['id'];
-				} else if(\pdp\PdpLib::isActive($eSale['farm']) and $eSale['farm']->acceptElectronicInvoicing() === FALSE) {
-					$link = '/farm/configuration:updateForElectronicInvoicing?id='.$eSale['farm']['id'];
-				} else if(\pdp\PdpLib::isActive($eSale['farm']) and $eSale['farm']->hasInvoicingMentions() === FALSE) {
+				if($eSale['farm']->hasInvoicingMentions() === FALSE) {
 					$link = '/farm/configuration:updateInvoiceMentions?id='.$eSale['farm']['id'];
 				} else {
 					$link = '/selling/invoice:create?customer='.$eSale['customer']['id'].'&sales[]='.$eSale['id'].'&origin=sales';
