@@ -270,6 +270,10 @@ class RatioLib {
 
 	protected function getPayments(): array {
 
+		if($this->cPayment->empty()) {
+			return [];
+		}
+
 		$payments = [];
 
 		$totalPaid = 0.0;
