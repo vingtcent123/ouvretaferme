@@ -8,8 +8,8 @@ new AdaptativeView('/client/{id}', function($data, FarmTemplate $t) {
 
 	$t->mainTitle = new \selling\CustomerUi()->displayTitle($data->e);
 
-	echo new \selling\CustomerUi()->getOne($data->e, $data->cSale);
-	echo new \selling\CustomerUi()->getTabs($data->e, $data->cSaleTurnover, $data->cGrid, $data->cGridGroup, $data->cSale, $data->cEmail, $data->cInvoice, $data->cPaymentMethod);
+	echo new \selling\CustomerUi()->getOne($data->e, $data->cSale, $data->cSaleTurnover);
+	echo new \selling\CustomerUi()->getTabs($data->e, $data->cGrid, $data->cGridGroup, $data->cSale, $data->cEmail, $data->cInvoice, $data->cPaymentMethod);
 
 });
 

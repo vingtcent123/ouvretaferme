@@ -252,10 +252,18 @@ h1 {
 	font-size: 2.5rem;
 }
 
-@media (max-width: 575px) {
+@media (min-width: 450px) and (max-width: 575px) {
 
 	h1 {
 		font-size: 2rem;
+	}
+
+}
+
+@media (max-width: 449px) {
+
+	h1 {
+		font-size: 1.75rem;
 	}
 
 }
@@ -275,10 +283,18 @@ h2 {
 	font-size: 2rem;
 }
 
-@media (max-width: 575px) {
+@media (min-width: 450px) and (max-width: 575px) {
 
 	h2 {
 		font-size: 1.75rem;
+	}
+
+}
+
+@media (max-width: 449px) {
+
+	h2 {
+		font-size: 1.5rem;
 	}
 
 }

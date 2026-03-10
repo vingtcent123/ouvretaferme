@@ -1771,7 +1771,7 @@ class AnalyzeUi {
 
 	public function getCustomerTurnover(\Collection $cSaleTurnover, ?int $year, Customer $eCustomer, bool $inPanel = FALSE): string {
 
-		$h = '<ul class="util-summarize mb-2">';
+		$h = '<ul class="util-summarize util-summarize-overflow mb-2">';
 
 			foreach($cSaleTurnover as $eSaleTurnover) {
 				$h .= '<li '.($eSaleTurnover['year'] === $year ? 'class="selected"' : '').'>';

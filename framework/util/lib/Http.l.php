@@ -36,19 +36,19 @@ class HttpLib  {
 		switch($browser['browser']) {
 
 			case 'MSIE':
-				return ($browser['version'] < 16);
+				return ($browser['version'] < 100);
 
 			case 'Opera':
-				return ($browser['version'] < 44);
+				return ($browser['version'] < 80);
 
 			case 'Firefox':
-				return ($browser['version'] < 54);
+				return ($browser['version'] < 90);
 
 			case 'Safari':
-				return ($browser['version'] < 11);
+				return ($browser['version'] < 15);
 
 			case 'Chrome':
-				return ($browser['version'] < 58);
+				return ($browser['version'] < 90);
 
 			default:
 				return FALSE;

@@ -1570,6 +1570,13 @@ a.util-block-close {
 	color: white;
 }
 
+.util-block-danger a,
+.util-block-success a,
+.util-block-warning a {
+	color: white;
+	text-decoration: underline;
+}
+
 .util-block-sticked {
 	margin-bottom: 0;
 	left: 1rem;
@@ -2822,8 +2829,23 @@ body[data-touch="yes"] .dropdown-list:not(.dropdown-list-minimalist).dropdown-li
 	}
 
 	.h-menu-wrapper {
-		font-size: 1.75rem;
 		height: 2.5rem;
+	}
+
+}
+
+@media (min-width: 449px) and (max-width: 575px) {
+
+	.h-menu-wrapper {
+		font-size: 2rem;
+	}
+
+}
+
+@media (max-width: 449px) {
+
+	.h-menu-wrapper {
+		font-size: 1.75rem;
 	}
 
 }

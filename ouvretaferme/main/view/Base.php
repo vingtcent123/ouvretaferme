@@ -245,10 +245,10 @@ class BaseTemplate extends SmartTemplate {
 
 	protected function getWarningObsoleteBrowser(): string {
 
-		$alert = '<p>';
-		$alert .= s("Attention, vous utilisez un vieux navigateur qui n'est pas compatible avec ce site. Merci d'utiliser un navigateur plus récent : <linkIE>Edge 16+</linkIE>, <linkFirefox>Firefox 54+</linkFirefox> ou <linkChrome>Google Chrome 58+</linkChrome>",
+		$alert = '<div>';
+			$alert .= s("Attention, vous utilisez un vieux navigateur qui n'est pas compatible avec ce site. Merci d'utiliser un navigateur plus récent : <linkIE>Edge 100+</linkIE>, <linkFirefox>Firefox 90+</linkFirefox> ou <linkChrome>Google Chrome 90+</linkChrome>",
 			['linkIE' => '<a href="http://window.microsoft.com/ie">', 'linkFirefox' => '<a href="http://www.getfirefox.com/">', 'linkChrome' => '<a href="http://www.google.com/chrome/">']);
-		$alert .= '</p>';
+		$alert .= '</div>';
 
 		return $alert;
 

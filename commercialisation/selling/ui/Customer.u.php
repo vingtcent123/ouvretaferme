@@ -106,7 +106,7 @@ class CustomerUi {
 
 		\Asset::css('media', 'media.css');
 
-		$item = '<div data-destination="'.$eCustomer['destination'].'" data-type="'.$eCustomer['type'].'">'.encode($eCustomer->getName()).'<br/><small class="color-muted">'.self::getCategory($eCustomer).'</small></div>';
+		$item = '<div data-destination="'.$eCustomer['destination'].'" data-type="'.$eCustomer['type'].'" data-self-billing="'.(int)$eCustomer['selfBilling'].'">'.encode($eCustomer->getName()).'<br/><small class="color-muted">'.self::getCategory($eCustomer).'</small></div>';
 
 		return [
 			'value' => $eCustomer['id'],
@@ -451,7 +451,7 @@ class CustomerUi {
 
 	}
 
-	public function getOne(Customer $eCustomer, \Collection $cSale): string {
+	public function getOne(Customer $eCustomer, \Collection $cSale, \Collection $cSaleTurnover): string {
 
 		$eCustomer->expects(['invite']);
 
@@ -549,11 +549,18 @@ class CustomerUi {
 			}
 		}
 
+		if(
+			$eCustomer['farm']->canAnalyze() and
+			$cSaleTurnover->notEmpty()
+		) {
+			$h .= new AnalyzeUi()->getCustomerTurnover($cSaleTurnover, NULL, $eCustomer);
+		}
+
 		return $h;
 
 	}
 
-	public function getTabs(Customer $eCustomer, \Collection $cSaleTurnover, \Collection $cGrid, \Collection $cGridGroup, \Collection $cSale, \Collection $cEmail, \Collection $cInvoice, \Collection $cPaymentMethod): string {
+	public function getTabs(Customer $eCustomer, \Collection $cGrid, \Collection $cGridGroup, \Collection $cSale, \Collection $cEmail, \Collection $cInvoice, \Collection $cPaymentMethod): string {
 
 		$h = '<div class="tabs-h" id="customer-tabs-wrapper" onrender="'.encode('Lime.Tab.restore(this, "sales")').'">';
 
@@ -581,13 +588,6 @@ class CustomerUi {
 
 			$h .= '<div>';
 				$h .= '<div data-tab="sales" class="tab-panel selected">';
-
-					if(
-						$eCustomer['farm']->canAnalyze() and
-						$cSaleTurnover->notEmpty()
-					) {
-						$h .= new AnalyzeUi()->getCustomerTurnover($cSaleTurnover, NULL, $eCustomer);
-					}
 
 					$h .= new \selling\SaleUi()->getList($eCustomer['farm'], $cSale, hide: ['customer'], show: ['average'], cPaymentMethod: $cPaymentMethod);
 
