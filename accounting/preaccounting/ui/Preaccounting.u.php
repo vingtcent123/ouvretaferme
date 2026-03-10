@@ -80,7 +80,7 @@ Class PreaccountingUi {
 							$count = '';
 							if(($cCashImported[$eRegister['id']][$date]['count'] ?? 0) > 0) {
 								$count .= '<span title="'.s("Opérations importées").'" class="mr-1">';
-									$count .= $cInvoiceImported[$date]['count'] ?? 0;
+									$count .= $cCashImported[$eRegister['id']][$date]['count'] ?? 0;
 									$count .= ' '.\Asset::icon('check-lg', ['class' => 'color-success']);
 								$count .= '</span>';
 							}
@@ -94,7 +94,7 @@ Class PreaccountingUi {
 						}
 
 						$h .= '<div class="preaccounting-import-item">';
-							$h .= '<span>'.\cash\RegisterUi::getName($eRegister).'</span>';
+							$h .= '<span><a href="'.\farm\FarmUi::urlConnected($eFarm).'/journal-de-caisse?register='.$eRegister['id'].'">'.\cash\RegisterUi::getName($eRegister).'</a></span>';
 							$h .= '<b>';
 								if($future === FALSE) {
 										$h .= $count;

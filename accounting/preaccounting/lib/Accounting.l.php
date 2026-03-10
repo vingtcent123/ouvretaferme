@@ -475,7 +475,7 @@ Class AccountingLib {
 		}
 
 		$items = [];
-//dd($eCash);
+
 		foreach($ratios as $vatRate => $ratio) {
 
 			foreach($ratio['splitByPayments'] as $paymentId => $ratioByPayment) {
@@ -648,7 +648,7 @@ Class AccountingLib {
 				}
 			}
 		}
-//dd($items);
+
 		return $items;
 	}
 

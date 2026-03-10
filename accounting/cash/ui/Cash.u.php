@@ -445,8 +445,8 @@ class CashUi {
 					$h .= '</tr>';
 					$h .= '<tr>';
 						$h .= '<th colspan="2"></th>';
-						$h .= '<th class="text-end t-highlight">'.s("Crédit").'</th>';
 						$h .= '<th class="text-end t-highlight">'.s("Débit").'</th>';
+						$h .= '<th class="text-end t-highlight">'.s("Crédit").'</th>';
 
 						if($hasVat) {
 							$h .= '<th class="text-center" colspan="2">'.s("TVA").'</th>';
@@ -531,13 +531,13 @@ class CashUi {
 							$h .= '</td>';
 
 							$h .= '<td class="td-min-content t-highlight text-end">';
-								if($eCash['type'] === Cash::CREDIT) {
+								if($eCash['type'] === Cash::DEBIT) {
 									$h .= \util\TextUi::money($eCash['amountIncludingVat']);
 								}
 							$h .= '</td>';
 
 							$h .= '<td class="td-min-content t-highlight text-end">';
-								if($eCash['type'] === Cash::DEBIT) {
+								if($eCash['type'] === Cash::CREDIT) {
 									$h .= \util\TextUi::money($eCash['amountIncludingVat']);
 								}
 							$h .= '</td>';
