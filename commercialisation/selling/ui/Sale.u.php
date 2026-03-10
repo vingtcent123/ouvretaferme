@@ -2758,7 +2758,7 @@ class SaleUi {
 
 			return [
 
-				9999 => $short ? s("0 %") : s("0 % - Pas de TVA"),
+				999 => $short ? s("0 %") : s("0 % - Pas de TVA"),
 
 			];
 
