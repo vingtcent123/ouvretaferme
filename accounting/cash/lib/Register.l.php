@@ -100,7 +100,15 @@ class RegisterLib extends RegisterCrud {
 
 			parent::delete($e);
 
-			CashLib::getByRegister($e)->map(fn($eCash) => $eCash['register'] = $e and CashLib::delete($eCash), depth: 2);
+			$cCash = Cash::model()
+				->select(Cash::getSelection())
+				->whereRegister($e)
+				->getCollection();
+
+			foreach($cCash as $eCash) {
+				$eCash['register'] = $e;
+				CashLib::delete($eCash);
+			}
 
 		Register::model()->commit();
 
