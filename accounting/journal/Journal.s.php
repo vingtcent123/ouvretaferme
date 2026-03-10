@@ -6,6 +6,7 @@ class JournalSetting extends \Settings {
 	const JOURNAL_CODE_BANK = 'BAN'; // Journal de banque
 	const JOURNAL_CODE_SELL = 'VEN'; // Journal de vente
 	const JOURNAL_CODE_BUY = 'ACH'; // Journal d'achat
+	const JOURNAL_CODE_CASH = 'CAI'; // Journal de caisse
 	const JOURNAL_CODE_OD = 'OD'; // Journal d'opérations diverses
 	const JOURNAL_CODE_OD_BILAN = 'ODB'; // Journal d'opérations diverses (pour les bilans)
 	const JOURNAL_CODE_STOCK = 'STK'; // Journal de stock

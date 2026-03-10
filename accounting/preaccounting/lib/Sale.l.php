@@ -85,17 +85,17 @@ Class SaleLib {
 		$selectSale = [
 			'id', 'customer' => ['name', 'type', 'destination', 'user', 'document'], 'preparationStatus',
 			'deliveredAt', 'document', 'farm', 'profile', 'createdAt', 'taxes',
-			'hasVat', 'priceExcludingVat', 'priceIncludingVat', 'vat', 'vatByRate',
+			'hasVat', 'priceExcludingVat', 'priceIncludingVat', 'vat', 'vatByRate', 'paymentAmount',
 			'shipping', 'shippingVatRate',
 			'paymentStatus', 'closed', 'invoice',
 			'marketParent' => ['customer' => ['name', 'type', 'destination']],
 			'shopDate' => ['id', 'deliveryDate', 'status', 'orderStartAt', 'orderEndAt'], 'createdBy',
 			'cPayment' => \selling\Payment::model()
-				->select(\selling\Payment::getSelection())
+				->select(\selling\Payment::getSelection()  + ['cashflow' => ['id', 'amount', 'account' => ['account']]])
 				->whereStatus(\selling\Payment::PAID)
 				->delegateCollection('sale', 'id'),
 				'cItem' => \selling\Item::model()
-					->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+					->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount', 'profile']])
 					->delegateCollection('sale')
 		];
 

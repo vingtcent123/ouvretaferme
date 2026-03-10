@@ -3,13 +3,17 @@ namespace preaccounting;
 
 Class ImportLib {
 
-	public static function getCash(\farm\Farm $eFarm, \Search $search): \Collection {
+	public static function getCash(\farm\Farm $eFarm, \Search $search, bool $forImportAction): \Collection {
 
 		$eFarm->expects(['cFinancialYear']);
 
 		$cAccount = \account\AccountLib::getAll(new \Search(['withVat' => TRUE, 'withJournal' => TRUE]));
 
-		$cCash = CashLib::getForAccounting($eFarm, $search, TRUE);
+		if($forImportAction) {
+			$cCash = CashLib::getForAccounting($eFarm, $search);
+		} else {
+			$cCash = CashLib::getForAccountingCheck($eFarm, $search, TRUE);
+		}
 
 		if($cCash->empty()) {
 			return new \Collection();
@@ -107,12 +111,13 @@ Class ImportLib {
 				}
 			}
 
-			$cCash = \preaccounting\ImportLib::getCash($eFarm, $search);
+			$cCash = \preaccounting\ImportLib::getCash($eFarm, $search, TRUE);
 
 			if($cCash->notEmpty()) {
 				foreach($cCash as $eCash) {
 					if(
-						empty($lastValidationDate) === FALSE and $lastValidationDate < $ePayment['paidAt']
+						empty($lastValidationDate) === FALSE and $lastValidationDate < $ePayment['paidAt'] or
+						$eCash->acceptAccountingImport() === FALSE
 					) {
 						continue;
 					}
@@ -296,7 +301,7 @@ Class ImportLib {
 				$eAccount = new \account\Account();
 			}
 
-			$eJournalCode = ($eAccount->notEmpty() and $eAccount['journalCode']->notEmpty()) ? \journal\JournalCodeLib::ask($eAccount['journalCode']['id']) : new \journal\JournalCode();
+			$eJournalCode = \journal\JournalCodeLib::askByCode($data[AccountingLib::FEC_COLUMN_JOURNAL_CODE]);
 
 			$date = mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 0, 4).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], 4, 2).'-'.mb_substr($data[\preaccounting\AccountingLib::FEC_COLUMN_DATE], -2);
 			$ePaymentMethod = $cPaymentMethod->find(fn($e) => $e['name'] === $data[\preaccounting\AccountingLib::FEC_COLUMN_PAYMENT_METHOD])->first();

@@ -254,6 +254,9 @@ class FinancialYearLib extends FinancialYearCrud {
 	// Sinon : pas de TVA.
 	public static function getHasVatByFinancialYear(\farm\Farm $eFarm, FinancialYear $eFinancialYear): bool {
 
+		if($eFinancialYear->empty()) {
+			$eFinancialYear = $eFarm['eFinancialYear'];
+		}
 		$hasVatStartDate = \farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $eFinancialYear['startDate']);
 		$hasVatEndDate = \farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $eFinancialYear['endDate']);
 

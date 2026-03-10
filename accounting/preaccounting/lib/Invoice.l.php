@@ -37,7 +37,7 @@ Class InvoiceLib {
 		return \selling\Invoice::model()
 			->select([
 				'id', 'date', 'number', 'document', 'farm',
-				'priceExcludingVat', 'priceIncludingVat', 'vat', 'taxes', 'hasVat', 'vatByRate',
+				'priceExcludingVat', 'priceIncludingVat', 'vat', 'taxes', 'hasVat', 'vatByRate', 'paymentAmount',
 				'customer' => [
 					'id', 'name', 'type', 'destination',
 					'thirdParty' => \account\ThirdParty::model()
@@ -53,7 +53,7 @@ Class InvoiceLib {
 					->select([
 						'id', 'shipping', 'shippingVatRate', 'deliveredAt', 'vat', 'vatByRate',
 						'cItem' => \selling\Item::model()
-							->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
+							->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount', 'profile']])
 							->delegateCollection('sale'),
 					])
 					->delegateCollection('invoice'),
@@ -78,7 +78,7 @@ Class InvoiceLib {
 			->select(\selling\Payment::getSelection() + [
 				'sale' => [
 					'id', 'document',
-					'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'shippingVatRate',
+					'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'shippingVatRate', 'paymentAmount',
 					'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
 					'cItem' => \selling\Item::model()
 						->select(['id', 'price', 'netPriceExcludingVat', 'vatRate', 'account', 'type', 'product' => ['id', 'proAccount', 'privateAccount']])
@@ -89,7 +89,7 @@ Class InvoiceLib {
 						->delegateCollection('sale', callback: fn(\Collection $cPayment) => $cPayment->sum('amountIncludingVat'))
 				],
 				'invoice' => [
-					'id', 'number', 'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'document',
+					'id', 'number', 'vatByRate', 'priceIncludingVat', 'taxes', 'hasVat', 'priceExcludingVat', 'paymentAmount', 'document',
 					'customer' => ['id', 'legalName', 'name', 'type', 'destination'],
 					'cSale' => \selling\Sale::model()
 						->select([

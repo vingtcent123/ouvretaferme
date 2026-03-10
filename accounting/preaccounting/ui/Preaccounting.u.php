@@ -278,7 +278,7 @@ Class PreaccountingUi {
 							'value' => \account\AccountSetting::WAITING_ACCOUNT_SUBCLASS,
 						],
 					];
-					$h .= $form->select('counterpart', $values, $search->get('counterpart')).\util\FormUi::info(s("S'il n'y a pas déjà une contrepartie, {siteName} utilisera la contrepartie sélectionnée."));
+					$h .= $form->select('counterpart', $values, $search->get('counterpart')).\util\FormUi::info(s("S'il n'y a pas déjà une contrepartie, {siteName} utilisera la contrepartie sélectionnée pour les ventes et factures non intégrées en journal de caisse."));
 				$h .= '</fieldset>';
 
 				$h .= '<div>';

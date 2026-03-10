@@ -253,7 +253,7 @@ new Page(function($data) {
 						($eRegister->notEmpty() and ($eMethod->empty() or $eMethod->is($eRegister['paymentMethod']))))
 					) {
 
-						$data->cCash = \preaccounting\CashLib::getForAccounting($data->eFarm, $data->search, FALSE);
+						$data->cCash = \preaccounting\CashLib::getForAccountingCheck($data->eFarm, $data->search, FALSE);
 						[$fecCash, $data->nCash] = \preaccounting\AccountingLib::generateCashFec(
 							cCash: $data->cCash,
 							cAccount: $cAccount,
@@ -471,13 +471,13 @@ new Page(function($data) {
 				}
 
 				if(empty($data->search->get('importType')) or (int)$data->search->get('importType') !== 0) {
-					$cCash = \preaccounting\ImportLib::getCash($data->eFarm, $data->search);
-					$nCash = \preaccounting\CashLib::countForAccounting($data->eFarm, $data->search, TRUE);
+					$cCash = \preaccounting\ImportLib::getCash($data->eFarm, $data->search, FALSE);
+					$nCash = \preaccounting\CashLib::countForAccountingCheck($data->eFarm, $data->search);
 				} else {
 					$cCash = new Collection();
 					$nCash = 0;
 				}
-				$cOperation = $cPayment->filter(fn($e) => $e->acceptAccountingImport())->mergeCollection($cCash->filter(fn($e) => $e->acceptAccountingImport()));
+				$cOperation = $cPayment->mergeCollection($cCash);
 				$cOperation->sort(function($e1, $e2) {
 					$date1 = $e1 instanceof \selling\Payment ? $e1['paidAt'] : $e1['date'];
 					$date2 = $e2 instanceof \selling\Payment ? $e2['paidAt'] : $e2['date'];
@@ -531,7 +531,7 @@ new Page(function($data) {
 		if($data->search->get('cRegister')->notEmpty() and $hasInvoice === NULL) {
 
 			// Ventes des journaux de caisse
-			$data->cCash = \preaccounting\CashLib::getForAccounting($data->eFarm, $data->search, FALSE);
+			$data->cCash = \preaccounting\CashLib::getForAccountingCheck($data->eFarm, $data->search, FALSE);
 			[$cashOperations, ] = \preaccounting\AccountingLib::generateCashFec(
 				cCash: $data->cCash,
 				cAccount: $cAccount,

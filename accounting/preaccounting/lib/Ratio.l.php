@@ -15,13 +15,13 @@ class RatioLib {
 		private \Collection $cAccount = new \Collection()
 	) {
 
-		$e->expects(['cItem', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat']);
+		$e->expects(['cItem', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat', 'paymentAmount']);
 
 		if($e instanceof \selling\Invoice) {
 			$e->expects(['cSale']);
 		}
 
-		$this->cPayment = \selling\PaymentTransactionLib::getAll($e, index: 'id');
+		$this->cPayment = \selling\PaymentTransactionLib::getAll($e, selection: \selling\Payment::getSelection() + ['cashflow' => ['id', 'amount', 'account' => ['account']]], index: 'id');
 
 		$this->splitByVat();
 		$this->splitByPayments();
@@ -49,6 +49,22 @@ class RatioLib {
 
 		}
 		return $ratiosByVat;
+
+	}
+
+	public function filter(\selling\Payment $ePaymentFilter, \payment\Method $eMethodFilter): array {
+
+		foreach($this->byVat as &$ratios) {
+			foreach($ratios['splitByPayments'] as $keyPayment => &$payment) {
+				if($ePaymentFilter->notEmpty() and $payment['payment']->is($ePaymentFilter) === FALSE) {
+					unset($ratios['splitByPayments'][$keyPayment]);
+				} else if($eMethodFilter->notEmpty() and $payment['payment']['method']->is($eMethodFilter) === FALSE) {
+					unset($ratios['splitByPayments'][$keyPayment]);
+				}
+			}
+		}
+
+		return $this->byVat;
 
 	}
 
@@ -359,6 +375,13 @@ class RatioLib {
 		) {
 
 			return $eItem['product']['privateAccount'];
+
+		} else if(
+			$eItem['product']->notEmpty() and
+			$eItem['product']['profile'] === \selling\Product::SHIPPING
+		) {
+
+			return $cAccount->find(fn($e) => $e['class'] === (string)\account\AccountSetting::PRODUCT_SHIPPING_ACCOUNT_CLASS, limit: 1, default: new \account\Account());
 
 		// On sait pas.
 		} else {
