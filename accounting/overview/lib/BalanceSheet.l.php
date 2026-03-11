@@ -300,8 +300,14 @@ Class BalanceSheetLib {
 
 		}
 
-		if(\account\AccountLabelLib::isAmortizationOrDepreciationClass($eOperation['class']) === FALSE and isset($balanceSheetDataCategory[$eOperation['class']]) === FALSE) {
-			$balanceSheetDataCategory[$eOperation['class']] = [
+		if(\account\AccountLabelLib::isAmortizationOrDepreciationClass($eOperation['class'])) {
+			$originClass = (int)\account\AccountLabelLib::getClassFromAmortizationOrDepreciationClass($eOperation['class']);
+		} else {
+			$originClass = $eOperation['class'];
+		}
+
+		if(isset($balanceSheetDataCategory[$originClass]) === FALSE) {
+			$balanceSheetDataCategory[$originClass] = [
 				'comparisonBrut' => 0,
 				'comparisonDepreciation' => 0,
 				'comparisonNet' => 0,
@@ -309,18 +315,18 @@ Class BalanceSheetLib {
 				'currentDepreciation' => 0,
 				'currentNet' => 0,
 				'current' => 0,
-				'class' => $eOperation['class'],
+				'class' => $originClass,
 			];
 		}
 
 		if(\account\AccountLabelLib::isAmortizationOrDepreciationClass($eOperation['class'])) {
 
 			// Classe à 3 chiffres
-			$originClass = (int)\account\AccountLabelLib::getClassFromAmortizationOrDepreciationClass($eOperation['class']);
 			if($eOperation['financialYear']->is($eFinancialYear)) {
 
 				$balanceSheetDataCategory[$originClass]['currentDepreciation'] += abs($eOperation['amount']);
 				$balanceSheetDataCategory[$originClass]['currentNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['currentDepreciation'], 2);
+
 			} else {
 
 				$balanceSheetDataCategory[$originClass]['comparisonDepreciation'] += abs($eOperation['amount']);
@@ -330,13 +336,13 @@ Class BalanceSheetLib {
 			}
 
 			// Classe complète (si isDetailed)
-			$originClass = \account\AccountLabelLib::pad($originClass);
+			$originClassPaded = \account\AccountLabelLib::pad($originClass);
 
 			// Cas où ça n'est pas créé : si les amortissements ont été regroupés et qu'on a perdu les sous-comptes
-			if(isset($balanceSheetDataCategory[$originClass])) {
+			if(isset($balanceSheetDataCategory[$originClassPaded])) {
 
-				$balanceSheetDataCategory[$originClass]['currentDepreciation'] += abs($eOperation['amount']);
-				$balanceSheetDataCategory[$originClass]['currentNet'] = round($balanceSheetDataCategory[$originClass]['currentBrut'] - $balanceSheetDataCategory[$originClass]['currentDepreciation'], 2);
+				$balanceSheetDataCategory[$originClassPaded]['currentDepreciation'] += abs($eOperation['amount']);
+				$balanceSheetDataCategory[$originClassPaded]['currentNet'] = round($balanceSheetDataCategory[$originClassPaded]['currentBrut'] - $balanceSheetDataCategory[$originClassPaded]['currentDepreciation'], 2);
 			}
 
 		} else {
