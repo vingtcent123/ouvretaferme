@@ -287,7 +287,7 @@ body[data-template~="farm"] .container {
 
 	}
 
-	@media (min-width: 1600px) and (max-width: 1999px) {
+	@media (min-width: 1800px) and (max-width: 1999px) {
 
 		:root {
 			--nav-width: 23rem;
@@ -296,10 +296,28 @@ body[data-template~="farm"] .container {
 
 	}
 
-	@media (max-width: 1599px) {
+	@media (min-width: 1600px) and (max-width: 1799px) {
+
+		:root {
+			--nav-width: 21rem;
+			--nav-padding: 1.5rem;
+		}
+
+	}
+
+	@media (min-width: 1200px) and (max-width: 1599px) {
 
 		:root {
 			--nav-width: 20rem;
+			--nav-padding: 1rem;
+		}
+
+	}
+
+	@media (max-width: 1199px) {
+
+		:root {
+			--nav-width: 19rem;
 			--nav-padding: 1rem;
 		}
 
