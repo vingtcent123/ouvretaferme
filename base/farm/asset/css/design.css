@@ -296,19 +296,10 @@ body[data-template~="farm"] .container {
 
 	}
 
-	@media (min-width: 1200px) and (max-width: 1599px) {
+	@media (max-width: 1599px) {
 
 		:root {
 			--nav-width: 20rem;
-			--nav-padding: 1rem;
-		}
-
-	}
-
-	@media (max-width: 1199px) {
-
-		:root {
-			--nav-width: 19rem;
 			--nav-padding: 1rem;
 		}
 

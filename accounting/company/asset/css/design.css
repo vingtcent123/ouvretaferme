@@ -69,7 +69,7 @@ a.nav-year:hover {
 	@media (max-width: 1599px) {
 
 		:root {
-			--nav-width: 19rem;
+			--nav-width: 20rem;
 			--nav-padding: 1.25rem;
 		}
 

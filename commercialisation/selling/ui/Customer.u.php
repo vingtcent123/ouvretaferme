@@ -394,7 +394,7 @@ class CustomerUi {
 
 		$menu .= '<a data-url-collection="/selling/sale:createCollection?farm='.$eFarm['id'].'" data-url="/selling/sale:create?farm='.$eFarm['id'].'&customer=" class="batch-sale batch-item">';
 			$menu .= \Asset::icon('plus-circle');
-			$menu .= '<span>'.s("Créer une vente").'</span>';
+			$menu .= '<span>'.s("Nouvelle vente").'</span>';
 		$menu .= '</a>';
 
 		$menu .= '<a data-ajax-submit="/selling/customer:doUpdateStatusCollection" post-status="'.Customer::ACTIVE.'" data-confirm="'.s("Activer ces clients ?").'" class="batch-item">';
@@ -642,7 +642,7 @@ class CustomerUi {
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eCustomer->getName()).'</div>';
-			$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'" class="dropdown-item">'.s("Créer une vente").'</a>';
+			$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'" class="dropdown-item">'.s("Nouvelle vente").'</a>';
 			$h .= '<a href="/selling/customer:update?id='.$eCustomer['id'].'" class="dropdown-item">'.s("Modifier le client").'</a>';
 
 			if($eCustomer->canManage()) {
@@ -663,10 +663,8 @@ class CustomerUi {
 			) {
 
 				$h .= '<div class="dropdown-divider"></div>';
-
-				if($eCustomer->canDelete()) {
-					$h .= '<a data-ajax="/selling/customer:doDelete" post-id="'.$eCustomer['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du client ?").'">'.s("Supprimer le client").'</a>';
-				}
+				$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
+				$h .= '<a data-ajax="/selling/customer:doDelete" post-id="'.$eCustomer['id'].'" class="dropdown-item" data-confirm="'.s("Confirmer la suppression du client ?").'">'.s("Supprimer le client").'</a>';
 
 			}
 		$h .= '</div>';
