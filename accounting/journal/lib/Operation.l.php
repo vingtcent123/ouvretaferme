@@ -669,8 +669,10 @@ class OperationLib extends OperationCrud {
 			$uniqueDocuments = array_unique($documents);
 			if(count($uniqueDocuments) > 1) {
 				$document = join(', ', $uniqueDocuments);
+			} else if(count($uniqueDocuments) === 1) {
+				$document = first($uniqueDocuments);
 			} else {
-				$document = $eOperationDefault['document'];
+				$document = NULL;
 			}
 
 			$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
