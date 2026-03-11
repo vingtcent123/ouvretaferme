@@ -1054,7 +1054,7 @@ class OperationLib extends OperationCrud {
 
 		$hash = $eOperationModel['hash'];
 		$update = [
-			'thirdParty' => $eThirdParty,
+			'thirdParty' => new \Sql('IF(thirdParty IS NULL, '.$eThirdParty['id'].', thirdParty)'),
 			'updatedAt' => Operation::model()->now(),
 			'paymentDate' => $eCashflow['date'],
 			'hash' => $hash
