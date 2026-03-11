@@ -462,7 +462,6 @@ class OperationLib extends OperationCrud {
 		return $hash.$crc.$end; /* 19 caracters */
 	}
 
-
 	public static function prepareOperations(\farm\Farm $eFarm, array $input, string $for = 'create', \bank\Cashflow $eCashflow = new \bank\Cashflow()): \Collection {
 
 		$eFinancialYear = \account\FinancialYearLib::getById($input['financialYear'] ?? NULL);
@@ -509,36 +508,13 @@ class OperationLib extends OperationCrud {
 
 		if($for === 'update') {
 
-			$cOperationOriginByHash = OperationLib::getByHash($input['hash']);
-
-			if($cOperationOriginByHash->notEmpty()) {
-
-				foreach($cOperationOriginByHash as $eOperationOriginByHash) {
-					$eOperationOriginByHash->validate('isNotLinkedToAsset');
-				}
-
-				// Si ce lot d'opérations était lié à une facture => Mise à jour du hash de l'invoice et de ses sales
-				if($for === 'update') {
-
-					\selling\Payment::model()
-			      ->whereAccountingHash($input['hash'])
-			      ->update(['accountingHash' => $hash]);
-
-				}
-
-				// On supprime tout et on recommence !
-				OperationCashflow::model()->whereHash($input['hash'])->delete();
-				Operation::model()->whereHash($input['hash'])->delete();
-
-			}
-
-			$for = 'create';
+			self::deleteByHash($input['hash'], $hash);
 
 		}
 
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
-		$indexes = count($input['accountLabel'] ?? []);
+		$indexes = count($input['account'] ?? []);
 
 		$fw = new \FailWatch();
 
@@ -552,11 +528,12 @@ class OperationLib extends OperationCrud {
 			'asset',
 			'thirdParty',
 		];
-		if($isFromCashflow === FALSE) {
+		if($isFromCashflow === FALSE) { // Sinon date est dans $eOperationDefault
 			$properties = array_merge($properties, ['date', 'paymentDate', 'paymentMethod']);
 		}
+		$properties = array_merge($properties, ['vatRate', 'vatRule']);
 
-		$eOperationDefault['thirdParty'] = NULL;
+		$eOperationDefault['thirdParty'] = new \account\ThirdParty();
 
 		$eOperationDefault['hash'] = $hash;
 		$eOperationDefault['financialYear'] = $eFinancialYear;
@@ -565,18 +542,9 @@ class OperationLib extends OperationCrud {
 
 			$eOperation = clone $eOperationDefault;
 
-			$eOperation['index'] = $index;
-			$eOperation['financialYear'] = $eFinancialYear;
-
-			$input['accountLabel'][$index] = \account\AccountLabelLib::pad($input['accountLabel'][$index]);
-
 			$eOperation->buildIndex($properties, $input, $index);
 
 			$fw->validate();
-
-			if(\farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $eOperation['date'])) {
-				$eOperation->buildIndex(['vatRate', 'vatRule'], $input, $index);
-			}
 
 			// Date de la pièce justificative : date de l'écriture
 			if($eOperation['document'] !== NULL) {
@@ -594,28 +562,11 @@ class OperationLib extends OperationCrud {
 			}
 
 			// Ce type d'écriture a un compte de TVA correspondant
-			$eAccount = $eOperation['account'];
 			$vatValue = var_filter($vatValues[$index] ?? NULL, 'float', 0.0);
+			$eAccount = self::manageVat($eOperation, $vatValue);
 
-			// L'utilisateur force le type de TVA à enregistrer
-			if($eOperation['vatRule'] === Operation::VAT_STD_DEDUCTIBLE) {
-
-				$eAccount['vatAccount'] = \account\AccountLib::getByClass(\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT);
-
-			} else if($eOperation['vatRule'] === Operation::VAT_STD_COLLECTED) {
-
-				$eAccount['vatAccount'] = \account\AccountLib::getByClass(\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT);
-
-			} else if($eOperation['vatRule'] === Operation::VAT_STD and $eAccount['vatAccount']->empty()) {
-
-				\Fail::log('Operation::vatStd.unknown');
+			if($eAccount === FALSE) {
 				return new \Collection();
-
-			} else if($eOperation['vatRule'] !== Operation::VAT_STD and $input['vatValue'][$index]) { // Il a saisi une valeur de TVA mais une règle qui dit "pas de TVA"
-
-				\Fail::log('Operation::vatRuleNoWithVatValue.inconsistency', [$eOperation['vatRule']]);
-				return new \Collection();
-
 			}
 
 			$hasVatAccount = (
@@ -637,15 +588,11 @@ class OperationLib extends OperationCrud {
 
 			// Doit passer après validate (account doit être setté)
 			if($eOperation['journalCode']->empty()) {
-					$eOperation['journalCode'] = $cAccount->find(fn($e) => $e['id'] === $eOperation['account']['id'])->first()['journalCode'];
+					$eOperation['journalCode'] = $cAccount->offsetGet($eOperation['account']['id'])['journalCode'];
 			}
 
 			// Données que l'on va recopier par défaut sur toutes les autres écritures du groupe
-			foreach(['document', 'documentDate', 'thirdParty', 'journalCode'] + ($for === 'create' ? ['date', 'paymentMethod'] : []) as $property) {
-				if(($eOperationDefault[$property] ?? NULL) === NULL) {
-					$eOperationDefault[$property] = $eOperation[$property];
-				}
-			}
+			$eOperationDefault->merge($eOperation->extracts(['document', 'documentDate', 'thirdParty', 'journalCode', 'date', 'paymentMethod']));
 
 			\journal\Operation::model()->insert($eOperation);
 
@@ -696,45 +643,33 @@ class OperationLib extends OperationCrud {
 			}
 
 			// Gestion des acomptes (409x et 419x) qui doivent être enregistrés TTC + une contrepartie 44581 pour la TVA
-			if(
-				\account\AccountLabelLib::isDeposit($eOperation['accountLabel'])  and
-				(int)$eOperation['vatRate'] !== 0 and
-				$eOperationVat->notEmpty()
-			) {
+			$eOperationDeposit = self::manageDeposit($eOperation, $eOperationVat);
 
-				$eAccountVatRegul = \account\AccountLib::getByClass(\account\AccountSetting::VAT_TO_REGULATE_CLASS);
-				$eOperation['amount'] += $eOperationVat['amount'] ?? 0;
-				Operation::model()->update($eOperation, ['amount' => $eOperation['amount']]);
+			if($eOperationDeposit->notEmpty()) {
 
-				// Créer l'écriture de TVA de régul
-				$eOperationVatRegul = self::createVatRegulOperation($eOperationVat, $eAccountVatRegul, $eOperation);
-
-				$cOperation->append($eOperationVatRegul);
+				$cOperation->append($eOperationDeposit);
 
 				if($isFromCashflow) {
 					$cOperationCashflow->append(new OperationCashflow([
-						'operation' => $eOperationVatRegul,
+						'operation' => $eOperationDeposit,
 						'cashflow' => $eCashflow,
 						'hash' => $hash,
 					]));
 				}
+
 			}
 
 		}
 
-		// Ajout de la transaction sur le numéro de compte bancaire 512 (seulement pour une création)
+		// Ajout de la transaction sur le numéro de compte bancaire 512
 		if($isFromCashflow === TRUE) {
 
-			// Si toutes les écritures sont sur le même document, on utilise aussi celui-ci pour l'opération bancaire;
+			// L'écriture de cash concatène toutes les pièces comptables
 			$documents = $cOperation->getColumn('document');
 			$uniqueDocuments = array_unique($documents);
-			if(count($uniqueDocuments) === 1 and count($documents) === $cOperation->count()) {
-				$document = first($uniqueDocuments);
-			} else {
+			if(count($uniqueDocuments) > 1) {
 				$document = join(', ', $uniqueDocuments);
 			}
-
-			$eOperationDefault['hash'] = $hash;
 
 			$eOperationBank = \journal\OperationLib::createBankOperationFromCashflow(
 				$eCashflow,
@@ -763,6 +698,59 @@ class OperationLib extends OperationCrud {
 		}
 
 		return $cOperation;
+
+	}
+
+	private static function manageVat(Operation $eOperation, float $vatValue): \account\Account|bool {
+
+		$eAccount = $eOperation['account'];
+
+		// L'utilisateur force le type de TVA à enregistrer
+		if($eOperation['vatRule'] === Operation::VAT_STD_DEDUCTIBLE) {
+
+			$eAccount['vatAccount'] = \account\AccountLib::getByClass(\account\AccountSetting::VAT_BUY_CLASS_ACCOUNT);
+
+		} else if($eOperation['vatRule'] === Operation::VAT_STD_COLLECTED) {
+
+			$eAccount['vatAccount'] = \account\AccountLib::getByClass(\account\AccountSetting::VAT_SELL_CLASS_ACCOUNT);
+
+		} else if($eOperation['vatRule'] === Operation::VAT_STD and $eAccount['vatAccount']->empty()) {
+
+			\Fail::log('Operation::vatStd.unknown');
+			return FALSE;
+
+		// Une valeur de TVA a été saisie avec une règle qui dit "pas de TVA"
+		} else if($eOperation['vatRule'] !== Operation::VAT_STD and $vatValue) {
+
+			\Fail::log('Operation::vatRuleNoWithVatValue.inconsistency', [$eOperation['vatRule']]);
+			return FALSE;
+
+		}
+
+		return $eAccount;
+	}
+
+	/**
+	 * Les acomptes (409x et 419x) doivent être enregistrés TTC avec une contrepartie 44581 pour la TVA
+	 */
+	private static function manageDeposit(Operation $eOperation, Operation $eOperationVat): Operation {
+
+		if(
+				\account\AccountLabelLib::isDeposit($eOperation['accountLabel']) === FALSE or
+				(int)$eOperation['vatRate'] === 0 or
+				$eOperationVat->empty())
+		{
+			return new Operation();
+		}
+
+		$eAccountVatRegul = \account\AccountLib::getByClass(\account\AccountSetting::VAT_TO_REGULATE_CLASS);
+		$eOperation['amount'] += $eOperationVat['amount'] ?? 0;
+		Operation::model()->update($eOperation, ['amount' => $eOperation['amount']]);
+
+		// Créer l'écriture de TVA de régul
+		$eOperationVatRegul = self::createVatRegulOperation($eOperationVat, $eAccountVatRegul, $eOperation);
+
+		return $eOperationVatRegul;
 
 	}
 
@@ -865,7 +853,7 @@ class OperationLib extends OperationCrud {
 
 	}
 
-	public static function deleteByHash(string $hash): void {
+	public static function deleteByHash(string $hash, ?string $newHash = NULL): void {
 
 		// Suppression de toutes les opérations liées par le hash
 		$cOperation = Operation::model()
@@ -873,16 +861,22 @@ class OperationLib extends OperationCrud {
 			->whereHash($hash)
 			->getCollection();
 
+		$cOperationOriginByHash = OperationLib::getByHash($hash);
+
+		foreach($cOperationOriginByHash as $eOperationOriginByHash) {
+			$eOperationOriginByHash->validate('isNotLinkedToAsset');
+		}
+
 		// Dissociation du cash si besoin
 		\cash\Cash::model()
 			->whereAccountingHash($hash)
-			->update(['accountingHash' => NULL]);
+			->update(['accountingHash' => $newHash]);
 
-		OperationCashflow::model()->whereOperation('IN', $cOperation->getIds())->delete();
-		Operation::model()->whereId('IN', $cOperation->getIds())->delete();
+		OperationCashflow::model()->whereHash($hash)->delete();
+		Operation::model()->whereHash($hash)->delete();
 
 		// Si l'opération est issue d'un import en compta => supprimer le lien avec les paiements
-		\selling\Payment::model()->whereAccountingHash($hash)->update(['accountingHash' => NULL]);
+		\selling\Payment::model()->whereAccountingHash($hash)->update(['accountingHash' => $newHash]);
 
 	}
 
@@ -1260,8 +1254,8 @@ class OperationLib extends OperationCrud {
 
 		return Operation::model()
 			->select(['description', 'count' => new \Sql('COUNT(*)')])
-			->whereThirdParty($eThirdParty)
-			->whereAccountLabel($accountLabel)
+			->whereThirdParty($eThirdParty, if: $eThirdParty and $eThirdParty->notEmpty())
+			->whereAccountLabel($accountLabel, if: $accountLabel)
 			// Exclusion banque et TVA qui sont générés automatiquement
 			->where('accountLabel NOT LIKE "'.\account\AccountSetting::BANK_ACCOUNT_CLASS.'%"')
 			->where('accountLabel NOT LIKE "'.\account\AccountSetting::VAT_CLASS.'%"')

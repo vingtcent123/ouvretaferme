@@ -567,10 +567,24 @@ new Page(function($data) {
 			// Formattage des nombres
 			foreach($operations as &$lineFec) {
 
-				\preaccounting\AccountingLib::unsetExtraColumns($lineFec);
 				foreach([\preaccounting\AccountingLib::FEC_COLUMN_DEBIT, \preaccounting\AccountingLib::FEC_COLUMN_CREDIT, \preaccounting\AccountingLib::FEC_COLUMN_DEVISE_AMOUNT] as $column) {
 					$lineFec[$column] = \util\TextUi::csvNumber($lineFec[$column]);
 				}
+
+				if(
+					array_key_exists(\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_ORIGIN, $lineFec) and
+					$lineFec[\preaccounting\AccountingLib::EXTRA_FEC_COLUMN_ORIGIN] === 'register' and
+					str_contains($lineFec[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT], '-')
+				) {
+					list($registerId, $position) = explode('-', $lineFec[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT]);
+					$eCash = new \cash\Cash([
+						'register' => new \cash\Register(['id' => $registerId]),
+						'position' => $position,
+					]);
+					$lineFec[\preaccounting\AccountingLib::FEC_COLUMN_DOCUMENT] = \cash\CashUi::getName($eCash);
+				}
+
+				\preaccounting\AccountingLib::unsetExtraColumns($lineFec);
 
 			}
 

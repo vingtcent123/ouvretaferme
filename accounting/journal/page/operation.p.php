@@ -342,7 +342,7 @@ new Page()
 		$accountLabel = POST('accountLabel');
 		$eThirdParty = \account\ThirdPartyLib::getById(POST('thirdParty'));
 
-		if($accountLabel and $eThirdParty->notEmpty()) {
+		if($accountLabel or $eThirdParty->notEmpty()) {
 			$data->descriptions = \journal\OperationLib::getDescriptions($accountLabel, $eThirdParty);
 		} else {
 			$data->descriptions = [];

@@ -263,6 +263,7 @@ Class AccountingLib {
 	public static function generateSalesFec(\Collection $cSale, \Collection $cAccount, \account\Account $eAccountFilter, \selling\Payment $ePaymentFilter = new \selling\Payment(), \cash\Cash $eCash = new \cash\Cash(), ?string $counterpart = NULL, \payment\Method $eMethodFilter = new \payment\Method()): array {
 
 		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL);
+		$cFinancialYear = \account\FinancialYearLib::getAll();
 
 		$fecData = [];
 		$nSale = 0;
@@ -281,7 +282,9 @@ Class AccountingLib {
 				$description = $document;
 			}
 
-			$ratios = new RatioLib($eSale, $cAccount)->filter($ePaymentFilter, $eMethodFilter);
+			$eFinancialYear = \account\FinancialYearLib::getFinancialYearForDate($eSale['deliveredAt'], $cFinancialYear);
+			$ratios = new RatioLib($eSale, $cAccount, ($eFinancialYear->notEmpty() and $eFinancialYear->isCashReceipts()))
+				->filter($ePaymentFilter, $eMethodFilter);
 			$items = self::generateFecData($ratios, $eSale['deliveredAt'], $cAccount, $eAccountFilter, $eJournalCode,
 				$document, $eSale['deliveredAt'], ($eInvoice['customer']['name'] ?? ''), $counterpart, $description, $eCash, 'sale');
 
@@ -308,6 +311,8 @@ Class AccountingLib {
 
 		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL);
 
+		$cFinancialYear = \account\FinancialYearLib::getAll();
+
 		$fecData = [];
 		$nInvoices = 0;
 
@@ -319,7 +324,9 @@ Class AccountingLib {
 			}
 			$eInvoice['cItem'] = $cItems;
 
-			$ratios = new RatioLib($eInvoice, $cAccount)->filter($ePaymentFilter, $eMethodFilter);
+			$eFinancialYear = \account\FinancialYearLib::getFinancialYearForDate($eInvoice['date'], $cFinancialYear);
+			$ratios = new RatioLib($eInvoice, $cAccount, ($eFinancialYear->notEmpty() and $eFinancialYear->isCashReceipts()))
+				->filter($ePaymentFilter, $eMethodFilter);
 			$items = self::generateFecData($ratios, $eInvoice['date'], $cAccount, $eAccountFilter, $eJournalCode,
 				$eInvoice['number'] ?? '', $eInvoice['date'], ($eInvoice['customer']['name'] ?? ''), $counterpart, $eInvoice['number'] ?? '', $eCash, 'invoice');
 
@@ -335,9 +342,10 @@ Class AccountingLib {
 
 	}
 
-	public static function generatePaymentsFec(\Collection $cPayment, \Collection $cAccount, bool $forImport, \account\Account $eAccountFilter = new \account\Account()): array {
+	public static function generatePaymentsFec(\Collection $cPayment, \Collection $cAccount): array {
 
 		$eJournalCode = \journal\JournalCodeLib::askByCode(\journal\JournalSetting::JOURNAL_CODE_SELL);
+		$cFinancialYear = \account\FinancialYearLib::getAll();
 
 		$fecData = [];
 		$nPayment = 0;
@@ -374,8 +382,10 @@ Class AccountingLib {
 			$documentDate = $referenceDate;
 			$compAuxLib = ($eElement['customer']['name'] ?? '');
 
-			$ratios = new RatioLib($eElement, $cAccount)->getByVat();
-			$items = self::generateFecData($ratios, $referenceDate, $cAccount, $eAccountFilter, $eJournalCode,
+			$eFinancialYear = \account\FinancialYearLib::getFinancialYearForDate($referenceDate, $cFinancialYear);
+			$ratios = new RatioLib($eElement, $cAccount, ($eFinancialYear->notEmpty() and $eFinancialYear->isCashReceipts()))->getByVat();
+
+			$items = self::generateFecData($ratios, $referenceDate, $cAccount, new \account\Account(), $eJournalCode,
 				$document, $documentDate, $compAuxLib, NULL, $document, new \cash\Cash(), $ePayment['source'], TRUE);
 
 			// S'il y a une différence de montant et qu'il faut la régulariser automatiquement
@@ -418,26 +428,23 @@ Class AccountingLib {
 					}
 
 					$eAccountRegul = $cAccount->find(fn($e) => $e['class'] === $accountLabel)->first();
-					if($eAccountFilter->empty() or \account\AccountLabelLib::isFromClass($eAccountFilter['class'], $eAccountRegul['class'])) {
 
-						$fecDataRegul = self::getFecLine(
-							eAccount    : $eAccountRegul,
-							date        : $referenceDate,
-							eCode       : $eJournalCode,
-							ecritureLib : $document,
-							document    : $document,
-							documentDate: $documentDate,
-							amount      : abs($difference),
-							type        : $type,
-							payment     : $ePayment['methodName'],
-							compAuxNum  : '',
-							compAuxLib  : $compAuxLib,
-							origin      : $ePayment['source'],
-						);
+					$fecDataRegul = self::getFecLine(
+						eAccount    : $eAccountRegul,
+						date        : $referenceDate,
+						eCode       : $eJournalCode,
+						ecritureLib : $document,
+						document    : $document,
+						documentDate: $documentDate,
+						amount      : abs($difference),
+						type        : $type,
+						payment     : $ePayment['methodName'],
+						compAuxNum  : '',
+						compAuxLib  : $compAuxLib,
+						origin      : $ePayment['source'],
+					);
 
-						self::mergeFecLineIntoItemData($items, $fecDataRegul);
-
-					}
+					self::mergeFecLineIntoItemData($items, $fecDataRegul);
 
 				}
 
@@ -518,9 +525,9 @@ Class AccountingLib {
 							payment     : $paymentName,
 							compAuxNum  : $compAuxNum,
 							compAuxLib  : $compAuxLib,
+							number      : $forImport ? ++$number : NULL,
 							origin      : $origin,
 							sortDate    : $date,
-							number      : $forImport ? ++$number : NULL,
 						);
 
 						$lastNumber = $number;
@@ -547,9 +554,9 @@ Class AccountingLib {
 								payment     : $paymentName,
 								compAuxNum  : $compAuxNum,
 								compAuxLib  : $compAuxLib,
+								number      : $forImport ? ++$number : NULL,
 								origin      : $origin,
 								sortDate    : $date,
-								number      : $forImport ? ++$number : NULL,
 							);
 
 							if($forImport) {
@@ -610,10 +617,10 @@ Class AccountingLib {
 						payment     : $paymentName,
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
+						number      : $forImport ? ++$number : NULL,
 						isSummed    : FALSE,
 						origin      : $origin,
 						sortDate    : $date,
-						number      : $forImport ? ++$number : NULL,
 					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataItem);
@@ -638,10 +645,10 @@ Class AccountingLib {
 						payment     : $paymentName,
 						compAuxNum  : $compAuxNum,
 						compAuxLib  : $compAuxLib,
+						number      : $forImport ? ++$number : NULL,
 						isSummed    : FALSE,
 						origin      : $origin,
 						sortDate    : $date,
-						number      : $forImport ? ++$number : NULL,
 					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataItem);
@@ -675,6 +682,7 @@ Class AccountingLib {
 
 		unset($fecLine[self::EXTRA_FEC_COLUMN_ORIGIN]);
 		unset($fecLine[self::EXTRA_FEC_COLUMN_IS_SUMMED]);
+		unset($fecLine[self::EXTRA_FEC_COLUMN_SORT_DATE]);
 
 		return $fecLine;
 
@@ -766,20 +774,6 @@ Class AccountingLib {
 		if($added === FALSE) {
 			$items[] = $fecLine;
 		}
-	}
-
-	private static function extractFinancialYearByDate(\Collection $cFinancialYear, string $date): \account\FinancialYear {
-
-		if($cFinancialYear->notEmpty()) {
-
-			$eFinancialYear = $cFinancialYear->find(
-				fn($e) => $e['startDate'] <= $date and $date <= $e['endDate']
-			)->first();
-
-		}
-
-		return $eFinancialYear ?? new \account\FinancialYear();
-
 	}
 
 }

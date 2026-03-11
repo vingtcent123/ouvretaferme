@@ -28,7 +28,9 @@ document.delegateEventListener('change', '[data-wrapper="value-calculation"] inp
 });
 
 document.delegateEventListener('input', 'input[name="acquisitionDate"]', function() {
-	qs('input[name="startDate"]').value = this.value;
+	if(qs('input[name="startDate"]')) {
+		qs('input[name="startDate"]').value = this.value;
+	}
 });
 
 document.delegateEventListener('change', '[data-field="economicMode"]', function() {

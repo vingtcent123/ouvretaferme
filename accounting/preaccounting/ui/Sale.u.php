@@ -66,7 +66,6 @@ Class SaleUi {
 						$h .= '<td class="t-highlight">'.encode($operation[AccountingLib::FEC_COLUMN_ACCOUNT_DESCRIPTION]).'</td>';
 						$h .= '<td>';
 							if($operation[AccountingLib::EXTRA_FEC_COLUMN_ORIGIN] === 'invoice' and $cInvoice->offsetExists($operation[AccountingLib::FEC_COLUMN_DOCUMENT])) {
-								$eInvoice = $cInvoice[$operation[AccountingLib::FEC_COLUMN_DOCUMENT]];
 								$document = $operation[AccountingLib::FEC_COLUMN_DOCUMENT];
 								$url = \farm\FarmUi::urlSellingInvoices($eFarm).'?name='.$document;
 							} else if($operation[AccountingLib::EXTRA_FEC_COLUMN_ORIGIN] === 'sale') {

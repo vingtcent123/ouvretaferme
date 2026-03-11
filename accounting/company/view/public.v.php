@@ -115,6 +115,8 @@ new AdaptativeView('beta', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/comptabilite/parametrer', function($data, FarmTemplate $t) {
 
+	Asset::js('account', 'financialYear.js');
+
 	$t->title = s("Paramétrer la comptabilité sur {siteName}");
 	$t->nav = 'accounting';
 	$t->subNav = 'analyze';

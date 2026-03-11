@@ -50,7 +50,7 @@ Class ImportLib {
 			return new \Collection();
 		}
 
-		[$fec, ] = AccountingLib::generatePaymentsFec($cPayment, $cAccount, TRUE);
+		[$fec, ] = AccountingLib::generatePaymentsFec($cPayment, $cAccount);
 
 		// Rattacher les opérations aux invoices
 		foreach($cPayment as &$ePayment) {
@@ -104,7 +104,7 @@ Class ImportLib {
 					) {
 						continue;
 					}
-					[$fec, ] = AccountingLib::generatePaymentsFec(new \Collection([$ePayment]), $cAccount, TRUE);
+					[$fec, ] = AccountingLib::generatePaymentsFec(new \Collection([$ePayment]), $cAccount);
 					if(self::isFecDataImportable($fec)) {
 						self::importPayment($eFinancialYear, $ePayment, $fec, $cAccount, $cPaymentMethod);
 					}

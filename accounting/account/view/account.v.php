@@ -87,7 +87,9 @@ new JsonView('query', function($data, AjaxTemplate $t) {
 
 	}
 
-	$results[] = \account\AccountUi::getAutocompleteCreate($data->eFarm);
+	if($data->eFarm['eFinancialYear']->isCashReceipts() === FALSE) {
+		$results[] = \account\AccountUi::getAutocompleteCreate($data->eFarm);
+	}
 
 	$t->push('results', $results);
 

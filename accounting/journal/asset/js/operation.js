@@ -38,18 +38,22 @@ document.delegateEventListener('autocompleteBeforeQuery', '[data-third-party="ba
 
 document.delegateEventListener('autocompleteBeforeQuery', '[data-description="journal-operation-create"], [data-description="journal-operation-update"], [data-description="bank-cashflow-allocate"]', function(e) {
 
-	if(e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]') === null) {
-		return;
-	}
-
-	if(e.detail.input.firstParent('div.operation-create').qs('[name^="accountLabel["]') === null) {
+	if(
+		e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]') === null &&
+		(Operation.isCashReceipts() === false || e.detail.input.firstParent('div.operation-create').qs('[name^="accountLabel["]') === null)
+	) {
 		return;
 	}
 
 	const thirdParty = e.detail.input.firstParent('div.operation-create').qs('[name^="thirdParty["]').getAttribute('value');
-	const accountLabel = e.detail.input.firstParent('div.operation-create').qs('[name^="accountLabel["]').value;
 	e.detail.body.append('thirdParty', thirdParty);
-	e.detail.body.append('accountLabel', accountLabel);
+
+	if(Operation.isCashReceipts() === false) {
+		const accountLabel = e.detail.input.firstParent('div.operation-create').qs('[name^="accountLabel["]').value;
+		e.detail.body.append('accountLabel', accountLabel);
+
+	}
+
 });
 
 document.delegateEventListener('autocompleteBeforeQuery', '[data-account="journal-operation-create"], [data-account="journal-operation-update"], [data-account="bank-cashflow-allocate"]', function(e) {
@@ -128,7 +132,9 @@ document.delegateEventListener('autocompleteSelect', '[data-account="journal-ope
 
 		}
 
-		qs('[data-account-label="' + this.dataset.account + '"][data-index="' + index + '"]').focus();
+		if(Operation.isCashReceipts() === false) {
+			qs('[data-account-label="' + this.dataset.account + '"][data-index="' + index + '"]').focus();
+		}
 
 	} else {
 
@@ -193,11 +199,7 @@ document.delegateEventListener('mouseout', '[data-highlight]', function(e) {
 
 document.delegateEventListener('change', '[data-date="journal-operation-create"][data-accounting-type="cash"]', function(e) {
 
-	const isFromCashflow = parseInt(qs('[data-cashflow]').getAttribute('data-cashflow')) === 1;
-
-	if(isFromCashflow) {
-		Operation.copyDate(e);
-	}
+	Operation.copyDate(e);
 
 });
 
@@ -271,6 +273,10 @@ class Operation {
 
 	static hasVat() {
 		return parseBool(qs('form[data-has-vat]').dataset.hasVat);
+	}
+
+	static isCashReceipts() {
+		return parseBool(qs('form[data-is-cash-receipts]').dataset.isCashReceipts);
 	}
 
 	static highlight(selector) {

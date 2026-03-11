@@ -86,8 +86,13 @@ class Asset extends AssetElement {
 	public function build(array $properties, array $input, \Properties $p = new \Properties()): void {
 
 		$p
-			->setCallback('account.check', function(?\account\Account $eAccount): bool {
+			->setCallback('account.check', function(?\account\Account &$eAccount): bool {
 
+				$eFarm = \farm\Farm::getConnected();
+				if($eFarm['eFinancialYear']->isCashReceipts()) {
+					$eAccount = \account\AccountLib::getByClass(\account\AccountSetting::TANGIBLE_ASSETS_CLASS);
+					return TRUE;
+				}
 				if($eAccount->empty()) {
 					return FALSE;
 				}
@@ -109,7 +114,12 @@ class Asset extends AssetElement {
 				return mb_substr($eAccount['class'], 0, 2) === mb_substr($this['accountLabel'], 0, 2);
 
 			})
-			->setCallback('accountLabel.check', function(?string $accountLabel): bool {
+			->setCallback('accountLabel.check', function(?string &$accountLabel): bool {
+
+				$eFarm = \farm\Farm::getConnected();
+				if($eFarm['eFinancialYear']->isCashReceipts()) {
+					$accountLabel = \account\AccountLabelLib::pad(\account\AccountSetting::TANGIBLE_ASSETS_CLASS);
+				}
 
 				return \account\AccountLabelLib::isFromClass($accountLabel, \account\AccountSetting::ASSET_GENERAL_CLASS)
 					or \account\AccountLabelLib::isFromClass($accountLabel, \account\AccountSetting::GRANT_ASSET_CLASS);
@@ -141,7 +151,21 @@ class Asset extends AssetElement {
 				return($this['value'] >= $amortizableBase);
 
 			})
-			->setCallback('economicMode.incompatible', function(?string $economicMode) use($p): bool {
+			->setCallback('economicMode.prepare', function(?string &$economicMode) use($p): bool {
+
+				$eFarm = \farm\Farm::getConnected();
+				if($eFarm['eFinancialYear']->isCashReceipts()) {
+					$economicMode = Asset::WITHOUT;
+				}
+
+				return TRUE;
+			})
+			->setCallback('economicMode.incompatible', function(?string &$economicMode) use($p): bool {
+
+				$eFarm = \farm\Farm::getConnected();
+				if($eFarm['eFinancialYear']->isCashReceipts()) {
+					$economicMode = Asset::WITHOUT;
+				}
 
 				if(
 					$p->isBuilt('accountLabel') === FALSE or $economicMode === NULL or $economicMode === Asset::WITHOUT or
@@ -189,7 +213,21 @@ class Asset extends AssetElement {
 				return ($economicDuration >= 36);
 
 			})
-			->setCallback('fiscalMode.incompatible', function(?string $fiscalMode) use($p): bool {
+			->setCallback('fiscalMode.prepare', function(?string &$fiscalMode) use($p): bool {
+
+				$eFarm = \farm\Farm::getConnected();
+				if($eFarm['eFinancialYear']->isCashReceipts()) {
+					$fiscalMode = Asset::WITHOUT;
+				}
+				return TRUE;
+
+			})
+			->setCallback('fiscalMode.incompatible', function(?string &$fiscalMode) use($p): bool {
+
+				$eFarm = \farm\Farm::getConnected();
+				if($eFarm['eFinancialYear']->isCashReceipts()) {
+					$fiscalMode = Asset::WITHOUT;
+				}
 
 				if(
 					$p->isBuilt('accountLabel') === FALSE or $fiscalMode === NULL or $fiscalMode === Asset::WITHOUT or
@@ -251,10 +289,15 @@ class Asset extends AssetElement {
 				return \util\DateLib::isValid($acquisitionDate) and $acquisitionDate <= date('Y-m-d');
 
 			})
-			->setCallback('startDate.inconsistency', function(?string $startDate) use($p): bool {
+			->setCallback('startDate.inconsistency', function(?string &$startDate) use($p): bool {
 
 				if($p->isBuilt('acquisitionDate') === FALSE) {
 					return TRUE;
+				}
+
+				$eFarm = \farm\Farm::getConnected();
+				if($eFarm['eFinancialYear']->isCashReceipts()) {
+					$startDate = $this['acquisitionDate'];
 				}
 
 				return $startDate >= $this['acquisitionDate'];

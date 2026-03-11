@@ -12,7 +12,8 @@ class RatioLib {
 
 	public function __construct(
 		private \selling\Sale|\selling\Invoice $e,
-		private \Collection $cAccount = new \Collection()
+		private \Collection $cAccount = new \Collection(),
+		private bool $isCashReceipt = FALSE,
 	) {
 
 		$e->expects(['cItem', 'vatByRate', 'priceIncludingVat', 'priceExcludingVat', 'paymentAmount']);
@@ -256,7 +257,7 @@ class RatioLib {
 
 			$accounts[$key] ??= [];
 
-			$eAccount = self::getAccountFromItem($eItem, $this->cAccount);
+			$eAccount = $this->getAccountFromItem($eItem, $this->cAccount);
 			$accountId = $eAccount->empty() ? NULL : $eAccount['id'];
 
 			$accounts[$key][$accountId] ??= 0.0;
@@ -342,7 +343,11 @@ class RatioLib {
 
 	}
 
-	private static function getAccountFromItem(\selling\Item $eItem, \Collection $cAccount): \account\Account {
+	private function getAccountFromItem(\selling\Item $eItem, \Collection $cAccount): \account\Account {
+
+		if($this->isCashReceipt) {
+			return $cAccount->find(fn($e) => $e['class'] === (string)\account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, limit: 1, default: new \account\Account());
+		}
 
 		// Account défini dans l'item
 		if($eItem['account']->notEmpty() and $cAccount->offsetExists($eItem['account']['id'])) {

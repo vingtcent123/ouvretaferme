@@ -126,19 +126,32 @@ class AssetLib extends \asset\AssetCrud {
 		}
 
 		// Check scale
-		$economicDurationScale = POST('economicDurationScale');
-		$fiscalDurationScale = POST('fiscalDurationScale');
-		if(
-			in_array($economicDurationScale, ['month', 'year']) === FALSE or
-			in_array($fiscalDurationScale, ['month', 'year']) === FALSE
-		) {
-			throw new \NotExpectedAction('Unknown scale value');
+		if($e['economicMode'] !== Asset::WITHOUT) {
+
+			$economicDurationScale = POST('economicDurationScale');
+
+			if(in_array($economicDurationScale, ['month', 'year']) === FALSE) {
+				throw new \NotExpectedAction('Unknown scale value');
+			}
+
+			if($economicDurationScale === 'year') {
+				$e['economicDuration'] *= 12;
+			}
+
 		}
-		if($economicDurationScale === 'year') {
-			$e['economicDuration'] *= 12;
-		}
-		if($fiscalDurationScale === 'year') {
-			$e['fiscalDuration'] *= 12;
+
+		if($e['fiscalMode'] !== Asset::WITHOUT) {
+
+			$fiscalDurationScale = POST('fiscalDurationScale');
+
+			if(in_array($fiscalDurationScale, ['month', 'year']) === FALSE) {
+				throw new \NotExpectedAction('Unknown scale value');
+			}
+
+			if($fiscalDurationScale === 'year') {
+				$e['fiscalDuration'] *= 12;
+			}
+
 		}
 
 		parent::create($e);

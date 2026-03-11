@@ -84,6 +84,7 @@ new Page()
 		$data->search->set('class', GET('class', 'array'));
 	}
 	$data->search->set('visible', TRUE);
+	$data->search->set('forReceiptAccounting', $data->eFarm['eFinancialYear']->isCashReceipts());
 
 	$cAccount = \account\AccountLib::getAll(query: $query, search: $data->search);
 

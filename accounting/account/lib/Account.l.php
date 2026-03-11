@@ -130,8 +130,23 @@ class AccountLib extends AccountCrud {
 			}
 		}
 
+		if($search->has('forReceiptAccounting') and $search->get('forReceiptAccounting') === TRUE) {
+			if($search->has('classPrefixes') and $search->get('classPrefixes')) {
+				Account::model()
+					->where(fn() => 'class LIKE "'.join('" OR class LIKE "', $search->get('classPrefixes')).'"', if: $search->has('classPrefixes') and $search->get('classPrefixes'))
+				;
+			} else {
+				Account::model()
+					->where('class IN ("'.join('", "', [AccountSetting::CHARGE_BUY_ACCOUNT_CLASS, AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS]).'") OR class LIKE "'.AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS.'%"')
+					;
+			}
+		} else {
+			Account::model()
+				->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->has('classPrefixes') and $search->get('classPrefixes'))
+				;
+		}
+
 		return Account::model()
-			->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->has('classPrefixes') and $search->get('classPrefixes'))
 			->where('class LIKE "%'.$search->get('stock').'%"', if: $search->has('stock') and $search->get('stock')->notEmpty())
 			->whereClass('LIKE', $search->get('classPrefix').'%', if: $search->get('classPrefix'))
 			->whereClass('IN', fn() => $search->get('class'), if: $search->has('class') and is_array($search->get('class')))

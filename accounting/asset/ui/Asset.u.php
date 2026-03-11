@@ -127,6 +127,7 @@ Class AssetUi {
 	public function createOrUpdate(\farm\Farm $eFarm, \Collection $cFinancialYear, Asset $eAsset, \Collection $cOperation, \Collection $cAmortizationDuration): \Panel {
 
 		\Asset::js('asset', 'asset.js');
+		$isCashReceipts = $eFarm['eFinancialYear']->isCashReceipts();
 
 		$script = '<script type="text/javascript">';
 			$script .= 'Asset.initFiscalDurations('.json_encode($cAmortizationDuration).', '.AssetSetting::AMORTIZATION_DURATION_TOLERANCE.')';
@@ -170,101 +171,111 @@ Class AssetUi {
 			$eAsset['value'] = $value;
 		}
 
-		$h .= $form->dynamicGroups($eAsset, ['description*']);
+		$properties = array_merge(
+			['description*', 'account*'],
+			$isCashReceipts === FALSE ? ['accountLabel*'] : [],
+			['value*'],
+			$isCashReceipts === FALSE ? ['residualValue'] : [],
+			['acquisitionDate*'],
+			$isCashReceipts === FALSE ? ['startDate'] : [],
+		);
 
-		$h .= $form->dynamicGroups($eAsset, ['account*', 'accountLabel*'], ['account*' => function($d) use($form, $eAsset) {
-			$d->autocompleteDispatch = '[data-account="'.$form->getId().'"]';
-			$d->attributes['data-wrapper'] = 'account';
-			$d->attributes['data-account'] = $form->getId();
-			$d->autocompleteDefault = $eAsset['account'];
-		}, 'accountLabel*' => function($d) use($form) {
-			$d->autocompleteDispatch = '[data-account-label="'.$form->getId().'"]';
-			$d->attributes['data-account-label'] = $form->getId();
-		}]);
+			$h .= $form->dynamicGroups($eAsset, $properties, ['account*' => function($d) use($form, $eAsset) {
+				$d->autocompleteDispatch = '[data-account="'.$form->getId().'"]';
+				$d->attributes['data-wrapper'] = 'account';
+				$d->attributes['data-account'] = $form->getId();
+				$d->autocompleteDefault = $eAsset['account'];
+			}, 'accountLabel*' => function($d) use($form) {
+				$d->autocompleteDispatch = '[data-account-label="'.$form->getId().'"]';
+				$d->attributes['data-account-label'] = $form->getId();
+			}]);
 
-		$h .= $form->dynamicGroups($eAsset, ['value*', 'residualValue', 'acquisitionDate*', 'startDate']);
+		if($isCashReceipts === FALSE) {
 
-		if($eAsset->exists() === FALSE) {
+			if($eAsset->exists() === FALSE) {
 
-			$h .= '<div class="mb-1"><a onclick="Asset.showAlreadyAmortizePart(this);" class="color-muted font-md" data-already-amortize-icon>';
-				$h .= \Asset::icon('chevron-down', ['class' => 'hide']).\Asset::icon('chevron-right');
-				$h .= ' ';
-				$h .= s("L'amortissement de cette immobilisation a déjà commencé");
-			$h .= '</a></div>';
+				$h .= '<div class="mb-1"><a onclick="Asset.showAlreadyAmortizePart(this);" class="color-muted font-md" data-already-amortize-icon>';
+					$h .= \Asset::icon('chevron-down', ['class' => 'hide']).\Asset::icon('chevron-right');
+					$h .= ' ';
+					$h .= s("L'amortissement de cette immobilisation a déjà commencé");
+				$h .= '</a></div>';
 
-			$h .= '<div data-already-amortize-part class="hide">';
-				$h .= '<h3>'.s("Réintégration de l'immobilisation").'</h3>';
-				$h .= $form->group(
-					s("Exercice"),
-					$form->select(
-						'resumeDate',
-						$cFinancialYear->toArray(fn($e) => [
-							'value' => $e['startDate'], 'label' => s("Exercice {value}", $e->getLabel())
-						])
-					).\util\FormUi::info(s("Exercice à partir duquel réintégrer l'immobilisation dans {siteName}"))
-				);
+				$h .= '<div data-already-amortize-part class="hide">';
+					$h .= '<h3>'.s("Réintégration de l'immobilisation").'</h3>';
+					$h .= $form->group(
+						s("Exercice"),
+						$form->select(
+							'resumeDate',
+							$cFinancialYear->toArray(fn($e) => [
+								'value' => $e['startDate'], 'label' => s("Exercice {value}", $e->getLabel())
+							])
+						).\util\FormUi::info(s("Exercice à partir duquel réintégrer l'immobilisation dans {siteName}"))
+					);
+				$h .= '</div>';
+
+			}
+
+			if($eAsset->exists()) {
+				$recommendationText = $this->getDurationRecommandation($eAsset['accountLabel'], $cAmortizationDuration);
+			} else if($cOperation->notEmpty()) {
+				$recommendationText = $this->getDurationRecommandation($cOperation->first()['accountLabel'], $cAmortizationDuration);
+			} else {
+				$recommendationText = '';
+			}
+			$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 '.($recommendationText ? '' : 'hide').'" data-url="'.\farm\FarmUi::urlConnected($eFarm).'/asset/:getRecommendedDuration">';
+				$h .= $recommendationText;
 			$h .= '</div>';
-		}
 
-		if($eAsset->exists()) {
-			$recommendationText = $this->getDurationRecommandation($eAsset['accountLabel'], $cAmortizationDuration);
-		} else if($cOperation->notEmpty()) {
-			$recommendationText = $this->getDurationRecommandation($cOperation->first()['accountLabel'], $cAmortizationDuration);
-		} else {
-			$recommendationText = '';
-		}
-		$h .= '<div id="amortization-duration-recommandation" class="util-block-help mt-2 '.($recommendationText ? '' : 'hide').'" data-url="'.\farm\FarmUi::urlConnected($eFarm).'/asset/:getRecommendedDuration">';
-			$h .= $recommendationText;
-		$h .= '</div>';
-
-		$h .= '<h3>'.s("Amortissement économique").'</h3>';
-		$h .= '<div class="util-block bg-background-light">';
-			$h .= $form->dynamicGroups($eAsset, ['economicMode*', 'economicDuration'], [
-				'economicDuration' => function($d) use($form, $eAsset) {
-					$form = new \util\FormUi();
-					$d->append = $form->select('economicDurationScale', ['month' => s("mois"), 'year' => s("années")], $eAsset->exists() ? 'month' : 'year', ['required' => TRUE]);
-					$d->group += ['class' => 'company_form_group-with-tip'];
-
-					$append = '<a data-economic-duration-suggested class="btn btn-outline-warning hide" data-dropdown="bottom" data-dropdown-hover="true">';
-						$append .= \Asset::icon('exclamation-triangle');
-					$append .= '</a>';
-					$append .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
-						$append .= '<span class="dropdown-item">';
-							$append .= '<span data-suggestion-one-year class="hide">'.s("La durée recommandée par l'administration fiscale est <br />de {minYear} ans, soit, avec la marge de tolérance, <br /> entre <b>{minMois} et {maxMois}</b> mois.", [
-								'minYear' => '<span data-min-year></span>',
-								'minMois' => '<span data-min-month></span>',
-								'maxMois' => '<span data-max-month></span>',
-							]).'</span>';
-							$append .= '<span data-suggestion-several-years class="hide">'.s("La durée recommandée par l'administration fiscale est comprise <br />entre {minYear} et {maxYear} ans, soit, avec la marge de tolérance, <br />entre <b>{minMois} et {maxMois}</b> mois.", [
-								'minYear' => '<span data-min-year></span>',
-								'maxYear' => '<span data-max-year></span>',
-								'minMois' => '<span data-min-month></span>',
-								'maxMois' => '<span data-max-month></span>',
-							]).'</span>';
-						$append .= '</span>';
-					$append .= '</div>';
-					$d->after = $append;
-				}
-			]);
-		$h .= '</div>';
-
-		$h .= '<div class="mb-1"><a onclick="Asset.showFiscalAmortization(this);" class="color-muted font-md" data-fiscal-amortization-icon>';
-			$h .= \Asset::icon('chevron-down', ['class' => 'hide']).\Asset::icon('chevron-right');
-			$h .= ' ';
-			$h .= s("L'amortissement fiscal est différent");
-		$h .= '</a></div>';
-
-		$h .= '<div data-fiscal-amortization class="hide">';
-			$h .= '<h3>'.s("Amortissement fiscal").'</h3>';
+			$h .= '<h3>'.s("Amortissement économique").'</h3>';
 			$h .= '<div class="util-block bg-background-light">';
-				$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration'], [
-					'fiscalDuration' => function($d) use($form, $eAsset) {
+				$h .= $form->dynamicGroups($eAsset, ['economicMode*', 'economicDuration'], [
+					'economicDuration' => function($d) use($form, $eAsset) {
 						$form = new \util\FormUi();
-						$d->append = $form->select('fiscalDurationScale', ['month' => s("mois"), 'year' => s("années")], $eAsset->exists() ? 'month' : 'year', ['required' => TRUE]);
+						$d->append = $form->select('economicDurationScale', ['month' => s("mois"), 'year' => s("années")], $eAsset->exists() ? 'month' : 'year', ['required' => TRUE]);
+						$d->group += ['class' => 'company_form_group-with-tip'];
+
+						$append = '<a data-economic-duration-suggested class="btn btn-outline-warning hide" data-dropdown="bottom" data-dropdown-hover="true">';
+							$append .= \Asset::icon('exclamation-triangle');
+						$append .= '</a>';
+						$append .= '<div class="dropdown-list bg-primary dropdown-list-bottom">';
+							$append .= '<span class="dropdown-item">';
+								$append .= '<span data-suggestion-one-year class="hide">'.s("La durée recommandée par l'administration fiscale est <br />de {minYear} ans, soit, avec la marge de tolérance, <br /> entre <b>{minMois} et {maxMois}</b> mois.", [
+									'minYear' => '<span data-min-year></span>',
+									'minMois' => '<span data-min-month></span>',
+									'maxMois' => '<span data-max-month></span>',
+								]).'</span>';
+								$append .= '<span data-suggestion-several-years class="hide">'.s("La durée recommandée par l'administration fiscale est comprise <br />entre {minYear} et {maxYear} ans, soit, avec la marge de tolérance, <br />entre <b>{minMois} et {maxMois}</b> mois.", [
+									'minYear' => '<span data-min-year></span>',
+									'maxYear' => '<span data-max-year></span>',
+									'minMois' => '<span data-min-month></span>',
+									'maxMois' => '<span data-max-month></span>',
+								]).'</span>';
+							$append .= '</span>';
+						$append .= '</div>';
+						$d->after = $append;
 					}
 				]);
 			$h .= '</div>';
-		$h .= '</div>';
+
+			$h .= '<div class="mb-1"><a onclick="Asset.showFiscalAmortization(this);" class="color-muted font-md" data-fiscal-amortization-icon>';
+				$h .= \Asset::icon('chevron-down', ['class' => 'hide']).\Asset::icon('chevron-right');
+				$h .= ' ';
+				$h .= s("L'amortissement fiscal est différent");
+			$h .= '</a></div>';
+
+			$h .= '<div data-fiscal-amortization class="hide">';
+				$h .= '<h3>'.s("Amortissement fiscal").'</h3>';
+				$h .= '<div class="util-block bg-background-light">';
+					$h .= $form->dynamicGroups($eAsset, ['fiscalMode*', 'fiscalDuration'], [
+						'fiscalDuration' => function($d) use($form, $eAsset) {
+							$form = new \util\FormUi();
+							$d->append = $form->select('fiscalDurationScale', ['month' => s("mois"), 'year' => s("années")], $eAsset->exists() ? 'month' : 'year', ['required' => TRUE]);
+						}
+					]);
+				$h .= '</div>';
+			$h .= '</div>';
+		}
+
 
 		if($eAsset->exists()) {
 			$text = s("Enregistrer");
@@ -753,8 +764,10 @@ Class AssetUi {
 						$h .= s("n/a");
 					}
 				$h .= '</dd>';
-				$h .= '<dt>'.self::p('amortizableBase')->label.'</dt>';
-				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
+				if($eAsset['economicMode'] !== Asset::WITHOUT) {
+					$h .= '<dt>'.self::p('amortizableBase')->label.'</dt>';
+					$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
+				}
 				$h .= '<dt>'.self::p('economicMode')->label.'</dt>';
 				$h .= '<dd>';
 					$h .= AssetUi::p('economicMode')->values[$eAsset['economicMode']];
@@ -807,53 +820,85 @@ Class AssetUi {
 			AssetElement::SOLD => s("Vendre"),
 		];
 
+		$isCashReceipts = $eFarm['eFinancialYear']->isCashReceipts();
+
 		$assetAccountLabel = rtrim($eAsset['accountLabel'], '0');
 		$amortizationAccountLabel = \account\AccountLabelLib::getAmortizationClassFromClass($assetAccountLabel);
 		$amortizableBase = AssetLib::getAmortizableBase($eAsset, 'economic');
 
 		$amortizationCumulated = $eAsset['cAmortization']->sum('amount');
 
-		$h .= '<div class="util-info">';
-			if($amortizationCumulated < $amortizableBase) {
-				$h .= s("En validant ce formulaire, deux mouvements seront créés automatiquement : ");
-			} else {
-				$h .= s("En validant ce formulaire, un mouvement sera créée automatiquement : ");
-			}
+		if($isCashReceipts === FALSE) {
 
-			$h .= '<ul>';
+			$h .= '<div class="util-info">';
+
 				if($amortizationCumulated < $amortizableBase) {
-					$h .= '<li>';
-						$h .= s("Écritures de la <b>dotation complémentaire</b> jusqu'à la date de sortie de l'immobilisation (débit 681, crédit {value})", $amortizationAccountLabel);
-					$h .= '</li>';
+					$h .= s("En validant ce formulaire, deux mouvements seront créés automatiquement : ");
+				} else {
+					$h .= s("En validant ce formulaire, un mouvement sera créée automatiquement : ");
 				}
-				$h .= '<li>';
-					$h .= s("Écritures de la <b>sortie de l'immobilisation</b> du patrimoine (débit {debit}, débit 657,  crédit {credit})", ['debit' => $amortizationAccountLabel, 'credit' => $assetAccountLabel]);
-				$h .= '</li>';
-				$h .= '</li>';
-			$h .= '</ul>';
 
-		$h .= '</div>';
+				$h .= '<ul>';
+					if($amortizationCumulated < $amortizableBase) {
+						$h .= '<li>';
+							$h .= s("Écritures de la <b>dotation complémentaire</b> jusqu'à la date de sortie de l'immobilisation (débit 681, crédit {value})", $amortizationAccountLabel);
+						$h .= '</li>';
+					}
+					$h .= '<li>';
+						$h .= s("Écritures de la <b>sortie de l'immobilisation</b> du patrimoine (débit {debit}, débit 657,  crédit {credit})", ['debit' => $amortizationAccountLabel, 'credit' => $assetAccountLabel]);
+					$h .= '</li>';
+					$h .= '</li>';
+				$h .= '</ul>';
+
+			$h .= '</div>';
+
+		}
 
 		$h .= '<div class="util-info hide" type="sold">';
 		$h .= '<h2>'.\Asset::icon('exclamation-octagon').' '.s("Point de vigilance").'</h2>';
 			$h .= s("Dans le cas d'une vente de l'immobilisation, les écritures de cession doivent être enregistrées dans le livre-journal. Il s'agit de :");
+
 			$h .= '<ul>';
 				$h .= '<li>';
-					$h .= s("<b>débiter</b> le compte 462 (créance sur cession d'immobilisation) ou le compte 512 (banque) ou le compte 411 (client),");
+					if($isCashReceipts === FALSE) {
+						$h .= s(
+							"<b>débiter</b> le compte {account1} (créance sur cession d'immobilisation) ou le compte {accountBank} (banque) ou le compte {clientAccount)} (client),", [
+							'account1' => \account\AccountSetting::RECEIVABLES_ON_ASSET_DISPOSAL_CLASS,
+							'accountBank' => \account\AccountSetting::BANK_ACCOUNT_CLASS,
+							'clientAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS,
+						]);
+				} else {
+					$h .= s(
+						"<b>débiter</b> le compte {value} (banque),",
+						\account\AccountSetting::BANK_ACCOUNT_CLASS,
+					);
+				}
+				$h .= '</li>';
+
+				$h .= '<li>';
+					if($isCashReceipts === FALSE) {
+						$h .= s("<b>créditer</b> le compte {value} (produit de cession d'immobilisation) du montant HT,", \account\AccountSetting::PRODUCT_ASSET_VALUE_CLASS);
+					} else {
+						$h .= s("<b>créditer</b> le compte {value} (ventes) du montant HT,", \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS);
+					}
 				$h .= '</li>';
 				$h .= '<li>';
-					$h .= s("<b>créditer</b> le compte 757 (produit de cession d'immobilisation) au montant HT,");
-				$h .= '</li>';
-				$h .= '<li>';
-					$h .= s("<b>créditer</b> le compte 44571 (TVA collectée) du montant de la TVA correspondante.");
+					$h .= s("<b>créditer</b> le compte {value} (TVA collectée) du montant de la TVA correspondante.", \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT);
 				$h .= '</li>';
 			$h .= '</ul>';
 		$h .= '</div>';
 
 		$h .= '<div class="util-info hide" id="dispose-scrap-warning">';
-			$h .= s(
-			"Attention, si vous percevez une indemnisation suite à un sinistre, cette indemnisation doit être comptabilisée comme le produit d'une vente de votre immobilisation : créditer le compte 757 (produit de cession d'immobilisation) et débiter le compte 512 (banque)",
-		);
+			if($isCashReceipts === FALSE) {
+				$h .= s(
+					"Attention, si vous percevez une indemnisation suite à un sinistre, cette indemnisation doit être comptabilisée comme le produit d'une vente de votre immobilisation : créditer le compte {soldAccount} (produit de cession d'immobilisation) et débiter le compte {bankAccount} (banque)", ['soldAccount' => \account\AccountSetting::PRODUCT_ASSET_VALUE_CLASS, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]
+				);
+			} else {
+				$h .= s(
+					"Attention, si vous percevez une indemnisation suite à un sinistre, cette indemnisation doit être comptabilisée comme le produit d'une vente de votre immobilisation : créditer le compte {productAccount} (vente) et débiter le compte {bankAccount} (banque)",
+					['productAccount' => \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, 'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS]
+				);
+			}
 		$h .= '</div>';
 
 		$h .= '<div class="util-block">';

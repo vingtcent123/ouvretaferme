@@ -134,6 +134,10 @@ new \account\FinancialYearPage(function($data) {
 	})
 	->read('close', function($data) {
 
+		if($data->e->isOpen() === FALSE or $data->e->acceptClose() === FALSE or $data->e['endDate'] >= date('Y-m-d')) {
+			throw new NotExistsAction();
+		}
+
 		$data->cFinancialYearOpen = \account\FinancialYearLib::getOpenFinancialYears();
 
 		$data->accountsToSettle = [
@@ -146,19 +150,28 @@ new \account\FinancialYearPage(function($data) {
 			$data->accountsToSettle['cOperationFarmersAccount'] = \account\ClosingLib::getFarmersAccountCloseOperation($data->e, '', $data->accountsToSettle['farmersAccount']);
 		}
 
-		$data->cDeferral = \journal\DeferralLib::getDeferralsForOperations();
+		if($data->e->isCashReceipts()) {
 
-		$data->cAssetGrant = \asset\AssetLib::getGrantsByFinancialYear($data->e);
-		\asset\AmortizationLib::simulateGrants($data->e, $data->cAssetGrant);
-		foreach($data->cAssetGrant as &$eAsset) {
-			$eAsset['table'] = \asset\AmortizationLib::computeTable($eAsset);
-		}
+			$data->cDeferral = new Collection();
+			$data->cAssetGrant = new Collection();
+			$data->cAsset = new Collection();
 
-		$data->cAsset = \asset\AssetLib::getAssetsByFinancialYear($data->e);
-		\asset\AmortizationLib::simulate($data->e, $data->cAsset);
+		} else {
 
-		foreach($data->cAsset as &$eAsset) {
-			$eAsset['table'] = \asset\AmortizationLib::computeTable($eAsset);
+			$data->cDeferral = \journal\DeferralLib::getDeferralsForOperations();
+
+			$data->cAssetGrant = \asset\AssetLib::getGrantsByFinancialYear($data->e);
+			\asset\AmortizationLib::simulateGrants($data->e, $data->cAssetGrant);
+			foreach($data->cAssetGrant as &$eAsset) {
+				$eAsset['table'] = \asset\AmortizationLib::computeTable($eAsset);
+			}
+
+			$data->cAsset = \asset\AssetLib::getAssetsByFinancialYear($data->e);
+			\asset\AmortizationLib::simulate($data->e, $data->cAsset);
+
+			foreach($data->cAsset as &$eAsset) {
+				$eAsset['table'] = \asset\AmortizationLib::computeTable($eAsset);
+			}
 		}
 
 		$data->e['cImport'] = \account\ImportLib::getByFinancialYear($data->e);

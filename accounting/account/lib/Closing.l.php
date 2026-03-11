@@ -19,12 +19,16 @@ Class ClosingLib {
 		// 0- Annuler tous les imports FEC en attente
 		ImportLib::cancelAll($eFinancialYear);
 
-		// 1- Calcul des amortissements classe 2. + des étalements de subvention
-		\asset\AssetLib::amortizeAll($eFinancialYear);
+		if($eFinancialYear->isCashReceipts() === FALSE) {
 
-		// 2- Charges et Produits constatés d'avance
-		if($eFinancialYear->isCashAccounting() === FALSE) {
-			\journal\DeferralLib::recordDeferralIntoFinancialYear($eFinancialYear);
+			// 1- Calcul des amortissements classe 2. + des étalements de subvention
+			\asset\AssetLib::amortizeAll($eFinancialYear);
+
+			// 2- Charges et Produits constatés d'avance
+			if($eFinancialYear->isCashAccounting() === FALSE) {
+				\journal\DeferralLib::recordDeferralIntoFinancialYear($eFinancialYear);
+			}
+
 		}
 
 		// 3- Solder le compte de l'exploitant si nécessaire
@@ -48,7 +52,9 @@ Class ClosingLib {
 		FinancialYear::model()->commit();
 
 		// Met à jour tous les fichiers de l'exercice
-		FinancialYearDocumentLib::regenerateAll($eFarm, $eFinancialYear);
+		if($eFinancialYear->isCashReceipts() === FALSE) {
+			FinancialYearDocumentLib::regenerateAll($eFarm, $eFinancialYear);
+		}
 
 		return TRUE;
 

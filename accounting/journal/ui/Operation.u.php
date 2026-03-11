@@ -207,6 +207,10 @@ class OperationUi {
 
 	public function getOperationGeneral(\account\FinancialYear $eFinancialYear, \Collection $cPaymentMethod, \Collection $cJournalCode, array $defaultValues, \util\FormUi $form, string $for, bool $isFromCashflow): string {
 
+		if($isFromCashflow === FALSE and $eFinancialYear->isCashReceipts()) {
+			return '';
+		}
+
 		$hasPaymentMethod = ($for === 'update' and
 			($defaultValues['paymentMethod'] ?? NULL) !== NULL and
 			$defaultValues['paymentMethod']->notEmpty()
@@ -233,14 +237,16 @@ class OperationUi {
 				$h .= '</fieldset>';
 			}
 
-			$h .= '<fieldset>';
-				$h .= '<legend>'.\journal\OperationUi::p('journalCode').'</legend>';
-				$h .= $form->select(
-					'journalCode',
-					$cJournalCode,
-						$defaultValues['journalCode'] ?? '',
-				);
-			$h .= '</fieldset>';
+			if($eFinancialYear->isCashReceipts() === FALSE) {
+				$h .= '<fieldset>';
+					$h .= '<legend>'.\journal\OperationUi::p('journalCode').'</legend>';
+					$h .= $form->select(
+						'journalCode',
+						$cJournalCode,
+							$defaultValues['journalCode'] ?? '',
+					);
+				$h .= '</fieldset>';
+			}
 		$h .= '</div>';
 
 		return $h;
@@ -269,6 +275,7 @@ class OperationUi {
 				'third-party-create-index' => 0,
 				'class' => 'panel-dialog',
 				'data-has-vat' => (int)$hasVatAccounting,
+				'data-is-cash-receipts' => (int)$eFinancialYear->isCashReceipts(),
 			], $eCashflow->empty() ? [] : ['data-cashflow' => 1]),
 		);
 
@@ -742,6 +749,7 @@ class OperationUi {
 				'third-party-create-index' => 0,
 				'class' => 'panel-dialog',
 				'data-has-vat' => (int)$hasVat,
+				'data-is-cash-receipts' => (int)$eFinancialYear->isCashReceipts(),
 				'data-cashflow' => 0,
 			],
 		);
@@ -797,7 +805,7 @@ class OperationUi {
 
 	}
 
-	private static function getCreateHeader(bool $hasVat, \bank\Cashflow $eCashflow): string {
+	private static function getCreateHeader(bool $hasVat, \account\FinancialYear $eFinancialYear, \bank\Cashflow $eCashflow): string {
 
 		$h = '<div class="operation-create operation-create-headers">';
 
@@ -806,7 +814,9 @@ class OperationUi {
 			$h .= '<div class="operation-create-header">'.self::p('document')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('thirdParty')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('account')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
+			if($eFinancialYear->isCashReceipts() === FALSE) {
+				$h .= '<div class="operation-create-header">'.self::p('accountLabel')->label.' '.\util\FormUi::asterisk().'</div>';
+			}
 			$h .= '<div class="operation-create-header" data-wrapper="asset-label">'.self::p('asset')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('description')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('type')->label.' '.\util\FormUi::asterisk().'</div>';
@@ -930,15 +940,19 @@ class OperationUi {
 				});
 			$h .='</div>';
 
-			$h .= '<div data-wrapper="accountLabel'.$suffix.'">';
-				$h .= $form->dynamicField($eOperation, 'accountLabel'.$suffix, function($d) use($form, $index, $suffix) {
-					$d->autocompleteDispatch = '[data-account-label="'.$form->getId().'"][data-index="'.$index.'"]';
-					$d->attributes['data-wrapper'] = 'accountLabel'.$suffix;
-					$d->attributes['data-index'] = $index;
-					$d->attributes['data-account-label'] = $form->getId();
-					$d->label .=  ' '.\util\FormUi::asterisk();
-				});
-			$h .='</div>';
+			if($eFinancialYear->isCashReceipts() === FALSE) {
+
+				$h .= '<div data-wrapper="accountLabel'.$suffix.'">';
+					$h .= $form->dynamicField($eOperation, 'accountLabel'.$suffix, function($d) use($form, $index, $suffix) {
+						$d->autocompleteDispatch = '[data-account-label="'.$form->getId().'"][data-index="'.$index.'"]';
+						$d->attributes['data-wrapper'] = 'accountLabel'.$suffix;
+						$d->attributes['data-index'] = $index;
+						$d->attributes['data-account-label'] = $form->getId();
+						$d->label .=  ' '.\util\FormUi::asterisk();
+					});
+				$h .='</div>';
+
+			}
 
 			$h .= '<div data-wrapper="asset'.$suffix.'" >';
 				$h .= '<div data-asset-container '.(\asset\AssetLib::isAsset($eOperation['accountLabel'] ?? '') ? '' : ' class="hide"').'>';
@@ -1171,7 +1185,7 @@ class OperationUi {
 
 	}
 
-	private static function getCreateValidate(bool $hasVatAccounting, bool $isFromCashflow): string {
+	private static function getCreateValidate(bool $hasVatAccounting, \account\FinancialYear $eFinancialYear, bool $isFromCashflow): string {
 
 		$h = '<div class="operation-create operation-create-validation">';
 
@@ -1179,7 +1193,9 @@ class OperationUi {
 			$h .= '<div></div>';
 			$h .= '<div></div>';
 			$h .= '<div></div>';
-			$h .= '<div></div>';
+			if($eFinancialYear->isCashReceipts() === FALSE) {
+				$h .= '<div></div>'; // Numéro de compte
+			}
 			$h .= '<div data-wrapper="asset-label"></div>'; // Immo
 			if($isFromCashflow === FALSE) {
 				$h .= '<div></div>';
@@ -1241,10 +1257,10 @@ class OperationUi {
 
 		$h = '<div id="operation-create-list" class="operation-create-several-container" data-columns="1" data-cashflow="'.($eCashflow->notEmpty() ? '1' : '0').'" data-vat="'.($hasVatAccounting ? '1' : '0').'">';
 
-			$h .= self::getCreateHeader($hasVatAccounting, $eCashflow);
+			$h .= self::getCreateHeader($hasVatAccounting, $eFinancialYear, $eCashflow);
 			$h .= self::getFieldsCreateGrid($form, $eOperation, $eCashflow, $eFinancialYear, $suffix, $defaultValues, [], $cPaymentMethod, $hasVatAccounting);
 
-			$h .= self::getCreateValidate($hasVatAccounting, $eCashflow->notEmpty());
+			$h .= self::getCreateValidate($hasVatAccounting, $eFinancialYear, $eCashflow->notEmpty());
 
 		$h .= '</div>';
 
@@ -1295,7 +1311,7 @@ class OperationUi {
 			$attributes['id'] = 'operation-create-list';
 		}
 		$h .= '<div '.attrs($attributes).'>';
-			$h .= self::getCreateHeader($hasVatAccounting, $eCashflow);
+			$h .= self::getCreateHeader($hasVatAccounting, $eFinancialYear, $eCashflow);
 
 			foreach($cOperation as $eOperation) {
 
@@ -1307,7 +1323,7 @@ class OperationUi {
 				$index++;
 			}
 
-			$h .= self::getCreateValidate($hasVatAccounting, $isFromCashflow);
+			$h .= self::getCreateValidate($hasVatAccounting, $eFinancialYear, $isFromCashflow);
 
 		$h .= '</div>';
 
@@ -1693,7 +1709,13 @@ class OperationUi {
 					];
 				};
 				$d->group += ['wrapper' => 'account'];
-				new \account\AccountUi()->query($d, GET('farm', 'farm\Farm'), query: ['withVat' => TRUE, 'withJournal' => TRUE, 'withDetail' => TRUE, 'status' => \account\Account::ACTIVE]);
+				new \account\AccountUi()->query(
+					$d, GET('farm', 'farm\Farm'),
+					query: [
+						'withVat' => TRUE, 'withJournal' => TRUE, 'withDetail' => TRUE,
+						'status' => \account\Account::ACTIVE,
+					],
+				);
 				break;
 
 			case 'description':

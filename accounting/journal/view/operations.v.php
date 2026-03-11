@@ -85,7 +85,7 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 	}
 
 	if(get_exists('hash')) {
-		echo '<div class="util-block-help"><h4>'.s("Filtre de recherche").'</h4>'.s("Un filtre sur un groupe d'écritures est actuellement activé.").'</div>';
+		echo '<div class="util-block-help"><h4>'.s("Filtre de recherche").'</h4>'.s("Un filtre sur un groupe d'écritures est actuellement activé (<link>réinitialiser les filtres</link>).", ['link' => '<a href="'.new \journal\JournalUi()->getBaseUrl($data->eFarm, $data->eFarm['eFinancialYear']).'">']).'</div>';
 	}
 
 	echo '<div class="tabs-h" id="journals"';

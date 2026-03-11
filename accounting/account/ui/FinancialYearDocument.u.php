@@ -49,54 +49,58 @@ Class FinancialYearDocumentUi {
 		$h .= '<div class="financial-year-documents">';
 
 			$h .= '<h2>'.s("Les documents").'</h2>';
-			$h .= '<h3>';
-				$h .= s("Bilans");
-				if($eFinancialYear->isClosed() === FALSE) {
-					$h .= ' <span class="util-badge bg-primary">'.s("Provisoire").'</span>';
-				}
-			$h .= '</h3>';
-			$h .= '<div class="util-buttons">';
-				foreach($bilanDocuments as $document) {
-					$h .= $this->getDocumentCell($eFarm, $eFinancialYear, $document);
-				}
-			$h .= '</div>';
 
-			$h .= '<h3>';
-				$h .= s("Comptes de résultat");
-				if($eFinancialYear->isClosed() === FALSE) {
-					$h .= ' <span class="util-badge bg-primary">'.s("Provisoire").'</span>';
-				}
-			$h .= '</h3>';
-			$h .= '<div class="util-buttons">';
-				foreach([\account\FinancialYearDocumentLib::INCOME_STATEMENT, \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED, \account\FinancialYearDocumentLib::SIG] as $document) {
-					$h .= $this->getDocumentCell($eFarm, $eFinancialYear, $document);
-				}
-			$h .= '</div>';
+			if($eFinancialYear->isCashReceipts() === FALSE) {
 
-			$h .= '<h3>';
-				$h .= s("Balances");
-				if($eFinancialYear->isClosed() === FALSE) {
-					$h .= ' <span class="util-badge bg-primary">'.s("Provisoire").'</span>';
-				}
-			$h .= '</h3>';
-			$h .= '<div class="util-buttons">';
-				foreach([\account\FinancialYearDocumentLib::BALANCE, \account\FinancialYearDocumentLib::BALANCE_DETAILED] as $document) {
-					$h .= $this->getDocumentCell($eFarm, $eFinancialYear, $document);
-				}
-			$h .= '</div>';
+				$h .= '<h3>';
+					$h .= s("Bilans");
+					if($eFinancialYear->isClosed() === FALSE) {
+						$h .= ' <span class="util-badge bg-primary">'.s("Provisoire").'</span>';
+					}
+				$h .= '</h3>';
+				$h .= '<div class="util-buttons">';
+					foreach($bilanDocuments as $document) {
+						$h .= $this->getDocumentCell($eFarm, $eFinancialYear, $document);
+					}
+				$h .= '</div>';
+
+				$h .= '<h3>';
+					$h .= s("Comptes de résultat");
+					if($eFinancialYear->isClosed() === FALSE) {
+						$h .= ' <span class="util-badge bg-primary">'.s("Provisoire").'</span>';
+					}
+				$h .= '</h3>';
+				$h .= '<div class="util-buttons">';
+					foreach([\account\FinancialYearDocumentLib::INCOME_STATEMENT, \account\FinancialYearDocumentLib::INCOME_STATEMENT_DETAILED, \account\FinancialYearDocumentLib::SIG] as $document) {
+						$h .= $this->getDocumentCell($eFarm, $eFinancialYear, $document);
+					}
+				$h .= '</div>';
+
+				$h .= '<h3>';
+					$h .= s("Balances");
+					if($eFinancialYear->isClosed() === FALSE) {
+						$h .= ' <span class="util-badge bg-primary">'.s("Provisoire").'</span>';
+					}
+				$h .= '</h3>';
+				$h .= '<div class="util-buttons">';
+					foreach([\account\FinancialYearDocumentLib::BALANCE, \account\FinancialYearDocumentLib::BALANCE_DETAILED] as $document) {
+						$h .= $this->getDocumentCell($eFarm, $eFinancialYear, $document);
+					}
+				$h .= '</div>';
 
 
-			$h .= '<h3>';
-				$h .= s("Immobilisations");
-				if($eFinancialYear->isClosed() === FALSE) {
-					$h .= ' <span class="util-badge bg-primary">'.s("Provisoire").'</span>';
-				}
-			$h .= '</h3>';
-			$h .= '<div class="util-buttons">';
-				foreach([\account\FinancialYearDocumentLib::ASSET_AMORTIZATION, \account\FinancialYearDocumentLib::ASSET_ACQUISITION] as $document) {
-					$h .= $this->getDocumentCell($eFarm, $eFinancialYear, $document);
-				}
-			$h .= '</div>';
+				$h .= '<h3>';
+					$h .= s("Immobilisations");
+					if($eFinancialYear->isClosed() === FALSE) {
+						$h .= ' <span class="util-badge bg-primary">'.s("Provisoire").'</span>';
+					}
+				$h .= '</h3>';
+				$h .= '<div class="util-buttons">';
+					foreach([\account\FinancialYearDocumentLib::ASSET_AMORTIZATION, \account\FinancialYearDocumentLib::ASSET_ACQUISITION] as $document) {
+						$h .= $this->getDocumentCell($eFarm, $eFinancialYear, $document);
+					}
+				$h .= '</div>';
+			}
 
 			if($eFinancialYear['nOperation'] > 0) {
 

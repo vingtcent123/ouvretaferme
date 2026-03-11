@@ -72,7 +72,7 @@ class Operation extends OperationElement {
 
 	public function isNotLinkedToAsset(): bool {
 
-		return $this['cOperationHash']->notEmpty() and $this['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->empty();
+		return $this['cOperationHash']->empty() or $this['cOperationHash']->getColumnCollection('asset')->find(fn($e) => $e->notEmpty())->empty();
 
 	}
 
@@ -145,9 +145,19 @@ class Operation extends OperationElement {
 				return $eAccount->notEmpty();
 
 			})
-			->setCallback('accountLabel.format', function(?string &$accountLabel): bool {
+			->setCallback('accountLabel.check', function(?string &$accountLabel) use ($p): bool {
 
-				if(mb_strlen($accountLabel) > 8) {
+				if($this['financialYear']->isCashReceipts()) {
+
+					if($p->isBuilt('account') === FALSE) {
+						return TRUE;
+					}
+
+					$accountLabel = \account\AccountLabelLib::pad($this['account']['class']);
+					return TRUE;
+				}
+
+				if(mb_strlen($accountLabel) !== \account\AccountLabelLib::ACCOUNT_LABEL_SIZE) {
 					return FALSE;
 				}
 
@@ -254,6 +264,32 @@ class Operation extends OperationElement {
 			->setCallback('amount.negative', function(float $amount): bool {
 
 				return $amount > 0.0;
+
+			})
+			->setCallback('vatRate.prepare', function(?float &$vatRate): bool {
+
+				$this->expects(['date']);
+
+				$eFarm = \farm\Farm::getConnected();
+
+				if(\farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $this['date']) === FALSE) {
+					$vatRate = 0;
+				}
+
+				return TRUE;
+
+			})
+			->setCallback('vatRule.prepare', function(?string &$vatRule): bool {
+
+				$this->expects(['date']);
+
+				$eFarm = \farm\Farm::getConnected();
+
+				if(\farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $this['date']) === FALSE) {
+					$vatRule = Operation::VAT_0;
+				}
+
+				return TRUE;
 
 			})
 		;

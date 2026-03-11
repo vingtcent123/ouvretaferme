@@ -21,6 +21,10 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			return FALSE;
 		}
 
+		if($eAsset['economicMode'] === Asset::WITHOUT) {
+			return FALSE;
+		}
+
 		foreach($nonAmortizableAssetsClasses as $class) {
 
 			$stringClass = (string)$class;
@@ -1353,65 +1357,66 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	public static function resume(Asset $eAsset): void {
 
+		if($eAsset['resumeDate'] === NULL) {
+			return;
+		}
+
 		// Calcul des amortissements déjà réalisés s'il y a une reprise
-		if($eAsset['resumeDate'] !== NULL) {
+		$table = AmortizationLib::computeTable($eAsset);
 
-			$table = AmortizationLib::computeTable($eAsset);
+		$economicAmortization = 0;
+		$excessAmortization = 0;
+		$excessRecovery = 0;
 
-			$economicAmortization = 0;
-			$excessAmortization = 0;
-			$excessRecovery = 0;
+		foreach($table as $period) {
 
-			foreach($table as $period) {
+			if($period['financialYear']['endDate'] < $eAsset['resumeDate']) {
 
-				if($period['financialYear']['endDate'] < $eAsset['resumeDate']) {
+				$economicAmortization += $period['amortizationValue'];
 
-					$economicAmortization += $period['amortizationValue'];
-
-					if($eAsset['isExcess']) {
-						$excessAmortization += $period['excessDotation'];
-						$excessRecovery += $period['excessRecovery'];
-					}
-
+				if($eAsset['isExcess']) {
+					$excessAmortization += $period['excessDotation'];
+					$excessRecovery += $period['excessRecovery'];
 				}
 
 			}
 
-			$eAsset['economicAmortization'] = $economicAmortization;
+		}
+
+		$eAsset['economicAmortization'] = $economicAmortization;
+
+		$eAmortization = new Amortization([
+			'asset' => $eAsset,
+			'amount' => $economicAmortization,
+			'type' => Amortization::ECONOMIC,
+			'date' => date('Y-m-d', strtotime($eAsset['resumeDate'].' - 1 DAY')),
+			'financialYear' => NULL,
+		]);
+
+		Amortization::model()->insert($eAmortization);
+
+		if($eAsset['isExcess']) {
+			$eAsset['excessAmortization'] = $excessAmortization;
+			$eAsset['excessRecovery'] = $excessRecovery;
 
 			$eAmortization = new Amortization([
 				'asset' => $eAsset,
-				'amount' => $economicAmortization,
-				'type' => Amortization::ECONOMIC,
+				'amount' => $excessAmortization,
+				'type' => Amortization::EXCESS,
 				'date' => date('Y-m-d', strtotime($eAsset['resumeDate'].' - 1 DAY')),
 				'financialYear' => NULL,
 			]);
 
 			Amortization::model()->insert($eAmortization);
 
-			if($eAsset['isExcess']) {
-				$eAsset['excessAmortization'] = $excessAmortization;
-				$eAsset['excessRecovery'] = $excessRecovery;
-
-				$eAmortization = new Amortization([
-					'asset' => $eAsset,
-					'amount' => $excessAmortization,
-					'type' => Amortization::EXCESS,
-					'date' => date('Y-m-d', strtotime($eAsset['resumeDate'].' - 1 DAY')),
-					'financialYear' => NULL,
-				]);
-
-				Amortization::model()->insert($eAmortization);
-
-			}
-
-			Asset::model()
-		     ->update($eAsset, [
-			     'economicAmortization' => $economicAmortization,
-			     'excessAmortization' => $excessAmortization,
-			     'excessRecovery' => $excessRecovery,
-		     ]);
 		}
+
+		Asset::model()
+			->update($eAsset, [
+				'economicAmortization' => $economicAmortization,
+				'excessAmortization' => $excessAmortization,
+				'excessRecovery' => $excessRecovery,
+			]);
 	}
 
 }
