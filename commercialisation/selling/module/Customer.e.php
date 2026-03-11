@@ -389,13 +389,8 @@ class Customer extends CustomerElement {
 				);
 
 			})
-			->setCallback('siret.check', function(?string &$siret) use($p) {
-				if($p->for === 'update' and \pdp\PdpLib::isActive($this['farm'])) {
-					return $siret !== NULL and \farm\Farm::checkSiret($siret);
-				}
-				return \farm\Farm::checkSiret($siret);
-			})
-			->setCallback('vatNumber.check', fn(?string &$vat) => \farm\Farm::checkVatNumber('selling\Customer', $this, $vat, ($p->for === 'create' or \pdp\PdpLib::isActive($this['farm']) === FALSE)))
+			->setCallback('siret.check', fn(?string &$siret) => \farm\Farm::checkSiret($siret))
+			->setCallback('vatNumber.check', fn(?string &$vat) => \farm\Farm::checkVatNumber('selling\Customer', $this, $vat, TRUE))
 			->setCallback('defaultPaymentMethod.check', function(\payment\Method $eMethod): bool {
 
 				if($eMethod->empty()) {
