@@ -328,15 +328,24 @@ body[data-touch="no"] #panel-operation-view .panel-header {
 
 .operation-general-fields {
 	display: grid;
-	grid-template-columns: 1fr 2fr 1fr 2fr;
+	border-radius: var(--radius);
+	padding: 0.5rem;
+	background-color: var(--background);
+	grid-template-columns: 1fr 1fr 1fr;
 	grid-gap: 0.5rem;
 	align-items: center;
 }
-.operation-general-fields .operation-general-title {
-	background-color: var(--background-light);
-	height: 100%;
-	display: flex;
-	align-items: center;
-	padding: 0.5rem;
-	border-radius: var(--radius);
+
+@media (max-width: 767px) {
+	.operation-general-fields {
+		grid-template-columns: 1fr 1fr;
+	}
+
+}
+
+@media (max-width: 575px) {
+	.operation-general-fields {
+		grid-template-columns: 1fr;
+	}
+
 }

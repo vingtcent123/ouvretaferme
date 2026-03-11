@@ -214,27 +214,33 @@ class OperationUi {
 		$h = '<div class="operation-general-fields">';
 
 			if($isFromCashflow) {
-				$h .= '<div class="operation-general-title">'.\journal\OperationUi::p('paymentDate').'</div>';
-				$h .= $form->date(
-					'paymentDate',
-						$defaultValues['paymentDate'] ?? '',
-					['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']] + ($for == 'update' ? ['disabled' => 'disabled'] : []),
-				);
-				$h .= '<div class="operation-general-title">'.\journal\OperationUi::p('paymentMethod').'</div>';
-				$h .= $form->select(
-					'paymentMethod',
-					$cPaymentMethod,
-						$defaultValues['paymentMethod'] ?? '',
-					['required' => TRUE] + ($hasPaymentMethod ? ['disabled' => 'disabled'] : []),
-				);
+				$h .= '<fieldset>';
+					$h .= '<legend>'.\journal\OperationUi::p('paymentDate').'</legend>';
+					$h .= $form->date(
+						'paymentDate',
+							$defaultValues['paymentDate'] ?? '',
+						['min' => $eFinancialYear['startDate'], 'max' => $eFinancialYear['endDate']] + ($for == 'update' ? ['disabled' => 'disabled'] : []),
+					);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.\journal\OperationUi::p('paymentMethod').'</legend>';
+					$h .= $form->select(
+						'paymentMethod',
+						$cPaymentMethod,
+							$defaultValues['paymentMethod'] ?? '',
+						['required' => TRUE] + ($hasPaymentMethod ? ['disabled' => 'disabled'] : []),
+					);
+				$h .= '</fieldset>';
 			}
 
-			$h .= '<div class="operation-general-title">'.\journal\OperationUi::p('journalCode').'</div>';
-			$h .= $form->select(
-				'journalCode',
-				$cJournalCode,
-					$defaultValues['journalCode'] ?? '',
-			);
+			$h .= '<fieldset>';
+				$h .= '<legend>'.\journal\OperationUi::p('journalCode').'</legend>';
+				$h .= $form->select(
+					'journalCode',
+					$cJournalCode,
+						$defaultValues['journalCode'] ?? '',
+				);
+			$h .= '</fieldset>';
 		$h .= '</div>';
 
 		return $h;
