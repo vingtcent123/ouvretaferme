@@ -1257,7 +1257,7 @@ class FinancialYearUi {
 				];
 
 				$d->required = TRUE;
-				$d->group = fn(FinancialYear $e) => (($e['taxSystem'] ?? NULL) === FinancialYear::MICRO_BA) ? [] : ['class' => 'hide'];
+				$d->group = fn(FinancialYear $e) => (($e['taxSystem'] ?? NULL) === FinancialYear::MICRO_BA and ($e['accountingMode'] ?? NULL) === FinancialYear::ACCOUNTING) ? [] : ['class' => 'hide'];
 
 				break;
 
@@ -1280,6 +1280,7 @@ class FinancialYearUi {
 
 				$d->required = TRUE;
 				$d->group = fn(FinancialYear $e) => (($e['taxSystem'] ?? NULL) === FinancialYear::MICRO_BA) ? [] : ['class' => 'hide'];
+				$d->attributes['onchange'] = 'FinancialYear.changeAccountingMode(this)';
 
 				break;
 

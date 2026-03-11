@@ -28,11 +28,12 @@ class FinancialYear extends FinancialYearElement {
 
 	}
 
+	// Comptabilité agricole
 	public function isAccounting() {
 		return $this['accountingMode'] === FinancialYear::ACCOUNTING;
 	}
 
-	// Comptabilité à l'engagement
+	// Livre des recettes
 	public function isCashReceipts() {
 		return $this['accountingMode'] === FinancialYear::CASH_RECEIPTS;
 	}
@@ -307,6 +308,12 @@ class FinancialYear extends FinancialYearElement {
 
 				if($this['taxSystem'] !== FinancialYear::MICRO_BA) {
 					$accountingType = FinancialYear::ACCRUAL;
+					return TRUE;
+				}
+
+				if($this['accountingMode'] === FinancialYear::CASH_RECEIPTS) {
+					$accountingType = FinancialYear::CASH;
+					return TRUE;
 				}
 
 				return ($accountingType !== NULL);
