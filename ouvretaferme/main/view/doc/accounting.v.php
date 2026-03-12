@@ -276,13 +276,13 @@ new AdaptativeView('receipts', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 	$t->menuSelected = 'accounting:receipts';
 
-	$t->title = s("Le livre de recettes");
+	$t->title = s("Le livre des recettes");
 	$t->subTitle = s("... ou comment tenir une comptabilité simplifiée");
 
 	echo '<div class="util-block">';
 
 		echo '<h2>'.s("Quel est le cadre légal ?").'</h2>';
-		echo '<p>'.s("L'utilisation du mode <b>livre de recettes</b> de {siteName} respecte le cadre légal défini par le <link>BOI-BA-DECLA-15 {icon}</link>.", ['link' => '<a target="_blank" href="https://bofip.impots.gouv.fr/bofip/10609-PGP.html/identifiant=BOI-BA-DECLA-15-20160907">', 'icon' => Asset::icon('box-arrow-up-right')]).'</p>';
+		echo '<p>'.s("L'utilisation du mode <b>livre des recettes</b> de {siteName} respecte le cadre légal défini par le <link>BOI-BA-DECLA-15 {icon}</link>.", ['link' => '<a target="_blank" href="https://bofip.impots.gouv.fr/bofip/10609-PGP.html/identifiant=BOI-BA-DECLA-15-20160907">', 'icon' => Asset::icon('box-arrow-up-right')]).'</p>';
 		echo '<p>'.Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Si vous êtes <u>redevable de la TVA</u>, vous devez tenir 2 registres : ").'</p>';
 		echo '<ul class="ml-2">';
 			echo '<li>'.s("Le <b>livre-journal des recettes</b>, tout en conservant les pièces justificatives qui y sont liées").'</li>';
@@ -310,7 +310,7 @@ new AdaptativeView('receipts', function($data, DocTemplate $t) {
 
 	echo '<div class="util-block">';
 		echo '<h2>'.s("Est-ce que je pourrai utiliser toutes les fonctionnalités de {siteName} quand même ?").'</h2>';
-		echo '<p>'.s("Oui ! Même en utilisant le mode <b>livre de recettes</b>, vous avez accès :").'</p>';
+		echo '<p>'.s("Oui ! Même en utilisant le mode <b>livre des recettes</b>, vous avez accès :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Au livre-journal (qui regroupe vos le livre des recettes et le registre des achats)").'</li>';
 			echo '<li>'.s("Au grand livre").'</li>';
