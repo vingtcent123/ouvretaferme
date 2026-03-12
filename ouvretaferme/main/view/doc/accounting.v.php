@@ -310,7 +310,7 @@ new AdaptativeView('receipts', function($data, DocTemplate $t) {
 
 	echo '<div class="util-block">';
 		echo '<h2>'.s("Est-ce que je pourrai utiliser toutes les fonctionnalités de {siteName} quand même ?").'</h2>';
-		echo '<p>'.s("Oui ! Même en utilisant le mode <b>livre des recettes</b>, vous avez accès :").'</p>';
+		echo '<p>'.s("Oui, partiellement ! Même en utilisant le mode <b>livre des recettes</b>, vous avez accès :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Au livre-journal (qui regroupe vos le livre des recettes et le registre des achats)").'</li>';
 			echo '<li>'.s("Au grand livre").'</li>';
