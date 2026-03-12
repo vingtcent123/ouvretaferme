@@ -45,7 +45,9 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_FINANCIAL_YEAR, function($data, Far
 	if($data->eFinancialYear['nOperation'] === 0) {
 
 		echo '<div class="util-empty">';
-			echo '<p>'.s("Dès que vous aurez créé vos premières écritures dans cet exercice comptable, vous pourrez éditer vos documents comme les bilans, le compte de résultat...").'</p>';
+			if($data->eFinancialYear->isCashReceipts() === FALSE) {
+				echo '<p>'.s("Dès que vous aurez créé vos premières écritures dans cet exercice comptable, vous pourrez éditer vos documents comme les bilans, le compte de résultat...").'</p>';
+			}
 			echo '<p>'.s("Voici plusieurs manières d'ajouter des écritures à votre exercice comptable :").'</p>';
 		echo '</div>';
 
@@ -65,12 +67,16 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_FINANCIAL_YEAR, function($data, Far
 
 			echo '</a>';
 
-			echo '<a href="'.\company\CompanyUi::urlAccount($data->eFarm, $data->eFinancialYear, $data->eFarm).'/financialYear/fec:import" class="util-button">';
+			if($data->eFinancialYear->isCashReceipts() === FALSE) {
 
-				echo '<h4>'.s("Importer un fichier FEC").'</h4>';
-				echo \Asset::icon('gear');
+				echo '<a href="'.\company\CompanyUi::urlAccount($data->eFarm, $data->eFinancialYear, $data->eFarm).'/financialYear/fec:import" class="util-button">';
 
-			echo '</a>';
+					echo '<h4>'.s("Importer un fichier FEC").'</h4>';
+					echo \Asset::icon('gear');
+
+				echo '</a>';
+
+			}
 
 		echo '</div>';
 

@@ -23,6 +23,7 @@ new Page(function($data) {
 
 })
 	->get('index', fn($data) => throw new ViewAction($data))
+	->get('receipts', fn($data) => throw new ViewAction($data))
 	->get('import', fn($data) => throw new ViewAction($data))
 	->get('bank', fn($data) => throw new ViewAction($data))
 	->get('start', fn($data) => throw new ViewAction($data))

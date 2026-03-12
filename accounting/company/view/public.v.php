@@ -131,15 +131,6 @@ new AdaptativeView('/comptabilite/parametrer', function($data, FarmTemplate $t) 
 
 	$t->mainTitle = $h;
 
-	echo '<div class="util-block-info">';
-		echo '<h3>'.s("Bienvenue sur le module de gestion de {siteName}").'</h3>';
-		echo '<p>';
-			echo s("Pour utiliser ce module, vous devez préalablement paramétrer un premier exercice comptable !");
-		echo '</p>';
-	echo '</div>';
-
-	echo '<br/><br/>';
-
 	// Première étape : les infos légales
 	if($data->eFarm->isLegal() === FALSE) {
 
@@ -153,7 +144,15 @@ new AdaptativeView('/comptabilite/parametrer', function($data, FarmTemplate $t) 
 
 	} else { // 2è étape : l'exercice
 
-		echo '<h3>'.s("Création de votre premier exercice comptable sur {siteName}").'</h3>';
+		echo '<div class="util-block-info">';
+			echo '<h3>'.s("Bienvenue sur le module de gestion de {siteName}").'</h3>';
+			echo '<p>';
+				echo s("Pour commencer à utiliser ce module, vous devez préalablement paramétrer un premier exercice comptable !");
+			echo '</p>';
+		echo '</div>';
+
+		echo '<br/><br/>';
+
 		echo new \company\CompanyUi()->create($data->eFarm);
 
 	}

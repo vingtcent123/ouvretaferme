@@ -11,18 +11,72 @@ new AdaptativeView('onboarding', function($data, FarmTemplate $t) {
 
 	echo '<div class="util-block-help">';
 		echo '<h4>'.s("Vous pouvez maintenant créer votre première écriture pour l'exercice {value} !", \account\FinancialYearUi::getYear($data->eFarm['eFinancialYear'])).'</h4>';
-		echo '<p>'.s("Vous pouvez enregistrer vos écritures de plusieurs manières sur {siteName} :").'</p>';
-		echo '<ul class="journal-onboarding-list">';
-			echo '<li>'.s("Depuis vos <link>opérations bancaires</link>, après avoir importé un relevé bancaire", ['link' => '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations">']).'</li>';
-			echo '<li>';
-				echo s("En important les <link>paiements que vous avez rapprochés</link>.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $data->eFarm).'/precomptabilite:importer">']);
-				if($data->nPaymentToImport > 0) {
-					echo ' '.p("Vous avez d'ailleurs <b>{value}</b> paiement à importer.", "Vous avez d'ailleurs <b>{value}</b> paiements à importer.", $data->nPaymentToImport);
+
+		if($data->eFarm['eFinancialYear']->isCashReceipts()) {
+
+			echo '<p>'.s("Vous relevez du régime des micro-exploitations agricoles (micro-BA) et avez choisi de tenir une comptabilité simplifiée. ").'</p>';
+			echo '<h5>'.s("Quelles sont vos obligations légales ?").'</h5>';
+			echo '<div>'.s("Pour tenir une comptabilité simplifiée conforme, vous devez :").'</div>';
+			echo '<ul class="journal-onboarding-list">';
+				echo '<li>';
+					echo s("Tenir un <b>livre-journal de recettes</b>. Vous enregistrez vos achats (HT + TVA) et conservez les justificatifs liés.");
+				echo '</li>';
+				echo '<li>';
+					echo s("Tenir un <b>registre des achats</b>. Vous enregistrez vos ventes (HT + TVA) depuis vos factures ou vos journaux de caisse ou manuellement.");
+				echo '</li>';
+			echo '</ul>';
+			echo '<p>'.s("Ces deux journaux vous permettront de remplir votre déclaration de TVA avec exactitude.").'</p>';
+
+			echo '<h5>'.s("Comment utiliser {siteName} ?").'</h5>';
+			echo '<p>'.s("{siteName} vous propose un logiciel de comptabilité conforme avec uniquement les classes de compte dont vous avez besoin :").'</p>';
+			echo '<ul class="journal-onboarding-list">';
+				echo '<li>';
+					echo s("Les achats : {value}", \account\AccountSetting::CHARGE_BUY_ACCOUNT_CLASS);
+				echo '</li>';
+				echo '<li>';
+					echo s("Les ventes : {value}", \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS);
+				echo '</li>';
+				echo '<li>';
+					echo s("La TVA (déductible et collectée) : {vatDeductible} et {vatCollected}", ['vatDeductible' => \account\AccountSetting::VAT_BUY_CLASS_ACCOUNT, 'vatCollected' => \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]);
+				echo '</li>';
+
+				if($data->eFarm['eFinancialYear']['legalCategory'] !== \farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) {
+					echo '<li>';
+						echo s("Le compte courant : {value}, qui vous permet de différencier le compte de votre exploitation de vos comptes personnels.", \account\AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS);
+					echo '</li>';
 				}
-			echo '</li>';
-			echo '<li>'.s("Directement sur cette page, en cliquant sur <link>{icon}Enregistrer une écriture</link>", ['link' => '<a class="btn btn-xs btn-primary" href="'.\company\CompanyUi::urlJournal($data->eFarm).'/operation:create?journalCode">', 'icon' => \Asset::icon('plus-circle').' ']).'</li>';
-			echo '<li>'.s("Ou en important un fichier {fec}, si vous utilisiez un autre logiciel de comptabilité, depuis les {icon} <link>Paramètres de l'exercice comptable</link>", ['fec' => '<span class="util-badge bg-primary">FEC</span>', 'link' => '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/">', 'icon' => \Asset::icon('gear')]).'</li>';
-		echo '</ul>';
+			echo '</ul>';
+
+			echo '<h5>'.s("Comment démarrer ?").'</h5>';
+
+			echo '<p>'.s("Vous pouvez enregistrer vos écritures de plusieurs manières sur {siteName} :").'</p>';
+			echo '<ul class="journal-onboarding-list">';
+				echo '<li>'.s("Depuis vos <link>opérations bancaires</link>, après avoir importé un relevé bancaire", ['link' => '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations">']).'</li>';
+				echo '<li>';
+					echo s("En important les <link>paiements que vous avez rapprochés</link>.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $data->eFarm).'/precomptabilite">']);
+					if($data->nPaymentToImport > 0) {
+						echo ' '.p("Vous avez d'ailleurs <b>{value}</b> paiement à importer.", "Vous avez d'ailleurs <b>{value}</b> paiements à importer.", $data->nPaymentToImport);
+					}
+				echo '</li>';
+				echo '<li>'.s("Directement sur cette page, en cliquant sur <link>{icon}Enregistrer une écriture</link>", ['link' => '<a class="btn btn-xs btn-primary" href="'.\company\CompanyUi::urlJournal($data->eFarm).'/operation:create?journalCode">', 'icon' => \Asset::icon('plus-circle').' ']).'</li>';
+			echo '</ul>';
+
+		} else {
+
+			echo '<p>'.s("Vous pouvez enregistrer vos écritures de plusieurs manières sur {siteName} :").'</p>';
+			echo '<ul class="journal-onboarding-list">';
+				echo '<li>'.s("Depuis vos <link>opérations bancaires</link>, après avoir importé un relevé bancaire", ['link' => '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/banque/operations">']).'</li>';
+				echo '<li>';
+					echo s("En important les <link>paiements que vous avez rapprochés</link>.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $data->eFarm).'/precomptabilite">']);
+					if($data->nPaymentToImport > 0) {
+						echo ' '.p("Vous avez d'ailleurs <b>{value}</b> paiement à importer.", "Vous avez d'ailleurs <b>{value}</b> paiements à importer.", $data->nPaymentToImport);
+					}
+				echo '</li>';
+				echo '<li>'.s("Directement sur cette page, en cliquant sur <link>{icon}Enregistrer une écriture</link>", ['link' => '<a class="btn btn-xs btn-primary" href="'.\company\CompanyUi::urlJournal($data->eFarm).'/operation:create?journalCode">', 'icon' => \Asset::icon('plus-circle').' ']).'</li>';
+				echo '<li>'.s("Ou en important un fichier {fec}, si vous utilisiez un autre logiciel de comptabilité, depuis les {icon} <link>Paramètres de l'exercice comptable</link>", ['fec' => '<span class="util-badge bg-primary">FEC</span>', 'link' => '<a href="'.\farm\FarmUi::urlConnected($data->eFarm).'/etats-financiers/">', 'icon' => \Asset::icon('gear')]).'</li>';
+			echo '</ul>';
+
+		}
 	echo '</div>';
 
 	echo '<br/>';

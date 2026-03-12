@@ -271,6 +271,61 @@ new AdaptativeView('index', function($data, DocTemplate $t) {
 
 });
 
+new AdaptativeView('receipts', function($data, DocTemplate $t) {
+
+	$t->template = 'doc';
+	$t->menuSelected = 'accounting:receipts';
+
+	$t->title = s("Le livre de recettes");
+	$t->subTitle = s("... ou comment tenir une comptabilité simplifiée");
+
+	echo '<div class="util-block">';
+
+		echo '<h2>'.s("Quel est le cadre légal ?").'</h2>';
+		echo '<p>'.s("L'utilisation du mode <b>livre de recettes</b> de {siteName} respecte le cadre légal défini par le <link>BOI-BA-DECLA-15 {icon}</link>.", ['link' => '<a target="_blank" href="https://bofip.impots.gouv.fr/bofip/10609-PGP.html/identifiant=BOI-BA-DECLA-15-20160907">', 'icon' => Asset::icon('box-arrow-up-right')]).'</p>';
+		echo '<p>'.s("Vous devez tenir 2 registres : ").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("Le <b>livre-journal des recettes</b>, tout en conservant les pièces justificatives qui y sont liées").'</li>';
+			echo '<li>'.s("Le <b>registre des achats</b> (en conservant également les justificatifs).").'</li>';
+		echo '</ul>';
+		echo '<p>'.s("Ces deux registres vous permettront de déclarer votre TVA en toute simplicité.").'</p>';
+	echo '</div>';
+
+	echo '<br/>';
+
+	echo '<div class="util-block">';
+		echo '<h2>'.s("Comment utiliser {siteName} pour ma comptabilité simplifiée ?").'</h2>';
+		echo '<p>'.s("Vous pourrez enregistrer simplement :").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("Vos achats, avec le numéro de compte {value}", \account\AccountSetting::CHARGE_BUY_ACCOUNT_CLASS).'</li>';
+			echo '<li>'.s("Vos ventes, avec le numéro de compte {value}", \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS).'</li>';
+			echo '<li>'.s("Éventuellement le compte courant d'associé (sauf si votre exploitation est une entreprise individuelle), avec le numéro de compte {value}", \account\AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS).'</li>';
+		echo '</ul>';
+			echo '<p>'.s("Si votre exploitation est redevable de la TVA, l'enregistrement d'une écriture de vente ou d'achat avec une règle de TVA et un taux de TVA créera automatiquement l'écriture de TVA pour vous.").'</p>';
+		echo '<p>'.s("Et c'est tout !").'</p>';
+	echo '</div>';
+
+	echo '<br/>';
+
+	echo '<div class="util-block">';
+		echo '<h2>'.s("Est-ce que je pourrai utiliser toutes les fonctionnalités de {siteName} quand même ?").'</h2>';
+		echo '<p>'.s("Oui ! Même en utilisant le mode livre de recettes, vous avez accès :").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("Au livre-journal (qui regroupe vos 2 registres)").'</li>';
+			echo '<li>'.s("Au grand livre").'</li>';
+			echo '<li>'.s("À la balance").'</li>';
+			echo '<li>'.s("À la gestion (simplifiée) de vos immobilisations").'</li>';
+			echo '<li>'.s("À vos déclarations de TVA").'</li>';
+			echo '<li>'.s("À l'export au format FEC de toutes vos écritures comptables").'</li>';
+		echo '</ul>';
+	echo '</div>';
+
+
+	echo '<br/>';
+	echo '<br/>';
+
+});
+
 
 new AdaptativeView('import', function($data, DocTemplate $t) {
 

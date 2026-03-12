@@ -185,6 +185,13 @@ class FinancialYearLib extends FinancialYearCrud {
 				'hasFinancialYears' => TRUE
 			]);
 
+			// On désactive les journaux pour ne pas polluer le livre-journal
+			if($e->isCashReceipts()) {
+				\journal\JournalCode::model()
+					->whereCode('NOT IN', [\journal\JournalSetting::JOURNAL_CODE_BUY, \journal\JournalSetting::JOURNAL_CODE_SELL, \journal\JournalSetting::JOURNAL_CODE_OD])
+					->update(['isDisplayed' => FALSE]);
+			}
+
 		FinancialYear::model()->commit();
 
 	}
@@ -241,6 +248,14 @@ class FinancialYearLib extends FinancialYearCrud {
 			if($e[$property] !== $value) {
 				$changes[$property] = ['old' => $value, 'new' => $e[$property]];
 			}
+		}
+
+		// On désactive les journaux pour ne pas polluer le livre-journal
+		if($e['eOld']->isCashReceipts() === FALSE and $e->isCashReceipts()) {
+
+			\journal\JournalCode::model()
+				->whereCode('NOT IN', [\journal\JournalSetting::JOURNAL_CODE_BUY, \journal\JournalSetting::JOURNAL_CODE_SELL, \journal\JournalSetting::JOURNAL_CODE_OD])
+				->update(['isDisplayed' => FALSE]);
 		}
 
 		LogLib::save('update', 'FinancialYear', ['id' => $e['id'], 'changes' => $changes]);
