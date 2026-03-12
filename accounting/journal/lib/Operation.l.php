@@ -640,24 +640,25 @@ class OperationLib extends OperationCrud {
 
 				}
 
-			}
+				// Gestion des acomptes (409x et 419x) qui doivent être enregistrés TTC + une contrepartie 44581 pour la TVA
+				$eOperationDeposit = self::manageDeposit($eOperation, $eOperationVat);
 
-			// Gestion des acomptes (409x et 419x) qui doivent être enregistrés TTC + une contrepartie 44581 pour la TVA
-			$eOperationDeposit = self::manageDeposit($eOperation, $eOperationVat);
+				if($eOperationDeposit->notEmpty()) {
 
-			if($eOperationDeposit->notEmpty()) {
+					$cOperation->append($eOperationDeposit);
 
-				$cOperation->append($eOperationDeposit);
+					if($isFromCashflow) {
+						$cOperationCashflow->append(new OperationCashflow([
+							'operation' => $eOperationDeposit,
+							'cashflow' => $eCashflow,
+							'hash' => $hash,
+						]));
+					}
 
-				if($isFromCashflow) {
-					$cOperationCashflow->append(new OperationCashflow([
-						'operation' => $eOperationDeposit,
-						'cashflow' => $eCashflow,
-						'hash' => $hash,
-					]));
 				}
 
 			}
+
 
 		}
 
