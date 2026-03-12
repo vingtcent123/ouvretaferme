@@ -93,7 +93,7 @@ new \farm\ConfigurationPage()
 	->doUpdateProperties('doUpdateInvoice', ['invoicePrefix', 'documentInvoices', 'invoiceDue', 'invoiceDueDays', 'invoiceDueMonth', 'invoiceReminder', 'invoicePaymentCondition', 'invoiceHeader', 'invoiceFooter', 'electronicScheme', 'electronicAddress', 'invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateForElectronicInvoicing', ['electronicScheme', 'electronicAddress', 'vatNumber'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdateProperties('doUpdateInvoiceMention', ['invoiceMandatoryTexts', 'invoiceCollection', 'invoiceLateFees', 'invoiceDiscount'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
-	->doUpdateProperties('doUpdateVat', ['hasVatAccounting', 'vatFrequency', 'vatChargeability'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
+	->doUpdateProperties('doUpdateVat', ['hasVat', 'hasVatAccounting', 'vatFrequency', 'vatChargeability'], fn() => throw new ReloadAction('farm', 'Configuration::updated'))
 	->doUpdate(fn() => throw new ReloadAction('farm', 'Configuration::updated'), onKo: fn() => \farm\Configuration::fail('error'))
 	->doUpdateProperties('doUpdateProfileAccount', ['profileAccount'], fn() => throw new ReloadAction('farm', 'Configuration::updated'));
 ?>

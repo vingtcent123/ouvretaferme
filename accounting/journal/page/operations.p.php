@@ -20,6 +20,12 @@ new Page(function($data) {
 
 		if(get_exists('onboarding')) {
 
+			if($data->eFarm['eFinancialYear']->isCashReceipts()) {
+
+				$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'accounting-onboarding-cash-receipts');
+				$data->tipNavigation = 'inline';
+			}
+
 			$data->cImport = \bank\Import::model()->count();
 			$search = new Search(['financialYear' => $data->eFarm['eFinancialYear']]);
 			$data->nPaymentToImport = \preaccounting\InvoiceLib::countForAccounting($data->eFarm, $search);

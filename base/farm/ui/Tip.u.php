@@ -545,6 +545,90 @@ class TipUi {
 					'button' => ['/doc/accounting:start', \Asset::icon('person-raised-hand').' '.s("Lire l'aide sur les exercices comptables")],
 				];
 
+			case 'accounting-onboarding-cash-receipts' :
+
+				$importButton = '<a href="'.\company\CompanyUi::urlAccount($eFarm).'/financialYear/fec:import" class="btn btn-sm btn-primary btn-md">';
+					$importButton .= s("Importer un fichier FEC");
+				$importButton .= '</a>';
+
+				$h = '<p><b>'.s("Vous pouvez maintenant créer votre première écriture !").'</b></p>';
+				$h .= '<p>'.s("Vous relevez du régime des micro-exploitations agricoles (micro-BA) et avez choisi de tenir une comptabilité simplifiée.").'</p>';
+
+				$h .= '<h4>'.s("Quelles sont vos obligations légales ?").'</h4>';
+
+				$h .= '<div>'.s("Pour tenir une comptabilité simplifiée conforme, vous devez :").'</div>';
+
+				$hasVat = $eFarm->getConf('hasVat');
+
+				if($hasVat) {
+					$details = s(" (HT + TVA)");
+				} else {
+					$details = '';
+				}
+				$h .= '<ul class="journal-onboarding-list">';
+					$h .= '<li>';
+						$h .= s("Tenir un <b>livre-journal de recettes</b>. Vous enregistrez vos achats{value} et conservez les justificatifs liés.", $details);
+					$h .= '</li>';
+					$h .= '<li>';
+						$h .= s("Tenir un <b>registre des achats</b>. Vous enregistrez vos ventes{value} depuis vos factures ou vos journaux de caisse ou manuellement.", $details);
+					$h .= '</li>';
+				$h .= '</ul>';
+
+				if($hasVat) {
+					$h .= '<p>'.s("Ces deux journaux vous permettront de remplir votre déclaration de TVA avec exactitude.").'</p>';
+				}
+
+				$h .= '<h4>'.s("Comment utiliser {siteName} ?").'</h4>';
+
+				$h .= '<p>'.s("{siteName} vous propose un logiciel de comptabilité conforme avec uniquement les classes de compte dont vous avez besoin :").'</p>';
+				$h .= '<ul class="journal-onboarding-list">';
+						$h .= '<li>';
+							$h .= s("Les ventes : {value}", \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS);
+						$h .= '</li>';
+
+					if($hasVat) {
+
+						$h .= '<li>';
+							$h .= s("Les achats : {value}", \account\AccountSetting::CHARGE_BUY_ACCOUNT_CLASS);
+						$h .= '</li>';
+						$h .= '<li>';
+							$h .= s("La TVA (déductible et collectée) : {vatDeductible} et {vatCollected}", ['vatDeductible' => \account\AccountSetting::VAT_BUY_CLASS_ACCOUNT, 'vatCollected' => \account\AccountSetting::VAT_SELL_CLASS_ACCOUNT]);
+						$h .= '</li>';
+
+					} else {
+
+						$h .= '<li>';
+							$h .= s("Les achats : {value}. N'étant pas redevable de la TVA, le registre des achats n'est pas obligatoire mais vous pourrez quand même enregistrer vos achats si vous le souhaitez", \account\AccountSetting::CHARGE_BUY_ACCOUNT_CLASS);
+						$h .= '</li>';
+
+					}
+
+					if($eFarm['eFinancialYear']['legalCategory'] !== \farm\FarmSetting::CATEGORIE_JURIDIQUE_ENTREPRENEUR_INDIVIDUEL) {
+						$h .= '<li>';
+							$h .= s("Le compte courant : {value}, qui vous permet de différencier le compte de votre exploitation de vos comptes personnels.", \account\AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS);
+						$h .= '</li>';
+					}
+				$h .= '</ul>';
+
+				$h .= '<h4>'.s("Comment démarrer ?").'</h4>';
+
+				$h .= '<p>'.s("Vous pouvez enregistrer vos écritures de plusieurs manières sur {siteName} :").'</p>';
+				$h .= '<ul class="journal-onboarding-list">';
+					$h .= '<li>'.s("Depuis vos <link>opérations bancaires</link>, après avoir importé un relevé bancaire", ['link' => '<a href="'.\farm\FarmUi::urlConnected($eFarm).'/banque/operations">']).'</li>';
+					$h .= '<li>';
+						$h .= s("En important les <link>paiements que vous avez rapprochés</link>.", ['link' => '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite">']);
+					$h .= '</li>';
+					$h .= '<li>'.s("Directement sur cette page, en cliquant sur <link>{icon}Enregistrer une écriture</link>", ['link' => '<a class="btn btn-xs btn-primary" href="'.\company\CompanyUi::urlJournal($eFarm).'/operation:create?journalCode">', 'icon' => \Asset::icon('plus-circle').' ']).'</li>';
+				$h .= '</ul>';
+
+				return [
+					'icon' => \Asset::icon('journal-plus'),
+					'title' => s("Vous pouvez démarrer la tenue de votre comptabilité !"),
+					'content' => $h,
+					'image' => FALSE,
+					'button' => ['/doc/accounting:receipts', \Asset::icon('person-raised-hand').' '.s("Lire l'aide sur la comptabilité avec les livres de recettes")],
+				];
+
 			default:
 				throw new \Exception('Invalid tip \''.$fqn.'\'');
 
