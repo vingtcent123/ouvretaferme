@@ -200,10 +200,14 @@ Class OpeningLib {
 		$cOperation = \account\OpeningLib::getRetainedEarnings($eFinancialYearPrevious, $eFinancialYear, $hash);
 
 		// Résultat et affectation
-		$cOperationResult = \account\OpeningLib::getResultOperation($eFinancialYearPrevious, $eFinancialYear, $hash);
+		if($eFinancialYearPrevious->isCashReceipts() === FALSE) {
 
-		if($cOperationResult->notEmpty()) {
-			$cOperation->mergeCollection($cOperationResult);
+			$cOperationResult = \account\OpeningLib::getResultOperation($eFinancialYearPrevious, $eFinancialYear, $hash);
+
+			if($cOperationResult->notEmpty()) {
+				$cOperation->mergeCollection($cOperationResult);
+			}
+
 		}
 
 		// Extournes

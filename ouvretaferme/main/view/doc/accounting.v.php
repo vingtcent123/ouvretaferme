@@ -321,6 +321,12 @@ new AdaptativeView('receipts', function($data, DocTemplate $t) {
 		echo '</ul>';
 	echo '</div>';
 
+	echo '<div class="util-block">';
+		echo '<h2>'.s("Que se passe-t-il en début et fin d'exercice ?").'</h2>';
+		echo '<p>'.s("En <b>début d'exercice</b>, tous les reports à nouveau seront reportés sur votre nouvel exercice. Il s'agit principalement du report de vos comptes courants d'associés s'ils n'étaient pas soldés à la clôture de l'exercice précédent. Le résultat de l'exercice précédent ne sera également pas reporté.").'</p>';
+		echo '<p>'.s("En <b>fin d'exercice</b>, aucune écriture ne sera réalisée, mais vous pourrez quand même effectuer la clôture pour marquer la fin de votre exercice !").'</p>';
+	echo '</div>';
+
 
 	echo '<br/>';
 	echo '<br/>';

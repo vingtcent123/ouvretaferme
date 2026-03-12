@@ -35,6 +35,7 @@ Package::setList([
 	'session' => 'framework',
 	'shop' => 'commercialisation',
 	'storage' => 'framework',
+	'thirdParty' => 'accounting',
 	'user' => 'framework',
 	'util' => 'framework',
 	'vat' => 'accounting',
