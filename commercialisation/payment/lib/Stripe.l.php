@@ -123,11 +123,6 @@ class StripeLib {
 			return;
 		}
 
-		if(($event['data']['object']['metadata']['type'] ?? NULL) === 'membership') {
-			\association\MembershipLib::webhookPaymentIntent($event);
-			return;
-		}
-
 		$eSale = self::getSaleFromPaymentIntent($eStripeFarm, $event);
 		$eSale['shop']['farm'] = $eSale['farm']; // Uniquement sur les boutiques personnelles
 

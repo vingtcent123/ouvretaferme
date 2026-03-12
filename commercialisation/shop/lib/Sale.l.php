@@ -478,7 +478,7 @@ class SaleLib {
 				self::createDirectPayment(new \payment\Method(), $eSaleReference);
 				return ShopUi::confirmationUrl($eSaleReference['shop'], $eSaleReference['shopDate'], $cSale);
 
-		};
+		}
 
 
 	}
@@ -512,7 +512,7 @@ class SaleLib {
 
 		$arguments = [
 			'payment_intent_data' => [
-				'metadata' => ['source' => 'otf']
+				'metadata' => ['source' => 'otf', 'type' => 'shop']
 			],
 			'expires_at' => time() + 60 * 45,
 			'client_reference_id' => $eCustomer['id'],
@@ -630,13 +630,14 @@ class SaleLib {
 	public static function paymentFailed(\selling\Sale $eSale, array $event): void {
 
 		$object = $event['data']['object'];
+		$paymentType = $object['metadata']['type'] ?? NULL;
 
 		$hasFailed = \selling\PaymentOnlineLib::failByPaymentIntentId($eSale, $object['id']);
 
 		if($hasFailed) {
 
 			\selling\HistoryLib::createBySale($eSale, 'shop-payment-failed', 'Stripe event id #'.$object['id'].' (event type '.$event['type'].')');
-			self::notify('saleFailed', $eSale);
+			self::notify('saleFailed', $paymentType, $eSale);
 
 		}
 
@@ -651,6 +652,7 @@ class SaleLib {
 
 		$object = $event['data']['object'];
 
+		$paymentType = $object['metadata']['type'] ?? NULL;
 		$amountReceived = (int)$object['amount_received'];
 		$amountExpected = (int)round($eSale['priceIncludingVat'] * 100);
 
@@ -659,16 +661,12 @@ class SaleLib {
 			return;
 		}
 
-		\selling\Sale::model()->beginTransaction();
+		$hasSucceeded = \selling\PaymentOnlineLib::payByPaymentIntentId($eSale, $object['id'], $eSale['priceIncludingVat']);
 
-			$hasSucceeded = \selling\PaymentOnlineLib::payByPaymentIntentId($eSale, $object['id'], $eSale['priceIncludingVat']);
-
-			if($hasSucceeded) {
-				$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
-				\selling\SaleLib::update($eSale, ['preparationStatus']);
-			}
-
-		\selling\Sale::model()->commit();
+		if($hasSucceeded) {
+			$eSale['preparationStatus'] = \selling\Sale::CONFIRMED;
+			\selling\SaleLib::update($eSale, ['preparationStatus']);
+		}
 
 		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$object['id']);
 
@@ -676,7 +674,7 @@ class SaleLib {
 		$cItem = \selling\SaleLib::getItems($eSale);
 		$eSale['cPayment'] = \selling\PaymentTransactionLib::getAll($eSale);
 
-		self::notify('salePaid', $eSale, $cItem);
+		self::notify('salePaid', $paymentType, $eSale, $cItem);
 
 		\selling\Sale::model()->commit();
 

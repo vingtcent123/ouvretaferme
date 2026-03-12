@@ -43,6 +43,13 @@ Package::setList([
 
 Package::setObservers([
 	'lib' => [
+		'shop' => [
+			'salePaid' => ['association', 'shop'],
+			'saleFailed' => ['association', 'shop'],
+			'saleConfirmed' => ['shop'],
+			'saleUpdated' => ['shop'],
+			'saleCanceled' => ['shop'],
+		],
 		'data' => [
 			'calculateFarmData' => ['company'],
 		],
@@ -61,13 +68,6 @@ Package::setObservers([
 		],
 		'lime' => [
 			'loadConf' => ['media'],
-		],
-		'shop' => [
-			'saleConfirmed' => ['shop'],
-			'saleUpdated' => ['shop'],
-			'salePaid' => ['shop'],
-			'saleFailed' => ['shop'],
-			'saleCanceled' => ['shop'],
 		],
 	],
 	'ui' => [

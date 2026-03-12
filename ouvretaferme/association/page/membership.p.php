@@ -36,7 +36,9 @@ new Page()
 
 		$fw = new FailWatch();
 
-		$url = \association\MembershipLib::createPayment($data->eFarm, \association\History::MEMBERSHIP);
+		$eMethod = \payment\MethodLib::getByFqn(\farm\FarmLib::getById(\association\AssociationSetting::FARM), \payment\MethodLib::ONLINE_CARD);
+
+		$url = \association\MembershipLib::createPayment($data->eFarm, \association\History::MEMBERSHIP, POST('amount'), $eMethod);
 
 		$fw->validate();
 
@@ -51,7 +53,8 @@ new Page()
 
 		$fw = new FailWatch();
 
-		$url = \association\MembershipLib::createPayment($data->eFarm, \association\History::DONATION);
+		$eMethod = \payment\MethodLib::getByFqn(\farm\FarmLib::getById(\association\AssociationSetting::FARM), \payment\MethodLib::ONLINE_CARD);
+		$url = \association\MembershipLib::createPayment($data->eFarm, \association\History::DONATION, POST('amount'), $eMethod);
 
 		$fw->validate();
 

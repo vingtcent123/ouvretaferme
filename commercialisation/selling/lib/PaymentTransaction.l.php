@@ -539,7 +539,7 @@ class PaymentTransactionLib {
 			) and
 			$notPaid >= 2
 		) {
-			throw new \Exception('Too much not paid payment methods for '.$e->getModule().' '.$e['id']);
+			throw new \Exception('Too many not paid payment methods for '.$e->getModule().' '.$e['id']);
 		}
 
 		if($paidAmount !== NULL) {

@@ -21,12 +21,7 @@ class HistoryLib extends HistoryCrud {
 	public static function getForDocument(int $id): History {
 
 		return History::model()
-			->select(
-				History::getSelection()
-				+ ['farm' => \farm\Farm::getSelection()]
-				+ ['sale' => \selling\Sale::getSelection()]
-				+ ['customer' => \selling\Customer::getSelection()]
-			)
+			->select(History::getSelection())
 			->whereId($id)
 			->get();
 	}
@@ -61,10 +56,10 @@ class HistoryLib extends HistoryCrud {
 
 	}
 
-	public static function updateByPaymentIntentId(string $paymentIntentId, array $values): void {
+	public static function updateBySale(\selling\Sale $eSale, array $values): void {
 
 		History::model()
-			->whereOnlinePaymentIntentId($paymentIntentId)
+			->whereSale($eSale)
 			->update($values);
 	}
 
@@ -126,7 +121,7 @@ class HistoryLib extends HistoryCrud {
 
 		new \media\AssociationDocumentLib()->send($eContent, $hash, $content, 'pdf');
 
-		History::model()->update($eHistory, ['document' => $hash]);
+		History::model()->update($eHistory, ['document' => $hash, 'documentStatus' => History::GENERATED]);
 
 		return self::getPdfContent($hash);
 

@@ -15,11 +15,9 @@ new \association\HistoryPage(
 	})
 	->post('doCreate', function($data) {
 
-		$data->eFarm = \farm\FarmLib::getById(POST('farm'));
-
 		$fw = new FailWatch();
 
-		\association\MembershipLib::createPayment($data->eFarm, post('type'), TRUE);
+		\association\MembershipLib::createPaymentByAdmin();
 
 		$fw->validate();
 

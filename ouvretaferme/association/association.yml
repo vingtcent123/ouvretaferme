@@ -11,6 +11,7 @@ History:
   status: enum(PROCESSING, VALID, INVALID) = PROCESSING
   sale: ?selling\Sale
   document: ?textFixed(20, 20) @charset(ascii)
+  documentStatus: ?enum(WAITING, GENERATING, GENERATED, SENDING, SENT, FAILED)
   createdAt: datetime = SPECIAL(now)
   updatedAt: datetime = SPECIAL(now)
   paidAt: ?datetime

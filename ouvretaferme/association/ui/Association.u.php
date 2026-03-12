@@ -14,13 +14,13 @@ class AssociationUi {
 
 	}
 
-	public static function confirmationUrl(History $eHistory, string $type, string $fromPage): string {
+	public static function confirmationUrl(\farm\Farm $eFarm, \selling\Sale $eSale, string $type, string $fromPage): string {
 
-		if($eHistory['farm']->empty()) {
-			return $fromPage.'?'.$type.'&email='.urlencode($eHistory['customer']['invoiceEmail']).'&customer='.$eHistory['customer']['id'];
+		if($eFarm->empty()) {
+			return $fromPage.'?'.$type.'&email='.urlencode($eSale['customer']['invoiceEmail']).'&customer='.$eSale['customer']['id'];
 		}
 
-		return self::url($eHistory['farm']).'?'.$type;
+		return self::url($eFarm).'?'.$type;
 	}
 
 	public static function url(\farm\Farm $eFarm): string {
@@ -204,7 +204,7 @@ Cordialement,
 				$h .= '<div class="pdf-document-custom-bottom">';
 
 					$h .= '<p>';
-						$h .= s("Paiement réalisé le {date}", ['date' => \util\DateUi::numeric($eHistory['paidAt'])]);
+						$h .= s("Paiement réalisé le {date}", ['date' => \util\DateUi::numeric($eHistory['paidAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
 					$h .= '</p>';
 
 					$h .= '<p>';

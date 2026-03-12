@@ -71,7 +71,11 @@ class ShopObserverLib {
 
 	}
 
-	public static function salePaid(\selling\Sale $eSale, \Collection $cItem): void {
+	public static function salePaid(?string $paymentType, \selling\Sale $eSale, \Collection $cItem): void {
+
+		if($paymentType !== 'shop' or $paymentType === NULL) { // TODO clean (supprimer $source === NULL le 31 mars 2026)
+			return;
+		}
 
 		$eSale->expects([
 			'shop' => [
@@ -111,7 +115,11 @@ class ShopObserverLib {
 
 	}
 
-	public static function saleFailed(\selling\Sale $eSale): void {
+	public static function saleFailed(?string $paymentType, \selling\Sale $eSale): void {
+
+		if($paymentType !== 'shop' or $paymentType === NULL) { // TODO clean (supprimer $source === NULL le 31 mars 2026)
+			return;
+		}
 
 		$eSale->expects([
 			'shop' => [

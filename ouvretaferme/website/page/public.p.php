@@ -132,7 +132,8 @@ new Page()
 
 		$fw = new FailWatch();
 
-		$url = \association\MembershipLib::createPayment(new \farm\Farm(), \association\History::DONATION);
+		$eMethod = \payment\MethodLib::getByFqn(\farm\FarmLib::getById(\association\AssociationSetting::FARM), \payment\MethodLib::ONLINE_CARD);
+		$url = \association\MembershipLib::createPayment(new \farm\Farm(), \association\History::DONATION, POST('amount', 'int'), $eMethod);
 
 		$fw->validate();
 

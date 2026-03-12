@@ -19,6 +19,13 @@ abstract class HistoryElement extends \Element {
 	const VALID = 'valid';
 	const INVALID = 'invalid';
 
+	const WAITING = 'waiting';
+	const GENERATING = 'generating';
+	const GENERATED = 'generated';
+	const SENDING = 'sending';
+	const SENT = 'sent';
+	const FAILED = 'failed';
+
 	public static function getSelection(): array {
 		return History::model()->getProperties();
 	}
@@ -64,13 +71,14 @@ class HistoryModel extends \ModuleModel {
 			'status' => ['enum', [\association\History::PROCESSING, \association\History::VALID, \association\History::INVALID], 'cast' => 'enum'],
 			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
 			'document' => ['textFixed', 'min' => 20, 'max' => 20, 'charset' => 'ascii', 'null' => TRUE, 'cast' => 'string'],
+			'documentStatus' => ['enum', [\association\History::WAITING, \association\History::GENERATING, \association\History::GENERATED, \association\History::SENDING, \association\History::SENT, \association\History::FAILED], 'null' => TRUE, 'cast' => 'enum'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'updatedAt' => ['datetime', 'cast' => 'string'],
 			'paidAt' => ['datetime', 'null' => TRUE, 'cast' => 'string'],
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'farm', 'customer', 'type', 'amount', 'membership', 'onlineCheckoutId', 'onlinePaymentIntentId', 'paymentStatus', 'status', 'sale', 'document', 'createdAt', 'updatedAt', 'paidAt'
+			'id', 'farm', 'customer', 'type', 'amount', 'membership', 'onlineCheckoutId', 'onlinePaymentIntentId', 'paymentStatus', 'status', 'sale', 'document', 'documentStatus', 'createdAt', 'updatedAt', 'paidAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -116,6 +124,9 @@ class HistoryModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'status' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'documentStatus' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			default :
@@ -179,6 +190,10 @@ class HistoryModel extends \ModuleModel {
 
 	public function whereDocument(...$data): HistoryModel {
 		return $this->where('document', ...$data);
+	}
+
+	public function whereDocumentStatus(...$data): HistoryModel {
+		return $this->where('documentStatus', ...$data);
 	}
 
 	public function whereCreatedAt(...$data): HistoryModel {
