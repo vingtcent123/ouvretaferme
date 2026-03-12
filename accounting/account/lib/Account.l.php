@@ -137,7 +137,7 @@ class AccountLib extends AccountCrud {
 				;
 			}
 			Account::model()
-				->where('class IN ("'.join('", "', [AccountSetting::CHARGE_BUY_ACCOUNT_CLASS, AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS]).'") OR class LIKE "'.AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS.'%"')
+				->where('class IN ("'.join('", "', [AccountSetting::CHARGE_BUY_ACCOUNT_CLASS, AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS, AccountSetting::CASH_SUB_ACCOUNT_CLASS, AccountSetting::BANK_ACCOUNT_CLASS]).'") OR class LIKE "'.AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS.'%"')
 				;
 		} else {
 			Account::model()

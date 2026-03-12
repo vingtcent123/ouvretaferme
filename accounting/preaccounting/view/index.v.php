@@ -97,6 +97,8 @@ new AdaptativeView('/precomptabilite/verifier', function($data, FarmTemplate $t)
 
 	}
 
+	$hasProductStep = ($data->eFarm['eFinancialYear']->notEmpty() and $data->eFarm['eFinancialYear']->isCashReceipts() === FALSE);
+
 	if($data->checkType === 'fec') {
 
 		echo new \preaccounting\PreaccountingUi()->getSearchPeriod($data->search);
@@ -115,7 +117,9 @@ new AdaptativeView('/precomptabilite/verifier', function($data, FarmTemplate $t)
 		echo '</div>';
 	}
 
-	echo new \preaccounting\PreaccountingUi()->getCheckSteps($data->nProductToCheck,  $data->nItemToCheck, $data->nInvoiceForPaymentToCheck + $data->nSaleForPaymentToCheck,  $data->cRegisterMissing, $data->type, $data->checkType, $t->canonical, $data->search);
+	if($hasProductStep) {
+		echo new \preaccounting\PreaccountingUi()->getCheckSteps($data->nProductToCheck,  $data->nItemToCheck, $data->nInvoiceForPaymentToCheck + $data->nSaleForPaymentToCheck,  $data->cRegisterMissing, $data->type, $data->checkType, $t->canonical, $data->search, $hasProductStep);
+	}
 
 	switch($data->type) {
 

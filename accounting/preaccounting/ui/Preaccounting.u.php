@@ -22,6 +22,8 @@ Class PreaccountingUi {
 
 		}
 
+		$isCashReceipts = $eFarm['eFinancialYear']->isCashReceipts();
+
 		$h = '<div class="preaccounting-import-container">';
 
 			foreach($dates as $date) {
@@ -63,11 +65,11 @@ Class PreaccountingUi {
 
 					foreach($cRegister as $eRegister) {
 
-						if($eRegister['account']->empty()) {
+						if($isCashReceipts === FALSE and $eRegister['account']->empty()) {
 
 							$count = '<a class="btn btn-sm btn-outline-danger" title="'.s("Ce journal de caisse n'a pas de numéro de compte configuré").'" href="'.\farm\FarmUi::urlConnected($eFarm).'/cash/register:update?id='.$eRegister['id'].'">'.\Asset::icon('exclamation-triangle').'</a>';
 
-						} else if($eRegister['hasAccounts'] === FALSE) {
+						} else if($isCashReceipts === FALSE and $eRegister['hasAccounts'] === FALSE) {
 
 							$count = '<a class="btn btn-sm btn-danger" title="'.s("Les numéros de compte des opérations de caisse ne sont pas configurés").'" href="'.\farm\FarmUi::urlConnected($eFarm).'/cash/register:update?id='.$eRegister['id'].'">'.\Asset::icon('exclamation-triangle').'</a>';
 

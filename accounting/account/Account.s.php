@@ -169,6 +169,7 @@ class AccountSetting extends \Settings {
 	// FINANCE
 	const BANK_ACCOUNT_CLASS = '512';
 	const CASH_ACCOUNT_CLASS = '53'; // caisse
+	const CASH_SUB_ACCOUNT_CLASS = '531'; // caisse
 	const DEFAULT_BANK_ACCOUNT_LABEL = '5121';
 	
 	const INTERESTS_TO_PAY_CLASS = '1648';

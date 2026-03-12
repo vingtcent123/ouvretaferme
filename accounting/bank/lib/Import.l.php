@@ -249,6 +249,10 @@ class ImportLib extends ImportCrud {
 
 			Import::model()->update($eImport, $eImport->extracts(['result', 'status', 'processedAt']));
 
+			if($eImport['account']->exists() === FALSE and BankAccount::model()->count() === 0) {
+				$eImport['newAccount'] = new BankAccount();
+				self::update($eImport, ['account']);
+			}
 		}
 
 		Cashflow::model()->commit();

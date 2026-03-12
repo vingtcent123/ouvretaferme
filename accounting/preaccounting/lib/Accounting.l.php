@@ -27,6 +27,8 @@ Class AccountingLib {
 		$cRegister = $search->get('cRegister');
 		$cMethod = $search->get('cMethod');
 
+		$cFinancialYear = \account\FinancialYearLib::getAll();
+
 		$fecData = [];
 		$nCash = 0;
 
@@ -35,6 +37,13 @@ Class AccountingLib {
 			$items = [];
 			$eRegister = $cRegister->offsetGet($eCash['register']['id']);
 			$eRegister['paymentMethod'] = $cMethod->offsetGet($eRegister['paymentMethod']['id']);
+			$eFinancialYear = \account\FinancialYearLib::getFinancialYearForDate($eCash['date'], $cFinancialYear);
+
+			if($eFinancialYear->isCashReceipts()) {
+
+				$eRegister['account'] = $cAccount->find(fn($e) => \account\AccountLabelLib::isFromClass($e['class'], \account\AccountSetting::CASH_SUB_ACCOUNT_CLASS), limit: 1);
+
+			}
 
 			$fecLines = [];
 
@@ -145,18 +154,29 @@ Class AccountingLib {
 	 */
 	public static function generateCashBankLines(\cash\Cash $eCash, \cash\Register $eRegister, \Collection $cAccount): array {
 
-		// On cherche la contrepartie par ordre de priorité
-		if($eCash['cashflow']->notEmpty()) {
+		$cFinancialYear = \account\FinancialYearLib::getAll();
+		$eFinancialYear = \account\FinancialYearLib::getFinancialYearForDate($eCash['date'], $cFinancialYear);
 
-			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['cashflow']['account']['account']['id'])->first();
+		if($eFinancialYear->isCashReceipts()) {
 
-		} else if($eCash['account']->notEmpty()) {
-
-			$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['account']['id'])->first();
+			$eAccount = $cAccount->find(fn($e) => \account\AccountLabelLib::isFromClass($e['class'], \account\AccountSetting::BANK_ACCOUNT_CLASS), limit: 1);
 
 		} else {
 
-			$eAccount = new \account\Account();
+			// On cherche la contrepartie par ordre de priorité
+			if($eCash['cashflow']->notEmpty()) {
+
+				$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['cashflow']['account']['account']['id'], limit: 1);
+
+			} else if($eCash['account']->notEmpty()) {
+
+				$eAccount = $cAccount->find(fn($e) => $e['id'] === $eCash['account']['id'], limit: 1);
+
+			} else {
+
+				$eAccount = new \account\Account();
+
+			}
 
 		}
 

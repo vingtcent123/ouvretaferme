@@ -338,12 +338,6 @@ new Page(function($data) {
 			$data->tipNavigation = 'inline';
 		}
 
-		$data->nProductToCheck = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
-		$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
-
-		$data->nInvoiceForPaymentToCheck = 0;
-		$data->nSaleForPaymentToCheck = 0;
-
 		$data->cRegister = \cash\RegisterLib::getActive();
 
 		if($data->cRegister->notEmpty()) {
@@ -352,12 +346,22 @@ new Page(function($data) {
 			$data->cCash = new Collection();
 		}
 
-		$data->cRegisterMissing = $data->cRegister->find(fn($e) => (
-			in_array($e['id'], $data->cCash->getKeys()) and
-			$e['account']->empty() and
-			isset($data->cCash[$e['id']][mb_substr($data->search->get('from'), 0, 7)])
-		));
+		if($eFinancialYear->isCashReceipts() === FALSE) {
 
+			$data->nProductToCheck = \preaccounting\ProductLib::countForAccountingCheck($data->eFarm, $data->search);
+			$data->nItemToCheck = \preaccounting\ItemLib::countForAccountingCheck($data->eFarm, $data->search);
+
+			$data->nInvoiceForPaymentToCheck = 0;
+			$data->nSaleForPaymentToCheck = 0;
+
+			$data->cRegisterMissing = $data->cRegister->find(fn($e) => (
+				in_array($e['id'], $data->cCash->getKeys()) and
+				$e['account']->empty() and
+				isset($data->cCash[$e['id']][mb_substr($data->search->get('from'), 0, 7)])
+			));
+
+		}
+		
 		if(get_exists('type') === FALSE) {
 
 			try {
@@ -371,9 +375,12 @@ new Page(function($data) {
 		}
 
 		if(
-			$data->nProductToCheck === 0 and
-			$data->nItemToCheck === 0 and
-			$data->cRegisterMissing->count() === 0
+			$eFinancialYear->isCashReceipts() or
+			(
+				$data->nProductToCheck === 0 and
+				$data->nItemToCheck === 0 and
+				$data->cRegisterMissing->count() === 0
+			)
 		) {
 
 			$data->type = 'export';
