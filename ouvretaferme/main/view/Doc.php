@@ -46,7 +46,7 @@ class DocTemplate extends MainTemplate {
 				$h .= '<a href="/doc/accounting:asset" '.$this->menuSelected('accounting:asset').'>'.s("Importer les immobilisations").'</a>';
 				$h .= '<a href="/doc/accounting:vat" '.$this->menuSelected('accounting:vat').'>'.s("La TVA").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Comptabilité simplifiée").'</div>';
-				$h .= '<a href="/doc/accounting:receipts" '.$this->menuSelected('accounting:receipts').'>'.s("Livre des recettes").'</a>';
+				$h .= '<a href="/doc/accounting:receipts" '.$this->menuSelected('accounting:receipts').'>'.s("Livre des recettes pour le micro-BA").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Divers").'</div>';
 				$h .= '<a href="/doc/editor" '.$this->menuSelected('editor').'>'.s("Utiliser l'éditeur de texte").'</a>';
 			$h .= '</div>';

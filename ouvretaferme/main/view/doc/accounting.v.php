@@ -276,27 +276,27 @@ new AdaptativeView('receipts', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 	$t->menuSelected = 'accounting:receipts';
 
-	$t->title = s("Le livre des recettes");
+	$t->title = s("Le livre des recettes pour le micro-BA");
 	$t->subTitle = s("... ou comment tenir une comptabilité simplifiée");
 
 	echo '<div class="util-block">';
 
-		echo '<h2>'.s("Quel est le cadre légal ?").'</h2>';
-		echo '<p>'.s("L'utilisation du mode <b>livre des recettes</b> de {siteName} respecte le cadre légal défini par le <link>BOI-BA-DECLA-15 {icon}</link>.", ['link' => '<a target="_blank" href="https://bofip.impots.gouv.fr/bofip/10609-PGP.html/identifiant=BOI-BA-DECLA-15-20160907">', 'icon' => Asset::icon('box-arrow-up-right')]).'</p>';
+		echo '<h2>'.s("Introduction au livre des recettes").'</h2>';
+		echo '<p>'.s("Au micro-BA, tenir une comptabilité selon les normes du plan comptable agricole n'est pas obligatoire.").'</p>';
 		echo '<p>'.Asset::icon('arrow-up-right', ['style' => 'margin-bottom: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Si vous êtes <u>redevable de la TVA</u>, vous devez tenir 2 registres : ").'</p>';
 		echo '<ul class="ml-2">';
 			echo '<li>'.s("Le <b>livre-journal des recettes</b>, tout en conservant les pièces justificatives qui y sont liées").'</li>';
 			echo '<li>'.s("Le <b>registre des achats</b> (en conservant également les justificatifs).").'</li>';
 		echo '</ul>';
-		echo '<p class="ml-3">'.s("Ces deux registres vous permettront de déclarer votre TVA en toute simplicité.").'</p>';
 		echo '<p>'.Asset::icon('arrow-down-right', ['style' => 'margin-top: -0.5rem; margin-left: 1rem; margin-right: 0.5rem;']).' '.s("Si vous n'êtes <u>pas redevable de la TVA</u>, seul le <b>livre-journal des recettes</b> est obligatoire.").'</p>';
+		echo '<p>'.s("L'utilisation du mode <b>livre des recettes pour le micro-BA</b> de {siteName} respecte le cadre légal défini par le <link>BOI-BA-DECLA-15 {icon}</link>.", ['link' => '<a target="_blank" href="https://bofip.impots.gouv.fr/bofip/10609-PGP.html/identifiant=BOI-BA-DECLA-15-20160907">', 'icon' => Asset::icon('box-arrow-up-right')]).'</p>';
 	echo '</div>';
 
 	echo '<br/>';
 
 	echo '<div class="util-block">';
-		echo '<h2>'.s("Comment utiliser {siteName} pour ma comptabilité simplifiée ?").'</h2>';
-		echo '<p>'.s("Vous pourrez enregistrer simplement :").'</p>';
+		echo '<h2>'.s("Comment utiliser {siteName} pour mon livre des recette et mon registre des achats ?").'</h2>';
+		echo '<p>'.s("Il s'agit tout simplifier d'utiliser le logiciel comptable proposé par {siteName}, mais dans sa version ultra-simplifiée.<br/>Vous enregistrez :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Vos ventes, avec le numéro de compte {value}", \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS).'</li>';
 			echo '<li>'.s("Vos achats, avec le numéro de compte {value}", \account\AccountSetting::CHARGE_BUY_ACCOUNT_CLASS).'</li>';
