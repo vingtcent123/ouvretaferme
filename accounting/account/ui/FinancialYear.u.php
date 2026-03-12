@@ -1268,7 +1268,7 @@ class FinancialYearUi {
 					$accounting .= '<li>'.s("Je gère mes immobilisations").'</li>';
 				$accounting .= '</ul>';
 
-				$cashReceipt = '<h4>'.s("Je tiens uniquement un livre des recettes").'</h4>';
+				$cashReceipt = '<h4>'.s("Je tiens uniquement un livre des recettes et un registre des achats").'</h4>';
 				$cashReceipt .= '<ul>';
 					$cashReceipt .= '<li>'.s("J'enregistre uniquement les rentrées d'argent et les achats").'</li>';
 				$cashReceipt .= '</ul>';
