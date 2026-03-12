@@ -312,13 +312,14 @@ new AdaptativeView('receipts', function($data, DocTemplate $t) {
 		echo '<h2>'.s("Est-ce que je pourrai utiliser toutes les fonctionnalités de {siteName} quand même ?").'</h2>';
 		echo '<p>'.s("Oui, partiellement ! Même en utilisant le mode <b>livre des recettes</b>, vous avez accès :").'</p>';
 		echo '<ul>';
-			echo '<li>'.s("Au livre-journal (qui regroupe vos le livre des recettes et le registre des achats)").'</li>';
+			echo '<li>'.s("Au livre-journal (qui regroupe le livre des recettes et le registre des achats)").'</li>';
 			echo '<li>'.s("Au grand livre").'</li>';
 			echo '<li>'.s("À la balance").'</li>';
 			echo '<li>'.s("À la gestion (simplifiée) de vos immobilisations").'</li>';
 			echo '<li>'.s("Si vous êtes redevable de la TVA : à vos déclarations de TVA").'</li>';
 			echo '<li>'.s("À l'export au format FEC de toutes vos écritures comptables").'</li>';
 		echo '</ul>';
+		echo '<p>'.s("En revanche, vous n'aurez pas les synthèses financières tels que le bilan ou le compte de résultat.").'</p>';
 	echo '</div>';
 
 	echo '<div class="util-block">';
