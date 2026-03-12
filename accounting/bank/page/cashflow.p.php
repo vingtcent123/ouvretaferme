@@ -102,6 +102,12 @@ new \bank\CashflowPage(function($data) {
 
 		$data->hasVatAccounting = \farm\ConfigurationLib::getConfigurationForDate($data->eFarm, 'hasVatAccounting', $data->e['date']);
 
+		if($data->eFarm['eFinancialYear']->isCashReceipts()) {
+			$data->cAccount = \account\AccountLib::getAll(new Search(['forReceiptAccounting' => TRUE]));
+		} else {
+			$data->cAccount = new \account\Account();
+		}
+
 		throw new ViewAction($data);
 
 	}, validate: ['acceptAllocate'])

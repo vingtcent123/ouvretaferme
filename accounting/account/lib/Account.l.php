@@ -135,11 +135,10 @@ class AccountLib extends AccountCrud {
 				Account::model()
 					->where(fn() => 'class LIKE "'.join('" OR class LIKE "', $search->get('classPrefixes')).'"', if: $search->has('classPrefixes') and $search->get('classPrefixes'))
 				;
-			} else {
-				Account::model()
-					->where('class IN ("'.join('", "', [AccountSetting::CHARGE_BUY_ACCOUNT_CLASS, AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS]).'") OR class LIKE "'.AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS.'%"')
-					;
 			}
+			Account::model()
+				->where('class IN ("'.join('", "', [AccountSetting::CHARGE_BUY_ACCOUNT_CLASS, AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS]).'") OR class LIKE "'.AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS.'%"')
+				;
 		} else {
 			Account::model()
 				->where(fn() => 'class LIKE "'.join('%" OR class LIKE "', $search->get('classPrefixes')).'%"', if: $search->has('classPrefixes') and $search->get('classPrefixes'))

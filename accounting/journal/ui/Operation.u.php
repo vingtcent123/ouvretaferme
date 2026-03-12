@@ -811,7 +811,7 @@ class OperationUi {
 
 			$h .= '<h4>&nbsp;</h4>';
 			$h .= '<div class="operation-create-header">'.self::p('date')->label.' '.\util\FormUi::asterisk().'</div>';
-			$h .= '<div class="operation-create-header">'.self::p('document')->label.'</div>';
+			$h .= '<div class="operation-create-header">'.self::p('document')->label.' '.\util\FormUi::asterisk().'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('thirdParty')->label.'</div>';
 			$h .= '<div class="operation-create-header">'.self::p('account')->label.' '.\util\FormUi::asterisk().'</div>';
 			if($eFinancialYear->isCashReceipts() === FALSE) {

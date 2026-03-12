@@ -352,7 +352,7 @@ class TipUi {
 
 			case 'accounting-pre-accounting-fec' :
 
-				$h = '<p>'.s("La précomptabilité est l'opération préparatoire de vos ventes avant l'intégration dans votre comptabilité.").'</p>';
+				$h = '<p>'.s("La précomptabilité est l'opération préparatoire de vos ventes avant l'intégration dans votre comptabilité et est utile dans le cadre d'une <b>comptabilité au Plan Comptable Agricole</b>.").'</p>';
 				$h .= '<p>'.s("Cette opération se fait en plusieurs étapes qui peuvent être réalisées au fur et à mesure dans l'année :").'</p>';
 				$h .= '<ul style="list-style-type: none;">';
 					$h .= '<li>'.\Asset::icon('1-circle-fill').' '.s("Associer un numéro de compte à <link>chaque produit</link> et aux articles sans référence produit", [

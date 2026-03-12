@@ -211,7 +211,7 @@ class CashflowLib extends CashflowCrud {
 
 		$keywords = [];
 
-		$words = array_filter(preg_split('/\s+/', $query));
+		$words = array_unique(array_map(fn($word) => strtolower($word), array_filter(preg_split('/\s+/', $query), fn($word) => strlen($word) > 5)));
 
 		if(count($words) > 0) {
 
@@ -221,12 +221,15 @@ class CashflowLib extends CashflowCrud {
 
 			$match = 'MATCH(memo, name) AGAINST ('.Cashflow::model()->format(implode(' ', $keywords)).' IN BOOLEAN MODE)';
 
-			Cashflow::model()->where($match.' > 0');
+			Cashflow::model()->where($match.' > '.(count($words) - 1));
+
+		} else {
+			return Cashflow::model()->where(FALSE);
 		}
 
 		return Cashflow::model()
-      ->where($match.' > 0')
 			->whereAmount($eCashflow['amount'])
+			->whereStatus(Cashflow::ALLOCATED)
 			->whereType($eCashflow['type'])
 			->whereId('!=', $eCashflow['id'])
 			->whereHash('!=', NULL);

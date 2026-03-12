@@ -469,7 +469,7 @@ class ConfigurationUi {
 			}).$dissociation
 		);
 
-		$label = $profile.\util\FormUi::info(s("Vente aux clients professionnels"));
+		$label = $profileLabel.\util\FormUi::info(s("Vente aux clients professionnels"));
 		$h .= $form->group(
 			$label,
 			$form->dynamicField($e, 'proAccount', function($d) use($profile, $eConfiguration) {

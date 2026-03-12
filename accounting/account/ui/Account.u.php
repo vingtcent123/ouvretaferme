@@ -94,9 +94,21 @@ class AccountUi {
 		\Asset::css('util', 'batch.css');
 		\Asset::js('util', 'batch.js');
 
-		$h = '<div class="util-block-help">';
-			$h .= s("Il est possible de créer des numéros de compte personnalisés, par exemple pour créer un compte-courant par associé. Cela vous permettra de mieux analyser vos flux.");
-		$h .= '</div>';
+		$h = '';
+
+		if($eFarm['eFinancialYear']->isCashReceipts()) {
+
+			$h .= '<div class="util-block-info">';
+				$h .= '<p>'.s("Votre exercice {value} est configuré pour fonctionner avec un livre des recettes. Les numéros de compte utilisés sont :", FinancialYearUi::getYear($eFarm['eFinancialYear'])).'</p>';
+				$h .= '<ul>';
+					$h .= '<li>'.s("{value} Compte courants d'associés", AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS).'</li>';
+					$h .= '<li>'.s("{value} Achats", AccountSetting::CHARGE_BUY_ACCOUNT_CLASS).'</li>';
+					$h .= '<li>'.s("{value} Ventes", AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS).'</li>';
+				$h .= '</ul>';
+				$h .= '<p>'.s("Les autres numéros de compte ne peuvent être utilisés que si vous réalisez une comptabilité selon le plan comptable agricole.").'</p>';
+			$h .= '</div>';
+
+		}
 
 		$h .= '<div class="util-overflow-sm">';
 

@@ -70,6 +70,7 @@ new AdaptativeView('allocate', function($data, PanelTemplate $t) {
 		$data->cPaymentMethod,
 		$data->cJournalCode,
 		$data->hasVatAccounting,
+		$data->cAccount,
 	);
 
 });

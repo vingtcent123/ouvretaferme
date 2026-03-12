@@ -211,7 +211,7 @@ class Operation extends OperationElement {
 				return $type !== NULL;
 
 			})
-			->setCallback('date.check', function(string $date): bool {
+			->setCallback('date.prepare', function(string $date): bool {
 
 				$cFinancialYear = \account\FinancialYearLib::getOpenFinancialYears();
 
@@ -263,10 +263,14 @@ class Operation extends OperationElement {
 			})
 			->setCallback('amount.negative', function(float $amount): bool {
 
-				return $amount > 0.0;
+				return $amount >= 0.0;
 
 			})
-			->setCallback('vatRate.prepare', function(?float &$vatRate): bool {
+			->setCallback('vatRate.prepare', function(?float &$vatRate) use($p): bool {
+
+				if($p->isBuilt('date') === FALSE) {
+					return TRUE;
+				}
 
 				$this->expects(['date']);
 
@@ -279,7 +283,11 @@ class Operation extends OperationElement {
 				return TRUE;
 
 			})
-			->setCallback('vatRule.prepare', function(?string &$vatRule): bool {
+			->setCallback('vatRule.prepare', function(?string &$vatRule) use($p) : bool {
+
+				if($p->isBuilt('date') === FALSE) {
+					return TRUE;
+				}
 
 				$this->expects(['date']);
 
@@ -292,8 +300,12 @@ class Operation extends OperationElement {
 				return TRUE;
 
 			})
-		;
+			->setCallback('document.prepare', function(?string $document): bool {
 
+				return empty($document) === FALSE;
+
+			})
+		;
 		parent::build($properties, $input, $p);
 
 	}

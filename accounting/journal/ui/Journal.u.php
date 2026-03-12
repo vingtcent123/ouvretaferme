@@ -482,7 +482,7 @@ class JournalUi {
 								$h .= '</td>';
 							}
 
-							$h .= '<td class="td-vertical-align-top">';
+							$h .= '<td class="td-vertical-align-top td-min-content">';
 								$h .= '<div class="journal-operation-description" data-dropdown="bottom" data-dropdown-hover="true">';
 									if($eOperation['accountLabel'] !== NULL) {
 										$text = encode($eOperation['accountLabel']);

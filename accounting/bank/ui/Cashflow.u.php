@@ -762,7 +762,7 @@ class CashflowUi {
 
 	}
 
-	public function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cPaymentMethod, \Collection $cJournalCode, bool $hasVat): \Panel {
+	public function getAllocate(\farm\Farm $eFarm, \account\FinancialYear $eFinancialYear, Cashflow $eCashflow, \Collection $cPaymentMethod, \Collection $cJournalCode, bool $hasVat, \Collection $cAccount): \Panel {
 
 		\Asset::js('journal', 'operation.js');
 		\Asset::js('journal', 'amount.js');
@@ -791,6 +791,18 @@ class CashflowUi {
 			'cOperationCashflow' => new \Collection(['cashflow' => $eCashflow]),
 			'cJournalCode' => $cJournalCode,
 		]);
+		if($eFinancialYear->isCashReceipts()) {
+			if($eCashflow['type'] === Cashflow::DEBIT) {
+				$eAccount = $cAccount->find(fn($e) => \account\AccountLabelLib::isFromClass($e['class'], \account\AccountSetting::CHARGE_BUY_ACCOUNT_CLASS), limit: 1);
+				$eOperation['account'] = $eAccount;
+				$eOperation['vatRate'] = ($eAccount['vatRate'] ?? 0);
+			} else {
+				$eAccount = $cAccount->find(fn($e) => \account\AccountLabelLib::isFromClass($e['class'], \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS), limit: 1);
+				$eOperation['account'] = $eAccount;
+				$eOperation['vatRate'] = ($eAccount['vatRate'] ?? 0);
+			}
+		}
+
 		$index = 0;
 		$defaultValues = [
 			'date' => $eCashflow['date'],
