@@ -336,7 +336,7 @@ new AdaptativeView('receipts', function($data, DocTemplate $t) {
 		echo '<h2>'.s("Que signifient ouverture et clôture d'exercice ?").'</h2>';
 		echo '<p>'.s("La comptabilité simplifiée au livre des recettes et registre des achats a rendu les rituels d'ouverture et de clôture très simples :").'</p>';
 		echo '<ul>';
-			echo '<li>'.s("En <b>début d'exercice</b>, les soldes de vos comptes courants d'associés (numéro {associateAccount}), numéro bancaire (compte {bankAccount}) et compte de caisse (numéro {cashAccount}) sont reportés depuis l'exercice précédent.", [
+			echo '<li>'.s("En <b>début d'exercice</b>, les soldes de vos comptes courants d'associés (numéro {associateAccount}), compte bancaire (numéro {bankAccount}) et compte de caisse (numéro {cashAccount}) sont reportés depuis l'exercice précédent.", [
 				'associateAccount' => \account\AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS,
 				'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS,
 				'cashAccount' => \account\AccountSetting::CASH_SUB_ACCOUNT_CLASS,
