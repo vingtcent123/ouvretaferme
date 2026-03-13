@@ -52,7 +52,7 @@ class WidgetLib {
 		}
 
 		// Pas les accès en écriture sur la boutique
-		if($eShop['farm']['id'] !== $eFarm['id']) {
+		if($eShop->validateShare($eFarm) === FALSE) {
 			return fn() => '';
 		}
 

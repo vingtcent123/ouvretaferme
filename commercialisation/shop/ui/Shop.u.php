@@ -695,7 +695,7 @@ class ShopUi {
 
 	public function getEmbedScript(Shop $eShop, string $mode) {
 
-		return '<script type="text/javascript">(function() { const element = document.createElement("script"); element.src = "'.self::domain().'/embed-'.$mode.'.js?id='.$eShop['id'].'&target=otf-'.$eShop['id'].'"; document.getElementsByTagName("head")[0].appendChild(element); })()</script><div id="otf-'.$eShop['id'].'"></div>';
+		return '<script type="text/javascript">(function() { const element = document.createElement("script"); element.src = "'.self::domain().'/embed-'.$mode.'.js?id='.$eShop['id'].'&target=otf-'.$mode.'-'.$eShop['id'].'"; document.getElementsByTagName("head")[0].appendChild(element); })()</script><div id="otf-'.$mode.'-'.$eShop['id'].'"></div>';
 
 	}
 
