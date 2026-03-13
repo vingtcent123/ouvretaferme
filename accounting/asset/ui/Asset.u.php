@@ -168,7 +168,7 @@ Class AssetUi {
 				}
 			}
 
-			$eAsset['value'] = $value;
+			$eAsset['value'] = abs($value);
 		}
 
 		$properties = array_merge(
