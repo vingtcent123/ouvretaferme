@@ -200,7 +200,7 @@ Class OpeningLib {
 		$cOperation = \account\OpeningLib::getRetainedEarnings($eFinancialYearPrevious, $eFinancialYear, $hash);
 
 		// Résultat et affectation
-		if($eFinancialYearPrevious->isCashReceipts() === FALSE) {
+		if($eFinancialYearPrevious->notEmpty() and $eFinancialYearPrevious->isCashReceipts() === FALSE) {
 
 			$cOperationResult = \account\OpeningLib::getResultOperation($eFinancialYearPrevious, $eFinancialYear, $hash);
 
