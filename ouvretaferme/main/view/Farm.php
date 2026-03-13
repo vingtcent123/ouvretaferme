@@ -79,7 +79,7 @@ class FarmTemplate extends MainTemplate {
 		}
 
 		if($eFarm->canAccounting()) {
-			$sections['accounting'] = [\Asset::icon('piggy-bank'), s("Comptabilité")];
+			$sections['accounting'] = [\Asset::icon('piggy-bank'), s("Gestion")];
 		}
 
 		$nSections = count($sections);

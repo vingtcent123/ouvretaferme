@@ -17,14 +17,13 @@ class TipUi {
 					$h .= str_repeat($content['icon'], 9);
 				$h .= '</div>';
 				$h .= '<div class="tip-header">';
-					$h .= '<div class="tip-intro">'.\Asset::icon('lightbulb').'</div>';
 					$h .= match($navigation) {
-						'close' => '<a href="/farm/tip?farm='.$eFarm['id'].'" class="btn btn-transparent btn-sm">'.\Asset::icon('caret-right-fill').' '.s("Toutes les astuces").'</a>',
-						'next' => '<a href="/farm/tip?farm='.$eFarm['id'].'" class="btn btn-transparent btn-sm">'.\Asset::icon('caret-right-fill').' '.s("Astuce suivante").'</a>',
+						'close' => '<a href="/farm/tip?farm='.$eFarm['id'].'" class="btn btn-secondary btn-sm">'.\Asset::icon('caret-right-fill').' '.s("Toutes les astuces").'</a>',
+						'next' => '<a href="/farm/tip?farm='.$eFarm['id'].'" class="btn btn-secondary btn-sm">'.\Asset::icon('caret-right-fill').' '.s("Astuce suivante").'</a>',
 						'inline' => ''
 					};
 				$h .= '</div>';
-				$h .= '<h2 class="tip-title">'.$content['title'].'</h2>';
+				$h .= '<h2 class="tip-title">'.\Asset::icon('lightbulb').' '.$content['title'].'</h2>';
 				$h .= '<div class="tip-content">';
 					$h .= $content['content'];
 					if($content['image']) {
@@ -39,10 +38,10 @@ class TipUi {
 				$h .= '</div>';
 				$h .= '<div class="tip-button">';
 					if($content['button'] !== NULL) {
-						$h .= '<a href="/farm/tip:click?id='.$tip.'&redirect='.urlencode($content['button'][0]).'" data-ajax-navigation="never" target="_blank" class="btn btn-outline-tip">'.$content['button'][1].'</a>';
+						$h .= '<a href="/farm/tip:click?id='.$tip.'&redirect='.urlencode($content['button'][0]).'" data-ajax-navigation="never" target="_blank" class="btn btn-lg btn-outline-tip">'.$content['button'][1].'</a>';
 					}
 					if($navigation === 'close' or $navigation === 'inline') {
-						$h .= '<a data-ajax="/farm/tip:close?id='.$tip.'" data-ajax-method="get" class="btn btn-tip">'.\Asset::icon('x-lg').'  '.s("Cacher cette astuce").'</a>';
+						$h .= '<a data-ajax="/farm/tip:close?id='.$tip.'" data-ajax-method="get" class="btn btn-lg btn-tip">'.\Asset::icon('x-lg').'  '.s("Cacher cette astuce").'</a>';
 					}
 				$h .= '</div>';
 			$h .= '</div>';
@@ -168,7 +167,7 @@ class TipUi {
 
 			case 'selling-market' :
 
-				$link = FarmUi::urlSellingSalesMarket($eFarm);
+				$link = FarmUi::urlSellingMarket($eFarm);
 
 				$h = '<p>'.s("Au marché avec votre téléphone ou une tablette, saisissez vos ventes avec le logiciel de caisse intégré sur {siteName}. Plus besoin d'une balance sophistiquée. À la fin du marché, vous savez exactement ce que vous avez vendu.").'</p>';
 
@@ -205,7 +204,7 @@ class TipUi {
 					$h .= '<li>'.s("Il est directement connecté à votre comptabilité si vous la tenez sur {siteName}").'</li>';
 				$h .= '</ul>';
 
-				$h .= '<p>'.s("Nous vous conseillons de <link>lire la documentation</link> pour tirer pleinement partie de cette fonctionnalité !", ['link' => '<a href="/doc/selling:market">']).'</p>';
+				$h .= '<p>'.s("Nous vous conseillons de <link>lire la documentation</link> pour tirer pleinement parti de cette fonctionnalité !", ['link' => '<a href="/doc/selling:market">']).'</p>';
 
 				return [
 					'icon' => \Asset::icon('cart2'),
@@ -213,6 +212,26 @@ class TipUi {
 					'content' => $h,
 					'image' => TRUE,
 					'button' => ['/doc/selling:market', s("Lire la documentation")],
+				];
+
+			case 'selling-catalog-start' :
+
+				$h = '<p>'.s("Les catalogues de produits permettent de gérer facilement et de façon centralisée vos disponibilités du moment. Ils sont particulièrement indiqués si vous voulez partager facilement la même gamme de produits ou vos stocks entre plusieurs boutiques en ligne.").'</p>';
+				$h .= '<p>'.s("Dans un catalogue, vous pouvez paramétrer finement la mise en vente de chaque produit :").'</p>';
+
+				$h .= '<ul>';
+					$h .= '<li>'.s("Stock disponible").'</li>';
+					$h .= '<li>'.s("Mise en avant").'</li>';
+					$h .= '<li>'.s("Restrictions de commandes").'</li>';
+					$h .= '<li>'.s("Et ainsi de suite").'</li>';
+				$h .= '</ul>';
+
+				return [
+					'icon' => \Asset::icon('book'),
+					'title' => s("Les catalogues de produits"),
+					'content' => $h,
+					'image' => TRUE,
+					'button' => NULL,
 				];
 
 			case 'selling-pdf' :
@@ -231,7 +250,7 @@ class TipUi {
 
 			case 'selling-shop' :
 
-				$link = FarmUi::urlShopList($eFarm);
+				$link = FarmUi::urlSellingShop($eFarm);
 
 				$h = '<p>'.s("Créez une boutique en permettant à vos clients de faire leurs commandes en ligne et de venir retirer leur panier à la date et au lieu de votre choix. Pas de commission sur les ventes et facile à installer !").'</p>';
 

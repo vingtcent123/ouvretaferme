@@ -336,7 +336,7 @@ class SuggestionLib {
 						'reference' => new \Sql('m1.id', 'int'),
 						'payment' => fn($e) => new \selling\Payment(['id' => $e['reference']]),
 						'date' => new \Sql('m1.paidAt'),
-						'sale' => ['document', 'profile', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate', 'compositionEndAt', 'closed'],
+						'sale' => ['document', 'profile', 'priceIncludingVat', 'priceExcludingVat', 'vat', 'vatByRate', 'preparationStatus', 'compositionEndAt', 'closed'],
 						'source' => fn() => Cash::SELL_SALE,
 						'type' => fn($e) => ($e['amountIncludingVat'] > 0) ? Cash::CREDIT : Cash::DEBIT, // Vérifier avant la ligne amountIncludingVat
 						'amountIncludingVat' => fn($e) => ($e['amountIncludingVat'] > 0) ? $e['amountIncludingVat'] : $e['amountIncludingVat'] * -1,

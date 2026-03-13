@@ -1203,7 +1203,7 @@ class AnalyzeUi {
 							$h .= '<th>'.$search->linkSort('product', s("Produit")).'</th>';
 
 							if($monthly === NULL or $monthly === 'turnover') {
-								$h .= '<th class="text-center" colspan="2">';
+								$h .= '<th class="text-center">';
 									$h .= '<div class="analyze-month-th">';
 										$h .= $search->linkSort('turnover', s("Ventes"), SORT_DESC);
 										if($expand) {
@@ -1248,7 +1248,7 @@ class AnalyzeUi {
 								$h .= $moreTh;
 							}
 
-							if($compare or $zoom) {
+							if($zoom) {
 								$h .= '<th></th>';
 							}
 

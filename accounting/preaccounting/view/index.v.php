@@ -13,7 +13,7 @@ new AdaptativeView('/precomptabilite', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-block-help">'.
 			'<h3>'.s("Vous êtes sur la page pour importer automatiquement en comptabilité").'</h3>'.
-			'<p>'.s("Les paiements de vos factures ainsi que les opérations de vos journaux de caisse peuvent être importés en un clic dans votre comptabilité après avoir préparé les données de vos ventes. À ce jour, vous n'avez pas encore utilisé le module de vente, la précomptabilité n'est donc pas disponible.").'</p>'.
+			'<p>'.s("Les paiements de vos factures ainsi que les opérations de vos journaux de caisse peuvent être importés en un clic dans votre comptabilité après avoir préparé les données de vos ventes. À ce jour, vous n'avez pas encore utilisé le module de vente, vous n'avez donc aucune écriture à importer.").'</p>'.
 			'<a href="'.\farm\FarmUi::urlSellingSales($data->eFarm).'" class="btn btn-secondary">'.s("Créer ma première vente").'</a>';
 
 			if($data->cRegister->empty()) {

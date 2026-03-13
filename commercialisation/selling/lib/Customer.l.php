@@ -103,6 +103,27 @@ class CustomerLib extends CustomerCrud {
 
 	}
 
+	public static function getMarketByFarm(\farm\Farm $eFarm): \Collection {
+
+		return Customer::model()
+			->select(Customer::getSelection() + [
+				'cSale' => Sale::model()
+					->select('id', 'deliveredAt')
+					->whereProfile(Sale::MARKET)
+					->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::SELLING, Sale::DELIVERED])
+					->whereDeliveredAt('>', new \Sql('NOW() - INTERVAL 1 YEAR'))
+					->sort(['deliveredAt' => SORT_DESC])
+					->delegateCollection('customer')
+			])
+			->whereStatus(Customer::ACTIVE)
+			->whereFarm($eFarm)
+			->whereType(Customer::PRIVATE)
+			->whereDestination(Customer::COLLECTIVE)
+			->sort(['name' => SORT_ASC])
+			->getCollection();
+
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm, bool $selectPrices = FALSE, bool $selectSales = FALSE, bool $selectInvite = FALSE, int $page = 0, \Search $search = new \Search()): \Collection {
 
 		if($selectPrices) {
@@ -169,8 +190,9 @@ class CustomerLib extends CustomerCrud {
 			->select(Customer::getSelection())
 			->option('count')
 			->whereFarm($eFarm)
-			->where(fn() => new \Sql('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$search->get('group')['id'].'\')'), if: $search->get('group')->notEmpty())
+			->where(fn() => new \Sql('JSON_CONTAINS('.Customer::model()->field('groups').', \''.$search->get('group')['id'].'\')'), if: $search->get('group')?->notEmpty())
 			->whereName('LIKE', '%'.$search->get('name').'%', if: $search->get('name'))
+			->whereType($search->get('type'), if: $search->get('type'))
 			->whereEmail('LIKE', '%'.$search->get('email').'%', if: $search->get('email'))
 			->sort($search->buildSort([
 				'firstName' => fn($direction) => match($direction) {

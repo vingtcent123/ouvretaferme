@@ -23,7 +23,7 @@ new Page(function($data) {
 		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate();
 		$data->eCustomer = \selling\CustomerLib::getByUserAndFarm($data->eUserOnline, $data->eFarm)->validate('isPro');
 
-		$data->cSale = \selling\SaleLib::getByCustomer($data->eCustomer);
+		$data->cSale = \selling\SaleLib::getSalesByCustomer($data->eCustomer);
 		$data->cInvoice = \selling\InvoiceLib::getByCustomer($data->eCustomer);
 
 		throw new ViewAction($data);

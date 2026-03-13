@@ -535,7 +535,7 @@ body[data-template~="farm"] .container {
 	#farm-nav-sections {
 		bottom: -1px;
 		display: grid;
-		grid-template-columns: 4fr 3fr 4fr;
+		grid-template-columns: 1fr 1fr 1fr;
 		grid-column-gap: 0.25rem;
 		width: 100%;
 		height: var(--sections-height);
@@ -889,10 +889,6 @@ body[data-template~="farm"] .container {
 		grid-area: selling;
 	}
 
-	.farm-nav-shop {
-		grid-area: shop;
-	}
-
 	.farm-nav-communication {
 		grid-area: communication;
 	}
@@ -910,13 +906,13 @@ body[data-template~="farm"] .container {
 		.farm-section-commercialisation {
 			display: grid;
 			align-items: start;
-			grid-template: "selling shop communication analyze settings" auto / auto auto auto auto auto;
+			grid-template: "selling communication analyze settings" auto / auto auto auto auto auto;
 		}
 
 		.farm-section-commercialisation:has(.farm-nav-join) {
 			grid-template:
 					"join join join join join" auto
-					"selling shop communication analyze settings" auto / auto auto auto auto auto;
+					"selling communication analyze settings" auto / auto auto auto auto auto;
 		}
 
 	}
@@ -927,15 +923,15 @@ body[data-template~="farm"] .container {
 			display: grid;
 			align-items: start;
 			grid-template:
-				"selling shop communication analyze" auto
-				"selling shop communication settings" 1fr / auto auto auto auto;
+				"selling communication analyze" auto
+				"selling communication settings" 1fr / auto auto auto auto;
 		}
 
 		.farm-section-commercialisation:has(.farm-nav-join) {
 			grid-template:
 				"join join join join" auto
-				"selling shop communication analyze" auto
-				"selling shop communication settings" 1fr / auto auto auto auto;
+				"selling communication analyze" auto
+				"selling communication settings" 1fr / auto auto auto auto;
 		}
 
 
@@ -947,16 +943,14 @@ body[data-template~="farm"] .container {
 			display: grid;
 			align-items: start;
 			grid-template:
-				"selling shop analyze" auto
-				"selling shop settings" auto
+				"selling communication analyze" auto
 				"selling communication settings" 1fr / auto auto auto;
 		}
 
 		.farm-section-commercialisation:has(.farm-nav-join) {
 			grid-template:
 				"join join join" auto
-				"selling shop analyze" auto
-				"selling shop settings" auto
+				"selling communication analyze" auto
 				"selling communication settings" 1fr / auto auto auto;
 		}
 
@@ -969,17 +963,17 @@ body[data-template~="farm"] .container {
 			display: grid;
 			align-items: start;
 			grid-template:
-				"selling shop" auto
 				"selling communication" auto
-				"analyze settings" auto / auto auto;
+				"selling analyze" auto
+				"selling settings" auto / auto auto;
 		}
 
 		.farm-section-commercialisation:has(.farm-nav-join) {
 			grid-template:
 				"join join" auto
-				"selling shop" auto
 				"selling communication" auto
-				"analyze settings" auto / auto auto;
+				"selling analyze" auto
+				"selling settings" auto / auto auto;
 		}
 
 

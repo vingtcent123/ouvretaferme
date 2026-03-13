@@ -32,10 +32,14 @@ class SaleUi {
 
 	public static function getName(Sale $eSale): string {
 
-		$eSale->expects(['id', 'profile', 'priceExcludingVat', 'compositionEndAt']);
+		$eSale->expects(['id', 'profile', 'priceExcludingVat', 'preparationStatus', 'compositionEndAt']);
 
 		if($eSale->isComposition()) {
 			return s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
+		} else if($eSale->isPurchase()) {
+			return s("Achat n°{value}", $eSale['document']);
+		} else if($eSale->isMarket()) {
+			return s("Vente n°{value}", $eSale['document']);
 		} else if($eSale['priceExcludingVat'] < 0) {
 			return s("Avoir n°{value}", $eSale['document']);
 		} else {
@@ -83,8 +87,8 @@ class SaleUi {
 			}
 
 			return match($eSale['taxes']) {
-				Sale::EXCLUDING => $eSale['priceExcludingVat'] ? \util\TextUi::money($eSale['priceExcludingVat'] / $eSale['marketSales'], precision: 2).$taxes : '',
-				Sale::INCLUDING => $eSale['priceIncludingVat'] ? \util\TextUi::money($eSale['priceIncludingVat'] / $eSale['marketSales'], precision: 2).$taxes : ''
+				Sale::EXCLUDING => $eSale['priceExcludingVat'] ? \util\TextUi::money($eSale['priceExcludingVat'] / $eSale['marketSales'], precision: 0).$taxes : '',
+				Sale::INCLUDING => $eSale['priceIncludingVat'] ? \util\TextUi::money($eSale['priceIncludingVat'] / $eSale['marketSales'], precision: 0).$taxes : ''
 			};
 
 		} else {
@@ -105,9 +109,9 @@ class SaleUi {
 
 	}
 
-	public function getSearch(\Search $search, \Collection $cPaymentMethod): string {
+	public function getSearchSales(\Search $search, \Collection $cPaymentMethod): string {
 
-		$h = '<div id="sale-search" class="util-block-search '.($search->empty(['ids', 'type', 'profile']) ? 'hide' : '').'">';
+		$h = '<div id="sale-search" class="util-block-search '.($search->empty(['ids', 'type']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = LIME_REQUEST_PATH;
@@ -158,6 +162,72 @@ class SaleUi {
 
 	}
 
+	public function getSearchPurchases(\Search $search): string {
+
+		$h = '<div id="sale-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
+
+			$form = new \util\FormUi();
+			$url = LIME_REQUEST_PATH;
+
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
+
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Numéro").'</legend>';
+					$h .= $form->text('document', $search->get('document'), ['placeholder' => s("Numéro")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Client").'</legend>';
+					$h .= $form->text('customerName', $search->get('customerName'), ['placeholder' => s("Client")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Date").'</legend>';
+					$h .= $form->month('deliveredAt', $search->get('deliveredAt'));
+				$h .= '</fieldset>';
+
+				$h .= '<div class="util-search-submit">';
+					$h .= $form->submit(s("Chercher"));
+					$h .= '<a href="'.$url.'" class="btn">'.\Asset::icon('x-lg').'</a>';
+				$h .= '</div>';
+
+			$h .= $form->close();
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getSearchMarket(\Search $search): string {
+
+		$h = '<div id="sale-search" class="util-block-search '.($search->empty() ? 'hide' : '').'">';
+
+			$form = new \util\FormUi();
+			$url = LIME_REQUEST_PATH;
+
+			$h .= $form->openAjax($url, ['method' => 'get', 'class' => 'util-search']);
+
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Point de vente").'</legend>';
+					$h .= $form->text('customerName', $search->get('customerName'), ['placeholder' => s("Nom du point de vente")]);
+				$h .= '</fieldset>';
+				$h .= '<fieldset>';
+					$h .= '<legend>'.s("Date").'</legend>';
+					$h .= $form->month('deliveredAt', $search->get('deliveredAt'));
+				$h .= '</fieldset>';
+
+				$h .= '<div class="util-search-submit">';
+					$h .= $form->submit(s("Chercher"));
+					$h .= '<a href="'.$url.'" class="btn">'.\Asset::icon('x-lg').'</a>';
+				$h .= '</div>';
+
+			$h .= $form->close();
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public function getNextSales(\farm\Farm $eFarm, ?string $type, array $nextSales): string {
 
 		if($nextSales === []) {
@@ -189,7 +259,18 @@ class SaleUi {
 
 	}
 
-	public function getList(\farm\Farm $eFarm, \Collection $cSale, ?\Search $search = NULL, array $hide = [], array $show = [], ?int $page = NULL, ?string $group = 'date', ?\Collection $cPaymentMethod = NULL): string {
+	public function getListPurchases(\farm\Farm $eFarm, \Collection $cSale, ?\Search $search = NULL, ?int $page = NULL, ?string $group = 'date'): string {
+
+		return $this->getListSales(
+			$eFarm, $cSale, $search,
+			hide: ['batch', 'items', 'paymentMethod'],
+			page: $page,
+			group: $group
+		);
+
+	}
+
+	public function getListSales(\farm\Farm $eFarm, \Collection $cSale, ?\Search $search = NULL, array $hide = [], array $show = [], ?int $page = NULL, ?string $group = 'date', ?\Collection $cPaymentMethod = NULL): string {
 
 		if($cSale->empty()) {
 			return '';
@@ -208,8 +289,11 @@ class SaleUi {
 			$hasGroup = ($group !== NULL);
 		}
 
+		$hasBatch = in_array('batch', $hide) === FALSE;
 		$hasAverage = (in_array('average', $show) and $cSale->contains(fn($eSale) => $eSale->isMarket()));
 		$hasDocuments = $cSale->contains(fn($eSale) => $eSale->isMarket() === FALSE);
+
+		$isMarket = in_array('market', $show);
 
 		$previousGroup = -1;
 
@@ -219,23 +303,32 @@ class SaleUi {
 
 				$h .= '<tr>';
 
-					$h .= '<th class="td-min-content">';
-						if($hasGroup === FALSE) {
-							$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
-								$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleSelection(this)"/>';
-							$h .= '</label>';
-						}
-					$h .= '</th>';
+					if($hasBatch) {
+
+						$h .= '<th class="td-min-content">';
+							if($hasGroup === FALSE) {
+								$h .= '<label title="'.s("Tout cocher / Tout décocher").'">';
+									$h .= '<input type="checkbox" class="batch-all" onclick="Sale.toggleSelection(this)"/>';
+								$h .= '</label>';
+							}
+						$h .= '</th>';
+
+					}
 
 					$label = s("Numéro");
 					$h .= '<th class="text-center td-min-content">'.($search ? $search->linkSort('id', $label, SORT_DESC) : $label).'</th>';
 
 					if(in_array('customer', $hide) === FALSE) {
 						$h .= '<th>';
-							$label = s("Prénom");
-							$h .= ($search ? $search->linkSort('firstName', $label) : $label).' / ';
-							$label = s("Nom");
-							$h .= ($search ? $search->linkSort('lastName', $label) : $label);
+							if($isMarket) {
+								$label = s("Point de vente");
+								$h .= ($search ? $search->linkSort('name', $label) : $label);
+							} else {
+								$label = s("Prénom");
+								$h .= ($search ? $search->linkSort('firstName', $label) : $label).' / ';
+								$label = s("Nom");
+								$h .= ($search ? $search->linkSort('lastName', $label) : $label);
+							}
 						$h .= '</th>';
 						$columns++;
 					}
@@ -294,6 +387,10 @@ class SaleUi {
 								$currentGroup = ($eSale['preparationStatus'] === Sale::DRAFT) ? Sale::DRAFT : $eSale['deliveredAt'];
 								break;
 
+							case 'month' :
+								$currentGroup = substr($eSale['deliveredAt'], 1, 7);
+								break;
+
 						}
 
 
@@ -305,11 +402,13 @@ class SaleUi {
 							}
 
 									$h .= '<tr class="tr-title">';
-										$h .= '<th class="td-checkbox">';
-											$h .= '<label title="'.s("Cocher ces ventes / Décocher ces ventes").'">';
-												$h .= '<input type="checkbox" class="batch-all batch-all-group" onclick="Sale.toggleGroupSelection(this)"/>';
-											$h .= '</label>';
-										$h .= '</th>';
+										if($hasBatch) {
+											$h .= '<th class="td-checkbox">';
+												$h .= '<label title="'.s("Cocher ces ventes / Décocher ces ventes").'">';
+													$h .= '<input type="checkbox" class="batch-all batch-all-group" onclick="Sale.toggleGroupSelection(this)"/>';
+												$h .= '</label>';
+											$h .= '</th>';
+										}
 										$h .= '<td colspan="'.$columns.'">';
 
 											switch($group) {
@@ -321,6 +420,11 @@ class SaleUi {
 														currentDate() => s("Aujourd'hui"),
 														default => \util\DateUi::textual($currentGroup)
 													};
+													break;
+
+												case 'month' :
+
+													$h .= mb_ucfirst(\util\DateUi::textual($eSale['deliveredAt'], \util\DateUi::MONTH_YEAR));
 													break;
 
 											}
@@ -342,7 +446,9 @@ class SaleUi {
 						}
 					$h .= '>';
 
-						$h .= $this->getBatchList($eSale);
+						if($hasBatch) {
+							$h .= $this->getBatchList($eSale);
+						}
 
 						$h .= '<td class="td-min-content text-center">';
 							if($eSale->canRead() === FALSE) {
@@ -359,14 +465,21 @@ class SaleUi {
 								} else {
 									$h .= encode($eSale['customer']->getName());
 								}
-								if($eSale->isMarket()) {
-									$h .= ' <span class="util-badge bg-secondary" title="'.s("Le logiciel de caisse est activé pour cette vente").'">'.\Asset::icon('cart4').'</span>';
+
+								if($isMarket === FALSE) {
+
+									if($eSale->isMarket()) {
+										$h .= ' <span class="util-badge bg-secondary" title="'.s("Le logiciel de caisse est activé pour cette vente").'">'.\Asset::icon('cart4').'</span>';
+									}
+
+									if($eSale['customer']->notEmpty()) {
+										$h .= '<div class="util-annotation">';
+											$h .= CustomerUi::getCategory($eSale['customer']);
+										$h .= '</div>';
+									}
+
 								}
-								if($eSale['customer']->notEmpty()) {
-									$h .= '<div class="util-annotation">';
-										$h .= CustomerUi::getCategory($eSale['customer']);
-									$h .= '</div>';
-								}
+
 							$h .= '</td>';
 						}
 
@@ -489,7 +602,9 @@ class SaleUi {
 			$h .= \util\TextUi::pagination($page, $cSale->getFound() / 100);
 		}
 
-		$h .= $this->getBatch($eFarm, $cPaymentMethod);
+		if($hasBatch) {
+			$h .= $this->getBatch($eFarm, $cPaymentMethod);
+		}
 
 		return $h;
 
@@ -1997,9 +2112,10 @@ class SaleUi {
 		$primaryList = '';
 
 		$primaryList .= '<a href="/selling/sale:update?id='.$eSale['id'].'" class="dropdown-item">';
-			$primaryList .= match($eSale->isComposition()) {
-				TRUE => s("Modifier la composition"),
-				FALSE => $eSale['closed'] ? s("Commenter la vente") : s("Modifier la vente"),
+			$primaryList .= match($eSale['profile']) {
+				Sale::COMPOSITION => s("Modifier la composition"),
+				Sale::PURCHASE => s("Modifier l'achat"),
+				default => $eSale['closed'] ? s("Commenter la vente") : s("Modifier la vente"),
 			};
 		$primaryList .= '</a>';
 
@@ -2024,14 +2140,17 @@ class SaleUi {
 			$eSale->canDelete()
 		) {
 
-			$confirm = $eSale->isComposition() ?
-				s("Confirmer la suppression de la composition ? Les éventuelles ventes qui utilisent cette composition ne seront pas modifiées.") :
-				s("Confirmer la suppression de la vente ?");
+			$confirm = match($eSale['profile']) {
+				Sale::COMPOSITION => s("Confirmer la suppression de la composition ? Les éventuelles ventes qui utilisent cette composition ne seront pas modifiées."),
+				Sale::PURCHASE => s("Confirmer la suppression de l'achat' ?"),
+				default => s("Confirmer la suppression de la vente ?"),
+			};
 
 			$secondaryList .= '<a data-ajax="/selling/sale:doDelete" post-id="'.$eSale['id'].'" class="dropdown-item" data-confirm="'.$confirm.'">';
-				$secondaryList .= match($eSale->isComposition()) {
-					TRUE => s("Supprimer la composition"),
-					FALSE => s("Supprimer la vente"),
+				$secondaryList .= match($eSale['profile']) {
+					Sale::COMPOSITION => s("Supprimer la composition"),
+					Sale::PURCHASE => s("Supprimer l'achat"),
+					default => s("Supprimer la vente"),
 				};
 			$secondaryList .= '</a>';
 		}
@@ -2092,7 +2211,7 @@ class SaleUi {
 				$h .= '  <span class="util-badge bg-primary">'.$cSale->count().'</span>';
 			$h .= '</h3>';
 
-			$h .= $this->getList($eFarm, $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], cPaymentMethod: $cPaymentMethod);
+			$h .= $this->getListSales($eFarm, $cSale, hide: ['deliveredAt', 'actions', 'documents'], show: ['createdAt'], cPaymentMethod: $cPaymentMethod);
 
 		}
 
@@ -2130,7 +2249,7 @@ class SaleUi {
 
 						$h .= '<tr>';
 
-							$h .= '<td>';
+							$h .= '<td class="td-min-content">';
 								$h .= \util\DateUi::numeric($eHistory['date']);
 							$h .= '</td>';
 
@@ -2244,10 +2363,10 @@ class SaleUi {
 		$h .= $form->asteriskInfo();
 
 		$h .= $form->hidden('farm', $eSale['farm']['id']);
+
 		if($eSale['shopDate']->notEmpty()) {
 			$h .= $form->hidden('shopDate', $eSale['shopDate']['id']);
 		}
-		$h .= $form->hidden('market', $eSale->isMarket());
 
 		$h .= $form->dynamicGroup($eSale, 'customer*', function($d) use($form, $eSale) {
 
@@ -2264,15 +2383,18 @@ class SaleUi {
 
 		});
 
+		if(
+			$eSale['customer']->notEmpty() and
+			$eSale['customer']['destination'] === Customer::COLLECTIVE
+		) {
+			$h .= $form->hidden('market', $eSale->isMarket());
+		}
+
+		if($eSale['customer']->acceptPurchase()) {
+			$h .= $form->hidden('purchase', $eSale->isPurchase());
+		}
+
 		if($eSale['customer']->notEmpty()) {
-
-			if($eSale['customer']['destination'] === Customer::COLLECTIVE) {
-
-				$h .= '<div class="util-block util-block-dark sale-create-market bg-selling">';
-					$h .= $form->dynamicGroup($eSale, 'market');
-				$h .= '</div>';
-
-			}
 
 			if($eSale['shopDate']->empty()) {
 				$h .= $form->dynamicGroup($eSale, 'deliveredAt');
@@ -2287,7 +2409,7 @@ class SaleUi {
 
 			if($eSale['cProduct']->notEmpty()) {
 
-				$h .= '<h3 class="mt-2">'.s("Ajouter des produits à la vente").'</h3>';
+				$h .= '<h3 class="mt-2 mb-2">'.s("Ajouter des produits").'</h3>';
 
 				if($eSale['nGrid'] > 0) {
 					$h .= '<div class="util-info">';
@@ -2306,11 +2428,20 @@ class SaleUi {
 
 				$h .= $form->dynamicField($eSale, 'productsList');
 
-				$footer = ItemUi::getCreateSubmit($eSale, $form, s("Créer la vente"));
+				$footer = ItemUi::getCreateSubmit($eSale, $form, match($eSale['profile']) {
+					Sale::PURCHASE => s("Créer l'achat"),
+					default => s("Créer la vente")
+				});
 
 			} else {
 
-				$footer = $form->submit(s("Créer la vente"), ['class' => 'btn btn-primary btn-lg']);
+				$footer = $form->submit(
+					match($eSale['profile']) {
+						Sale::PURCHASE => s("Ajouter l'achat"),
+						default => s("Ajouter la vente")
+					},
+					['class' => 'btn btn-primary btn-lg']
+				);
 			}
 
 		} else {
@@ -2326,8 +2457,9 @@ class SaleUi {
 		return new \Panel(
 			id: 'panel-sale-create',
 			title: match($eSale['profile']) {
-				Sale::MARKET => s("Créer une vente pour le logiciel de caisse"),
-				default => s("Créer une vente")
+				Sale::MARKET => s("Nouvelle vente pour le logiciel de caisse"),
+				Sale::PURCHASE => s("Nouvel achat"),
+				default => s("Nouvelle vente")
 			},
 			dialogOpen: $form->openAjax('/selling/sale:doCreate', ['id' => 'sale-create', 'class' => 'panel-dialog']),
 			dialogClose: $form->close(),
@@ -2339,7 +2471,7 @@ class SaleUi {
 
 	public function getWarning(bool $temporary = FALSE): string {
 
-		$h = '<div class="util-block-info mt-2">';
+		$h = '<div class="util-block-side mt-2">';
 			$h .= '<h3>'.s("Vous souhaitez créer des ventes pour tester {siteName} ?").'</h3>';
 			$h .= '<p>'.s("N'utilisez pas votre compte principal, car vous ne pouvez pas librement supprimer les ventes que vous renseignez dans le logiciel pour des contraintes réglementaires. Si vous souhaitez tester les fonctionnalités de commercialisation de Ouvretaferme, nous vous suggérons de :").'</p>';
 			$h .= '<ul>';
@@ -2347,11 +2479,11 @@ class SaleUi {
 				$h .= '<li>'.s("Utiliser la ferme de démonstration").'</li>';
 			$h .= '</ul>';
 			$h .= '<p>';
-				$h .= '<a href="/farm/farm:create" target="_blank" class="btn btn-transparent">'.s("Créer une autre ferme").'</a> ';
-				$h .= '<a href="'.OTF_DEMO_URL.'/ferme/1/ventes" target="_blank" class="btn btn-transparent">'.s("Utiliser la démo").'</a>';
+				$h .= '<a href="/farm/farm:create" target="_blank" class="btn btn-secondary">'.s("Créer une autre ferme").'</a> ';
+				$h .= '<a href="'.OTF_DEMO_URL.'/ferme/1/ventes" target="_blank" class="btn btn-secondary">'.s("Utiliser la démo").'</a>';
 			$h .= '</p>';
 			if($temporary) {
-				$h .= '<p>'.s("Cet écran d'alerte disparaitra lorsque vous aurez réalisé votre 5<sup>ème</sup> vente sur {siteName} !").'</p>';
+				$h .= '<div>'.s("Cet écran d'alerte disparaitra lorsque vous aurez réalisé votre 5<sup>ème</sup> vente sur {siteName} !").'</div>';
 			}
 		$h .= '</div>';
 
@@ -2393,7 +2525,7 @@ class SaleUi {
 
 			if($eSale['cProduct']->notEmpty()) {
 
-				$h .= '<h3 class="mt-2">'.s("Ajouter des produits à la vente").'</h3>';
+				$h .= '<h3 class="mt-2 mb-2">'.s("Ajouter des produits").'</h3>';
 
 				if($eSale['nGrid'] > 0) {
 
@@ -2432,7 +2564,7 @@ class SaleUi {
 
 		return new \Panel(
 			id: 'panel-sale-create',
-			title: s("Créer une vente"),
+			title: s("Nouvelle vente"),
 			dialogOpen: $form->openAjax('/selling/sale:doCreateCollection', ['id' => 'sale-create', 'class' => 'panel-dialog']),
 			dialogClose: $form->close(),
 			body: $h,
@@ -2444,7 +2576,7 @@ class SaleUi {
 	protected function getCreateGroupDropdown(\Collection $cCustomerGroup): string {
 
 		$h = '<div class="text-end">';
-			$h .= '<a class="dropdown-toggle" data-dropdown="bottom-end">'.s("Créer une vente pour un groupe de clients").'</a>';
+			$h .= '<a class="dropdown-toggle" data-dropdown="bottom-end">'.s("Nouvelle vente pour un groupe de clients").'</a>';
 			$h .= '<div class="dropdown-list bg-primary">';
 			foreach($cCustomerGroup as $eCustomerGroup) {
 				$h .= '<a href="/selling/sale:createCollection'.\util\HttpUi::setArgument(LIME_REQUEST_ARGS, 'group', $eCustomerGroup['id']).'" class="dropdown-item">';
@@ -2466,7 +2598,12 @@ class SaleUi {
 
 		$values = [];
 
-		foreach([Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED] as $status) {
+		$statuses = $eSale->isPurchase() ?
+			[Sale::DRAFT, Sale::CONFIRMED, Sale::DELIVERED] :
+			[Sale::DRAFT, Sale::CONFIRMED, Sale::PREPARED];
+
+
+		foreach($statuses as $status) {
 			$values[] = [
 				'value' => $status,
 				'label' => '⬤  '.self::p('preparationStatus')->values[$status],
@@ -2487,20 +2624,26 @@ class SaleUi {
 
 		$form = new \util\FormUi();
 
+		$eSale['deliveredAt'] = currentDate();
+
 		$h = $form->openAjax('/selling/sale:doDuplicate');
 
-			$h .= '<div class="util-block-info">';
-				$h .= '<h3>'.s("Dupliquer une vente").'</h3>';
-				$h .= '<ul>';
-					$h .= '<li>'.s("La vente sera dupliquée avec l'ensemble des articles de la vente initiale").'</li>';
-					if($eSale['cPayment']->notEmpty()) {
-						$h .= '<li>'.s("Les moyens de paiement ne sont pas copiés mais si le client a un moyen de paiement par défaut, celui-ci est utilisé").'</li>';
-					}
-					if($eSale['shop']->notEmpty()) {
-						$h .= '<li>'.s("La vente dupliquée sera dissociée à la boutique {value}", '<u>'.encode($eSale['shop']['name']).'</u>').'</li>';
-					}
-				$h .= '</ul>';
-			$h .= '</div>';
+			if($eSale->isMarket() === FALSE) {
+
+				$h .= '<div class="util-block-info">';
+					$h .= '<h3>'.s("Dupliquer une vente").'</h3>';
+					$h .= '<ul>';
+						$h .= '<li>'.s("La vente sera dupliquée avec l'ensemble des articles de la vente initiale").'</li>';
+						if($eSale['cPayment']->notEmpty()) {
+							$h .= '<li>'.s("Les moyens de paiement ne sont pas copiés mais si le client a un moyen de paiement par défaut, celui-ci est utilisé").'</li>';
+						}
+						if($eSale['shop']->notEmpty()) {
+							$h .= '<li>'.s("La vente dupliquée sera dissociée à la boutique {value}", '<u>'.encode($eSale['shop']['name']).'</u>').'</li>';
+						}
+					$h .= '</ul>';
+				$h .= '</div>';
+
+			}
 
 			$h .= $form->hidden('id', $eSale['id']);
 
@@ -2528,14 +2671,20 @@ class SaleUi {
 			}
 
 			$h .= $form->group(
-				content: $form->submit(s("Dupliquer"))
+				content: $form->submit(
+					$eSale->isMarket() ?
+						s("Créer la vente à partir de celle-ci") :
+						s("Dupliquer")
+				)
 			);
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-sale-duplicate',
-			title: s("Dupliquer une vente"),
+			title: $eSale->isMarket() ?
+				s("Nouvelle vente") :
+				s("Dupliquer une vente"),
 			body: $h,
 		);
 
@@ -2604,7 +2753,11 @@ class SaleUi {
 
 		return new \Panel(
 			id: 'panel-sale-update',
-			title: $eSale->isComposition() ? s("Modifier une composition") : s("Modifier une vente"),
+			title: match($eSale['profile']) {
+				Sale::COMPOSITION => s("Modifier une composition"),
+				Sale::PURCHASE => s("Modifier un achat"),
+				default => s("Modifier une vente"),
+			},
 			body: $h
 		);
 
@@ -2702,7 +2855,7 @@ class SaleUi {
 
 		return new \Panel(
 			id: 'panel-sale-customer',
-			title: s("Transférer la vente à un autre client"),
+			title: s("Transférer à un autre client"),
 			body: $h
 		);
 
@@ -2794,9 +2947,12 @@ class SaleUi {
 		$d = Sale::model()->describer($property, [
 			'customers' => s("Clients"),
 			'customer' => s("Client"),
-			'deliveredAt' => fn($e) => $e->isComposition() ? s("Pour les livraisons à partir du") : s("Date de vente"),
+			'deliveredAt' => fn($e) => match($e['profile']) {
+				Sale::COMPOSITION => s("Pour les livraisons à partir du"),
+				Sale::PURCHASE => s("Date d'achat"),
+				default => s("Date de vente")
+			},
 			'paidAt' => s("Date de paiement"),
-			'market' => s("Utiliser le logiciel de caisse<br/>pour cette vente"),
 			'preparationStatus' => s("Statut de préparation"),
 			'paymentStatus' => s("État du paiement"),
 			'orderFormValidUntil' => s("Date d'échéance du devis"),
@@ -2983,10 +3139,6 @@ class SaleUi {
 			case 'shopComment' :
 				$d->field = 'textarea';
 				$d->attributes = ['data-limit' => Sale::model()->getPropertyRange('shopComment')[1]];
-				break;
-
-			case 'market' :
-				$d->field = 'yesNo';
 				break;
 
 			case 'taxes' :

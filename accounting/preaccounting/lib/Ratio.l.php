@@ -22,7 +22,9 @@ class RatioLib {
 			$e->expects(['cSale']);
 		}
 
-		$this->cPayment = \selling\PaymentTransactionLib::getAll($e, selection: \selling\Payment::getSelection() + ['cashflow' => ['id', 'amount', 'account' => ['account']]], index: 'id');
+		$this->cPayment = \selling\PaymentTransactionLib::getAll($e, selection: \selling\Payment::getSelection() + [
+			'cashflow' => ['amount', 'account' => ['account']]
+			], index: 'id');
 
 		$this->splitByVat();
 		$this->splitByPayments();

@@ -37,7 +37,7 @@ new AdaptativeView('start', function($data, MainTemplate $t) {
 				echo '</ul>';
 			echo '</div>';
 			echo '<div class="home-feature-buttons">';
-				echo '<a href="'.\farm\FarmUi::urlShopList($data->e).'" class="btn btn-commercialisation"><p>'.Asset::icon('cart').'</p>'.s("Créer une boutique en ligne").'</a>';
+				echo '<a href="'.\farm\FarmUi::urlSellingShop($data->e).'" class="btn btn-commercialisation"><p>'.Asset::icon('cart').'</p>'.s("Créer une boutique en ligne").'</a>';
 			echo '</div>';
 
 		echo '</div>';

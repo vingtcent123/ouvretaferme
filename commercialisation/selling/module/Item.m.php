@@ -13,6 +13,7 @@ abstract class ItemElement extends \Element {
 	const SALE = 'sale';
 	const SALE_MARKET = 'sale-market';
 	const MARKET = 'market';
+	const PURCHASE = 'purchase';
 	const COMPOSITION = 'composition';
 
 	const GOOD = 'good';
@@ -75,7 +76,7 @@ class ItemModel extends \ModuleModel {
 			'sale' => ['element32', 'selling\Sale', 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
 			'type' => ['enum', [\selling\Item::PRIVATE, \selling\Item::PRO], 'cast' => 'enum'],
-			'profile' => ['enum', [\selling\Item::SALE, \selling\Item::SALE_MARKET, \selling\Item::MARKET, \selling\Item::COMPOSITION], 'cast' => 'enum'],
+			'profile' => ['enum', [\selling\Item::SALE, \selling\Item::SALE_MARKET, \selling\Item::MARKET, \selling\Item::PURCHASE, \selling\Item::COMPOSITION], 'cast' => 'enum'],
 			'additional' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'origin' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
@@ -100,7 +101,6 @@ class ItemModel extends \ModuleModel {
 			'locked' => ['enum', [\selling\Item::UNIT_PRICE, \selling\Item::NUMBER, \selling\Item::PRICE], 'cast' => 'enum'],
 			'vatRate' => ['decimal', 'digits' => 4, 'decimal' => 2, 'min' => 0.0, 'max' => 99.99, 'null' => TRUE, 'cast' => 'float'],
 			'vatCode' => ['enum', [\selling\Item::STANDARD, \selling\Item::ZERO, \selling\Item::EXEMPT, \selling\Item::AUTOLIQUIDATION, \selling\Item::INTRACOM_DELIVERY, \selling\Item::EXPORTATION, \selling\Item::OUT_OF_VAT], 'null' => TRUE, 'cast' => 'enum'],
-			'stats' => ['bool', 'cast' => 'bool'],
 			'prepared' => ['bool', 'cast' => 'bool'],
 			'account' => ['element32', 'account\Account', 'null' => TRUE, 'cast' => 'element'],
 			'status' => ['enum', Sale::model()->getPropertyEnum('preparationStatus'), 'cast' => 'enum'],
@@ -109,7 +109,7 @@ class ItemModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'reference', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceInitial', 'netPriceExcludingVat', 'locked', 'vatRate', 'vatCode', 'stats', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
+			'id', 'name', 'reference', 'sale', 'customer', 'type', 'profile', 'additional', 'origin', 'farm', 'shop', 'shopDate', 'shopProduct', 'product', 'composition', 'ingredientOf', 'nature', 'quality', 'parent', 'packaging', 'unit', 'unitPrice', 'unitPriceInitial', 'discount', 'number', 'price', 'priceInitial', 'netPriceExcludingVat', 'locked', 'vatRate', 'vatCode', 'prepared', 'account', 'status', 'createdAt', 'deliveredAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -157,9 +157,6 @@ class ItemModel extends \ModuleModel {
 
 			case 'vatCode' :
 				return Item::STANDARD;
-
-			case 'stats' :
-				return TRUE;
 
 			case 'prepared' :
 				return FALSE;
@@ -336,10 +333,6 @@ class ItemModel extends \ModuleModel {
 
 	public function whereVatCode(...$data): ItemModel {
 		return $this->where('vatCode', ...$data);
-	}
-
-	public function whereStats(...$data): ItemModel {
-		return $this->where('stats', ...$data);
 	}
 
 	public function wherePrepared(...$data): ItemModel {

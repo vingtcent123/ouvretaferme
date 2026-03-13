@@ -56,7 +56,7 @@ class ShopManageUi {
 							$h .= \farm\FarmUi::getNavigation();
 							$h .= '<span class="h-menu-label">'.encode($eShopCurrent['name']).'</span>';
 						$h .= '</a>';
-						$h .= '<div class="dropdown-list bg-secondary">';
+						$h .= '<div class="util-action-navigation-list dropdown-list bg-secondary">';
 							$h .= '<div class="dropdown-title">'.s("Mes boutiques").'</div>';
 
 							foreach($ccShop as $key => $cShop) {

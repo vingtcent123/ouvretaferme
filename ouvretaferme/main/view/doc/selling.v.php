@@ -42,22 +42,27 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 
 		echo '<h3>'.s("Activer le logiciel de caisse").'</h3>';
 
-		echo '<h4>'.Asset::icon('1-circle').' '.s("Créez un client").'</h4>';
+		echo '<h4>'.Asset::icon('1-circle').' '.s("Allez sur la page du logiciel de caisse").'</h4>';
+
+		echo '<h4>'.Asset::icon('2-circle').' '.s("Créez un point de vente").'</h4>';
 
 		echo '<p>'.s("Vous devez créer un client de type <b>Point de vente pour les particuliers</b> en indiquant le nom de votre marché comme nom de client.").'</p>';
 		echo Asset::image('main', 'doc/market-customer.png');
 
-		echo '<h4>'.Asset::icon('2-circle').' '.s("Créez une vente pour ce client").'</h4>';
+		echo '<h4>'.Asset::icon('3-circle').' '.s("Créez une première vente").'</h4>';
 
-		echo '<p>'.s("Une fois le client créé, vous pouvez maintenant lui créer une vente en veillant à activer le logiciel de caisse pour cette vente. Vous pouvez en profiter pour sélectionner les produits que vous voulez proposer à la vente. Il n'est pas indispensable de sélectionner les produits à cette étape, vous pourrez également le faire à l'étape suivante.").'</p>';
+		echo '<p>'.s("Une fois le client créé, vous pouvez maintenant lui créer une vente en veillant à activer le logiciel de caisse pour cette vente.").'</p>';
 		echo Asset::image('main', 'doc/market-sale.png');
 
-		echo '<h4>'.Asset::icon('3-circle').' '.s("Configurez votre vente").'</h4>';
+		echo '<p>'.s("Vous pouvez en profiter pour sélectionner les produits que vous voulez proposer à la vente. Il n'est pas indispensable de sélectionner les produits à cette étape, vous pourrez également le faire à l'étape suivante.").'</p>';
+		echo Asset::image('main', 'doc/market-product.png');
+
+		echo '<h4>'.Asset::icon('4-circle').' '.s("Terminez de configurer votre vente").'</h4>';
 
 		echo '<p>'.s("Une fois la vente créée, vous pouvez encore compléter votre gamme. Pour chaque produit, vous pouvez indiquer la quantité que vous souhaitez emporter au marché. Cela peut vous être notamment utile pour préparer vos récoltes ou vos conditionnements.").'</p>';
 		echo Asset::image('main', 'doc/market-configure.png');
 
-		echo '<h4>'.Asset::icon('4-circle').' '.s("Démarrer la vente").'</h4>';
+		echo '<h4>'.Asset::icon('5-circle').' '.s("Démarrer la vente").'</h4>';
 
 		echo '<p>'.s("Vous avez complété votre gamme ? Votre étal est prêt ?").'</p>';
 		echo '<p>'.s("Il ne vous reste plus qu'à cliquer sur le bouton <link>Ouvrir le logiciel de caisse</link> pour commencer à vendre !", ['link' => '<a class="btn btn-selling btn-xs">'.Asset::icon('cart4').' ']).'</p>';
@@ -85,15 +90,9 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Astuces").'</h2>';
 
-		echo '<h3>'.s("Voir toutes les ventes avec le logiciel de caisse").'</h3>';
-		echo '<div class="util-info">';
-			echo '<p>'.s("Sur la page de vos ventes, vous pouvez sélectionner <u>Logiciel de caisse </u> dans le menu principal afin de n'afficher que les ventes pour lesquelles vous avez activé le logiciel de caisse.").'</p>';
-		echo '</div>';
-		echo Asset::image('main', 'doc/market-list.png');
-
 		echo '<h3>'.s("Configurer les marchés suivants en un clic").'</h3>';
 		echo '<div class="util-info">';
-			echo '<p>'.s("Créer votre premier marché avec le logiciel de caisse va prendre un peu de temps, car vous devrez ajouter manuellement les produits que vous souhaitez vendre dans le logiciel. Pour les marchés suivants, nous vous recommandons d'utiliser la fonctionnalité <u>Dupliquer une vente</u>.").'</p>';
+			echo '<p>'.s("Créer votre premier marché avec le logiciel de caisse va prendre un peu de temps, car vous devrez ajouter manuellement les produits que vous souhaitez vendre dans le logiciel. Pour les marchés suivants, nous vous recommandons d'utiliser la fonctionnalité qui permet de repartir d'une vente précédente.").'</p>';
 			echo '<p>'.s("En dupliquant votre marché précédent, vous n'avez plus qu'à choisir la nouvelle date de vente et la liste des produits que vous avez vendus la dernière fois est automatiquement reportée. Il vous restera éventuellement à supprimer les quelques produits que vous avez sortis de la vente et ajouter ceux qui entrent dans la gamme !").'</p>';
 		echo '</div>';
 		echo Asset::image('main', 'doc/market-duplicate.png');

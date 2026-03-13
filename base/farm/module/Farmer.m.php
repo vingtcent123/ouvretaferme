@@ -48,17 +48,19 @@ abstract class FarmerElement extends \Element {
 	const WHITE = 'white';
 	const BLACK = 'black';
 
-	const ALL = 'all';
-	const PRIVATE = 'private';
-	const PRO = 'pro';
-	const MARKET = 'market';
+	const SALE = 'sale';
+	const SALE_PRIVATE = 'sale-private';
+	const SALE_PRO = 'sale-pro';
 	const LABEL = 'label';
+	const PURCHASE = 'purchase';
 	const ARCHIVES = 'archives';
 
 	const PRODUCT = 'product';
 	const CATEGORY = 'category';
 
 	const CUSTOMER = 'customer';
+	const CUSTOMER_PRIVATE = 'customer-private';
+	const CUSTOMER_PRO = 'customer-pro';
 	const GROUP = 'group';
 
 	const ITEM = 'item';
@@ -131,9 +133,9 @@ class FarmerModel extends \ModuleModel {
 			'viewSoilColor' => ['enum', [\farm\Farmer::WHITE, \farm\Farmer::BLACK, \farm\Farmer::PLANT], 'cast' => 'enum'],
 			'viewSoilOverlay' => ['bool', 'cast' => 'bool'],
 			'viewSoilTasks' => ['bool', 'cast' => 'bool'],
-			'viewSellingSales' => ['enum', [\farm\Farmer::ALL, \farm\Farmer::PRIVATE, \farm\Farmer::PRO, \farm\Farmer::MARKET, \farm\Farmer::LABEL, \farm\Farmer::ARCHIVES], 'cast' => 'enum'],
+			'viewSellingSales' => ['enum', [\farm\Farmer::SALE, \farm\Farmer::SALE_PRIVATE, \farm\Farmer::SALE_PRO, \farm\Farmer::LABEL, \farm\Farmer::PURCHASE, \farm\Farmer::ARCHIVES], 'cast' => 'enum'],
 			'viewSellingProducts' => ['enum', [\farm\Farmer::PRODUCT, \farm\Farmer::CATEGORY], 'cast' => 'enum'],
-			'viewSellingCustomers' => ['enum', [\farm\Farmer::CUSTOMER, \farm\Farmer::GROUP], 'cast' => 'enum'],
+			'viewSellingCustomers' => ['enum', [\farm\Farmer::CUSTOMER, \farm\Farmer::CUSTOMER_PRIVATE, \farm\Farmer::CUSTOMER_PRO, \farm\Farmer::GROUP], 'cast' => 'enum'],
 			'viewSellingCategory' => ['enum', [\farm\Farmer::ITEM, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::PERIOD], 'cast' => 'enum'],
 			'viewSellingCategoryCurrent' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
 			'viewSellingPreparing' => ['json', 'null' => TRUE, 'cast' => 'array'],
@@ -217,7 +219,7 @@ class FarmerModel extends \ModuleModel {
 				return FALSE;
 
 			case 'viewSellingSales' :
-				return Farmer::ALL;
+				return Farmer::SALE;
 
 			case 'viewSellingProducts' :
 				return Farmer::PRODUCT;

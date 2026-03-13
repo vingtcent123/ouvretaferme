@@ -6,8 +6,10 @@ new \selling\SalePage()
 
 		if(input_exists('compositionOf')) {
 			$profile = \selling\Sale::COMPOSITION;
-		} else if(INPUT('market', 'bool')) {
+		} else if(input_exists('market')) {
 			$profile = \selling\Sale::MARKET;
+		} else if(input_exists('purchase')) {
+			$profile = \selling\Sale::PURCHASE;
 		} else {
 			$profile = \selling\Sale::SALE;
 		}
@@ -16,8 +18,7 @@ new \selling\SalePage()
 			'farm' => $data->eFarm,
 			'profile' => $profile,
 			'shop' => new \shop\Shop(),
-			'shopDate' => new \shop\Date(),
-			'market' => ($profile === \selling\Sale::MARKET)
+			'shopDate' => new \shop\Date()
 		]);
 
 		if($eSale->isComposition()) {
@@ -239,7 +240,7 @@ new Page(function($data) {
 
 		throw new RedirectAction(
 			$cSale->count() > 1 ?
-				\farm\FarmUi::urlSellingSales($data->eFarm, \farm\Farmer::ALL).'?success=selling\\Sale::createdCollection' :
+				\farm\FarmUi::urlSellingSales($data->eFarm, \farm\Farmer::SALE).'?success=selling\\Sale::createdCollection' :
 				\selling\SaleUi::url($eSale).'?success=selling\\Sale::created'
 		);
 
@@ -516,8 +517,9 @@ new \selling\SalePage()
 		throw new RedirectAction(
 			$data->e->isComposition() ?
 				\selling\ProductUi::url($data->e['compositionOf']).'?success=selling\\Product::deletedComposition' :
-				\farm\FarmUi::urlSellingSalesAll($data->e['farm']).'?success=selling\\Sale::deleted'
+				\farm\FarmUi::urlSellingSales($data->e['farm']).'?success=selling\\Sale::deleted'
 		);
+
 
 	});
 

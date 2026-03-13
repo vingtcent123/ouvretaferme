@@ -45,7 +45,7 @@ class RegisterUi {
 					$h .= \farm\FarmUi::getNavigation();
 					$h .= '<span class="h-menu-label">'.self::getName($eRegisterCurrent).'</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-secondary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-secondary">';
 					$h .= '<div class="dropdown-title">'.s("Mes journaux de caisse").'</div>';
 
 					foreach($ccRegister as $status => $cRegister) {

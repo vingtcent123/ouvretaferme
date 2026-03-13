@@ -14,7 +14,7 @@ class PointUi {
 		$h = '<div class="util-block-help">';
 			$h .= '<h4>'.s("Bienvenue sur la nouvelle boutique de votre ferme !").'</h4>';
 			$h .= '<p>'.s("Vous avez créé avec succès la boutique qui vous permettra de vendre votre production en ligne.").'<br/>'.s("Avant de créer votre première vente, choisissez la façon dont vous souhaitez livrer vos clients, à domicile ou en point de retrait.").'</p>';
-			$h .= '<p class="mb-2"><a href="'.\farm\FarmUi::urlShopPoint($eShop['farm']).'" class="btn btn-secondary">'.s("Configurer les modes de livraison").'</a></p>';
+			$h .= '<p class="mb-2"><a href="/shop/point:manage?farm='.$eShop['farm']['id'].'" class="btn btn-secondary">'.s("Configurer les modes de livraison").'</a></p>';
 			$h .= '<p>'.s("Vous pouvez également <link>désactiver le choix du mode de livraison</link> pour vos clients lorsqu'ils commandent sur la boutique, ce sera à vous de les informer de la façon dont ils peuvent retirer leurs commandes.", ['link' => '<a data-ajax="/shop/:doUpdatePoint" post-id="'.$eShop['id'].'" post-has-point="0" data-confirm="'.s("Souhaitez-vous réellement réactiver le choix du mode de livraison sur votre boutique ?").'">']).'</p>';
 		$h .= '</div>';
 

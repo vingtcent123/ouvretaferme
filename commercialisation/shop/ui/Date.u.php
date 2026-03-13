@@ -197,7 +197,7 @@ class DateUi {
 				$h .= s("Commande possible jusqu'au {date}", ['date' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DATE_HOUR_MINUTE)]);
 			} else {
 				if($eDate['deliveryDate'] !== NULL) {
-					$h .= s("Les ventes sont ouvertes !");
+					$h .= s("La prise de commandes sont ouvertes !");
 				}
 			}
 		} else if($eDate->acceptOrderSoon()) {
@@ -205,9 +205,9 @@ class DateUi {
 			$from = lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderStartAt'])))).' '.\util\DateUi::textual($eDate['orderStartAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE);
 
 			if($eDate['orderEndAt'] !== NULL) {
-				$h .= s("Commandes ouvertes du {from} jusqu'au {to}", ['from' => $from, 'to' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE)]);
+				$h .= s("Prise de commandes ouverte du {from} jusqu'au {to}", ['from' => $from, 'to' => lcfirst(\util\DateUi::getDayName(date('N', strtotime($eDate['orderEndAt'])))).' '.\util\DateUi::textual($eDate['orderEndAt'], \util\DateUi::DAY_MONTH | \util\DateUi::TIME_HOUR_MINUTE)]);
 			} else {
-				$h .= s("Commandes ouvertes depuis le {from}", ['from' => $from]);
+				$h .= s("Prise de commandes ouverte depuis le {from}", ['from' => $from]);
 			}
 
 		} else if($eDate->isExpired()) {
@@ -357,11 +357,7 @@ class DateUi {
 
 						$canSubmit = FALSE;
 
-						$h .= '<div class="util-block-info">';
-							$h .= '<h4>'.s("Vous n'avez pas encore créé de produit").'</h4>';
-							$h .= '<p>'.s("Avant d'aller plus loin, vous devez d'abord constituer votre gamme de produits à proposer sur votre boutique en ligne.").'</p>';
-							$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($e['farm']).'" class="btn btn-transparent" target="_blank">'.s("Ajouter un premier produit").'</a>';
-						$h .= '</div>';
+						$h .= new \selling\ProductUi()->getWarning($e['farm']);
 
 					} else {
 						$h .= $form->dynamicField($e, 'productsList');
@@ -979,7 +975,7 @@ class DateUi {
 
 						$eFarmSale = $eDate['eFarmSelected']->empty() ? $eFarm : $eDate['eFarmSelected'];
 
-						$actions .= '<a href="/selling/sale:createCollection?farm='.$eFarmSale['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter une vente").'</a> ';
+						$actions .= '<a href="/selling/sale:createCollection?farm='.$eFarmSale['id'].'&shopDate='.$eDate['id'].'" data-ajax-navigation="never" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Saisir une vente").'</a> ';
 						
 					}
 
@@ -1294,7 +1290,7 @@ class DateUi {
 						if($eCatalog['status'] === Catalog::DELETED) {
 							$catalogs[] = '<span class="btn btn-lg btn-primary disabled" style="margin: 0.125rem 0">'.s("Catalogue supprimé").'</span>';
 						} else {
-							$catalogs[] = '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'?catalog='.$eCatalog['id'].'" class="btn btn-lg btn-primary" style="margin: 0.125rem 0">'.\Asset::icon('pencil-fill', ['class' => 'asset-icon-flip-h']).'  '.encode($eCatalog['name']).'</a>';
+							$catalogs[] = '<a href="'.\farm\FarmUi::urlSellingCatalog($eFarm).'?catalog='.$eCatalog['id'].'" class="btn btn-lg btn-primary" style="margin: 0.125rem 0">'.\Asset::icon('pencil-fill', ['class' => 'asset-icon-flip-h']).'  '.encode($eCatalog['name']).'</a>';
 						}
 					}
 

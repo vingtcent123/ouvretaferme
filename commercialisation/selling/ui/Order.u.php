@@ -230,7 +230,7 @@ class OrderUi {
 
 			$h .= '<div class="tabs-item">';
 				$h .= '<a class="tab-item selected" data-tab="order" onclick="Lime.Tab.select(this)">';
-					$h .= s("Commandes");
+					$h .= s("Ventes");
 				$h .= '</a>';
 				$h .= '<a class="tab-item" data-tab="invoice" onclick="Lime.Tab.select(this)">';
 					$h .= s("Factures");

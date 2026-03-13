@@ -354,6 +354,30 @@ class SaleLib extends SaleCrud {
 
 	}
 
+	public static function getMarketsByFarm(\farm\Farm $eFarm, ?int $position = NULL, ?int $number = NULL, \Search $search = new \Search()): \Collection {
+
+		Sale::model()->whereProfile(Sale::MARKET);
+
+		return self::getByFarm($eFarm, $position, $number, $search);
+
+	}
+
+	public static function getSalesByFarm(\farm\Farm $eFarm, ?int $position = NULL, ?int $number = NULL, \Search $search = new \Search()): \Collection {
+
+		Sale::model()->whereProfile('IN', [Sale::SALE, Sale::MARKET]);
+
+		return self::getByFarm($eFarm, $position, $number, $search);
+
+	}
+
+	public static function getPurchasesByFarm(\farm\Farm $eFarm, ?int $position = NULL, ?int $number = NULL, \Search $search = new \Search()): \Collection {
+
+		Sale::model()->whereProfile(Sale::PURCHASE);
+
+		return self::getByFarm($eFarm, $position, $number, $search);
+
+	}
+
 	public static function getByFarm(\farm\Farm $eFarm, ?int $position = NULL, ?int $number = NULL, \Search $search = new \Search()): \Collection {
 
 		if($search->get('customerName')) {
@@ -422,13 +446,11 @@ class SaleLib extends SaleCrud {
 			->where('m1.id', 'IN', fn() => explode(',', $search->get('ids')), if: $search->get('ids'))
 			->where('m1.farm', $eFarm)
 			->where('m1.type', $search->get('type'), if: $search->get('type') !== NULL)
-			->where('m1.profile', $search->get('profile'), if: $search->get('profile') !== NULL)
 			->where('m1.customer', $search->get('customer'), if: $search->get('customer'))
 			->whereDeliveredAt('LIKE', '%'.$search->get('deliveredAt').'%', if: $search->get('deliveredAt'))
 			->whereDeliveredAt('>', new \Sql('CURDATE() - INTERVAL '.Sale::model()->format($search->get('delivered')).' DAY'), if: $search->get('delivered'))
 			->wherePreparationStatus($search->get('preparationStatus'), if: $search->get('preparationStatus'))
-			->wherePreparationStatus('!=', Sale::COMPOSITION)
-			->where('m1.stats', TRUE)
+			->where('m1.profile', 'IN', Sale::getStatsProfiles())
 			->sort($search->buildSort([
 				'firstName' => fn($direction) => match($direction) {
 					SORT_ASC => new \Sql('IF(firstName IS NULL, name, firstName), lastName, m1.id'),
@@ -472,7 +494,7 @@ class SaleLib extends SaleCrud {
 			->whereType($type, if: $type !== NULL)
 			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::SELLING, Sale::DELIVERED])
 			->whereDeliveredAt($sign, currentDate())
-			->whereStats(TRUE)
+			->whereProfile('IN', [Sale::MARKET, Sale::SALE])
 			->group('deliveredAt')
 			->sort(['deliveredAt' => $sort])
 			->getCollection(0, $number)
@@ -517,7 +539,7 @@ class SaleLib extends SaleCrud {
 			->whereFarm($eFarm)
 			->whereDeliveredAt($date)
 			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
-			->whereStats(TRUE)
+			->whereProfile('IN', [Sale::MARKET, Sale::SALE])
 			->getCollection(NULL, NULL, 'id');
 
 	}
@@ -600,7 +622,26 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getByCustomer(Customer $eCustomer): \Collection {
+	public static function getSalesByCustomer(Customer $eCustomer): \Collection {
+
+		Sale::model()
+			->select(['cPayment' => PaymentTransactionLib::delegateBySale()])
+			->whereProfile('IN', [Sale::SALE, Sale::MARKET]);
+
+		return self::getByCustomer($eCustomer);
+
+	}
+
+	public static function getPurchasesByCustomer(Customer $eCustomer): \Collection {
+
+		Sale::model()
+			->whereProfile(Sale::PURCHASE);
+
+		return self::getByCustomer($eCustomer);
+
+	}
+
+	protected static function getByCustomer(Customer $eCustomer): \Collection {
 
 		return Sale::model()
 			->select(Sale::getSelection())
@@ -610,7 +651,6 @@ class SaleLib extends SaleCrud {
 					->sort(['version' => SORT_DESC])
 					->delegateCollection('sale', ['type', NULL])
 			])
-			->select(['cPayment' => PaymentTransactionLib::delegateBySale()])
 			->whereCustomer($eCustomer)
 			->sort(new \Sql('FIELD(preparationStatus, "'.Sale::DRAFT.'", "'.Sale::CONFIRMED.'", "'.Sale::PREPARED.'", "other") DESC, id DESC'))
 			->getCollection();
@@ -711,7 +751,7 @@ class SaleLib extends SaleCrud {
 			->select(Sale::getSelection())
 			->whereCustomer('IN', $cCustomer)
 			->wherePreparationStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED, Sale::CANCELED])
-			->whereStats(TRUE)
+			->whereProfile('IN', [Sale::MARKET, Sale::SALE])
 			->sort([
 				'id' => SORT_DESC
 			])
@@ -786,7 +826,6 @@ class SaleLib extends SaleCrud {
 			$e->expects(['compositionOf']);
 
 			$e['preparationStatus'] = Sale::COMPOSITION;
-			$e['stats'] = FALSE;
 
 		}
 
@@ -827,10 +866,24 @@ class SaleLib extends SaleCrud {
 
 		HistoryLib::createBySale($e, 'sale-created');
 
-		if($e['farm']['hasSales'] === FALSE) {
+		if(
+			($e->isSale() or $e->isMarket()) and
+			$e['farm']['hasSales'] === FALSE
+		) {
 
 			\farm\Farm::model()->update($e['farm'], [
 				'hasSales' => TRUE
+			]);
+
+		}
+
+		if(
+			$e->isPurchase() and
+			$e['farm']['hasPurchases'] === FALSE
+		) {
+
+			\farm\Farm::model()->update($e['farm'], [
+				'hasPurchases' => TRUE
 			]);
 
 		}
@@ -954,7 +1007,6 @@ class SaleLib extends SaleCrud {
 		$e['hasVat'] = $e['farm']->getConf('hasVat');
 		$e['deliveredAt'] = $eSale['deliveredAt'];
 		$e['marketParent'] = $eSale;
-		$e['stats'] = FALSE;
 
 		self::create($e);
 

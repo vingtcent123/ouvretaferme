@@ -2,7 +2,7 @@
 new AdaptativeView('update', function($data, FarmTemplate $t) {
 
 	$t->title = s("Paramétrer la boutique");
-	$t->nav = 'shop';
+	$t->nav = 'selling';
 	$t->subNav = 'shop';
 
 	$h = '<h1>';

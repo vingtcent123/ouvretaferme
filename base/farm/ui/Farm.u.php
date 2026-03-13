@@ -176,10 +176,13 @@ class FarmUi {
 
 		return match($view) {
 			'sale' => self::urlSellingSales($eFarm),
+			'invoice' => self::urlSellingInvoices($eFarm),
+			'shop' => self::urlSellingShop($eFarm),
 			'product' => self::urlSellingProducts($eFarm),
 			'stock' => self::urlSellingStock($eFarm),
+			'catalog' => self::urlSellingCatalog($eFarm),
 			'customer' => self::urlSellingCustomers($eFarm),
-			'invoice' => self::urlSellingInvoices($eFarm)
+			'market' => self::urlSellingMarket($eFarm),
 		};
 
 	}
@@ -217,6 +220,8 @@ class FarmUi {
 
 		return match($view) {
 			Farmer::CUSTOMER => self::urlSellingCustomersAll($eFarm),
+			Farmer::CUSTOMER_PRIVATE => self::urlSellingCustomersPrivate($eFarm),
+			Farmer::CUSTOMER_PRO => self::urlSellingCustomersPro($eFarm),
 			Farmer::GROUP => self::urlSellingCustomersGroups($eFarm),
 		};
 
@@ -224,6 +229,14 @@ class FarmUi {
 
 	public static function urlSellingCustomersAll(Farm $eFarm): string {
 		return self::url($eFarm).'/clients';
+	}
+
+	public static function urlSellingCustomersPrivate(Farm $eFarm): string {
+		return self::url($eFarm).'/clients/particuliers';
+	}
+
+	public static function urlSellingCustomersPro(Farm $eFarm): string {
+		return self::url($eFarm).'/clients/professionnels';
 	}
 
 	public static function urlSellingCustomersGroups(Farm $eFarm): string {
@@ -235,10 +248,10 @@ class FarmUi {
 		$view ??= $eFarm->getView('viewSellingSales');
 
 		return match($view) {
-			Farmer::ALL => self::urlSellingSalesAll($eFarm),
-			Farmer::PRIVATE => self::urlSellingSalesPrivate($eFarm),
-			Farmer::PRO => self::urlSellingSalesPro($eFarm),
-			Farmer::MARKET => self::urlSellingSalesMarket($eFarm),
+			Farmer::SALE => self::urlSellingSalesAll($eFarm),
+			Farmer::SALE_PRIVATE => self::urlSellingSalesPrivate($eFarm),
+			Farmer::SALE_PRO => self::urlSellingSalesPro($eFarm),
+			Farmer::PURCHASE => self::urlSellingPurchases($eFarm),
 			Farmer::LABEL => self::urlSellingSalesLabel($eFarm),
 			Farmer::ARCHIVES => self::urlSellingSalesArchives($eFarm),
 		};
@@ -257,8 +270,12 @@ class FarmUi {
 		return self::url($eFarm).'/ventes/professionnels';
 	}
 
-	public static function urlSellingSalesMarket(Farm $eFarm): string {
-		return self::url($eFarm).'/ventes/caisse';
+	public static function urlSellingPurchases(Farm $eFarm): string {
+		return self::url($eFarm).'/achats';
+	}
+
+	public static function urlSellingMarket(Farm $eFarm): string {
+		return self::url($eFarm).'/caisse';
 	}
 
 	public static function urlSellingSalesInvoice(Farm $eFarm): string {
@@ -273,26 +290,12 @@ class FarmUi {
 		return self::url($eFarm).'/archives';
 	}
 
-	public static function urlShop(Farm $eFarm, string $view): string {
-
-		return match($view) {
-			'shop' => self::urlShopList($eFarm),
-			'catalog' => self::urlShopCatalog($eFarm),
-			'point' => self::urlShopPoint($eFarm)
-		};
-
-	}
-
-	public static function urlShopList(Farm $eFarm): string {
+	public static function urlSellingShop(Farm $eFarm): string {
 		return self::url($eFarm).'/boutiques';
 	}
 
-	public static function urlShopCatalog(Farm $eFarm): string {
+	public static function urlSellingCatalog(Farm $eFarm): string {
 		return self::url($eFarm).'/catalogues';
-	}
-
-	public static function urlShopPoint(Farm $eFarm): string {
-		return self::url($eFarm).'/livraison';
 	}
 
 	public static function urlCommunications(Farm $eFarm, string $view, ?string $subView = NULL): string {
@@ -1034,10 +1037,6 @@ class FarmUi {
 				'icon' => \Asset::icon('wallet'),
 				'label' => s("Commercialisation")
 			],
-			'shop' => [
-				'icon' => \Asset::icon('cart'),
-				'label' => s("Vente en ligne")
-			],
 			'communications' => [
 				'icon' => \Asset::icon('megaphone'),
 				'label' => s("Communication")
@@ -1068,7 +1067,7 @@ class FarmUi {
 			],
 			'accounting' => [
 				'icon' => \Asset::icon('journal-bookmark'),
-				'label' => s("Logiciel comptable").' <span class="util-badge bg-primary">'.s("BETA").'</span>'
+				'label' => s("Comptabilité").' <span class="util-badge bg-primary">'.s("BETA").'</span>'
 			],
 			'settings-accounting' => [
 				'icon' => \Asset::icon('gear-fill'),
@@ -1104,7 +1103,6 @@ class FarmUi {
 			'analyze-production' => FarmUi::urlAnalyzeProduction($eFarm, $name),
 
 			'selling' => FarmUi::urlSelling($eFarm, $name),
-			'shop' => FarmUi::urlShop($eFarm, $name),
 			'communications' => FarmUi::urlCommunications($eFarm, $name),
 			'analyze-commercialisation' => FarmUi::urlAnalyzeCommercialisation($eFarm, $name),
 
@@ -1166,16 +1164,13 @@ class FarmUi {
 
 			'selling' => match($name) {
 				'sale' => s("Ventes"),
+				'invoice' => s("Factures"),
 				'customer' => s("Clients"),
 				'product' => s("Produits"),
-				'invoice' => s("Factures"),
-				'stock' => s("Stocks"),
-			},
-
-			'shop' => match($name) {
-				'shop' => s("Boutiques"),
 				'catalog' => s("Catalogues"),
-				'point' => s("Modes de livraison"),
+				'stock' => s("Stocks"),
+				'shop' => s("Boutiques en ligne"),
+				'market' => s("Logiciel de caisse"),
 			},
 
 			'communications' => match($name) {
@@ -1337,21 +1332,6 @@ class FarmUi {
 
 				$h .= $this->getNav('selling', $nav);
 				$h .= $this->getSellingMenu($eFarm, subNav: $subNav);
-
-			$h .= '</div>';
-			$h .= '<div class="farm-tab-wrapper farm-nav-shop">';
-
-				if($eFarm['hasShops']) {
-
-					$h .= $this->getNav('shop', $nav);
-					$h .= $this->getShopMenu($eFarm, subNav: $subNav);
-
-				} else {
-
-					$h .= $this->getNav('shop', $nav);
-					$h .= $this->getEmptyShopMenu($eFarm, subNav: $subNav);
-
-				}
 
 			$h .= '</div>';
 
@@ -1674,7 +1654,7 @@ class FarmUi {
 					$h .= self::getNavigation();
 					$h .= '<span class="h-menu-label">'.$this->getSeriesCategories($eFarm)[$selectedView].'</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($this->getSeriesCategories($eFarm) as $key => $value) {
 						$h .= '<a href="'.FarmUi::urlCultivationSeries($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -1849,7 +1829,7 @@ class FarmUi {
 					$h .= self::getNavigation();
 					$h .= '<span class="h-menu-label">'.$this->getSoilCategories($eFarm)[$selectedView].'</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($this->getSoilCategories($eFarm) as $key => $value) {
 						$h .= '<a href="'.FarmUi::urlCultivationSoil($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -2044,7 +2024,7 @@ class FarmUi {
 
 	public function getSellingSalesTitle(Farm $eFarm, string $selectedView): string {
 
-		$categories = $this->getSellingSalesCategories();
+		$categories = $this->getSellingSalesCategories($eFarm);
 
 		$title = $categories[$selectedView];
 
@@ -2054,7 +2034,7 @@ class FarmUi {
 					$h .= self::getNavigation();
 					$h .= '<span class="h-menu-label">'.$title.'</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						if($value === NULL) {
 							$h .= '<div class="dropdown-divider"></div>';
@@ -2069,16 +2049,11 @@ class FarmUi {
 
 				switch($selectedView) {
 
-					case Farmer::ALL :
-					case Farmer::PRIVATE :
-					case Farmer::PRO :
+					case Farmer::SALE :
+					case Farmer::SALE_PRIVATE :
+					case Farmer::SALE_PRO :
 						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 						$h .= '<a href="/selling/sale:createCollection?farm='.$eFarm['id'].'&view='.$selectedView.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
-						break;
-
-					case Farmer::MARKET :
-						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
-						$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&type='.\selling\Sale::PRIVATE.'&market=1" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle vente").'</span></a> ';
 						break;
 
 					case Farmer::ARCHIVES :
@@ -2095,17 +2070,52 @@ class FarmUi {
 
 	}
 
-	protected static function getSellingSalesCategories(): array {
-		return [
-			Farmer::ALL => s("Toutes les ventes"),
-			Farmer::PRO => s("Ventes aux professionnels"),
-			Farmer::PRIVATE => s("Ventes aux particuliers"),
-			Farmer::MARKET => s("Logiciel de caisse"),
-			NULL,
-			Farmer::LABEL => s("Étiquettes de colisage"),
-			NULL,
-			Farmer::ARCHIVES => s("Archivage des données de vente"),
+	public function getSellingMarketTitle(Farm $eFarm): string {
+
+		$h = '<div class="util-action">';
+			$h .= '<h1>';
+				$h .= s("Logiciel de caisse");
+			$h .= '</h1>';
+
+			$h .= '<div>';
+				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#sale-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+				$h .= '<a href="/selling/customer:createCollective?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau point de vente").'</span></a> ';
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	protected static function getSellingSalesCategories(Farm $eFarm): array {
+
+		$categories = [
+			Farmer::SALE => s("Ventes"),
+			Farmer::SALE_PRO => '<span class="util-badge bg-pro">'.s("Professionnels").'</span>',
+			Farmer::SALE_PRIVATE => '<span class="util-badge bg-private">'.s("Particuliers").'</span>',
 		];
+
+		if($eFarm['hasPurchases']) {
+
+			$categories = array_merge($categories, [
+				NULL,
+				Farmer::PURCHASE => '<span>'.s("Achats aux {value}", '<span class="util-badge bg-pro">'.s("professionnels").'</span>').'</span>'
+			]);
+
+		}
+
+		$categories = array_merge($categories, [
+			NULL,
+			Farmer::LABEL => s("Étiquettes de colisage")
+		]);
+
+		if($eFarm['hasSales']) {
+			$categories[Farmer::ARCHIVES] = s("Archivage des données de vente");
+		}
+
+		return $categories;
+
 	}
 
 	public function getAccountingBankTitle(Farm $eFarm, string $selectedView, ?int $number): string {
@@ -2122,7 +2132,7 @@ class FarmUi {
 						$h .= $title;
 					$h .= '</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).$value['url'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value['label'].'</a>';
 					}
@@ -2161,76 +2171,12 @@ class FarmUi {
 		];
 	}
 
-	public function getPreAccountingTitle(Farm $eFarm, string $selectedView, \Search $search): string {
-
-		$categories = $this->getPreAccountingCategories();
-
-		$title = $categories[$selectedView]['label'];
-		if(
-			date('Y-m-01', strtotime('last month')) >= $eFarm['eFinancialYear']['startDate'] and
-			date('Y-m-01', strtotime('last month')) <= $eFarm['eFinancialYear']['endDate']
-		){
-			$dateFallback = date('Y-m-01', strtotime('last month'));
-		} else {
-			$dateFallback = $eFarm['eFinancialYear']['startDate'];
-		}
-		$from = $search->get('from') ?: $dateFallback;
-		$urlMore = 'from='.$from;
-
-		$h = '<div class="util-action">';
-			$h .= '<h1>';
-				$h .= '<a class="util-action-navigation h-menu-wrapper" data-dropdown="bottom-start" data-dropdown-hover="true">';
-					$h .= self::getNavigation();
-					$h .= '<span class="h-menu-label">';
-						$h .= $title;
-					$h .= '</span>';
-				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
-					foreach($categories as $key => $value) {
-						$h .= '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).$value['url'].'?'.$urlMore.'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">';
-							$h .= $value['label'];
-						$h .= '</a>';
-					}
-				$h .= '</div>';
-			$h .= '</h1>';
-
-			$h .= '<div>';
-				$h .= '<a href="/doc/accounting" class="btn btn-xs btn-outline-primary">'.\Asset::icon('person-raised-hand').' '.s("Aide").'</a>';
-			$h .= '</div>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	protected static function getPreAccountingCategories(): array {
 		return [
 			'preaccounting' => ['url' => '/precomptabilite', 'label' => s("Précomptabilité")],
 			'import' => ['url' => '/precomptabilite:importer', 'label' => s("Importer dans le logiciel comptable")],
 			'export' => ['url' => '/precomptabilite/fec', 'label' => s("Exporter les données de vente au format comptable")],
 		];
-	}
-
-	public function getAccountingInvoiceTitle(Farm $eFarm, array $numbers): string {
-
-		$h = '<div class="util-action">';
-			$h .= '<h1>';
-				$h .= s("Factures");
-			$h .= '</h1>';
-
-				$h .= '<div>';
-					if(array_sum($numbers['import']) > 0 and $eFarm->usesAccounting()) {
-						$h .= '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite:importer" class="btn btn-outline-primary">'.s("Factures à importer ({value})", array_sum($numbers['import'])).'</a> ';
-					}
-					if($numbers['reconciliate'] > 0) {
-						$h .= '<a href="'.\farm\FarmUi::urlFinancialYear(NULL, $eFarm).'/precomptabilite:rapprocher" class="btn btn-outline-primary">'.s("Rapprochements ({value})", $numbers['reconciliate']).'</a> ';
-					}
-				$h .= '</div>';
-		$h .= '</div>';
-
-		return $h;
-
 	}
 
 	public function getAccountingAssetsTitle(Farm $eFarm, string $selectedView, bool $hasAsset, \account\FinancialYearDocument $eFinancialYearDocument): string {
@@ -2253,7 +2199,7 @@ class FarmUi {
 						$h .= $title;
 					$h .= '</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\farm\FarmUi::urlConnected($eFarm).$value['url'].'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value['label'].'</a>';
 					}
@@ -2399,7 +2345,7 @@ class FarmUi {
 						}
 					$h .= '</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						if($value === NULL) {
 							$h .= '<div class="dropdown-divider"></div>';
@@ -2465,7 +2411,7 @@ class FarmUi {
 						}
 					$h .= '</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						if($value === NULL) {
 							$h .= '<div class="dropdown-divider"></div>';
@@ -2481,11 +2427,24 @@ class FarmUi {
 			switch($selectedView) {
 
 				case Farmer::CUSTOMER :
+				case Farmer::CUSTOMER_PRO :
+				case Farmer::CUSTOMER_PRIVATE :
 					$h .= '<div>';
+
 						$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#customer-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+
 						if($canCreate) {
-							$h .= '<a href="/selling/customer:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau client").'</span></a>';
+
+							$type = match($selectedView) {
+								Farmer::CUSTOMER => '',
+								Farmer::CUSTOMER_PRO => '&type='.\selling\Customer::PRO,
+								Farmer::CUSTOMER_PRIVATE => '&type='.\selling\Customer::PRIVATE,
+							};
+
+							$h .= '<a href="/selling/customer:create?farm='.$eFarm['id'].$type.'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau client").'</span></a>';
+
 						}
+
 					$h .= '</div>';
 					break;
 
@@ -2508,31 +2467,11 @@ class FarmUi {
 	protected static function getSellingCustomersCategories(): array {
 		return [
 			Farmer::CUSTOMER => s("Clients"),
+			Farmer::CUSTOMER_PRO => '<span class="util-badge bg-pro">'.s("Professionnels").'</span>',
+			Farmer::CUSTOMER_PRIVATE => '<span class="util-badge bg-private">'.s("Particuliers").'</span>',
+			NULL,
 			Farmer::GROUP => s("Groupes de clients"),
 		];
-	}
-
-	public function getShopMenu(Farm $eFarm, ?string $subNav = NULL): string {
-
-		return $this->getSubNav(
-			$eFarm,
-			'shop',
-			$subNav
-		);
-
-	}
-
-	public function getEmptyShopMenu(Farm $eFarm, ?string $subNav = NULL): string {
-
-		$h = '<div class="farm-subnav-wrapper">';
-			$h .= '<a href="'.self::urlShopList($eFarm).'" class="farm-subnav-item '.('shop' === $subNav ? 'selected' : '').'" data-sub-nav="shop">';
-				$h .= '<span class="farm-subnav-prefix">'.\Asset::icon('chevron-right').' </span>';
-				$h .= '<span>'.s("Créer une boutique").'</span>';
-			$h .= '</a>';
-		$h .= '</div>';
-
-		return $h;
-
 	}
 
 	public function getCommunicationsMenu(Farm $eFarm, ?string $subNav = NULL): string {
@@ -2553,7 +2492,7 @@ class FarmUi {
 					$h .= self::getNavigation();
 					$h .= '<span class="h-menu-label">'.$this->getMailingCategories()[$selectedView].' <span class="util-counter">'.$counter.'</span></span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($this->getMailingCategories() as $key => $value) {
 						$h .= '<a href="'.FarmUi::urlCommunicationsMailing($eFarm, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -2633,23 +2572,22 @@ class FarmUi {
 
 			case 'selling' :
 
-				$categories = ['sale', 'customer', 'product', 'invoice'];
+				$categories = ['sale'];
+
+				if($eFarm['hasSales']) {
+					$categories[] = 'invoice';
+				}
+
+				$categories[] = 'customer';
+				$categories[] = 'product';
 
 				if($eFarm['featureStock']) {
 					$categories[] = 'stock';
 				}
 
-				return $categories;
-
-			case 'shop' :
-				$categories = ['shop'];
-
-				if($eFarm['hasShops']) {
-
-					$categories[] = 'catalog';
-					$categories[] = 'point';
-
-				}
+				$categories[] = 'catalog';
+				$categories[] = 'shop';
+				$categories[] = 'market';
 
 				return $categories;
 
@@ -2727,7 +2665,7 @@ class FarmUi {
 					$h .= self::getNavigation();
 					$h .= '<span class="h-menu-label">'.$categories[$selectedView].'</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeWorkingTime($eFarm, $selectedYear, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -2776,7 +2714,7 @@ class FarmUi {
 					$h .= self::getNavigation();
 					$h .= '<span class="h-menu-label">'.$categories[$selectedView].'</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeSelling($eFarm, $selectedYear, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -2840,7 +2778,7 @@ class FarmUi {
 					$h .= self::getNavigation();
 					$h .= '<span class="h-menu-label">'.$categories[$selectedView].'</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					foreach($categories as $key => $value) {
 						$h .= '<a href="'.\farm\FarmUi::urlAnalyzeCultivation($eFarm, $selectedSeason, $key).'" class="dropdown-item '.($key === $selectedView ? 'selected' : '').'">'.$value.'</a> ';
 					}
@@ -2912,7 +2850,7 @@ class FarmUi {
 					$h .= self::getNavigation();
 					$h .= '<span class="h-menu-label">'.$label.'</span>';
 				$h .= '</a>';
-				$h .= '<div class="dropdown-list bg-primary">';
+				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					$h .= '<div class="dropdown-title">'.s("Paramétrage").'</div>';
 					$h .= '<a href="/farm/farm:update?id='.$eFarm['id'].'" class="dropdown-item">'.\Asset::icon('gear-fill').'  '.s("Paramétrer la ferme").'</a>';
 					$h .= '<a href="/farm/farmer:manage?farm='.$eFarm['id'].' '.($selected === 'team' ? 'selected' : '').'" class="dropdown-item">'.\Asset::icon('people-fill').'  '.s("Gérer l'équipe de la ferme").'</a>';
@@ -2937,6 +2875,11 @@ class FarmUi {
 			$h .= '<a href="/farm/configuration:update?id='.$eFarm['id'].'" class="util-button">';
 				$h .= '<h4>'.s("Les réglages de base").'</h4>';
 				$h .= \Asset::icon('gear-fill');
+			$h .= '</a>';
+
+			$h .= '<a href="/shop/point:manage?farm='.$eFarm['id'].'" class="util-button">';
+				$h .= '<h4>'.s("Les modes de livraison").'</h4>';
+				$h .= \Asset::icon('truck');
 			$h .= '</a>';
 
 			$h .= '<a href="/farm/farm:updateEmail?id='.$eFarm['id'].'" class="util-button">';
@@ -3105,7 +3048,7 @@ class FarmUi {
 					$h .= '<a href="'.$eFarm->getCommercialisationUrl().'" class="btn btn-commercialisation">'.\Asset::icon('basket3').'<br/>'.s("Vente").'</a> ';
 				}
 				if($eFarm->canAccounting()) {
-					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-accounting">'.\Asset::icon('piggy-bank').'<br/>'.s("Comptabilité").'</a> ';
+					$h .= '<a href="'.$eFarm->getAccountingUrl().'" class="btn btn-accounting">'.\Asset::icon('piggy-bank').'<br/>'.s("Gestion").'</a> ';
 				}
 
 			$h .= '</div>';

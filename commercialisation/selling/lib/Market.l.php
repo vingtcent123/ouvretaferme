@@ -312,20 +312,14 @@ class MarketLib {
 			// On sort la vente du logiciel de caisse
 			$eSale['profile'] = Sale::SALE;
 			$eSale['marketParent'] = new Sale();
-			$eSale['stats'] = TRUE;
 			$eSale['preparationStatus'] = Sale::DELIVERED;
 
-			SaleLib::update($eSale, ['profile', 'marketParent', 'stats', 'preparationStatus']);
-
-			Sale::model()
-				->select('profile', 'marketParent', 'stats')
-				->update($eSale);
+			SaleLib::update($eSale, ['profile', 'marketParent', 'preparationStatus']);
 
 			Item::model()
 				->whereSale($eSale)
 				->update([
 					'parent' => new Item(),
-					'stats' => TRUE,
 					'profile' => $eSale['profile'],
 				]);
 

@@ -35,7 +35,7 @@ class RangeUi {
 				};
 			$h .= '</div>';
 
-			$h .= '<a href="'.\farm\FarmUi::urlShopCatalog($eRange['farm']).'" class="btn btn-primary">'.s("Créer un catalogue").'</a>';
+			$h .= '<a href="'.\farm\FarmUi::urlSellingCatalog($eRange['farm']).'" class="btn btn-primary">'.s("Créer un catalogue").'</a>';
 
 		} else {
 

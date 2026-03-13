@@ -41,7 +41,6 @@ new Page(function($data) {
 		'/ferme/{id}/ventes',
 		'/ferme/{id}/ventes/particuliers',
 		'/ferme/{id}/ventes/professionnels',
-		'/ferme/{id}/ventes/caisse',
 		], function($data) {
 
 		$data->eFarm->validate('canSelling');
@@ -50,31 +49,17 @@ new Page(function($data) {
 
 			case '/ferme/{id}/ventes' :
 				$data->type = NULL;
-				$data->profile = NULL;
-				\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::ALL);
+				\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::SALE);
 				break;
 
 			case '/ferme/{id}/ventes/particuliers' :
 				$data->type = \selling\Sale::PRIVATE;
-				$data->profile = NULL;
-				\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::PRIVATE);
+				\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::SALE_PRIVATE);
 				break;
 
 			case '/ferme/{id}/ventes/professionnels' :
 				$data->type = \selling\Sale::PRO;
-				$data->profile = NULL;
-				\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::PRO);
-				break;
-
-			case '/ferme/{id}/ventes/caisse' :
-
-				$data->type = \selling\Sale::PRIVATE;
-				$data->profile = \selling\Sale::MARKET;
-				\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::MARKET);
-
-				$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'selling-market-start');
-				$data->tipNavigation = 'inline';
-
+				\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::SALE_PRO);
 				break;
 
 		}
@@ -90,7 +75,6 @@ new Page(function($data) {
 		$data->search = new Search([
 			'document' => GET('document', '?int'),
 			'type' => $data->type,
-			'profile' => $data->profile,
 			'ids' => GET('ids'),
 			'customerName' => GET('customerName'),
 			'deliveredAt' => GET('deliveredAt'),
@@ -100,12 +84,76 @@ new Page(function($data) {
 		], GET('sort'));
 
 		$data->cPaymentMethod = \payment\MethodLib::getByFarm($data->eFarm, NULL);
-		$data->cSale = \selling\SaleLib::getByFarm($data->eFarm, $data->page * 100, 100, $data->search);
+		$data->cSale = \selling\SaleLib::getSalesByFarm($data->eFarm, $data->page * 100, 100, $data->search);
 
 		throw new ViewAction($data, ':sellingSales');
 
 	})
-	->get('/ferme/{id}/clients', function($data) {
+	->get('/ferme/{id}/achats', function($data) {
+
+		$data->eFarm->validate('canSelling');
+
+		\farm\FarmerLib::setView('viewSellingSales', $data->eFarm, \farm\Farmer::PURCHASE);
+
+		$data->page = GET('page', 'int');
+
+		$data->search = new Search([
+			'document' => GET('document', '?int'),
+			'customerName' => GET('customerName'),
+			'deliveredAt' => GET('deliveredAt'),
+		], GET('sort'));
+
+		$data->cSale = \selling\SaleLib::getPurchasesByFarm($data->eFarm, $data->page * 100, 100, $data->search);
+
+		throw new ViewAction($data, ':sellingPurchases');
+
+	})
+	->get('/ferme/{id}/caisse', function($data) {
+
+		$data->eFarm->validate('canSelling');
+
+		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'selling-market-start');
+		$data->tipNavigation = 'inline';
+
+		$data->page = GET('page', 'int');
+
+		$data->search = new Search([
+			'customerName' => GET('customerName'),
+			'deliveredAt' => GET('deliveredAt'),
+		], GET('sort'));
+
+		$data->cCustomer = \selling\CustomerLib::getMarketByFarm($data->eFarm);
+		$data->cSale = \selling\SaleLib::getMarketsByFarm($data->eFarm, $data->page * 100, 100, $data->search);
+
+		throw new ViewAction($data);
+
+	})
+	->get([
+		'/ferme/{id}/clients',
+		'/ferme/{id}/clients/particuliers',
+		'/ferme/{id}/clients/professionnels',
+		], function($data) {
+
+		$data->eFarm->validate('canSelling');
+
+		switch($data->__page['name']) {
+
+			case '/ferme/{id}/clients' :
+				$data->type = NULL;
+				\farm\FarmerLib::setView('viewSellingCustomers', $data->eFarm, \farm\Farmer::CUSTOMER);
+				break;
+
+			case '/ferme/{id}/clients/particuliers' :
+				$data->type = \selling\Sale::PRIVATE;
+				\farm\FarmerLib::setView('viewSellingCustomers', $data->eFarm, \farm\Farmer::CUSTOMER_PRIVATE);
+				break;
+
+			case '/ferme/{id}/clients/professionnels' :
+				$data->type = \selling\Sale::PRO;
+				\farm\FarmerLib::setView('viewSellingCustomers', $data->eFarm, \farm\Farmer::CUSTOMER_PRO);
+				break;
+
+		}
 
 		$data->eFarm->validate('canSelling');
 
@@ -113,6 +161,7 @@ new Page(function($data) {
 
 		$data->search = new Search([
 			'name' => GET('name'),
+			'type' => $data->type,
 			'group' => GET('group', 'selling\CustomerGroup'),
 			'cCustomerGroup' => \selling\CustomerGroupLib::getByFarm($data->eFarm),
 			'email' => GET('email'),
@@ -123,7 +172,7 @@ new Page(function($data) {
 
 		$data->cCustomerGroup = \selling\CustomerGroupLib::getByFarm($data->eFarm);
 
-		throw new ViewAction($data);
+		throw new ViewAction($data, ':sellingCustomers');
 
 	})
 	->get('/ferme/{id}/produits', function($data) {
@@ -290,6 +339,9 @@ new Page(function($data) {
 		$data->cCatalog = \shop\CatalogLib::getByFarm($data->eFarm, index: 'id');
 		$data->eCatalogSelected = new \shop\Catalog();
 
+		$data->tip = \farm\TipLib::pickOne($data->eUserOnline, 'selling-catalog-start');
+		$data->tipNavigation = 'inline';
+
 		if(get_exists('catalog')) {
 
 			$eCatalog = GET('catalog', 'shop\Catalog', fn() => new \shop\Catalog());
@@ -322,15 +374,9 @@ new Page(function($data) {
 			$data->eCatalogSelected['cCustomerGroup'] = \selling\CustomerGroupLib::getRestrictedByCollection($data->eCatalogSelected['cProduct']);
 		}
 
-		throw new ViewAction($data);
-
-	})
-	->get('/ferme/{id}/livraison', function($data) {
-
-		$data->eFarm->validate('canSelling');
-
-		$data->ccPoint = \shop\PointLib::getByFarm($data->eFarm);
-		$data->pointsUsed = \shop\PointLib::getUsedByFarm($data->eFarm);
+		if($data->cCatalog->empty()) {
+			$data->hasProducts = \selling\ProductLib::existsByFarm($data->eFarm);
+		}
 
 		throw new ViewAction($data);
 

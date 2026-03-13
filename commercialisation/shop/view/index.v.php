@@ -1,11 +1,11 @@
 <?php
 new AdaptativeView('/ferme/{id}/boutique/{shop}', function($data, FarmTemplate $t) {
 
-	$t->nav = 'shop';
+	$t->nav = 'selling';
 	$t->subNav = 'shop';
 
 	$t->title = $data->eShop['name'];
-	$t->canonical = \farm\FarmUi::urlShopList($data->e);
+	$t->canonical = \farm\FarmUi::urlSellingShop($data->e);
 
 	$uiShopManage = new \shop\ShopManageUi();
 
@@ -46,7 +46,7 @@ new AdaptativeView('createShared', function($data, PanelTemplate $t) {
 new AdaptativeView('website', function($data, FarmTemplate $t) {
 
 	$t->title = s("Intégrer la boutique sur un site internet");
-	$t->nav = 'shop';
+	$t->nav = 'selling';
 	$t->subNav = 'shop';
 
 	$h = '<h1>';

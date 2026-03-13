@@ -33,11 +33,28 @@ class Sale extends SaleElement {
 
 	}
 
+	public function isStats(): bool {
+
+		return (
+			$this['preparationStatus'] === Sale::DELIVERED and
+			in_array($this['profile'], Sale::getStatsProfiles())
+		);
+
+	}
+
 	public function isSale(): bool {
 
 		$this->expects(['profile']);
 
 		return $this['profile'] === Sale::SALE;
+
+	}
+
+	public function isPurchase(): bool {
+
+		$this->expects(['profile']);
+
+		return $this['profile'] === Sale::PURCHASE;
 
 	}
 
@@ -276,6 +293,7 @@ class Sale extends SaleElement {
 		$this->expects(['cPayment', 'invoice']);
 
 		return (
+			$this->isPurchase() === FALSE and
 			$this->isMarket() === FALSE and
 			$this->isComposition() === FALSE and
 			$this['preparationStatus'] !== Sale::CANCELED and
@@ -334,7 +352,7 @@ class Sale extends SaleElement {
 
 		$this->expects(['customer', 'farm', 'stats']);
 
-		return $this['stats'] and (
+		return in_array($this['profile'], Sale::getStatsProfiles()) and (
 			// Ferme
 			$this->canRead() or
 			// Client
@@ -483,6 +501,7 @@ class Sale extends SaleElement {
 	public function acceptDelivery(): bool {
 
 		return (
+			$this->isPurchase() === FALSE and
 			$this->isMarket() === FALSE and
 			$this->isMarketSale() === FALSE and
 			$this->isComposition() === FALSE and
@@ -580,6 +599,7 @@ class Sale extends SaleElement {
 	public function acceptOrderForm(): bool {
 
 		return
+			$this->isPurchase() === FALSE and
 			$this->acceptCommonDocument() and
 			$this['shop']->empty();
 
@@ -598,7 +618,10 @@ class Sale extends SaleElement {
 
 		return (
 			$this['customer']->acceptInvoice() and
-			$this->isSale()
+			(
+				$this->isSale() or
+				$this->isPurchase()
+			)
 		);
 
 	}
@@ -613,6 +636,7 @@ class Sale extends SaleElement {
 	public function acceptDeliveryNote(): bool {
 
 		return (
+			$this->isPurchase() === FALSE and
 			in_array($this['nature'], [Sale::MIXED, Sale::GOOD]) and
 			$this->acceptCommonDocument()
 		);
@@ -640,6 +664,7 @@ class Sale extends SaleElement {
 	public function acceptAssociateShop(): bool {
 		return (
 			$this->isComposition() === FALSE and
+			$this->isPurchase() === FALSE and
 			$this->isMarket() === FALSE and
 			$this->isMarketSale() === FALSE and
 			$this['shop']->empty()
@@ -656,6 +681,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this->isComposition() === FALSE and
+			$this->isPurchase() === FALSE and
 			$this->isMarketSale() === FALSE
 		);
 
@@ -714,7 +740,11 @@ class Sale extends SaleElement {
 
 	}
 
-	public function getDeleteStatuses(): array {
+	public static function getStatsProfiles(): array {
+		return [Sale::SALE, Sale::MARKET, Sale::PURCHASE];
+	}
+
+	public static function getDeleteStatuses(): array {
 		return [Sale::COMPOSITION, Sale::CONFIRMED, Sale::PREPARED, Sale::DRAFT, Sale::BASKET];
 	}
 
@@ -764,6 +794,7 @@ class Sale extends SaleElement {
 			$this['closed'] === FALSE and
 			$this->acceptUpdatePreparationStatus() and
 			$this->isMarket() === FALSE and
+			$this->isPurchase() === FALSE and
 			$this->isMarketSale() === FALSE and
 			in_array($this['preparationStatus'], [Sale::CONFIRMED, Sale::DRAFT])
 		);
@@ -948,7 +979,7 @@ class Sale extends SaleElement {
 						->get($eCustomer)
 				) {
 
-					if($this['profile'] === Sale::SALE_MARKET and $eCustomer->isCollective()) {
+					if($this['profile'] === Sale::SALE_MARKET and $eCustomer->acceptSaleMarket() === FALSE) {
 						return FALSE;
 					}
 
@@ -965,10 +996,6 @@ class Sale extends SaleElement {
 			})
 			->setCallback('customer.market', function(Customer $eCustomer) use($fw): bool {
 
-				if($this->isComposition()) {
-					return TRUE;
-				}
-
 				$this->expects(['profile']);
 
 				if($fw->has('Sale::customer.check')) { // L'action génère déjà une erreur
@@ -976,7 +1003,22 @@ class Sale extends SaleElement {
 				}
 
 				if($this->isMarket()) {
-					return ($eCustomer['destination'] === Customer::COLLECTIVE);
+					return $eCustomer->acceptMarket();
+				} else {
+					return TRUE;
+				}
+
+			})
+			->setCallback('customer.purchase', function(Customer $eCustomer) use($fw): bool {
+
+				$this->expects(['profile']);
+
+				if($fw->has('Sale::customer.check')) { // L'action génère déjà une erreur
+					return TRUE;
+				}
+
+				if($this->isPurchase()) {
+					return $eCustomer->acceptPurchase();
 				} else {
 					return TRUE;
 				}

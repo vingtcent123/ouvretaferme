@@ -52,7 +52,7 @@ new \shop\ProductPage()
 		if($data->e['date']->notEmpty()) {
 			$redirect = \shop\ShopUi::adminDateUrl($data->e['farm'], $data->e['date']).'?';
 		} else if($data->e['catalog']->notEmpty()) {
-			$redirect = \farm\FarmUi::urlShopCatalog($data->e['farm']).'?catalog='.$data->e['catalog']['id'].'&';
+			$redirect = \farm\FarmUi::urlSellingCatalog($data->e['farm']).'?catalog='.$data->e['catalog']['id'].'&';
 		}
 
 		throw new RedirectAction($redirect.'success=shop\\Product::createdGroup');

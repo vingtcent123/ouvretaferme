@@ -209,6 +209,15 @@ class ProductLib extends ProductCrud {
 
 	}
 
+	public static function existsByFarm(\farm\Farm $eFarm): bool {
+
+		return Product::model()
+			->whereFarm($eFarm)
+			->whereStatus('IN', Product::getManipulable())
+			->exists();
+
+	}
+
 	public static function countByFarm(\farm\Farm $eFarm, \Search $search = new \Search()): array {
 
 		self::applySearch($eFarm, $search);

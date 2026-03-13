@@ -65,6 +65,37 @@ class Customer extends CustomerElement {
 
 	}
 
+	public function acceptSaleMarket(): bool {
+
+		return (
+			$this->notEmpty() and
+			$this->isIndividual()
+		);
+
+	}
+
+	public function acceptMarket(): bool {
+
+		return (
+			$this->notEmpty() and
+			$this->isCollective()
+		);
+
+	}
+
+	public function acceptPurchase(): bool {
+
+		if(FEATURE_PURCHASE === FALSE) {
+			return FALSE;
+		}
+
+		return (
+			$this->notEmpty() and
+			$this->isPro()
+		);
+
+	}
+
 	public function acceptInvoice(): bool {
 
 		return (
@@ -73,6 +104,7 @@ class Customer extends CustomerElement {
 		);
 
 	}
+
 	public function acceptCreateElectronicInvoice(): bool {
 
 		$this->expects(['type']);

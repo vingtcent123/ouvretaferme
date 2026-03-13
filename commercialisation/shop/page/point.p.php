@@ -1,4 +1,16 @@
 <?php
+new Page()
+	->get('manage', function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById(GET('farm'))->validate('canManage');
+
+		$data->ccPoint = \shop\PointLib::getByFarm($data->eFarm);
+		$data->pointsUsed = \shop\PointLib::getUsedByFarm($data->eFarm);
+
+		throw new ViewAction($data);
+
+	});
+
 new shop\PointPage()
 	->getCreateElement(function($data) {
 

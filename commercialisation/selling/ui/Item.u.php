@@ -74,6 +74,13 @@ class ItemUi {
 				$new .= $form->dynamicField($eItem, 'product', function($d) use($eSale) {
 					$d->autocompleteDispatch = '#item-create-'.$eSale['id'];
 					$d->placeholder = s("Ajouter un produit");
+					$d->autocompleteBody = function(\util\FormUi $form, Item $e) {
+						$e->expects(['farm']);
+						return [
+							'farm' => $e['farm']['id'],
+							'new' => TRUE
+						];
+					};
 					$d->attributes['class'] = 'form-control-lg';
 				});
 
@@ -656,7 +663,7 @@ class ItemUi {
 					$h .= '<div data-tab="summary" class="tab-panel selected">';
 						$h .= $this->getItemsBySummary($cSale, $ccItemProduct);
 						$h .= '<h3>'.s("État des ventes").'</h3>';
-						$h .= new SaleUi()->getList($eFarm, $cSale, hide: ['paymentMethod'], cPaymentMethod: $cPaymentMethod);
+						$h .= new SaleUi()->getListSales($eFarm, $cSale, hide: ['paymentMethod'], cPaymentMethod: $cPaymentMethod);
 					$h .= '</div>';
 					$h .= '<div data-tab="product" class="tab-panel">';
 						$h .= $this->getItemsByProduct($cSale, $ccItemProduct);
@@ -671,8 +678,8 @@ class ItemUi {
 		}
 
 		$title = $date ?
-			s("Commandes pour le {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($date)))).' '.\util\DateUi::textual($date, \util\DateUi::DAY_MONTH)) :
-			s("Commandes sélectionnées");
+			s("Ventes pour le {value}", lcfirst(\util\DateUi::getDayName(date('N', strtotime($date)))).' '.\util\DateUi::textual($date, \util\DateUi::DAY_MONTH)) :
+			s("Ventes sélectionnées");
 
 		if(
 			$ccItemProduct->contains(fn($eItem) => $eItem['containsComposition'] or $eItem['containsIngredient'], depth: 2)
@@ -1017,7 +1024,7 @@ class ItemUi {
 						$h .= ' <span class="util-annotation">'.$eSale->getTaxes().'</span>';
 					}
 				$h .= '</div>';
-				$h .= '<div class="items-products-number">'.s("Quantité vendue").'</div>';
+				$h .= '<div class="items-products-number">'.s("Quantité").'</div>';
 				if($hasPrice) {
 					$h .= '<div class="items-products-price">';
 						$h .= s("Montant total");
@@ -1089,7 +1096,7 @@ class ItemUi {
 					$h .= '</div>';
 
 					$h .= '<div class="items-products-number" data-wrapper="number['.$eProduct['id'].']">';
-						$h .= '<h4>'.s("Quantité vendue").'</h4>';
+						$h .= '<h4>'.s("Quantité").'</h4>';
 						$h .= $form->dynamicField($eItem, $eSale->isMarket() ? 'number['.$eProduct['id'].']' : 'number['.$eProduct['id'].']*');
 					$h .= '</div>';
 
@@ -1480,7 +1487,7 @@ class ItemUi {
 			'unitPrice' => s("Prix unitaire"),
 			'unitPriceDiscount' => s("Prix remisé"),
 			'price' => s("Montant"),
-			'number' => s("Quantité vendue"),
+			'number' => s("Quantité"),
 			'vatRate' => s("Taux de TVA"),
 			'account' => s("Numéro de compte"),
 			'vatCode' => s("Code de TVA"),

@@ -1,12 +1,13 @@
-#tip-wrapper {
-	overflow: hidden;
-}
-
 .tip-block {
 	position: relative;
-	background-color: #2e687f;
+	background-color: var(--primary);
 	border-radius: var(--radius);
 	width: calc(100% - var(--container-padding) * 2);
+	box-shadow: 0 0 20rem #0005;
+}
+
+#tip-wrapper .tip-block {
+	overflow: hidden;
 }
 
 #tip-wrapper.tip-wrapper-inline .tip-block {
@@ -58,9 +59,8 @@
 
 	#tip-wrapper:not(.tip-wrapper-inline) .tip-block {
 		border-radius: var(--radius);
-		box-shadow: 0 0 50rem var(--muted);
 		pointer-events: initial;
-		max-width: 50rem;
+		max-width: 60rem;
 	}
 
 }
@@ -70,22 +70,13 @@
 	left: 0;
 	line-height: 1;
 	text-align: center;
-	color: #CCC3;
+	color: #FFF1;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	align-items: center;
 	gap: 3rem;
 	pointer-events: none;
 	transform: rotate(18deg);
-}
-
-@media (min-width: 576px) {
-
-	.tip-icons {
-		top: -100%;
-		left: -100%;
-	}
-
 }
 
 @media (max-width: 575px) {
@@ -97,23 +88,23 @@
 }
 
 .tip-icons svg:nth-child(4n) {
-	font-size: 25vw;
+	font-size: 10rem;
 	align-self: start;
 	justify-self: center;
 }
 
 .tip-icons svg:nth-child(4n + 1) {
-	font-size: 35vw;
+	font-size: 15rem;
 	transform: rotate(45deg);
 }
 
 .tip-icons svg:nth-child(4n + 2) {
-	font-size: 30vw;
+	font-size: 10rem;
 	align-self: end;
 }
 
 .tip-icons svg:nth-child(4n + 3) {
-	font-size: 40vw;
+	font-size: 20rem;
 	transform: rotate(-30deg);
 }
 
@@ -122,15 +113,15 @@
 }
 
 .tip-icon-end svg:nth-child(3) {
-	font-size: 20vw;
+	font-size: 10rem;
 }
 
 .tip-icon-end svg:nth-child(2) {
-	font-size: 35vw;
+	font-size: 15rem;
 }
 
 .tip-icon-end svg:nth-child(1) {
-	font-size: 50vw;
+	font-size: 20vw;
 }
 
 .tip-header {
@@ -139,16 +130,6 @@
 	justify-content: space-between;
 	align-items: center;
 	position: relative;
-}
-
-.tip-intro {
-	position: relative;
-	color: white;
-	letter-spacing: 2px;
-	text-transform: uppercase;
-	margin-bottom: 0;
-	line-height: 1;
-	font-size: 1.5rem;
 }
 
 .tip-title {
@@ -163,10 +144,10 @@
 .tip-content {
 	margin-top: -1rem;
 	position: relative;
-	font-size: 1.1rem;
-	min-height: 5vw;
-	padding: 3vw 2rem 1rem 2rem;
+	font-size: 1.2rem;
 	color: white;
+	min-height: 5vw;
+	padding: 2vw 2rem 1rem 2rem;
 }
 
 .tip-content a {
@@ -187,7 +168,7 @@
 	position: relative;
 	border-top: 1px solid #FFF6;
 	padding: 1.5rem 2rem;
-	background-color: #0006;
+	background-color: var(--secondary);
 	display: flex;
 	flex-wrap: wrap;
 	gap: 1rem;
@@ -222,18 +203,16 @@
 .tip-list > * {
 	padding: 0.5rem;
 	border-radius: var(--radius);
-	border: 1px solid white;
+	border: 1px solid var(--secondary);
 	display: inline-block;
 	margin: 0.25rem 0;
 }
 
 .tip-list > a {
 	text-decoration: none;
-	color: white;
 }
 
 .tip-list > a:hover {
-	background-color: white;
 	color: black;
 }
 

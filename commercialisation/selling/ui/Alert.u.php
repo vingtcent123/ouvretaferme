@@ -7,7 +7,7 @@ class AlertUi {
 
 		return match($fqn) {
 
-			'Customer::name.empty' => s("Un nom de client valide est obligatoire."),
+			'Customer::name.empty' => s("Un nom est obligatoire."),
 			'Customer::phone.check' => s("Le numéro de téléphone est invalide."),
 			'Customer::siret.check' => \farm\AlertUi::getErrorSiret(),
 			'Customer::vatNumber.check' => fn() => \farm\AlertUi::getErrorVatNumber($options[0]),
@@ -81,6 +81,7 @@ class AlertUi {
 			'Sale::products.check' => s("Vous ne pouvez pas continuer car votre panier est vide !"),
 			'Sale::customer.check' => s("Client non reconnu sur votre ferme."),
 			'Sale::customer.market' => s("Le logiciel de caisse n'est disponible que pour les points de vente aux particuliers."),
+			'Sale::customer.purchase' => s("Vous ne pouvez saisir des achats que pour les clients professionnels"),
 			'Sale::deliveredAt.check' => s("La date de vente est obligatoire."),
 			'Sale::deliveredAt.composition' => s("Vous avez déjà ajouté une composition pour cette même date."),
 			'Sale::deliveredAt.compositionTooLate' => s("Vous ne pouvez modifier la composition de votre produit que sur les 30 derniers jours."),
@@ -115,12 +116,12 @@ class AlertUi {
 
 			'Item::vatRate.check' => s("Vous devez renseigner la TVA de tous les produits que vous vendez !"),
 			'Item::product.composition' => s("Vous ne pouvez pas ajouter de produit composé à une composition !"),
-			'Item::number.empty' => s("La quantité vendue ne peut pas être vide !"),
+			'Item::number.empty' => s("La quantité ne peut pas être vide !"),
 			'Item::price.locked' => s("Veuillez indiquer le montant total !"),
 			'Item::unitPrice.check' => s("Veuillez indiquer le prix unitaire !"),
 			'Item::unitPriceDiscount.value' => s("Le prix remisé doit être plus avantageux que le prix unitaire initial"),
-			'Item::number.division' => s("Lorsque le prix unitaire est verrouillé, la quantité vendue ne peut pas être égale à zéro !"),
-			'Item::unitPrice.division' => s("Lorsque la quantité vendue est verrouillée, le prix unitaire ne peut pas être égal à zéro !"),
+			'Item::number.division' => s("Lorsque le prix unitaire est verrouillé, la quantité ne peut pas être égale à zéro !"),
+			'Item::unitPrice.division' => s("Lorsque la quantité est verrouillée, le prix unitaire ne peut pas être égal à zéro !"),
 			'Item::createEmpty' => s("Ajoutez au moins un article à la vente !"),
 			'Item::createDuplicateNameMarket' => fn($name) => s("Vous avez déjà ajouté un article sans référence de produit portant le nom {value} à votre vente !", $name),
 			'Item::createDuplicateProductMarket' => fn($name) => s("Vous avez déjà ajouté le produit {value} à votre vente !", $name),
@@ -151,6 +152,7 @@ class AlertUi {
 			'Archive::created' => s("L'archive a bien été générée."),
 
 			'Customer::created' => s("Le client a bien été ajouté."),
+			'Customer::createdCollective' => s("Le point de vente a bien été ajouté."),
 			'Customer::updated' => s("Le client a bien été mis à jour."),
 			'Customer::deleted' => s("Le client a bien été supprimé."),
 			'Customer::optInUpdated' => s("Vos préférences de communication par e-mail ont bien été mises à jour."),

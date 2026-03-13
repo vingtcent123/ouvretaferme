@@ -122,12 +122,6 @@ a.sale-preparing-after:hover .sale-preparing-customer {
 	font-weight: bold;
 }
 
-
-.sale-create-market .field-radio-group {
-	background-color: #fff4;
-	color: white;
-}
-
 body[data-template~="farm-preparing"] .sale-presentation dt:has(+ dd:empty),
 body[data-template~="farm-preparing"] .sale-presentation dt + dd:empty {
 	display: none;

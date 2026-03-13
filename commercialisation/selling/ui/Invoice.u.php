@@ -257,7 +257,7 @@ class InvoiceUi {
 						$h .= '<td class="text-end invoice-item-amount">';
 							$h .= SaleUi::getIncludingTaxesTotal($eInvoice);
 							$h .= '<div class="util-annotation">';
-								$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eInvoice['farm'], \farm\Farmer::ALL).'?ids='.implode(',', $eInvoice['sales']).'">'.p("{value} vente", "{value} ventes", count($eInvoice['sales'])).'</a>';
+								$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eInvoice['farm'], \farm\Farmer::SALE).'?ids='.implode(',', $eInvoice['sales']).'">'.p("{value} vente", "{value} ventes", count($eInvoice['sales'])).'</a>';
 							$h .= '</div>';
 						$h .= '</td>';
 
@@ -719,7 +719,7 @@ class InvoiceUi {
 				$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['list']).'</td>';
 				$h .= '<td>'.CustomerUi::link($eSale['customer'], newTab: TRUE).'</td>';
 				$h .= '<td class="text-end">';
-					$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eFarm, \farm\Farmer::ALL).'?ids='.$eSale['list'].'" class="btn btn-sm btn-outline-secondary" target="_blank">'.$eSale['number'].'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eFarm, \farm\Farmer::SALE).'?ids='.$eSale['list'].'" class="btn btn-sm btn-outline-secondary" target="_blank">'.$eSale['number'].'</a>';
 				$h .= '</td>';
 				$h .= '<td class="text-end">';
 				$h .= SaleUi::getTotal($eSale);

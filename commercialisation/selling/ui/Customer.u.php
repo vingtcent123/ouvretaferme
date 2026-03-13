@@ -20,6 +20,10 @@ class CustomerUi {
 		}
 	}
 
+	public static function getBadge(Customer $eCustomer): string {
+		return '<a href="/client/'.$eCustomer['id'].'" class="btn btn-sm btn-outline-'.$eCustomer['type'].'">'.encode($eCustomer['number']).'</a>';
+	}
+
 	public static function getCategory(Customer $eCustomer): string {
 
 		return match($eCustomer['type']) {
@@ -139,7 +143,7 @@ class CustomerUi {
 
 	public function getSearch(\farm\Farm $eFarm, \Search $search): string {
 
-		$h = '<div id="customer-search" class="util-block-search '.($search->empty(['cCustomerGroup']) ? 'hide' : '').'">';
+		$h = '<div id="customer-search" class="util-block-search '.($search->empty(['cCustomerGroup', 'type']) ? 'hide' : '').'">';
 
 			$form = new \util\FormUi();
 			$url = \farm\FarmUi::urlSellingCustomers($eFarm);
@@ -159,10 +163,12 @@ class CustomerUi {
 					$h .= '<legend>'.s("E-mail").'</legend>';
 					$h .= $form->text('email', $search->get('email'), ['placeholder' => s("E-mail de client")]);
 				$h .= '</fieldset>';
-				$h .= '<fieldset>';
-					$h .= '<legend>'.s("Catégorie").'</legend>';
-					$h .= $form->select('category', self::getCategories(), $search->get('category'));
-				$h .= '</fieldset>';
+				if($search->get('type') === NULL) {
+					$h .= '<fieldset>';
+						$h .= '<legend>'.s("Catégorie").'</legend>';
+						$h .= $form->select('category', self::getCategories(), $search->get('category'));
+					$h .= '</fieldset>';
+				}
 				$h .= '<div class="util-search-submit">';
 					$h .= $form->submit(s("Chercher"));
 					$h .= '<a href="'.$url.'" class="btn">'.\Asset::icon('x-lg').'</a>';
@@ -206,7 +212,7 @@ class CustomerUi {
 						$h .= '<th colspan="2" class="text-center hide-xs-down t-highlight">'.s("Ventes").'</th>';
 					}
 					if(in_array('prices', $hide) === FALSE) {
-						$h .= '<th rowspan="2" class="customer-item-grid">'.s("Prixpersonnalisés").'</th>';
+						$h .= '<th rowspan="2" class="customer-item-grid">'.s("Prix personnalisés").'</th>';
 					}
 					$h .= '<th rowspan="2" class="customer-item-contact">'.s("Contact").'</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
@@ -251,8 +257,8 @@ class CustomerUi {
 							$h .= '</label>';
 						$h .= '</td>';
 
-						$h .= '<td class="td-min-content text-center">';
-							$h .= '<a href="/client/'.$eCustomer['id'].'" class="btn btn-sm btn-outline-primary">'.encode($eCustomer['number']).'</a>';
+						$h .= '<td class="td-min-content">';
+							$h .= $this->getBadge($eCustomer);
 						$h .= '</td>';
 
 						$h .= '<td>';
@@ -484,7 +490,7 @@ class CustomerUi {
 			$h .= '<div class="util-block stick-xs">';
 				$h .= '<dl class="util-presentation util-presentation-2">';
 					$h .= '<dt>'.s("Numéro").'</dt>';
-					$h .= '<dd><span class="btn btn-xs btn-outline-primary btn-readonly">'.encode($eCustomer['number']).'</span></dd>';
+					$h .= '<dd><span class="btn btn-xs btn-outline-'.$eCustomer['type'].' btn-readonly">'.encode($eCustomer['number']).'</span></dd>';
 					$h .= '<dt>'.s("Catégorie").'</dt>';
 					$h .= '<dd>'.$type.'</dd>';
 					$h .= '<dt>'.s("Adresse e-mail").'</dt>';
@@ -537,16 +543,7 @@ class CustomerUi {
 			$h .= '</div>';
 
 		} else {
-
-			if($cSale->empty()) {
-				$h .= '<div class="util-block-help">';
-					$h .= '<h3>'.s("Point de vente aux particuliers").'</h3>';
-					$h .= '<p>'.s("Le logiciel de caisse proposé par Ouvretaferme peut être utilisé pour ce point de vente aux particuliers.").'</p>';
-					$h .= '<a href="/doc/selling:market" class="btn btn-secondary">'.s("En savoir plus sur le logiciel de caisse").'</a>';
-				$h .= '</div>';
-			} else {
-				$h .= '<div class="util-block">'.s("Ce client est un point de vente aux particuliers.").'</div>';
-			}
+			$h .= '<div class="util-block">'.s("Ce client est un point de vente aux particuliers.").'</div>';
 		}
 
 		if(
@@ -560,7 +557,7 @@ class CustomerUi {
 
 	}
 
-	public function getTabs(Customer $eCustomer, \Collection $cGrid, \Collection $cGridGroup, \Collection $cSale, \Collection $cEmail, \Collection $cInvoice, \Collection $cPaymentMethod): string {
+	public function getTabs(Customer $eCustomer, \Collection $cGrid, \Collection $cGridGroup, \Collection $cSale, \Collection $cPurchase, \Collection $cEmail, \Collection $cInvoice, \Collection $cPaymentMethod): string {
 
 		$h = '<div class="tabs-h" id="customer-tabs-wrapper" onrender="'.encode('Lime.Tab.restore(this, "sales")').'">';
 
@@ -568,6 +565,11 @@ class CustomerUi {
 				$h .= '<a class="tab-item selected" data-tab="sales" onclick="Lime.Tab.select(this)">';
 					$h .= s("Ventes").' <span class="tab-item-count">'.$cSale->count().'</span>';
 				$h .= '</a>';
+				if($cPurchase->notEmpty()) {
+					$h .= '<a class="tab-item selected" data-tab="purchases" onclick="Lime.Tab.select(this)">';
+						$h .= s("Achats").' <span class="tab-item-count">'.$cPurchase->count().'</span>';
+					$h .= '</a>';
+				}
 				$h .= '<a class="tab-item" data-tab="grid" onclick="Lime.Tab.select(this)">';
 					$h .= s("Prix personnalisés").' <span class="tab-item-count">'.$cGrid->count().'</span>';
 					if($cGridGroup->count() > 0) {
@@ -589,7 +591,7 @@ class CustomerUi {
 			$h .= '<div>';
 				$h .= '<div data-tab="sales" class="tab-panel selected">';
 
-					$h .= new \selling\SaleUi()->getList($eCustomer['farm'], $cSale, hide: ['customer'], show: ['average'], cPaymentMethod: $cPaymentMethod);
+					$h .= new \selling\SaleUi()->getListSales($eCustomer['farm'], $cSale, hide: ['customer'], show: ['average'], cPaymentMethod: $cPaymentMethod);
 
 					if($cSale->empty()) {
 
@@ -597,6 +599,12 @@ class CustomerUi {
 					}
 
 				$h .= '</div>';
+
+				if($cPurchase->notEmpty()) {
+					$h .= '<div data-tab="purchases" class="tab-panel selected">';
+						$h .= new \selling\SaleUi()->getListPurchases($eCustomer['farm'], $cPurchase);
+					$h .= '</div>';
+				}
 
 				$h .= '<div data-tab="grid" class="tab-panel">';
 					$h .= new \selling\GridUi()->getGridByCustomer($eCustomer, $cGrid, $cGridGroup);
@@ -642,7 +650,14 @@ class CustomerUi {
 		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
 		$h .= '<div class="dropdown-list">';
 			$h .= '<div class="dropdown-title">'.encode($eCustomer->getName()).'</div>';
-			$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'" class="dropdown-item">'.s("Nouvelle vente").'</a>';
+			$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'" class="dropdown-item">'.s("Saisir une vente").'</a>';
+
+			if($eCustomer->acceptPurchase()) {
+				$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'&purchase" class="dropdown-item">'.s("Saisir un achat").'</a>';
+			}
+
+			$h .= '<div class="dropdown-divider"></div>';
+
 			$h .= '<a href="/selling/customer:update?id='.$eCustomer['id'].'" class="dropdown-item">'.s("Modifier le client").'</a>';
 
 			if($eCustomer->canManage()) {
@@ -750,15 +765,14 @@ class CustomerUi {
 
 		$form = new \util\FormUi();
 
-		$eCustomer['type'] = NULL;
-		$eCustomer['destination'] = NULL;
+		$eCustomer['type'] ??= NULL;
+		$eCustomer['destination'] ??= NULL;
 		$eCustomer['deliveryCountry'] = $eCustomer['farm']['legalCountry'];
 
 		$eFarm = $eCustomer['farm'];
 
 		$h = '';
-
-		$h .= $form->openAjax('/selling/customer:doCreate', ['class' => 'customer-form-unknown']);
+		$h .= $form->openAjax('/selling/customer:doCreate', ['class' => 'customer-form-'.($eCustomer['type'] ?: 'unknown')]);
 
 			$h .= $form->asteriskInfo();
 
@@ -783,6 +797,43 @@ class CustomerUi {
 		return new \Panel(
 			id: 'panel-customer-create',
 			title: s("Ajouter un client"),
+			body: $h
+		);
+
+	}
+
+	public function createCollective(Customer $eCustomer): \Panel {
+
+		$eCustomer->expects(['farm']);
+
+		$form = new \util\FormUi();
+
+		$eCustomer['type'] = Customer::INDIVIDUAL;
+		$eCustomer['destination'] = Customer::COLLECTIVE;
+
+		$eFarm = $eCustomer['farm'];
+
+		$h = '';
+
+		$h .= $form->openAjax('/selling/customer:doCreate', ['class' => 'customer-form-'.Customer::COLLECTIVE]);
+
+			$h .= $form->asteriskInfo();
+
+			$h .= $form->hidden('origin', 'market');
+			$h .= $form->hidden('farm', $eFarm['id']);
+			$h .= $form->hidden('category', Customer::COLLECTIVE);
+
+			$h .= $this->write('create', $form, $eCustomer);
+
+			$h .= $form->group(
+				content: $form->submit(s("Créer le point de vente"))
+			);
+
+		$h .= $form->close();
+
+		return new \Panel(
+			id: 'panel-customer-create',
+			title: s("Ajouter un point de vente"),
 			body: $h
 		);
 
@@ -907,7 +958,9 @@ class CustomerUi {
 
 	protected function write(string $action, \util\FormUi $form, Customer $eCustomer) {
 
-		$eCustomer->expects(['user', 'nGroup']);
+		if($action === 'update') {
+			$eCustomer->expects(['nGroup']);
+		}
 
 		$h = '';
 
@@ -939,6 +992,8 @@ class CustomerUi {
 					$h .= $form->dynamicGroup($eCustomer, match($action) {
 						'create' => 'name*',
 						'update' => 'name*'
+					}, function($d) {
+						$d->placeholder = s("Ex. : Marché du village");
 					});
 				$h .= '</div>';
 				$h .= '<div class="customer-form-category customer-form-private">';
@@ -1192,7 +1247,7 @@ class CustomerUi {
 					$values[Customer::PRIVATE] = s("Client particulier");
 					$values[Customer::PRO] = s("Client professionnel");
 
-					if($e['type'] === NULL) {
+					if($e->exists() === FALSE) {
 						$values[Customer::COLLECTIVE] = s("Point de vente pour les particuliers").'<span class="hide-sm-up"><br/></span><span class="hide-xs-down">  </span><small class="color-muted">'.s("(marché, vente à la ferme, AMAP, ...)").'</small><br/><div class="btn btn-xs btn-selling" style="margin-top: 0.5rem">'.\Asset::icon('cart4').' '.s("Compatible logiciel de caisse").'</div>';
 					}
 

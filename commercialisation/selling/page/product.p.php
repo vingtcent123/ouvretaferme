@@ -203,13 +203,15 @@ new \selling\ProductPage()
 new Page()
 	->post('query', function($data) {
 
-		$eFarm = \farm\FarmLib::getById(POST('farm', '?int'))->validate('canWrite');;
+		$data->eFarm = \farm\FarmLib::getById(POST('farm', '?int'))->validate('canWrite');;
 		$type = POST('type', '?string');
 		$stock = POST('stock', '?string');
 		$withComposition = POST('withComposition', 'bool', TRUE);
 		$exclude = post_exists('exclude') ? explode(',', POST('exclude')) : [];
 
-		$data->cProduct = \selling\ProductLib::getFromQuery(POST('query'), $eFarm, $type, excludeIds: $exclude, stock: $stock, withComposition: $withComposition);
+		$data->cProduct = \selling\ProductLib::getFromQuery(POST('query'), $data->eFarm, $type, excludeIds: $exclude, stock: $stock, withComposition: $withComposition);
+
+		$data->hasNew = post_exists('new');
 
 		throw new \ViewAction($data);
 

@@ -170,7 +170,7 @@ Item:
   sale: selling\Sale
   customer: ?selling\Customer
   type: enum(PRIVATE, PRO)
-  profile: enum(SALE, SALE_MARKET, MARKET, COMPOSITION) = SALE
+  profile: enum(SALE, SALE_MARKET, MARKET, PURCHASE, COMPOSITION) = SALE
   additional: ?text8
   origin: ?text8(1, null)
   farm: farm\Farm
@@ -195,7 +195,6 @@ Item:
   locked: enum(UNIT_PRICE, NUMBER, PRICE) = PRICE
   vatRate: ?decimal(4, 2, 0.0, 100)
   vatCode: ?enum(STANDARD, ZERO, EXEMPT, AUTOLIQUIDATION, INTRACOM_DELIVERY, EXPORTATION, OUT_OF_VAT) = STANDARD
-  stats: bool = TRUE
   prepared: bool = FALSE
   account: ?account\Account
   status: enum(PHP(Sale::model()->getPropertyEnum('preparationStatus')))
@@ -319,7 +318,7 @@ Sale:
   document: ?int32(1, null)
   farm: farm\Farm
   customer: ?selling\Customer
-  profile: enum(SALE, SALE_MARKET, MARKET, COMPOSITION) = SALE
+  profile: enum(SALE, SALE_MARKET, MARKET, PURCHASE, COMPOSITION) = SALE
   taxes: enum(INCLUDING, EXCLUDING)
   organic: bool = FALSE
   conversion: bool = FALSE
@@ -370,7 +369,6 @@ Sale:
   deliveryCity: ?text8
   deliveryCountry: ?user\Country
   comment: ?text24
-  stats: bool = TRUE
   crc32: ?int32(0, null)
   createdAt: datetime = SPECIAL(now)
   createdBy: ?user\User = SPECIAL(user)

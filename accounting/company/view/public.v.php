@@ -241,8 +241,14 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 				echo '<div class="home-feature-icon">'.Asset::icon('journal-text').'</div>';
 				echo s("Journal de caisse");
 			echo '</h2>';
+			echo '<ul>';
+				echo '<li>'.s("Je crée autant de journaux de caisse que nécessaire").'</li>';
+				echo '<li>'.s("Je trace mes entrées et sorties d'argent").'</li>';
+				echo '<li>'.s("Je me conforme à la réglementation fiscale").'</li>';
+				echo '<li>'.s("J'intègre facilement ces données dans ma comptabilité").'</li>';
+			echo '</ul>';
 			echo '<div class="home-feature-buttons">';
-				echo s("Printemps 2026");
+				echo '<a href="'.\farm\FarmUi::urlCash(eFarm: $data->eFarm).'" class="btn btn-accounting"><p>'.Asset::icon('journal-text').'</p>'.s("Commencer un journal de caisse").'</a>';
 			echo '</div>';
 
 		echo '</div>';

@@ -10,6 +10,81 @@ class MarketUi {
 
 	}
 
+	public function getNew(\farm\Farm $eFarm, \Collection $cSale, \Collection $cCustomer): string {
+
+		if($cCustomer->notEmpty()) {
+
+			$threshold = 5;
+
+			$h = '<div class="util-block stick-xs">';
+
+				$h .= '<h3>'.s("Démarrer une nouvelle vente").'</h3>';
+
+				if($cCustomer->count() > $threshold) {
+					$h .= '<div class="util-overflow-md">';
+				}
+
+					$h .= '<div class="market-new-list">';
+
+						$btn = $cCustomer->count() > $threshold ? '' : 'btn-lg';
+
+						foreach($cCustomer as $eCustomer) {
+
+							if($eCustomer['cSale']->empty()) {
+								$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&customer='.$eCustomer['id'].'&market" class="btn '.$btn.' btn-secondary">'.$eCustomer->getName().'</a> ';
+							} else {
+
+								$h .= '<a data-dropdown="bottom-start" class="btn '.$btn.' btn-secondary dropdown-toggle">'.$eCustomer->getName().'</a>';
+
+								$h .= '<div class="dropdown-list">';
+									$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&customer='.$eCustomer['id'].'&market" class="dropdown-item">'.s("Créer une vente de zéro").'</a> ';
+									$h .= '<div class="dropdown-divider"></div>';
+									$h .= '<div class="dropdown-subtitle">'.s("Créer à partir d'une vente précédente").'</div>';
+
+									$position= 0;
+
+									foreach($eCustomer['cSale'] as $eSale) {
+
+										$h .= '<a href="/selling/sale:duplicate?id='.$eSale['id'].'" class="dropdown-item">'.s("Vente du {value}", \util\DateUi::numeric($eSale['deliveredAt'])).'</a>';
+
+										if(++$position === 3) {
+											break;
+										}
+
+									}
+
+								$h .= '</div>';
+
+							}
+
+						}
+
+					$h .= '</div>';
+
+				if($cCustomer->count() > $threshold) {
+					$h .= '</div>';
+				}
+
+			$h .= '</div>';
+
+		} else {
+
+			if($cSale->notEmpty()) {
+				return '';
+			}
+
+			$h = '<div class="util-info">'.s("Créez un premier point de vente pour utiliser le logiciel de caisse.<br/>Un point de vente peut être un marché, une AMAP ou tout autre lieu dans lequel vous vendez régulièrement vos produits à une clientèle variée.").'</div>';
+
+			$h .= new CustomerUi()->createCollective(new Customer([
+				'farm' => $eFarm
+			]))->body;
+
+		}
+
+		return $h;
+
+	}
+
 	public function getStats(Sale $eSaleCurrent, array $cSaleLast): string {
 
 		[$cSaleAfter, $cSaleBefore] = $cSaleLast;

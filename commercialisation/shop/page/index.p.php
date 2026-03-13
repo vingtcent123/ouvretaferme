@@ -160,6 +160,6 @@ new shop\ShopPage()
 		throw new ReloadAction('shop', $data->e['hasPoint'] ? 'Shop::pointOn' : 'Shop::pointOff');
 	})
 	->doDelete(function($data) {
-		throw new RedirectAction(\farm\FarmUi::urlShopList($data->e['farm']).'?success=shop\\Shop::deleted');
+		throw new RedirectAction(\farm\FarmUi::urlSellingShop($data->e['farm']).'?success=shop\\Shop::deleted');
 	});
 ?>

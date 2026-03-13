@@ -109,6 +109,17 @@ class Item extends ItemElement {
 		);
 	}
 
+	public function isStats(): bool {
+
+		return (
+			$this['ingredientOf']->empty() and
+			$this['status'] === Sale::DELIVERED and
+			in_array($this['profile'], Sale::getStatsProfiles()) and
+			$this['netPriceExcludingVat'] !== NULL
+		);
+
+	}
+
 	public function fillFromProduct(Product $eProduct, \farm\Farm $eFarm): self {
 
 		return $this->merge([

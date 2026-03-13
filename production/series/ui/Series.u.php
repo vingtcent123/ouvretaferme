@@ -121,7 +121,7 @@ class SeriesUi {
 							$h .= '<a href="/series/series:createSequence?id='.$eSeries['id'].'" class="dropdown-item">'.s("Créer un itinéraire technique").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';
 						}
-						$h .= '<a data-ajax="/series/series:doDelete" post-id="'.$eSeries['id'].'" data-confirm="'.s("Souhaitez-vous réellement supprimer cette série de votre plan de culture ?").'" class="dropdown-item">'.s("Supprimer la série").'</a>';
+						$h .= '<a data-ajax="/series/series:doDelete" post-id="'.$eSeries['id'].'" data-confirm="'.s("Souhaitez-vous réellement supprimer cette série de votre plan de culture ? Les interventions seront également supprimées dans le planning.").'" class="dropdown-item">'.s("Supprimer la série").'</a>';
 					$h .= '</div>';
 
 				}

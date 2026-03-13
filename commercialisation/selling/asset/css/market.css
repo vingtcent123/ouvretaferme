@@ -1,3 +1,17 @@
+.market-new-list {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+@media (max-width: 767px) {
+
+	.market-new-list {
+		gap: 0.25rem;
+	}
+
+}
+
 body[data-template="market"] {
 	background: repeating-linear-gradient(135deg, var(--background-light) 0, var(--background-light) 1rem, white 1rem, white 2rem);
 	overflow-y: hidden;

@@ -841,7 +841,8 @@ address {
 	border-color: var(--private);
 }
 
-.btn-outline-private:hover {
+.btn-private,
+.btn-outline-private:not(.btn-readonly):hover {
 	background: var(--private);
 	color: white;
 }
@@ -851,7 +852,8 @@ address {
 	border-color: var(--pro);
 }
 
-.btn-outline-pro:hover {
+.btn-pro,
+.btn-outline-pro:not(.btn-readonly):hover {
 	background: var(--pro);
 	color: white;
 }

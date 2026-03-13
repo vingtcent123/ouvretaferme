@@ -38,6 +38,17 @@ class ProductUi {
 
 	}
 
+	public function getWarning(\farm\Farm $eFarm): string {
+
+		$h = '<div class="util-block-info">';
+			$h .= '<p>'.s("Avant d'aller plus loin, vous devez d'abord constituer votre gamme de produits").'</p>';
+			$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'" class="btn btn-transparent" target="_blank">'.s("Ajouter un premier produit").'</a>';
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
 	public static function getAutocomplete(Product $eProduct): array {
 
 		\Asset::css('media', 'media.css');
@@ -60,6 +71,19 @@ class ProductUi {
 			'value' => $eProduct['id'],
 			'itemHtml' => $item,
 			'itemText' => $eProduct->getName()
+		];
+
+	}
+
+	public static function getAutocompleteCreate(\farm\Farm $eFarm): array {
+
+		$item = \Asset::icon('plus-circle');
+		$item .= '<div>'.s("Ajouter un nouveau produit").'</div>';
+
+		return [
+			'type' => 'link',
+			'link' => '/selling/product:create?farm='.$eFarm['id'],
+			'itemHtml' => $item
 		];
 
 	}

@@ -25,7 +25,7 @@ new \farm\FarmPage(
 	->doCreate(function($data) {
 		throw new RedirectAction(match($data->e['type']) {
 			\farm\Farm::PRODUCER => '/farm/farm:start?id='.$data->e['id'],
-			\farm\Farm::COMMUNITY => \farm\FarmUi::urlShopList($data->e),
+			\farm\Farm::COMMUNITY => \farm\FarmUi::urlSellingShop($data->e),
 		});
 	});
 

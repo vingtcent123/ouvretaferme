@@ -38,6 +38,11 @@ new JsonView('doUpdateStatus', function($data, AjaxTemplate $t) {
 new JsonView('query', function($data, AjaxTemplate $t) {
 
 	$results = $data->cProduct->makeArray(fn($eProduct) => \selling\ProductUi::getAutocomplete($eProduct));
+
+	if($data->hasNew) {
+		$results[] = \selling\ProductUi::getAutocompleteCreate($data->eFarm);
+	}
+
 	$t->push('results', $results);
 
 });

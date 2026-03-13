@@ -352,7 +352,7 @@ class CsvUi {
 						$h .= '<h4 class="color-danger">'.s("Catalogues non reconnus").'</h4>';
 						$h .= '<p>'.s("Les catalogues suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un catalogues existant ou ajoutez-les d'abord à votre ferme.").'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
-						$h .= '<a href="'.\farm\FarmUi::urlShopCatalog($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des catalogues").'</a>';
+						$h .= '<a href="'.\farm\FarmUi::urlSellingCatalog($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des catalogues").'</a>';
 					$h .= '</div>';
 					break;
 

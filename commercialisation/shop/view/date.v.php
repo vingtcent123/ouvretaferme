@@ -1,7 +1,7 @@
 <?php
 new AdaptativeView('create', function($data, FarmTemplate $t) {
 
-	$t->nav = 'shop';
+	$t->nav = 'selling';
 	$t->subNav = 'shop';
 
 	$t->title = match($data->e['shop']['opening']) {
@@ -44,7 +44,7 @@ new JsonView('doUpdateCatalog', function($data, AjaxTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/date/{date}', function($data, FarmTemplate $t) {
 
-	$t->nav = 'shop';
+	$t->nav = 'selling';
 	$t->subNav = 'shop';
 
 	$t->title = \shop\DateUi::name($data->eDate);

@@ -148,6 +148,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{farm}', 'donner'],
 		],
+		'/ferme/{id}/achats' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'achats'],
+		],
 		'/ferme/{id}/analyses/cultures' => [
 			'request' => 'farm/index',
 			'priority' => 5,
@@ -223,6 +228,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'boutiques'],
 		],
+		'/ferme/{id}/caisse' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'caisse'],
+		],
 		'/ferme/{id}/campagnes' => [
 			'request' => 'farm/index',
 			'priority' => 5,
@@ -247,6 +257,16 @@ Route::register([
 			'request' => 'farm/index',
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'clients'],
+		],
+		'/ferme/{id}/clients/particuliers' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'clients', 'particuliers'],
+		],
+		'/ferme/{id}/clients/professionnels' => [
+			'request' => 'farm/index',
+			'priority' => 5,
+			'route' => ['ferme', '{id}', 'clients', 'professionnels'],
 		],
 		'/ferme/{id}/configuration/commercialisation' => [
 			'request' => 'farm/index',
@@ -302,11 +322,6 @@ Route::register([
 			'request' => 'farm/index',
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'itineraires', '{status}'],
-		],
-		'/ferme/{id}/livraison' => [
-			'request' => 'farm/index',
-			'priority' => 5,
-			'route' => ['ferme', '{id}', 'livraison'],
 		],
 		'/ferme/{id}/optIn' => [
 			'request' => 'mail/contact',
@@ -382,11 +397,6 @@ Route::register([
 			'request' => 'farm/index',
 			'priority' => 5,
 			'route' => ['ferme', '{id}', 'ventes'],
-		],
-		'/ferme/{id}/ventes/caisse' => [
-			'request' => 'farm/index',
-			'priority' => 5,
-			'route' => ['ferme', '{id}', 'ventes', 'caisse'],
 		],
 		'/ferme/{id}/ventes/particuliers' => [
 			'request' => 'farm/index',

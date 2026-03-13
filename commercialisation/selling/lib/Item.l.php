@@ -175,7 +175,7 @@ class ItemLib extends ItemCrud {
 			])
 			->join(Sale::model(), 'm2.id = m1.sale')
 			->whereProduct($eProduct)
-			->where('m1.stats', TRUE)
+			->where('m1.profile', 'IN', Sale::getStatsProfiles())
 			->sort(['m1.deliveredAt' => SORT_DESC])
 			->getCollection(0, 50);
 
@@ -291,7 +291,7 @@ class ItemLib extends ItemCrud {
 			->whereFarm($eFarm)
 			->whereNumber('!=', NULL)
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
-			->whereStats(TRUE)
+			->whereProfile('IN', Sale::getStatsProfiles())
 			->whereDeliveredAt('IN', [currentDate(), date('Y-m-d', strtotime('yesterday'))])
 			->group(['deliveredAt', 'product'])
 			->getCollection(index: ['product', 'deliveredAt']);
@@ -307,7 +307,7 @@ class ItemLib extends ItemCrud {
 			])
 			->whereFarm($eFarm)
 			->whereStatus('IN', [Sale::CONFIRMED, Sale::PREPARED, Sale::DELIVERED])
-			->whereStats(TRUE)
+			->whereProfile('IN', Sale::getStatsProfiles())
 			->whereDeliveredAt('>', currentDate())
 			->group('product')
 			->getCollection(index: 'product');
@@ -530,8 +530,7 @@ class ItemLib extends ItemCrud {
 			  'number' => $copyNumber,
 			  'price' => $copyPrice,
 			  'netPriceExcludingVat' => $copyNetPriceExcludingVat,
-			  'vatRate' => $eItemCopy['vatRate'],
-			  'stats' => $eItemComposition['stats']
+			  'vatRate' => $eItemCopy['vatRate']
 			]);
 
 			$cItemIngredient[] = $eItemIngredient;
@@ -692,7 +691,7 @@ class ItemLib extends ItemCrud {
 
 		$e->expects([
 			'sale' => [
-				'deliveredAt', 'preparationStatus', 'shop', 'shopDate', 'type', 'stats', 'hasVat', 'discount', 'profile'
+				'deliveredAt', 'preparationStatus', 'shop', 'shopDate', 'type', 'hasVat', 'discount', 'profile'
 			],
 		]);
 
@@ -711,7 +710,6 @@ class ItemLib extends ItemCrud {
 		$e['shopProduct'] ??= new \shop\Product();
 		$e['type'] = $eSale['type'];
 		$e['discount'] = $eSale['discount'];
-		$e['stats'] = $eSale['stats'];
 		$e['status'] = $eSale['preparationStatus'];
 		$e['isComposition'] = $e['product']->notEmpty() ? ($e['product']['profile'] === Product::COMPOSITION) : FALSE;
 		$e['composition'] = new Sale(); // La composition est affectée à l'étape suivante

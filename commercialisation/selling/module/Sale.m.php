@@ -10,6 +10,7 @@ abstract class SaleElement extends \Element {
 	const SALE = 'sale';
 	const SALE_MARKET = 'sale-market';
 	const MARKET = 'market';
+	const PURCHASE = 'purchase';
 	const COMPOSITION = 'composition';
 
 	const INCLUDING = 'including';
@@ -74,7 +75,7 @@ class SaleModel extends \ModuleModel {
 			'document' => ['int32', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'customer' => ['element32', 'selling\Customer', 'null' => TRUE, 'cast' => 'element'],
-			'profile' => ['enum', [\selling\Sale::SALE, \selling\Sale::SALE_MARKET, \selling\Sale::MARKET, \selling\Sale::COMPOSITION], 'cast' => 'enum'],
+			'profile' => ['enum', [\selling\Sale::SALE, \selling\Sale::SALE_MARKET, \selling\Sale::MARKET, \selling\Sale::PURCHASE, \selling\Sale::COMPOSITION], 'cast' => 'enum'],
 			'taxes' => ['enum', [\selling\Sale::INCLUDING, \selling\Sale::EXCLUDING], 'cast' => 'enum'],
 			'organic' => ['bool', 'cast' => 'bool'],
 			'conversion' => ['bool', 'cast' => 'bool'],
@@ -125,7 +126,6 @@ class SaleModel extends \ModuleModel {
 			'deliveryCity' => ['text8', 'null' => TRUE, 'cast' => 'string'],
 			'deliveryCountry' => ['element32', 'user\Country', 'null' => TRUE, 'cast' => 'element'],
 			'comment' => ['text24', 'null' => TRUE, 'cast' => 'string'],
-			'stats' => ['bool', 'cast' => 'bool'],
 			'crc32' => ['int32', 'min' => 0, 'max' => NULL, 'null' => TRUE, 'cast' => 'int'],
 			'createdAt' => ['datetime', 'cast' => 'string'],
 			'createdBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
@@ -137,7 +137,7 @@ class SaleModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceInitial', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'secured', 'securedAt', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'paymentAmount', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopSharedCustomer', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'stats', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'paidAt', 'expiresAt', 'statusAt', 'statusBy'
+			'id', 'document', 'farm', 'customer', 'profile', 'taxes', 'organic', 'conversion', 'nature', 'type', 'discount', 'items', 'hasVat', 'vat', 'vatByRate', 'priceInitial', 'priceExcludingVat', 'priceIncludingVat', 'shippingVatRate', 'shippingVatFixed', 'shipping', 'secured', 'securedAt', 'closed', 'closedAt', 'closedBy', 'preparationStatus', 'paymentStatus', 'paymentAmount', 'compositionOf', 'compositionEndAt', 'marketSales', 'marketParent', 'orderFormValidUntil', 'orderFormPaymentCondition', 'orderFormHeader', 'orderFormFooter', 'deliveryNoteDate', 'deliveryNoteHeader', 'deliveryNoteFooter', 'invoice', 'shop', 'shopDate', 'shopLocked', 'shopShared', 'shopSharedCustomer', 'shopUpdated', 'shopPoint', 'shopComment', 'deliveryStreet1', 'deliveryStreet2', 'deliveryPostcode', 'deliveryCity', 'deliveryCountry', 'comment', 'crc32', 'createdAt', 'createdBy', 'deliveredAt', 'paidAt', 'expiresAt', 'statusAt', 'statusBy'
 		]);
 
 		$this->propertiesToModule += [
@@ -210,9 +210,6 @@ class SaleModel extends \ModuleModel {
 
 			case 'shopUpdated' :
 				return FALSE;
-
-			case 'stats' :
-				return TRUE;
 
 			case 'createdAt' :
 				return new \Sql('NOW()');
@@ -505,10 +502,6 @@ class SaleModel extends \ModuleModel {
 
 	public function whereComment(...$data): SaleModel {
 		return $this->where('comment', ...$data);
-	}
-
-	public function whereStats(...$data): SaleModel {
-		return $this->where('stats', ...$data);
 	}
 
 	public function whereCrc32(...$data): SaleModel {

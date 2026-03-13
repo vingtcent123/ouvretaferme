@@ -388,12 +388,12 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur la page pour gérer vos ventes").'</h4>';
-			echo '<p>'.s("Avec {siteName}, vous allez gérer facilement et de façon fiable la commercialisation dans votre ferme :").'</p>';
+			echo '<p>'.s("Avec {siteName}, vous allez gérer facilement toute la commercialisation dans votre ferme :").'</p>';
 			echo '<ul>';
 				echo '<li>'.s("Référencez <link>votre gamme de produits</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'">']).'</li>';
 				echo '<li>'.s("Créez les ventes de vos <link>clients particuliers et professionnels</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingCustomers($data->eFarm).'">']).'</li>';
 				echo '<li>'.s("Éditez vos devis, bons de livraisons et factures au format PDF").'</li>';
-				echo '<li>'.s("Ouvrez <link>des boutiques en ligne</link> avec en option le paiement par carte bancaire", ['link' => '<a href="'.\farm\FarmUi::urlShopList($data->eFarm).'">']).'</li>';
+				echo '<li>'.s("Ouvrez <link>des boutiques en ligne</link> avec en option le paiement par carte bancaire", ['link' => '<a href="'.\farm\FarmUi::urlSellingShop($data->eFarm).'">']).'</li>';
 				echo '<li>'.s("Analysez vos ventes avec graphiques et statistiques").'</li>';
 			echo '</ul>';
 			echo '<p>'.s("Avant de créer votre première vente, regardez au préalable comment <customer>créer des clients</customer> et <items>référencer vos produits</items>. Une fois que c'est fait, c'est parti !", ['customer' => '<a href="'.\farm\FarmUi::urlSellingCustomers($data->eFarm).'">', 'items' => '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'">']).'</p>';
@@ -412,13 +412,11 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, $data->eFarm->getView('viewSellingSales'));
 
-		echo new \selling\SaleUi()->getSearch($data->search, $data->cPaymentMethod);
+		echo new \selling\SaleUi()->getSearchSales($data->search, $data->cPaymentMethod);
 
-		if($data->search->empty(['ids', 'type', 'profile'])) {
+		if($data->search->empty(['ids', 'type'])) {
 
-			if($data->profile === NULL) {
-				echo new \selling\SaleUi()->getNextSales($data->eFarm, $data->type, $data->nextSales);
-			}
+			echo new \selling\SaleUi()->getNextSales($data->eFarm, $data->type, $data->nextSales);
 
 			if($data->cSale->count() < 5) {
 				echo new \selling\SaleUi()->getWarning(TRUE);
@@ -426,13 +424,109 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		}
 
-		echo new \selling\SaleUi()->getList($data->eFarm, $data->cSale, $data->search, hide: ['items'], page: $data->page, cPaymentMethod: $data->cPaymentMethod);
+		echo new \selling\SaleUi()->getListSales($data->eFarm, $data->cSale, $data->search, hide: ['items'], page: $data->page, cPaymentMethod: $data->cPaymentMethod);
 
 	}
 
 });
 
-new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
+new AdaptativeView('sellingPurchases', function($data, FarmTemplate $t) {
+
+	$t->title = s("Achats de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlSellingPurchases($data->eFarm);
+
+	$t->nav = 'selling';
+	$t->subNav = 'sale';
+	$t->subNavTarget = $t->canonical;
+
+	if(
+		$data->cSale->getFound() === 0 and
+		$data->search->empty()
+	) {
+
+		$t->mainTitle = '<h1>'.s("Achats de la ferme").'</h1>';
+
+		echo '<div class="util-block-help">';
+			echo '<h4>'.s("Vous êtes sur la page pour gérer vos achats").'</h4>';
+			echo '<p>'.s("Avec {siteName}, vous allez gérer facilement toute la commercialisation dans votre ferme :").'</p>';
+			echo '<ul>';
+				echo '<li>'.s("Référencez <link>votre gamme de produits</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'">']).'</li>';
+				echo '<li>'.s("Créez les ventes de vos <link>clients particuliers et professionnels</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingCustomers($data->eFarm).'">']).'</li>';
+				echo '<li>'.s("Éditez vos devis, bons de livraisons et factures au format PDF").'</li>';
+				echo '<li>'.s("Ouvrez <link>des boutiques en ligne</link> avec en option le paiement par carte bancaire", ['link' => '<a href="'.\farm\FarmUi::urlSellingShop($data->eFarm).'">']).'</li>';
+				echo '<li>'.s("Analysez vos ventes avec graphiques et statistiques").'</li>';
+			echo '</ul>';
+			echo '<p>'.s("Avant de créer votre première vente, regardez au préalable comment <customer>créer des clients</customer> et <items>référencer vos produits</items>. Une fois que c'est fait, c'est parti !", ['customer' => '<a href="'.\farm\FarmUi::urlSellingCustomers($data->eFarm).'">', 'items' => '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'">']).'</p>';
+			echo '<a href="/presentation/producteur" class="btn btn-secondary">'.s("En savoir plus").'</a>';
+		echo '</div>';
+
+		echo '<br/>';
+
+		if($data->eFarm->isVerified()) {
+			echo '<a href="/selling/sale:create?farm='.$data->eFarm['id'].'" class="btn btn-primary btn-lg">'.s("Ajouter une première vente").'</a>';
+		} else {
+			echo new \farm\FarmUi()->getLegalForm($data->eFarm, onlyCountry: TRUE);
+		}
+
+	} else {
+
+		$t->mainTitle = new \farm\FarmUi()->getSellingSalesTitle($data->eFarm, $data->eFarm->getView('viewSellingSales'));
+
+		echo new \selling\SaleUi()->getSearchPurchases($data->search);
+
+		echo new \selling\SaleUi()->getListPurchases($data->eFarm, $data->cSale, $data->search, page: $data->page);
+
+	}
+
+});
+
+new AdaptativeView('/ferme/{id}/caisse', function($data, FarmTemplate $t) {
+
+	$t->title = s("Logiciel de caisse de {value}", $data->eFarm['name']);
+	$t->canonical = \farm\FarmUi::urlSellingMarket($data->eFarm);
+
+	$t->nav = 'selling';
+	$t->subNav = 'market';
+
+	$t->mainTitle = new \farm\FarmUi()->getSellingMarketTitle($data->eFarm);
+
+	if(
+		$data->tip === NULL and
+		$data->cCustomer->empty() and
+		$data->cSale->empty()
+	) {
+
+		echo '<div class="util-block-help mb-2">';
+			echo '<h4>'.s("Vous êtes sur la page pour utiliser le logiciel de caisse").'</h4>';
+			echo '<p>'.s("Le logiciel de caisse proposé par Ouvretaferme vous permet d'enregistrer les ventes que vous réalisez pendant vos marchés avec une tablette ou un téléphone. C'est une solution simple et efficace qui permet de gérer un grand nombre de clients par heure.").'</p>';
+		echo '</div>';
+
+	}
+
+	if($data->eFarm->isVerified()) {
+
+		echo new \selling\SaleUi()->getSearchMarket($data->search);
+
+		echo new \selling\MarketUi()->getNew($data->eFarm, $data->cSale, $data->cCustomer);
+
+		echo new \selling\SaleUi()->getListSales($data->eFarm, $data->cSale, $data->search, show: ['average', 'market'], hide: ['items'], page: $data->page, group: 'month', cPaymentMethod: new Collection());
+
+		if(
+			$data->search->empty() and
+			$data->cCustomer->notEmpty() and
+			$data->cSale->count() < 5
+		) {
+			echo new \selling\SaleUi()->getWarning(TRUE);
+		}
+
+	} else {
+
+		echo new \farm\FarmUi()->getLegalForm($data->eFarm, onlyCountry: TRUE);
+	}
+
+});
+
+new AdaptativeView('sellingCustomers', function($data, FarmTemplate $t) {
 
 	$t->title = s("Clients de {value}", $data->eFarm['name']);
 	$t->canonical = \farm\FarmUi::urlSellingCustomers($data->eFarm);
@@ -474,7 +568,7 @@ new AdaptativeView('/ferme/{id}/clients', function($data, FarmTemplate $t) {
 
 	} else {
 		
-		$t->mainTitle = new \farm\FarmUi()->getSellingCustomersTitle($data->eFarm, \farm\Farmer::CUSTOMER, $data->cCustomer->getFound());
+		$t->mainTitle = new \farm\FarmUi()->getSellingCustomersTitle($data->eFarm, $data->eFarm->getView('viewSellingCustomers'), $data->cCustomer->getFound());
 
 		echo new \selling\CustomerUi()->getSearch($data->eFarm, $data->search);
 		echo new \selling\CustomerUi()->getList($data->eFarm, $data->cCustomer, $data->cCustomerGroup, search: $data->search, page: $data->page);
@@ -615,11 +709,11 @@ new AdaptativeView('/ferme/{id}/campagnes', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
-	$t->nav = 'shop';
+	$t->nav = 'selling';
 	$t->subNav = 'shop';
 
 	$t->title = s("Boutiques de {value}", $data->eFarm['name']);
-	$t->canonical = \farm\FarmUi::urlShopList($data->eFarm);
+	$t->canonical = \farm\FarmUi::urlSellingShop($data->eFarm);
 
 	$uiShopManage = new \shop\ShopManageUi();
 
@@ -663,35 +757,38 @@ new AdaptativeView('/ferme/{id}/boutiques', function($data, FarmTemplate $t) {
 
 new AdaptativeView('/ferme/{id}/catalogues', function($data, FarmTemplate $t) {
 
-	$t->nav = 'shop';
+	$t->nav = 'selling';
 	$t->subNav = 'catalog';
 
 	$t->title = s("Catalogues de {value}", $data->eFarm['name']);
-	$t->canonical = \farm\FarmUi::urlShopCatalog($data->eFarm);
+	$t->canonical = \farm\FarmUi::urlSellingCatalog($data->eFarm);
 
 	if($data->cCatalog->empty()) {
 
-		$t->mainTitle = '<h1>'.s("Catalogues de vente").'</h1>';
+		$t->mainTitle = '<h1>'.s("Catalogues de produits").'</h1>';
 
-		echo '<div class="util-block-help">';
-			echo '<h4>'.s("Vous êtes sur la page pour gérer vos catalogues de vente").'</h4>';
-			echo '<p>'.s("Créez des catalogues de vente pour gérer facilement les disponibilités dans vos boutiques en ligne. Les catalogues sont particulièrement indiqués si vous voulez partager facilement la même gamme de produits entre plusieurs boutiques ou participer à des boutiques collectives.").'</p>';
-		echo '</div>';
+		if($data->tip === NULL) {
 
-		echo '<br/>';
+			echo '<div class="util-block-help mb-2">';
+				echo '<h4>'.s("Vous êtes sur la page pour gérer vos catalogues").'</h4>';
+				echo '<p>'.s("Les catalogues de produits permettent de gérer facilement et de façon centralisée vos disponibilités du moment. Ils sont particulièrement indiqués si vous voulez partager facilement la même gamme de produits ou vos stocks entre plusieurs boutiques en ligne.").'</p>';
+			echo '</div>';
+
+		}
 
 		echo '<h3>'.s("Créer un premier catalogue").'</h3>';
 
-		echo '<div class="util-block-help">';
-			echo s("Les catalogues ne sont pas indispensables au fonctionnement de vos boutiques en ligne, nous vous conseillons de les utiliser uniquement si vous êtes dans le cas mentionné ci-dessus et si vous êtes déjà bien à l'aise avec {siteName}.");
-		echo '</div>';
+		if($data->hasProducts === FALSE) {
+			echo new \selling\ProductUi()->getWarning($data->eFarm);
+		} else {
+			echo new \shop\CatalogUi()->create($data->eFarm)->body;
+		}
 
-		echo new \shop\CatalogUi()->create($data->eFarm)->body;
 
 	} else {
 
 		$h = '<div class="util-action">';
-			$h .= '<h1>'.s("Catalogues de vente").'</h1>';
+			$h .= '<h1>'.s("Catalogues de produits").'</h1>';
 			$h .= '<div>';
 				if($data->eFarm->canManage()) {
 					$h .= '<a href="/shop/catalog:create?farm='.$data->eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouveau catalogue").'</span></a>';
@@ -705,19 +802,6 @@ new AdaptativeView('/ferme/{id}/catalogues', function($data, FarmTemplate $t) {
 
 	}
 
-
-});
-
-new AdaptativeView('/ferme/{id}/livraison', function($data, FarmTemplate $t) {
-
-	$t->nav = 'shop';
-	$t->subNav = 'point';
-
-	$t->title = s("Modes de livraison de {value}", $data->eFarm['name']);
-	$t->canonical = \farm\FarmUi::urlShopPoint($data->eFarm);
-
-	$t->mainTitle = '<h1>'.s("Modes de livraison").'</h1>';
-	echo new \shop\PointUi()->getList($data->eFarm, $data->ccPoint, $data->pointsUsed);
 
 });
 

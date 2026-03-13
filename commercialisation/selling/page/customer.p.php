@@ -14,14 +14,33 @@ new \selling\CustomerPage()
 	->create(function($data) {
 
 		$data->e->merge([
-			'invoiceCountry' => $data->eFarm['legalCountry']
+			'invoiceCountry' => $data->eFarm['legalCountry'],
+			'type' => \selling\Customer::GET('type', 'type'),
 		]);
+
+		if($data->e['type'] !== NULL) {
+			$data->e['destination'] = \selling\Customer::INDIVIDUAL;
+		}
 
 		throw new ViewAction($data);
 
 	})
+	->create(function($data) {
+
+		$data->e->merge([
+			'invoiceCountry' => $data->eFarm['legalCountry'],
+		]);
+
+		throw new ViewAction($data);
+
+	}, page: 'createCollective')
 	->doCreate(function($data) {
-		throw new RedirectAction(\selling\CustomerUi::url($data->e));
+
+		throw new RedirectAction(match(POST('origin')) {
+			'market' => \farm\FarmUi::urlSellingMarket($data->eFarm).'?success=selling\Customer::createdCollective',
+			default => \selling\CustomerUi::url($data->e)
+		});
+
 	});
 
 new \selling\CustomerPage()
@@ -31,7 +50,10 @@ new \selling\CustomerPage()
 
 		$data->cGrid = \selling\GridLib::getByCustomer($data->e);
 		$data->cGridGroup = \selling\GridLib::getByGroups($data->e['groups']);
-		$data->cSale = \selling\SaleLib::getByCustomer($data->e);
+
+		$data->cSale = \selling\SaleLib::getSalesByCustomer($data->e);
+		$data->cPurchase = \selling\SaleLib::getPurchasesByCustomer($data->e);
+
 		$data->cInvoice = \selling\InvoiceLib::getByCustomer($data->e);
 
 		$data->e['invite'] = \farm\InviteLib::getByCustomer($data->e);
