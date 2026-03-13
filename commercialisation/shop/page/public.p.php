@@ -164,10 +164,12 @@ END;
 		'/shop/public/{fqn}/{date}',
 	], function($data) {
 
-		if(
+		$isCustomize = (
 			$data->eShop->canWrite() and
 			get_exists('customize')
-		) {
+		);
+
+		if($isCustomize) {
 
 			$data->eShop['customTabs'] = GET('customTabs', 'bool');
 			$data->eShop['customDesign'] = GET('customDesign', [\shop\Shop::LINE, \shop\Shop::GRID], $data->eShop['customDesign']);
@@ -182,7 +184,10 @@ END;
 
 		$data->isModifying = GET('modify', 'bool', FALSE);
 
-		if($data->isModifying === FALSE) {
+		if(
+			$data->isModifying === FALSE and
+			$isCustomize === FALSE
+		) {
 			$data->eShop->validateEmbed();
 		}
 

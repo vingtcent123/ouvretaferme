@@ -655,7 +655,7 @@ class ShopUi {
 		$h .= $form->close();
 
 		$h .= '<h3 class="shop-preview-title">'.s("Prévisualisation de boutique").'</h3>';
-		$h .= '<iframe id="shop-preview" src="'.ShopUi::url($eShop).'?"></iframe>';
+		$h .= '<iframe id="shop-preview" src="'.ShopUi::url($eShop).'?customize"></iframe>';
 
 		return $h;
 

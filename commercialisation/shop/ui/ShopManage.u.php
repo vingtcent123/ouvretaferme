@@ -422,7 +422,7 @@ class ShopManageUi {
 						$h .= '<div class="dropdown-list">';
 							$h .= '<a href="/shop/date:create?shop='.$eShop['id'].'&farm='.$eFarm['id'].'" class="dropdown-item">'.s("Créer une livraison de zéro").'</a>';
 							$h .= '<div class="dropdown-divider"></div>';
-							$h .= '<div class="dropdown-subtitle">'.s("Créer à partir une autre livraison").'</div>';
+							$h .= '<div class="dropdown-subtitle">'.s("Créer à partir d'une livraison précédente").'</div>';
 							$count = 0;
 							foreach($cDate as $eDate) {
 								if($count++ >= 3) {
