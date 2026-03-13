@@ -83,6 +83,11 @@ new Page(function($data) {
 
 		$css = Lime::getUrl().(string)Asset::getCssPath('website', 'widget.css');
 		$key = random_int(0, 1000000);
+		$target = GET('target', default: 'otf-limited');
+
+		if(toFqn($target) !== $target) {
+			throw new NotExpectedAction();
+		}
 
 		echo <<<END
 
@@ -93,7 +98,7 @@ new Page(function($data) {
 		
 		document.getElementsByTagName("head")[0].appendChild(otfCss$key);
 		
-		document.getElementById("otf-limited").innerHTML = '$content';
+		document.getElementById("$target").innerHTML = '$content';
 END;
 
 	})
@@ -117,6 +122,11 @@ END;
 
 		$url = \shop\ShopUi::url($data->eShop).'?embed';
 		$key = random_int(0, 1000000);
+		$target = GET('target', default: 'otf-full');
+
+		if(toFqn($target) !== $target) {
+			throw new NotExpectedAction();
+		}
 
 		echo <<<END
 
@@ -127,7 +137,7 @@ END;
 		otfIframe$key.style.minWidth = "100%";
 		otfIframe$key.style.border = "none";
 		otfIframe$key.style.height = otfIframeHeight$key +"px";
-		document.getElementById("otf-full").appendChild(otfIframe$key);
+		document.getElementById("$target").appendChild(otfIframe$key);
 		
 		window.addEventListener('message', function(e) {
 		
