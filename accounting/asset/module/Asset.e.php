@@ -165,6 +165,7 @@ class Asset extends AssetElement {
 				$eFarm = \farm\Farm::getConnected();
 				if($eFarm['eFinancialYear']->isCashReceipts()) {
 					$economicMode = Asset::WITHOUT;
+					return TRUE;
 				}
 
 				if(
@@ -227,6 +228,7 @@ class Asset extends AssetElement {
 				$eFarm = \farm\Farm::getConnected();
 				if($eFarm['eFinancialYear']->isCashReceipts()) {
 					$fiscalMode = Asset::WITHOUT;
+					return TRUE;
 				}
 
 				if(
