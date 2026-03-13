@@ -296,36 +296,53 @@ new AdaptativeView('receipts', function($data, DocTemplate $t) {
 
 	echo '<div class="util-block">';
 		echo '<h2>'.s("Comment utiliser {siteName} pour mon livre des recettes et mon registre des achats ?").'</h2>';
-		echo '<p>'.s("Il s'agit tout simplement d'utiliser le logiciel comptable proposé par {siteName}, mais dans sa version ultra-simplifiée.<br/>Vous enregistrez :").'</p>';
+		echo '<p>'.s("Il s'agit tout simplement d'utiliser le logiciel comptable proposé par {siteName}, mais dans sa version ultra-simplifiée").'</p>';
+		echo '<p>'.s("Dès que possible, {siteName} indique pour vous les numéros de compte afin que vous ne vous occupiez que des informations réellement importantes.").'</p>';
+		echo '<p>'.s("Vous enregistrez donc :").'</p>';
 		echo '<ul>';
-			echo '<li>'.s("Vos ventes, avec le numéro de compte {value}", \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS).'</li>';
-			echo '<li>'.s("Vos achats, avec le numéro de compte {value}", \account\AccountSetting::CHARGE_BUY_ACCOUNT_CLASS).'</li>';
-			echo '<li>'.s("Éventuellement le compte courant d'associé (sauf si votre exploitation est une entreprise individuelle), avec le numéro de compte {value}", \account\AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS).'</li>';
+			echo '<li>'.s("vos <b>ventes</b> avec le numéro de compte {value}", \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS).'</li>';
+			echo '<li>'.s("si vous êtes redevable de la TVA, ou si vous le souhaitez : vos <b>achats</b> avec le numéro de compte {value}", \account\AccountSetting::CHARGE_BUY_ACCOUNT_CLASS).'</li>';
+			echo '<li>'.s("si votre exploitation n'est pas une entreprise individuelle et que vous le souhaitez, les <b>mouvements du compte courant d'associé</b>, avec le numéro de compte {value}", \account\AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS).'</li>';
 		echo '</ul>';
-			echo '<p>'.s("Si votre exploitation est redevable de la TVA, l'enregistrement d'une écriture de vente ou d'achat avec une règle de TVA et un taux de TVA créera automatiquement l'écriture de TVA pour vous.").'</p>';
-		echo '<p>'.s("Et c'est tout !").'</p>';
+			echo '<p>'.s("Note : Si vous êtes redevable de la TVA, l'enregistrement d'une écriture de vente ou d'achat avec une règle de TVA et un taux de TVA créera <b>automatiquement l'écriture de TVA</b> pour vous.").'</p>';
 	echo '</div>';
 
 	echo '<br/>';
 
 	echo '<div class="util-block">';
-		echo '<h2>'.s("Est-ce que je pourrai utiliser toutes les fonctionnalités de {siteName} quand même ?").'</h2>';
+		echo '<h2>'.s("Comment déclarer la TVA ?").'</h2>';
+		echo '<p>'.s("En tant qu'exploitation au micro-BA, vous pouvez être soumis au régime simplifié de l'agriculture (RSA), si vous avez choisi d'être assujetti·e à la TVA en lieu et place du remboursement forfaitaire de TVA agricole (RFA)").'</p>';
+		echo '<p>'.s("À partir de votre livre des recettes et votre registre des achats, {siteName} vous propose une déclaration de régularisation de TVA annuelle pré-remplie que vous n'avez plus qu'à vérifier et recopier sur votre déclaration de TVA sur le site des impots, que vous retrouvez dans les États financiers.").'</p>';
+		echo '<p>'.s("Vous trouverez plus d'informations sur les conditions pour bénéficier de ce régime, comment payer et comment régulariser annuellement sur le site <link>service-public.gouv.fr {icon}</link>.", ['link' => '<a href="https://entreprendre.service-public.gouv.fr/vosdroits/F35361">', 'icon' => Asset::icon('box-arrow-up-right')]).'</p>';
+	echo '</div>';
+
+	echo '<br/>';
+
+	echo '<div class="util-block">';
+		echo '<h2>'.s("Est-ce que je pourrai utiliser toutes les fonctionnalités de {siteName} en comptabilité simplifiée ?").'</h2>';
 		echo '<p>'.s("Oui, partiellement ! Même en utilisant le mode <b>livre des recettes</b>, vous avez accès :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Au livre-journal (qui regroupe le livre des recettes et le registre des achats)").'</li>';
 			echo '<li>'.s("Au grand livre").'</li>';
 			echo '<li>'.s("À la balance").'</li>';
 			echo '<li>'.s("À la gestion (simplifiée) de vos immobilisations").'</li>';
-			echo '<li>'.s("Si vous êtes redevable de la TVA : à vos déclarations de TVA").'</li>';
+			echo '<li>'.s("Si vous êtes redevable de la TVA : à votre déclaration de TVA").'</li>';
 			echo '<li>'.s("À l'export au format FEC de toutes vos écritures comptables").'</li>';
 		echo '</ul>';
 		echo '<p>'.s("En revanche, vous n'aurez pas les synthèses financières tels que le bilan ou le compte de résultat.").'</p>';
 	echo '</div>';
 
 	echo '<div class="util-block">';
-		echo '<h2>'.s("Que se passe-t-il en début et fin d'exercice ?").'</h2>';
-		echo '<p>'.s("En <b>début d'exercice</b>, tous les reports à nouveau seront reportés sur votre nouvel exercice. Il s'agit principalement du report de vos comptes courants d'associés s'ils n'étaient pas soldés à la clôture de l'exercice précédent. Le résultat de l'exercice précédent ne sera également pas reporté.").'</p>';
-		echo '<p>'.s("En <b>fin d'exercice</b>, aucune écriture ne sera réalisée, mais vous pourrez quand même effectuer la clôture pour marquer la fin de votre exercice !").'</p>';
+		echo '<h2>'.s("Que signifient ouverture et clôture d'exercice ?").'</h2>';
+		echo '<p>'.s("La comptabilité simplifiée au livre des recettes et registre des achats a rendu les rituels d'ouverture et de clôture très simples :").'</p>';
+		echo '<ul>';
+			echo '<li>'.s("En <b>début d'exercice</b>, les soldes de vos comptes courants d'associés (numéro {associateAccount}), numéro bancaire (compte {bankAccount}) et compte de caisse (numéro {cashAccount}) sont reportés depuis l'exercice précédent.", [
+				'associateAccount' => \account\AccountSetting::ASSOCIATE_ACCOUNT_PRINCIPAL_CLASS,
+				'bankAccount' => \account\AccountSetting::BANK_ACCOUNT_CLASS,
+				'cashAccount' => \account\AccountSetting::CASH_SUB_ACCOUNT_CLASS,
+			]).'</li>';
+			echo '<li>'.s("En <b>fin d'exercice</b>, aucune écriture ne sera proposée ni réalisée, mais vous pourrez quand même clôturer pour marquer la fin de votre exercice et repartir sur un nouvel exercice !").'</li>';
+		echo '</ul>';
 	echo '</div>';
 
 

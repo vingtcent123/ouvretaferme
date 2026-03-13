@@ -313,6 +313,10 @@ class Operation {
 
 	static resetAccountLabel(index) {
 
+		if(Operation.isCashReceipts()) {
+			return;
+		}
+
 		const element = qs('[data-wrapper="accountLabel['+ index +']"] a[class="autocomplete-empty"]');
 		AutocompleteField.empty(element);
 

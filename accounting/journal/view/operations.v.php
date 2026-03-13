@@ -60,9 +60,12 @@ new AdaptativeView('/journal/livre-journal', function($data, FarmTemplate $t) {
 	}
 
 	$selectedJournalCode = GET('journalCode');
+
 	if(
 		in_array($selectedJournalCode, $data->cJournalCode->getIds()) === FALSE and
-		in_array($selectedJournalCode, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_CODE_BANK]) === FALSE
+		(
+			$data->eFarm['eFinancialYear']->isCashReceipts() or in_array($selectedJournalCode, ['vat-buy', 'vat-sell', \journal\JournalSetting::JOURNAL_CODE_BANK]) === FALSE
+		)
 	) {
 		$selectedJournalCode = NULL;
 	}

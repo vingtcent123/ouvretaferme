@@ -213,17 +213,30 @@ class JournalUi {
 				$h .= '</div>';
 			$h .= '</a>';
 
-			$h .= '<a class="tab-item'.($selectedJournalCode === \journal\JournalSetting::JOURNAL_CODE_BANK ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_CODE_BANK.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.\journal\JournalSetting::JOURNAL_CODE_BANK.'&'.$args.'">';
-				$h .= '<div class="text-center">';
-					$h .= s("Banque");
-					$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("BAN").')</span></small>';
-				$h .= '</div>';
-			$h .= '</a>';
+			if($eFarm['eFinancialYear']->isCashReceipts() === FALSE) {
+
+				$h .= '<a class="tab-item'.($selectedJournalCode === \journal\JournalSetting::JOURNAL_CODE_BANK ? ' selected' : '').'" data-tab="journal-'.\journal\JournalSetting::JOURNAL_CODE_BANK.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.\journal\JournalSetting::JOURNAL_CODE_BANK.'&'.$args.'">';
+					$h .= '<div class="text-center">';
+						$h .= s("Banque");
+						$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.s("BAN").')</span></small>';
+					$h .= '</div>';
+				$h .= '</a>';
+
+			}
 
 			foreach($cJournalCode as $eJournalCode) {
 
 				if($eJournalCode['isDisplayed'] === FALSE and (int)$selectedJournalCode !== $eJournalCode['id']) {
 					continue;
+				}
+
+				if($eFarm['eFinancialYear']->isCashReceipts()) {
+					$name = match($eJournalCode['code']) {
+						JournalSetting::JOURNAL_CODE_BUY => s("Registre des achats"),
+						JournalSetting::JOURNAL_CODE_SELL => s("Livre des recettes"),
+					};
+				} else {
+					$name = $eJournalCode['name'];
 				}
 
 				$attributes = [
@@ -242,7 +255,7 @@ class JournalUi {
 
 					$h .= '<a '.attrs($attributes).'>';
 						$h .= '<div class="text-center">';
-							$h .= encode($eJournalCode['name']);
+							$h .= encode($name);
 							$h .= '<br /><small><span style="font-weight: lighter" class="opacity-75">('.encode($eJournalCode['code']).')</span></small>';
 						$h .= '</div>';
 					$h .= '</a>';
@@ -250,7 +263,7 @@ class JournalUi {
 			}
 
 			// Journaux de TVA
-			if($hasVat) {
+			if($hasVat and $eFarm['eFinancialYear']->isCashReceipts() === FALSE) {
 
 				$journalCode = 'vat-buy';
 				$h .= '<a class="tab-item'.($selectedJournalCode === $journalCode ? ' selected' : '').'" data-tab="journal-'.$journalCode.'" href="'.\company\CompanyUi::urlJournal($eFarm).'/livre-journal?journalCode='.$journalCode.'&'.$args.'">';

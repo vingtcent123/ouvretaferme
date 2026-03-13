@@ -12,6 +12,9 @@ new Page(function($data) {
 	}
 
 	$data->cJournalCode = \journal\JournalCodeLib::deferred();
+	if($data->eFarm['eFinancialYear']->isCashReceipts()) {
+		$data->cJournalCode->filter(fn($e) => in_array($e['code'], [\journal\JournalSetting::JOURNAL_CODE_SELL, \journal\JournalSetting::JOURNAL_CODE_BUY]));
+	}
 
 })
 	->get('/journal/livre-journal', function($data) {
