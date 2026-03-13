@@ -105,7 +105,7 @@ new \bank\CashflowPage(function($data) {
 		if($data->eFarm['eFinancialYear']->isCashReceipts()) {
 			$data->cAccount = \account\AccountLib::getAll(new Search(['forReceiptAccounting' => TRUE]));
 		} else {
-			$data->cAccount = new \account\Account();
+			$data->cAccount = new Collection();
 		}
 
 		throw new ViewAction($data);
