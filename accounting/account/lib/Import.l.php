@@ -445,7 +445,7 @@ Class ImportLib extends ImportCrud {
 
 		// Traitement en cours ou alors en attente de correction de l'utilisateur
 		if(in_array($eImport['status'], [Import::IN_PROGRESS, Import::FEEDBACK_REQUESTED])) {
-			//return FALSE;
+			return FALSE;
 		}
 
 		// On bloque les accès concurrents à cet import
