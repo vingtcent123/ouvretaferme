@@ -302,6 +302,11 @@ class Operation extends OperationElement {
 			})
 			->setCallback('document.prepare', function(?string $document): bool {
 
+				// Changement intervenu en mars
+				if($this['date'] < '2026-03-01') {
+					return TRUE;
+				}
+
 				return empty($document) === FALSE;
 
 			})

@@ -21,7 +21,8 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			return FALSE;
 		}
 
-		if($eAsset['economicMode'] === Asset::WITHOUT) {
+		// dans le build du create, on est justement en train de vérifier economicMode.
+		if($eAsset->exists() and $eAsset['economicMode'] === Asset::WITHOUT) {
 			return FALSE;
 		}
 
@@ -673,17 +674,8 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		Amortization::model()->insert($eAmortization);
 
 		$valuesToUpdate = [
-			'economicAmortization' => new \Sql('economicAmortization + '.$amortizationValue),
 			'updatedAt' => new \Sql('NOW()'),
 		];
-
-		Asset::model()->update(
-			$eAsset,
-			[
-				'economicAmortization' => new \Sql('economicAmortization + '.$amortizationValue),
-				'updatedAt' => new \Sql('NOW()'),
-			]
-		);
 
 		// Étape 4 : Si la sub est entièrement amortie, il faut débiter le compte d'origine (131 ou 138) et créditer 139 du montant total
 		$amortizedTotalValue = round($eAsset['economicAmortization'] + $amortizationValue, 2);
@@ -1004,12 +996,10 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			}
 
 			// Étape 4 : Mise à jour de l'immobilisation
+			// Attention, ne pas mettre à jour economicAmortization, excessAmortization et excessRecovery qui servent uniquement à connaître les reprises
 			Asset::model()->update(
 				$eAsset,
 				[
-					'economicAmortization' => new \Sql('economicAmortization + '.$amortizationValue),
-					'excessAmortization' => new \Sql('excessAmortization + '.$amortizationExcessValue),
-					'excessRecovery' => new \Sql('excessRecovery + '.$amortizationExcessRecoverValue),
 					'status' => new \Sql('IF(economicAmortization >= value OR endDate <= "'.$endDate.'", "'.Asset::ENDED.'", status)'),
 					'updatedAt' => new \Sql('NOW()'),
 				]
@@ -1355,6 +1345,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			]);
 	}
 
+	// On ne crée pas d'entrée dans amortization. On initialise juste les champs dans asset
 	public static function resume(Asset $eAsset): void {
 
 		if($eAsset['resumeDate'] === NULL) {
@@ -1384,32 +1375,6 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		}
 
 		$eAsset['economicAmortization'] = $economicAmortization;
-
-		$eAmortization = new Amortization([
-			'asset' => $eAsset,
-			'amount' => $economicAmortization,
-			'type' => Amortization::ECONOMIC,
-			'date' => date('Y-m-d', strtotime($eAsset['resumeDate'].' - 1 DAY')),
-			'financialYear' => NULL,
-		]);
-
-		Amortization::model()->insert($eAmortization);
-
-		if($eAsset['isExcess']) {
-			$eAsset['excessAmortization'] = $excessAmortization;
-			$eAsset['excessRecovery'] = $excessRecovery;
-
-			$eAmortization = new Amortization([
-				'asset' => $eAsset,
-				'amount' => $excessAmortization,
-				'type' => Amortization::EXCESS,
-				'date' => date('Y-m-d', strtotime($eAsset['resumeDate'].' - 1 DAY')),
-				'financialYear' => NULL,
-			]);
-
-			Amortization::model()->insert($eAmortization);
-
-		}
 
 		Asset::model()
 			->update($eAsset, [

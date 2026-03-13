@@ -730,7 +730,7 @@ Class AssetUi {
 
 			foreach($eAsset['cAmortization'] as $eAmortization) {
 
-				if($eAmortization['financialYear']->notEmpty() and $eAmortization['financialYear']['endDate'] > $eFinancialYearLast) {
+				if($eFinancialYearLast->empty() or ($eAmortization['financialYear']->notEmpty() and $eAmortization['financialYear']['endDate'] > $eFinancialYearLast['endDate'])) {
 					$eFinancialYearLast = $eAmortization['financialYear'];
 				}
 
@@ -786,12 +786,16 @@ Class AssetUi {
 					}
 					$h .= '</dd>';
 
+				$vncVal = '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated, 2)).'</dd>';
 				if($eAsset['endedDate'] !== NULL) {
-					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eAsset['endedDate'])).'</dt>';
-					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated, 2)).'</dd>';
+					$h .= '<dt>'.s("Valeur nette comptable au {value} (fin)", \util\DateUi::numeric($eAsset['endedDate'])).'</dt>';
+					$h .= $vncVal;
 				} elseif($eFinancialYearLast->notEmpty()) {
 					$h .= '<dt>'.s("Valeur nette comptable au {value}", \util\DateUi::numeric($eFinancialYearLast['endDate'])).'</dt>';
-					$h .= '<dd>'.\util\TextUi::money(round($amortizableBase - $eAsset['economicAmortization'], 2)).'</dd>';
+					$h .= $vncVal;
+				} else if($eAsset['resumeDate'] !== NULL) {
+					$h .= '<dt>'.s("Valeur nette comptable <br />au {value} (reprise)", \util\DateUi::numeric($eAsset['resumeDate'])).'</dt>';
+					$h .= $vncVal;
 				}
 
 				$h .= '<dt>'.self::p('status')->label.'</dt>';

@@ -38,7 +38,7 @@ class AlertUi {
 			'Operation::document.empty' => s("Le nom de la pièce comptable est nécessaire pour enregistrer le document dans votre espace de stockage."),
 			'Operation::attach.check' => s("Il n'y a pas d'opération à rattacher ?"),
 
-			'Operation::FinancialYear.notUpdatable' => s("Il n'est plus possible d'écrire dans cet exercice comptable."),
+			'Op@eration::FinancialYear.notUpdatable' => s("Il n'est plus possible d'écrire dans cet exercice comptable."),
 
 			'Operation::selectedJournalCodeInconsistency' => s("Un problème technique est survenu avec le journal choisi. Veuillez rafraîchir la page et recommencer."),
 
@@ -47,6 +47,9 @@ class AlertUi {
 
 			'Operation::vatRuleNoWithVatValue.inconsistency' => s("L'une des écritures a de la TVA indiquée malgré une règle de TVA \"{value}\"", OperationUi::p('vatRule')->values[$options[0]]),
 			'Operation::vatStd.unknown' => s("Veuillez préciser le type de règle de TVA : collectée ou déductible. Le type de compte choisi ne permet pas une déduction automatique type de la règle."),
+
+			'Operation::document.prepare' => s("La pièce comptable est obligatoire."),
+
 
 			default => null
 
