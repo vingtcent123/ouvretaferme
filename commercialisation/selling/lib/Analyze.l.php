@@ -456,7 +456,7 @@ class AnalyzeLib {
 
 		Item::model()->where('m1.sale', $eSale);
 
-		return self::getProducts($eSale['farm'], field: $displayExcludingVat ? 'netPriceExcludingVat' : 'price');
+		return self::getProducts($eSale['farm'], field: $displayExcludingVat ? self::getNetTurnoverString() : 'SUM(IF(m1.profile = "'.Sale::PURCHASE.'", -1, 1) * price)');
 
 	}
 
