@@ -445,7 +445,7 @@ Class ImportLib extends ImportCrud {
 
 		// Traitement en cours ou alors en attente de correction de l'utilisateur
 		if(in_array($eImport['status'], [Import::IN_PROGRESS, Import::FEEDBACK_REQUESTED])) {
-			return FALSE;
+			//return FALSE;
 		}
 
 		// On bloque les accès concurrents à cet import
@@ -537,25 +537,20 @@ Class ImportLib extends ImportCrud {
 				continue;
 			}
 
+			$eAccount = $cAccount->find(fn($e) => $e['id'] === ($eImport['rules']['comptes'][$compteNum]['account']['id'] ?? NULL), limit: 1, default: new Account());
 			if(
-				isset($eImport['rules']['comptes'][$compteNum]['account']['id']) and
-				$cAccount->offsetExists($eImport['rules']['comptes'][$compteNum]['account']['id'])
+				$eAccount->notEmpty() and
+				AccountLabelLib::isFromClass($compteNum, $eAccount['class']) === FALSE and
+				AccountLabelLib::isFromClass(preg_replace('/[^0-9.]+/', '', $compteNum), $eAccount['class']) === FALSE
 			) {
-
-				$eAccount = $cAccount->find(fn($e) => $e['id'] === $eImport['rules']['comptes'][$compteNum]['account']['id'])->first();
-				if(
-					AccountLabelLib::isFromClass($compteNum, $eAccount['class']) === FALSE and
-					AccountLabelLib::isFromClass(preg_replace('/[^0-9.]+/', '', $compteNum), $eAccount['class']) === FALSE
-				) {
-					throw new \Exception('Consistency issue between FEC account and account class for import #'.$eImport['id'].' and farm '.$eFarm['id']);
-				}
-
-			} else {
-
-				$eAccount = new Account();
-
+				throw new \Exception('Consistency issue between FEC account and account class for import #'.$eImport['id'].' and farm '.$eFarm['id']);
 			}
 
+			if($eAccount->empty()) { // Le compte a été perdu => on repart en configuration
+				$eImport['rules']['comptes'][$compteNum]['account'] = [];
+				Import::model()->update($eImport, ['status' => Import::FEEDBACK_REQUESTED, 'rules' => $eImport['rules']]);
+				return FALSE;
+			}
 			if(isset($eImport['rules']['journaux'][$journalCode]['journalCode']['id'])) {
 				$eJournalCode = \journal\JournalCodeLib::ask($eImport['rules']['journaux'][$journalCode]['journalCode']['id']);
 			} else {
