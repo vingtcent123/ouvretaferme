@@ -624,7 +624,7 @@ class JournalUi {
 
 											}
 
-											if(\asset\AssetLib::isAsset($eOperation['accountLabel'])) {
+											if(\asset\AssetLib::isAsset($eOperation['accountLabel']) or \asset\AssetLib::isGrant($eOperation['accountLabel'])) {
 
 												$h .= '<div class="dropdown-divider"></div>';
 
