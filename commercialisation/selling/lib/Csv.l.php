@@ -27,7 +27,7 @@ class CsvLib {
 					$eItem['product']->empty() ? '' : $eItem['product']['reference'],
 					\util\TextUi::csvNumber($eItem['number'] * ($eItem['packaging'] ?? 1)),
 					\selling\UnitUi::getSingular($eItem['unit'], noWrap: FALSE),
-					match($eItem['type']) {
+					($eItem['price'] === NULL) ? NULL : match($eItem['type']) {
 						Item::PRO => \util\TextUi::csvNumber($eItem['price'], 2),
 						Item::PRIVATE => \util\TextUi::csvNumber(\util\AmountUi::fromIncluding($eItem['price'], $eItem['vatRate'])),
 					},
@@ -35,7 +35,7 @@ class CsvLib {
 
 				if($hasVat) {
 					$data[] = \util\TextUi::csvNumber($eItem['vatRate']);
-					$data[] = match($eItem['type']) {
+					$data[] = ($eItem['price'] === NULL) ? NULL : match($eItem['type']) {
 						Item::PRO => \util\TextUi::csvNumber(\util\AmountUi::fromExcluding($eItem['price'], $eItem['vatRate']), 2),
 						Item::PRIVATE => \util\TextUi::csvNumber($eItem['price']),
 					};
