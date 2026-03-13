@@ -295,7 +295,7 @@ new AdaptativeView('receipts', function($data, DocTemplate $t) {
 	echo '<br/>';
 
 	echo '<div class="util-block">';
-		echo '<h2>'.s("Comment utiliser {siteName} pour mon livre des recette et mon registre des achats ?").'</h2>';
+		echo '<h2>'.s("Comment utiliser {siteName} pour mon livre des recettes et mon registre des achats ?").'</h2>';
 		echo '<p>'.s("Il s'agit tout simplifier d'utiliser le logiciel comptable proposé par {siteName}, mais dans sa version ultra-simplifiée.<br/>Vous enregistrez :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Vos ventes, avec le numéro de compte {value}", \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS).'</li>';
