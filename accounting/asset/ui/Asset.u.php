@@ -780,7 +780,15 @@ Class AssetUi {
 				$h .= '<dt>'.self::p('economicDuration')->label.'</dt>';
 				$h .= '<dd>';
 					if($eAsset['economicDuration'] !== NULL) {
-						$h .= p("{value} mois", "{value} mois", $eAsset['economicDuration']).' ('.s("soit {value}", self::getDurationInYears($eAsset['economicDuration'])).')</dd>';
+
+						$h .= p("{value} mois", "{value} mois", $eAsset['economicDuration']);
+
+						if($eAsset['economicDuration'] > 12) {
+							$h .= ' ('.s("soit {value}", self::getDurationInYears($eAsset['economicDuration'])).')';
+						}
+
+						$h .= '</dd>';
+
 					} else {
 						$h .= s("n/a");
 					}
