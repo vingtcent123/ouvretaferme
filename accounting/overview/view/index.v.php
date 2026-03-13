@@ -82,7 +82,7 @@ new AdaptativeView(\overview\AnalyzeLib::TAB_FINANCIAL_YEAR, function($data, Far
 
 	} else {
 
-		if($data->eFarm->getConf('hasVat')) {
+		if($data->eFarm->getConf('hasVatAccounting')) {
 			echo new \vat\VatUi()->list($data->eFarm, $data->allPeriods, $data->cDeclaration);
 		}
 
