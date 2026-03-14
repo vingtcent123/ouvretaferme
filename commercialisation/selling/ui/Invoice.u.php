@@ -69,7 +69,7 @@ class InvoiceUi {
 	public function getContent(Invoice $eInvoice): string {
 
 		$h = $this->getPresentation($eInvoice);
-
+		$h .= $this->getButtons($eInvoice);
 		$h .= $this->getSummary($eInvoice);
 
 		return $h;
@@ -83,11 +83,9 @@ class InvoiceUi {
 				$h .= '<dt>'.s("Client").'</dt>';
 				$h .= '<dd>'.CustomerUi::link($eInvoice['customer']).'</dd>';
 
-
 				$h .= '<dt>'.s("Date de facture").'</dt>';
 				$h .= '<dd>';
-
-				$h .= \util\DateUi::numeric($eInvoice['date'], \util\DateUi::DATE);
+					$h .= \util\DateUi::numeric($eInvoice['date'], \util\DateUi::DATE);
 				$h .= '</dd>';
 
 				$h .= '<dt>'.s("Moyen de paiement").'</dt>';
@@ -95,9 +93,9 @@ class InvoiceUi {
 					$h .= PaymentTransactionUi::getPaymentBox($eInvoice, optimize: TRUE);
 				$h .= '</dd>';
 
-				$h .= '<dt>'.s("Document").'</dt>';
+				$h .= '<dt>'.s("Date d'échéance").'</dt>';
 				$h .= '<dd>';
-					$h .= $this->getDocument($eInvoice, 'element');
+					$h .= \util\DateUi::numeric($eInvoice['dueDate'], \util\DateUi::DATE);
 				$h .= '</dd>';
 
 			$h .= '</dl>';
@@ -108,75 +106,17 @@ class InvoiceUi {
 
 	}
 
-	public function getDocument(Invoice $eInvoice, string $origin): string {
+	public function getButtons(Invoice $eInvoice): string {
 
-		$sales = count($eInvoice['sales']);
-
-		$label = PdfUi::getName(Pdf::INVOICE, $eInvoice);
-		if($eInvoice['number'] !== NULL) {
-			$label .= ' '.encode($eInvoice['number']);
-		}
-
-		$dropdown = match($origin) {
-			'list' => 'bottom-end',
-			'element' => 'bottom-start',
-		};
-
-		$document = '<a class="btn sale-document" title="'.$label.'" data-dropdown="'.$dropdown.'">';
-			$document .= '<div class="sale-document-name">';
-				$document .= \selling\SellingSetting::INVOICE;
-			$document .= '</div>';
-			$document .= '<div class="sale-document-status">';
-
-				if($eInvoice['emailedAt']) {
-					$document .= \Asset::icon('check-all');
-				} else {
-					$document .= \Asset::icon('check');
-				}
-
-			$document .= '</div>';
-			$document .= '<div class="sale-document-count">';
-				$document .= $sales;
-			$document .= '</div>';
-		$document .= '</a> ';
-
-		$document .= '<div class="dropdown-list bg-primary">';
-			$document .= '<div class="dropdown-title">';
-				$document .= $label;
-				$document .= '  <span class="btn btn-sm btn-readonly invoice-status-'.$eInvoice['status'].'-button">'.InvoiceUi::p('status')->values[$eInvoice['status']].'</span>';
-				$document .= '<div class="font-sm">';
-					$document .= \util\DateUi::numeric($eInvoice['date']).'  ';
-				$document .= '</div>';
-			$document .= '</div>';
-
-			if($origin !== 'element') {
-
-				$document .= '<a href="/vente/'.$eInvoice['id'].'" class="dropdown-item">'.s("Consulter la facture").'</a>';
-
-			}
+		$h = '<div class="mb-1">';
 
 			if($eInvoice->acceptDownload()) {
-				$document .= '<a href="'.InvoiceUi::downloadUrl($eInvoice).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger le PDF").'</a>';
+				$h .= '<a href="'.InvoiceUi::downloadUrl($eInvoice).'" data-ajax-navigation="never" class="btn btn-primary btn-xl">'.\Asset::icon('download').' '.s("Télécharger le PDF").'</a>';
 			}
 
-			if($eInvoice->acceptSend()) {
+		$h .= '</div>';
 
-				$document .= '<div class="dropdown-divider"></div>';
-
-				$document .= '<a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eInvoice['id'].'" data-confirm="'.s("Confirmer l'envoi de la facture au client par e-mail ? Une facture envoyée par e-mail n'est plus annulable.").'" class="dropdown-item">'.s("Envoyer au client par e-mail").'</a>';
-
-			}
-
-			if($eInvoice->acceptDelete()) {
-
-				$document .= '<div class="dropdown-divider"></div>';
-				$document .= '<a data-ajax="/selling/invoice:doDelete" post-id="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("La suppression d'une facture est définitive. Voulez-vous continuer ?").'">'.s("Supprimer la facture").'</a>';
-
-			}
-
-		$document .= '</div>';
-
-		return $document;
+		return $h;
 
 	}
 
