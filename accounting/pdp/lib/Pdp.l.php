@@ -12,7 +12,8 @@ class PdpLib {
 			return FALSE;
 		}
 
-		return (LIME_ENV === 'dev');
+		$eUser = \user\ConnectionLib::getOnline();
+		return (LIME_ENV === 'dev' and $eUser['id'] === 21);
 
 	}
 
