@@ -1148,49 +1148,64 @@ class InvoiceUi {
 				$h .= '  <span class="util-badge bg-primary" id="item-count">'.count($eInvoice['sales']).'</span>';
 			$h .= '</h3>';
 
-			$h .= $this->getSales(NULL, $eInvoice['cSale'], FALSE);
+			$h .= '<table class="tr-even">';
+
+				$h .= '<thead>';
+					$h .= '<tr>';
+
+						$h .= '<th>'.s("Date").'</th>';
+						$h .= '<th class="text-end">'.s("Montant").'</th>';
+					$h .= '</tr>';
+				$h .= '</thead>';
+
+				$h .= '<tbody>';
+					foreach($eInvoice['cSale'] as $eSale) {
+
+						$h .= '<tr>';
+
+							$h .= '<td class="td-min-content text-center">';
+								$h .= SaleUi::link($eSale, newTab: FALSE, content: 'name', size: 'btn-xs');
+							$h .= '</td>';
+							$h .= '<td>'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
+							$h .= '<td class="text-end">';
+							$h .= SaleUi::getTotal($eSale);
+							$h .= '</td>';
+						$h .= '</tr>';
+					}
+
+				$h .= '</tbody>';
+
+			$h .= '</table>';
 
 		$h .= '</div>';
 
 		return $h;
 
 	}
-	protected function getSales(?\util\FormUi $form, \Collection $cSale, bool $checked): string {
+	protected function getSales(\util\FormUi $form, \Collection $cSale, bool $checked): string {
 
-		$header =  '<tr>';
-
-			if($form !== NULL) {
-
-				$header .= '<th>';
-					if($checked === FALSE) {
-						$header .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[data-invoice-checked="0"]\')').'"/>';
-					}
-				$header .= '</th>';
-
-			}
-
-			$header .= '<th></th>';
-			$header .= '<th>'.s("Date").'</th>';
-			$header .= '<th>'.s("Règlement").'</th>';
-			$header .= '<th class="text-end">'.s("Montant").'</th>';
-		$header .= '</tr>';;
 
 		$h = '<table class="tr-even">';
 
-			if($form === NULL) {
-				$h .= '<thead>'.$header.'</thead>';
-			} else {
-				$h .= $header;
-			}
+			$h .=  '<tr>';
+
+				$h .= '<th>';
+					if($checked === FALSE) {
+						$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[data-invoice-checked="0"]\')').'"/>';
+					}
+				$h .= '</th>';
+
+				$h .= '<th></th>';
+				$h .= '<th>'.s("Date").'</th>';
+				$h .= '<th>'.s("Règlement").'</th>';
+				$h .= '<th class="text-end">'.s("Montant").'</th>';
+			$h .= '</tr>';;
 
 		foreach($cSale as $eSale) {
 
 			$h .= '<tr>';
 
-				if($form !== NULL) {
-					$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['id'], ['checked' => $checked, 'data-invoice-checked' => (int)$checked]).'</td>';
-				}
-
+				$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['id'], ['checked' => $checked, 'data-invoice-checked' => (int)$checked]).'</td>';
 				$h .= '<td class="td-min-content text-center">';
 					$h .= SaleUi::link($eSale, newTab: TRUE, content: 'name', size: 'btn-xs');
 				$h .= '</td>';

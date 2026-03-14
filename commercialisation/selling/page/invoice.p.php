@@ -91,15 +91,11 @@ new \selling\InvoicePage()
 
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
-		$data->cItem = new Collection();
 		$data->e['cSale'] = \selling\SaleLib::getByIds($data->e['sales'], sort: ['deliveredAt' => SORT_ASC]);
-		foreach($data->e['cSale'] as $eSale) {
-			$data->cItem->mergeCollection(\selling\SaleLib::getItems($eSale, withIngredients: TRUE));
-		}
 
 		$data->cHistory = \selling\HistoryLib::getByInvoice($data->e);
 
-		throw new ViewAction($data, ':invoice');
+		throw new ViewAction($data);
 
 	}, validate: ['canPublicRead'])
 	->read('/facture/{id}/telecharger', function($data) {

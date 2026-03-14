@@ -50,7 +50,7 @@ new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
 });
 
 
-new AdaptativeView('invoice', function($data, FarmTemplate $t) {
+new AdaptativeView('/facture/{id}', function($data, FarmTemplate $t) {
 
 	$t->title = \selling\InvoiceUi::getName($data->e);
 
@@ -64,7 +64,6 @@ new AdaptativeView('invoice', function($data, FarmTemplate $t) {
 	if($data->e['cSale']->notEmpty()) {
 
 		echo new \selling\InvoiceUi()->getSalesList($data->e);
-		echo new \selling\ItemUi()->getBySale($data->e['cSale']->first(), $data->cItem);
 
 	}
 
