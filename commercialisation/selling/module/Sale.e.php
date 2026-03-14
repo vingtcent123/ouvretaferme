@@ -350,7 +350,7 @@ class Sale extends SaleElement {
 
 	public function canAccess(): bool {
 
-		$this->expects(['customer', 'farm', 'stats']);
+		$this->expects(['customer', 'farm']);
 
 		return in_array($this['profile'], Sale::getStatsProfiles()) and (
 			// Ferme
