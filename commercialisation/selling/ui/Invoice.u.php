@@ -54,7 +54,10 @@ class InvoiceUi {
 
 		$h = '<div class="util-title">';
 			$h .= '<div>';
-				$h .= '<h1 style="margin-bottom: 0.5rem">'.InvoiceUi::getName($eInvoice).'  '.$this->getStatusForUpdate($eInvoice).'</h1>';
+				$h .= '<h1>';
+					$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eInvoice['farm']).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+					$h .= InvoiceUi::getName($eInvoice).'  '.$this->getStatusForUpdate($eInvoice);
+				$h .= '</h1>';
 			$h .= '</div>';
 			$h .= '<div>';
 				$h .= $this->getUpdate($eInvoice, 'btn-primary');
