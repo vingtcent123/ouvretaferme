@@ -1465,9 +1465,15 @@ class ItemUi {
 
 		$h .= $form->close();
 
+		if($cItem->count() > 1) {
+			$title = s("Numéro de compte des articles sélectionnés");
+		} else {
+			$title = s("Numéro de compte de l'article {value}", encode($cItem->first()['name']));
+		}
+
 		return new \Panel(
 			id: 'panel-item-update-account',
-			title: s("Numéro de compte des articles sélectionnés").'<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>',
+			title: $title.'<h3><span class="util-badge bg-accounting">'.s("Comptabilité").'</span></h3>',
 			body: $h
 		);
 

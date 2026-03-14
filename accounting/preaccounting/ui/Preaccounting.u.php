@@ -512,10 +512,11 @@ Class PreaccountingUi {
 			$h = '<table class="tr-even" data-batch="#batch-accounting-item">';
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<th class="td-checkbox">';
+						$h .= '<th class="text-center">';
 							$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="item" onclick="Preaccounting.toggleGroupSelection(this)"/>';
 						$h .= '</th>';
 						$h .= '<th>'.s("Nom").'</th>';
+						$h .= '<th>'.s("Numéro de compte").'</th>';
 					$h .= '</tr>';
 				$h .= '</thead>';
 
@@ -532,6 +533,10 @@ Class PreaccountingUi {
 
 							$h .= '<td class="product-item-name">';
 								$h .= encode($eItem['name']);
+							$h .= '</td>';
+
+							$h .= '<td>';
+								$h .= '<a href="/selling/item:updateAccount?farm='.$eFarm['id'].'&ids[]='.urlencode($eItem['name']).'" class="btn btn-sm btn-outline-primary">'.s("Définir").'</a>';
 							$h .= '</td>';
 
 						$h .= '</tr>';
@@ -682,7 +687,7 @@ Class PreaccountingUi {
 			$h .= '<table class="tr-even" data-batch="#batch-accounting-product">';
 				$h .= '<thead>';
 					$h .= '<tr>';
-						$h .= '<th class="td-checkbox">';
+						$h .= '<th class="text-center">';
 							$h .= '<input type="checkbox" class="batch-all batch-all-group" batch-type="product" onclick="Preaccounting.toggleGroupSelection(this)"/>';
 						$h .= '</th>';
 						$h .= '<th></th>';
