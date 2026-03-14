@@ -98,7 +98,11 @@ class InvoiceUi {
 
 				$h .= '<dt>'.s("Date d'échéance").'</dt>';
 				$h .= '<dd>';
-					$h .= \util\DateUi::numeric($eInvoice['dueDate'], \util\DateUi::DATE);
+					if($eInvoice['dueDate'] === NULL) {
+						$h .= s("Aucune");
+					} else {
+						$h .= \util\DateUi::numeric($eInvoice['dueDate'], \util\DateUi::DATE);
+					}
 				$h .= '</dd>';
 
 			$h .= '</dl>';
