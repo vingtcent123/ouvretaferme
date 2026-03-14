@@ -6,9 +6,9 @@ new \selling\SalePage()
 
 		if(input_exists('compositionOf')) {
 			$profile = \selling\Sale::COMPOSITION;
-		} else if(input_exists('market')) {
+		} else if(INPUT('market', 'bool')) {
 			$profile = \selling\Sale::MARKET;
-		} else if(input_exists('purchase')) {
+		} else if(INPUT('purchase', 'bool')) {
 			$profile = \selling\Sale::PURCHASE;
 		} else {
 			$profile = \selling\Sale::SALE;

@@ -31,13 +31,13 @@ class MarketUi {
 						foreach($cCustomer as $eCustomer) {
 
 							if($eCustomer['cSale']->empty()) {
-								$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&customer='.$eCustomer['id'].'&market" class="btn '.$btn.' btn-secondary">'.$eCustomer->getName().'</a> ';
+								$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&customer='.$eCustomer['id'].'&market=1" class="btn '.$btn.' btn-secondary">'.$eCustomer->getName().'</a> ';
 							} else {
 
 								$h .= '<a data-dropdown="bottom-start" class="btn '.$btn.' btn-secondary dropdown-toggle">'.$eCustomer->getName().'</a>';
 
 								$h .= '<div class="dropdown-list">';
-									$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&customer='.$eCustomer['id'].'&market" class="dropdown-item">'.s("Créer une vente de zéro").'</a> ';
+									$h .= '<a href="/selling/sale:create?farm='.$eFarm['id'].'&customer='.$eCustomer['id'].'&market=1" class="dropdown-item">'.s("Créer une vente de zéro").'</a> ';
 									$h .= '<div class="dropdown-divider"></div>';
 									$h .= '<div class="dropdown-subtitle">'.s("Créer à partir d'une vente précédente").'</div>';
 
