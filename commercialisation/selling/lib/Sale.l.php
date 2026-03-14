@@ -864,7 +864,7 @@ class SaleLib extends SaleCrud {
 
 		}
 
-		HistoryLib::createBySale($e, 'sale-created');
+		HistoryLib::createByElement($e, 'sale-created');
 
 		if(
 			($e->isSale() or $e->isMarket()) and
@@ -1294,9 +1294,9 @@ class SaleLib extends SaleCrud {
 		if($updatePreparationStatus) {
 
 			if($e['oldPreparationStatus'] === Sale::DELIVERED) {
-				HistoryLib::createBySale($e, 'sale-delivered-cancel');
+				HistoryLib::createByElement($e, 'sale-delivered-cancel');
 			} else {
-				HistoryLib::createBySale($e, 'sale-'.$e['preparationStatus']);
+				HistoryLib::createByElement($e, 'sale-'.$e['preparationStatus']);
 			}
 
 			$newItems['status'] = $e['preparationStatus'];

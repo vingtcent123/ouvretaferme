@@ -337,6 +337,8 @@ class InvoiceLib extends InvoiceCrud {
 					'invoice' => $e
 				]);
 
+			HistoryLib::createByElement($e, 'sale-created');
+
 		Invoice::model()->commit();
 
 		if($e['generation'] === Invoice::NOW) {
@@ -444,6 +446,8 @@ class InvoiceLib extends InvoiceCrud {
 							->update([
 								'invoice' => NULL
 							]);
+
+						HistoryLib::createByElement($e, 'invoice-canceled');
 
 						break;
 

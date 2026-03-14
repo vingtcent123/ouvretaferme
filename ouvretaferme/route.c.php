@@ -133,6 +133,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['facture', '{id}'],
 		],
+		'/facture/{id}/telecharger' => [
+			'request' => 'selling/invoice',
+			'priority' => 5,
+			'route' => ['facture', '{id}', 'telecharger'],
+		],
 		'/factures/particuliers' => [
 			'request' => 'selling/order',
 			'priority' => 5,

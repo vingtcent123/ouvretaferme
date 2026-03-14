@@ -110,7 +110,9 @@ Grid:
 
 History:
   id: serial32
-  sale: selling\Sale
+  sale: ?selling\Sale
+  invoice: ?selling\Invoice
+  source: enum(SALE, INVOICE)
   farm: farm\Farm
   event: selling\Event
   payment: ?selling\Payment

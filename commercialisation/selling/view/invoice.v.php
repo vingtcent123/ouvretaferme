@@ -49,4 +49,26 @@ new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
 
 });
 
+
+new AdaptativeView('invoice', function($data, FarmTemplate $t) {
+
+	$t->title = \selling\InvoiceUi::getName($data->e);
+
+	$t->nav = 'selling';
+	$t->subNav = 'invoice';
+
+	$t->mainTitle = new \selling\InvoiceUi()->getHeader($data->e);
+
+	echo new \selling\InvoiceUi()->getContent($data->e);
+
+	if($data->e['cSale']->notEmpty()) {
+
+		echo new \selling\InvoiceUi()->getSalesList($data->e);
+		echo new \selling\ItemUi()->getBySale($data->e['cSale']->first(), $data->cItem);
+
+	}
+
+	echo new \selling\HistoryUi()->getList($data->e, $data->cHistory);
+
+});
 ?>

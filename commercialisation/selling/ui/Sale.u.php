@@ -1233,34 +1233,10 @@ class SaleUi {
 					$document .= '</div>';
 				$document .= '</div>';
 
-				$document .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" data-ajax-navigation="never" class="dropdown-item">'.s("Consulter la facture").'</a>';
+				$document .= '<a href="/facture/'.($eSale['invoice']['id']).'" class="dropdown-item">'.s("Consulter la facture").'</a>';
 
 				if($eInvoice->acceptDownload()) {
 					$document .= '<a href="'.InvoiceUi::url($eSale['invoice']).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger le PDF").'</a>';
-				}
-
-				if($eSale['invoice']->acceptSend()) {
-
-					$document .= '<div class="dropdown-divider"></div>';
-
-					if($eSale['invoice']->acceptSend()) {
-						$text = s("Envoyer au client par e-mail").'</a>';
-					} else {
-						$text = '<span class="sale-document-forbidden">'.s("Envoyer au client par e-mail").'</span>';
-					}
-
-					$document .= '<a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eSale['invoice']['id'].'" data-confirm="'.s("Confirmer l'envoi de la facture au client par e-mail ? Une facture envoyée par e-mail n'est plus annulable.").'" class="dropdown-item">'.$text.'</a>';
-
-				}
-
-				if(
-					$eInvoice->acceptDelete() and
-					$eSale->canWrite()
-				) {
-
-					$document .= '<div class="dropdown-divider"></div>';
-					$document .= '<a data-ajax="/selling/invoice:doDelete" post-id="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("La suppression d'une facture est définitive. Voulez-vous continuer ?").'">'.s("Supprimer la facture").'</a>';
-
 				}
 
 			$document .= '</div>';
@@ -2234,65 +2210,6 @@ class SaleUi {
 
 	}
 
-	public function getHistory(Sale $eSale, \Collection $cHistory) {
-
-		if(
-			$eSale->isComposition() or
-			$cHistory->empty()
-		) {
-			return '';
-		}
-
-		$h = '<h3>'.s("Historique").'</h3>';
-
-		$h .= '<div class="util-overflow-sm stick-xs">';
-
-			$h .= '<table>';
-
-				$h .= '<thead>';
-					$h .= '<tr>';
-						$h .= '<th>'.s("Date").'</th>';
-						$h .= '<th>'.s("Événement").'</th>';
-						$h .= '<th>'.s("Par").'</th>';
-					$h .= '</tr>';
-				$h .= '</thead>';
-				$h .= '<tbody>';
-
-					foreach($cHistory as $eHistory) {
-
-						$h .= '<tr>';
-
-							$h .= '<td class="td-min-content">';
-								$h .= \util\DateUi::numeric($eHistory['date']);
-							$h .= '</td>';
-
-							$h .= '<td>';
-								$h .= $eHistory['event']['name'];
-								if($eHistory['comment']) {
-									$h .= '<div class="util-annotation color-muted">';
-										$h .= encode($eHistory['comment']);
-									$h .= '</div>';
-								}
-							$h .= '</td>';
-
-							$h .= '<td>';
-								$h .= $eHistory['user']->empty() ? '-' : $eHistory['user']->getName();
-							$h .= '</td>';
-
-						$h .= '</tr>';
-
-					}
-
-				$h .= '</tbody>';
-
-			$h .= '</table>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public function create(Sale $eSale): \Panel {
 
 		if($eSale['profile'] === Sale::COMPOSITION) {
@@ -2778,14 +2695,10 @@ class SaleUi {
 
 	public function updatePayment(Sale $eSale): \Panel {
 
-		if($eSale['invoice']->notEmpty()) {
-			$h = $this->getInvoicePayment($eSale);
+		if($eSale->isPaymentOnline(Payment::FAILED)) {
+			$h = new PaymentTransactionUi()->getOnlinePayment($eSale);
 		} else {
-			if($eSale->isPaymentOnline(Payment::FAILED)) {
-				$h = new PaymentTransactionUi()->getOnlinePayment($eSale);
-			} else {
-				$h = new PaymentTransactionUi()->getPaymentForm($eSale);
-			}
+			$h = new PaymentTransactionUi()->getPaymentForm($eSale);
 		}
 
 		return new \Panel(

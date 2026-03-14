@@ -351,7 +351,7 @@ class SaleLib {
 		$eSale['preparationStatus'] = \selling\Sale::BASKET;
 		\selling\SaleLib::update($eSale, ['preparationStatus']);
 
-		\selling\HistoryLib::createBySale($eSale, 'sale-update-payment');
+		\selling\HistoryLib::createByElement($eSale, 'sale-update-payment');
 
 	}
 
@@ -405,7 +405,7 @@ class SaleLib {
 						\selling\SaleLib::update($eSaleExisting, $properties);
 						\selling\ItemLib::createCollection($eSaleExisting, $cItem, replace: TRUE);
 
-						\selling\HistoryLib::createBySale($eSaleExisting, 'sale-updated-customer');
+						\selling\HistoryLib::createByElement($eSaleExisting, 'sale-updated-customer');
 
 					} else {
 
@@ -544,7 +544,7 @@ class SaleLib {
 
 		\selling\PaymentTransactionLib::createForTransaction($eSale, $ePayment);
 
-		\selling\HistoryLib::createBySale($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
+		\selling\HistoryLib::createByElement($eSale, 'shop-payment-initiated', 'Stripe checkout id #'.$stripeSession['id'], ePayment: $ePayment);
 
 		\selling\Sale::model()->commit();
 
@@ -636,7 +636,7 @@ class SaleLib {
 
 		if($hasFailed) {
 
-			\selling\HistoryLib::createBySale($eSale, 'shop-payment-failed', 'Stripe event id #'.$object['id'].' (event type '.$event['type'].')');
+			\selling\HistoryLib::createByElement($eSale, 'shop-payment-failed', 'Stripe event id #'.$object['id'].' (event type '.$event['type'].')');
 			self::notify('saleFailed', $paymentType, $eSale);
 
 		}
@@ -668,7 +668,7 @@ class SaleLib {
 			\selling\SaleLib::update($eSale, ['preparationStatus']);
 		}
 
-		\selling\HistoryLib::createBySale($eSale, 'shop-payment-succeeded', 'Stripe event #'.$object['id']);
+		\selling\HistoryLib::createByElement($eSale, 'shop-payment-succeeded', 'Stripe event #'.$object['id']);
 
 		// Récupération des données actualisées
 		$cItem = \selling\SaleLib::getItems($eSale);

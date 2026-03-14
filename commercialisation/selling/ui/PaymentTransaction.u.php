@@ -186,10 +186,22 @@ class PaymentTransactionUi {
 
 			$never = $e->acceptNeverPaid() ? '<a data-ajax="'.self::getPrefix($e).':doUpdateNeverPaid" post-id="'.$e['id'].'" class="btn btn-outline-primary" data-confirm="'.$neverPaidConfirm.'">'.s("Ne sera pas payée").'</a>' : '';
 
-			if($e['priceIncludingVat'] !== NULL) {
-				$title = s("Vente de {value}", \util\TextUi::money($e['priceIncludingVat']));
+			if($e instanceof Sale) {
+
+				if($e['priceIncludingVat'] !== NULL) {
+					$title = s("Vente de {value}", \util\TextUi::money($e['priceIncludingVat']));
+				} else {
+					$title = s("Vente");
+				}
+
 			} else {
-				$title = s("Vente");
+
+				if($e['priceIncludingVat'] !== NULL) {
+					$title = s("Facture de {value}", \util\TextUi::money($e['priceIncludingVat']));
+				} else {
+					$title = s("Facture");
+				}
+
 			}
 
 			$h .= $form->group(content: '<div class="util-title">'.

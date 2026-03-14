@@ -89,6 +89,21 @@ new \selling\InvoicePage()
 	}, propertiesUpdate: ['dueDate', 'paymentCondition', 'header', 'footer'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
 	->read('/facture/{id}', function($data) {
 
+		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
+
+		$data->cItem = new Collection();
+		$data->e['cSale'] = \selling\SaleLib::getByIds($data->e['sales'], sort: ['deliveredAt' => SORT_ASC]);
+		foreach($data->e['cSale'] as $eSale) {
+			$data->cItem->mergeCollection(\selling\SaleLib::getItems($eSale, withIngredients: TRUE));
+		}
+
+		$data->cHistory = \selling\HistoryLib::getByInvoice($data->e);
+
+		throw new ViewAction($data, ':invoice');
+
+	}, validate: ['canPublicRead'])
+	->read('/facture/{id}/telecharger', function($data) {
+
 		switch($data->e['status']) {
 
 			case \selling\Invoice::DRAFT :
