@@ -1359,6 +1359,8 @@ class SaleLib extends SaleCrud {
 
 			if($e['preparationStatus'] === Sale::SELLING) {
 				MarketLib::updateSaleMarket($e);
+			} else if($e['preparationStatus'] !== Sale::DELIVERED) {
+				PaymentLinkLib::deactivate($e);
 			}
 
 			if($e->isMarketSale()) {

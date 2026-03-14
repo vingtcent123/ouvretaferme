@@ -303,6 +303,17 @@ class Sale extends SaleElement {
 
 	}
 
+	public function acceptStripeLink(): bool {
+
+		return (
+			$this['invoice']->empty() and
+			$this->acceptReplacePayment() and
+			$this['preparationStatus'] === Sale::DELIVERED and
+			\payment\StripeLib::getByFarm($this['farm'])->notEmpty()
+		);
+
+	}
+
 	public function acceptReplacePayment(): bool {
 
 		return (

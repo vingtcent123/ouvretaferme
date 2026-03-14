@@ -295,6 +295,8 @@ class InvoiceLib extends InvoiceCrud {
 				$priceExcludingVat += $eSale['priceExcludingVat'];
 				$priceIncludingVat += $eSale['priceIncludingVat'];
 
+				PaymentLinkLib::deactivate($eSale);
+
 			}
 
 			$totalVat = 0.0;
@@ -444,6 +446,8 @@ class InvoiceLib extends InvoiceCrud {
 							->update([
 								'invoice' => NULL
 							]);
+
+						PaymentLinkLib::deactivate($e);
 
 						break;
 

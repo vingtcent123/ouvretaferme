@@ -2778,13 +2778,15 @@ class SaleUi {
 
 	public function updatePayment(Sale $eSale): \Panel {
 
+		$h = new PaymentTransactionUi()->getCreatePaymentLink($eSale);
+
 		if($eSale['invoice']->notEmpty()) {
-			$h = $this->getInvoicePayment($eSale);
+			$h .= $this->getInvoicePayment($eSale);
 		} else {
 			if($eSale->isPaymentOnline(Payment::FAILED)) {
-				$h = new PaymentTransactionUi()->getOnlinePayment($eSale);
+				$h .= new PaymentTransactionUi()->getOnlinePayment($eSale);
 			} else {
-				$h = new PaymentTransactionUi()->getPaymentForm($eSale);
+				$h .= new PaymentTransactionUi()->getPaymentForm($eSale);
 			}
 		}
 

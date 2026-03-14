@@ -99,6 +99,7 @@ class StripeLib {
 
 	}
 
+
 	public static function getStripeCheckoutSessionFromPaymentIntent(StripeFarm $eStripeFarm, string $paymentIntentId) {
 
 		$arguments = [
@@ -111,7 +112,13 @@ class StripeLib {
 	public static function webhook(StripeFarm $eStripeFarm, array $event): void {
 
 		if(str_starts_with($event['type'], 'payment_intent')) {
+
 			self::webhookPaymentIntent($eStripeFarm, $event);
+
+		} else if($event['type'] === 'checkout.session.completed') {
+
+			StripeLinkLib::webhookCheckoutSessionCompleted($eStripeFarm, $event);
+
 		}
 
 	}
@@ -119,7 +126,10 @@ class StripeLib {
 	public static function webhookPaymentIntent(StripeFarm $eStripeFarm, array $event): void {
 
 		// Les utilisateurs qui partagent leur compte stripe avec d'autres services
-		if(($event['data']['object']['metadata']['source'] ?? NULL) !== 'otf') {
+		if(
+			($event['data']['object']['metadata']['source'] ?? NULL) !== 'otf' or
+			($event['data']['object']['metadata']['type'] ?? NULL) === 'link' // Les payment link sont gérés via checkout.session.completed
+		) {
 			return;
 		}
 
@@ -249,8 +259,7 @@ class StripeLib {
 
 	}
 
-
-	private static function sendStripeRequest(StripeFarm $eStripeFarm, string $endpoint, array $arguments = [], string $mode = 'POST'): ?array {
+	protected static function sendStripeRequest(StripeFarm $eStripeFarm, string $endpoint, array $arguments = [], string $mode = 'POST'): ?array {
 
 		$key = match(LIME_ENV) {
 			'dev' => $eStripeFarm['apiSecretKeyTest'],

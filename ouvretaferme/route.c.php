@@ -473,6 +473,11 @@ Route::register([
 			'priority' => 5,
 			'route' => ['outil', '{id@int}'],
 		],
+		'/paiement' => [
+			'request' => 'selling/public',
+			'priority' => 5,
+			'route' => ['paiement'],
+		],
 		'/pdf/{id}' => [
 			'request' => 'selling/pdf',
 			'priority' => 5,

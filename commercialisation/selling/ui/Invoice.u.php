@@ -975,10 +975,12 @@ class InvoiceUi {
 
 	public function updatePayment(Invoice $eInvoice): \Panel {
 
+		$h = new PaymentTransactionUi()->getCreatePaymentLink($eInvoice);
+
 		if($eInvoice->isPaymentOnline(Payment::FAILED)) {
-			$h = new PaymentTransactionUi()->getOnlinePayment($eInvoice);
+			$h .= new PaymentTransactionUi()->getOnlinePayment($eInvoice);
 		} else {
-			$h = new PaymentTransactionUi()->getPaymentForm($eInvoice);
+			$h .= new PaymentTransactionUi()->getPaymentForm($eInvoice);
 		}
 
 		return new \Panel(

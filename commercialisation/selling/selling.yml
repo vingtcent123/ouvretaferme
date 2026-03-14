@@ -243,6 +243,29 @@ Payment:
     ["onlinePaymentIntentId"]
   ]
 
+PaymentLink:
+  id: serial32
+  source: enum(SALE, INVOICE)
+  sale: ?selling\Sale
+  invoice: ?selling\Invoice
+  customer: ?selling\Customer
+  farm: farm\Farm
+  amountIncludingVat: ?decimal(8, 2)
+  paymentLinkId: ?text8
+  url: ?text8
+  validUntil: date
+  status: enum(ACTIVE, PAID, INACTIVE, EXPIRED) = ACTIVE
+  createdAt: datetime = SPECIAL(now)
+  paidAt: ?datetime
+  INDEX: [
+    ["farm"],
+    ["sale"],
+    ["invoice"],
+  ]
+  UNIQUE: [
+    ["paymentLinkId"]
+  ]
+
 Pdf:
   id: serial32
   sale: selling\Sale

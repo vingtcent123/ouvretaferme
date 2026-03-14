@@ -122,6 +122,16 @@ class Invoice extends InvoiceElement {
 		);
 	}
 
+	public function acceptStripeLink(): bool {
+
+		return (
+			$this->acceptReplacePayment() and
+			\payment\StripeLib::getByFarm($this['farm'])->notEmpty() and
+			in_array($this['status'], [Invoice::DELIVERED, Invoice::GENERATED])
+		);
+
+	}
+
 	public function acceptReplacePayment(): bool {
 
 		return (

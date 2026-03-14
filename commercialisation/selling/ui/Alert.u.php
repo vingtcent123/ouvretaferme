@@ -232,6 +232,8 @@ class AlertUi {
 
 			'Sale::ticket.send' => s("Le ticket de caisse a bien été envoyé par e-mail."),
 
+			'PaymentLink::created' => s("Le lien de paiement a bien été généré.").($options['actions'] ?? ''),
+
 			default => NULL
 
 		};
