@@ -61,7 +61,7 @@ class RatioLib {
 			foreach($ratios['splitByPayments'] as $keyPayment => &$payment) {
 				if($ePaymentFilter->notEmpty() and $payment['payment']->is($ePaymentFilter) === FALSE) {
 					unset($ratios['splitByPayments'][$keyPayment]);
-				} else if($eMethodFilter->notEmpty() and $payment['payment']['method']->is($eMethodFilter) === FALSE) {
+				} else if($eMethodFilter->notEmpty() and $payment['payment']['method']->notEmpty() and $payment['payment']['method']->is($eMethodFilter) === FALSE) {
 					unset($ratios['splitByPayments'][$keyPayment]);
 				}
 			}
