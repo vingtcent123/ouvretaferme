@@ -302,8 +302,6 @@ class MembershipLib {
 				'profile' => \selling\Sale::SALE,
 			]);
 
-			$eSale->validate('canCreate');
-
 			$fw = new \FailWatch();
 
 			$properties = \selling\SaleLib::getPropertiesCreate()($eSale);
