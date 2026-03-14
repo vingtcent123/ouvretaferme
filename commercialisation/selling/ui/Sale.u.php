@@ -2138,6 +2138,12 @@ class SaleUi {
 			$primaryList .= '</a>';
 		}
 
+		if($eSale->acceptStripeLink()) {
+			$primaryList .= '<a href="/selling/paymentLink:create?sale='.$eSale['id'].'" class="dropdown-item">';
+				$primaryList .= s("Créer un lien de paiement");
+			$primaryList .= '</a>';
+		}
+
 		$secondaryList = '';
 
 		if($eSale->acceptAssociateShop()) {
@@ -2778,7 +2784,7 @@ class SaleUi {
 
 	public function updatePayment(Sale $eSale): \Panel {
 
-		$h = new PaymentTransactionUi()->getCreatePaymentLink($eSale);
+		$h = new PaymentLinkUi()->showExistingPaymentLinks($eSale['cPaymentLink']);
 
 		if($eSale['invoice']->notEmpty()) {
 			$h .= $this->getInvoicePayment($eSale);

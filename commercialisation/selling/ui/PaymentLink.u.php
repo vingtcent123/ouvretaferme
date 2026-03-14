@@ -9,27 +9,40 @@ class PaymentLinkUi {
 
 			$eElement = $ePaymentLink['sale'];
 			$name = SaleUi::getName($eElement);
+			$url = \Lime::getUrl().'/vente/'.$eElement['id'];
 
 		} else if($ePaymentLink['source'] === PaymentLink::INVOICE) {
 
 			$eElement = $ePaymentLink['invoice'];
 			$name = InvoiceUi::getName($eElement);
+			$url = \Lime::getUrl().'/ferme/'.$ePaymentLink['farm']['id'].'/factures/?name='.$eElement['number'];
 
 		}
 
-		$title = s("Paiement de {value} depuis un lien de paiement", $eElement['customer']->getName());
+		$title = s("Paiement depuis un lien de paiement", $eElement['customer']->getName());
 
-		$text = s("Bonjour,
+		$content = s("Bonjour,
+		
+Un lien de paiement a été payé : 
+- Référence : <link>{name}</link>
+- Client : {customer}
+- Montant payé : {amount} 
 
 {customer} vient de payer {amount} depuis le lien de paiement que vous lui avez transmis pour la référence : {name}.
 
 À bientôt,
-L'équipe {siteName}", ['customer' => $eElement['customer']->getName(), 'amount' => \util\TextUi::money($ePaymentLink['amountIncludingVat']), 'name' => $name]);
+L'équipe {siteName}", [
+			'customer' => $eElement['customer']->getName(),
+			'amount' => \util\TextUi::money($ePaymentLink['amountIncludingVat']),
+			'name' => $name,
+			'link' => '<a href="'.$url.'">',
+		]);
 
 
 		return [
 			$title,
-			$text
+			\mail\DesignUi::encapsulateText($eElement['farm'], $content),
+			\mail\DesignUi::encapsulateHtml($eElement['farm'], nl2br($content))
 		];
 
 	}
@@ -56,16 +69,17 @@ L'équipe {siteName}", ['customer' => $eElement['customer']->getName(), 'amount'
 
 		}
 
+		$source = $eElement instanceof Invoice ? PaymentLink::INVOICE : PaymentLink::SALE;
+
 		$h = '<h4>'.$title.'</h4>';
 
-		$h .= '<div class="util-info">'.s("Pour faciliter le recouvrement de vos créances, vous pouvez proposer un lien de paiement direct à vos clients.").'</div>';
-		$h .= $this->showExistingPaymentLinks($cPaymentLink, FALSE);
+		$h .= new PaymentLinkUi()->showExistingPaymentLinks($cPaymentLink);
 
 		$h .= $form->openAjax('/selling/paymentLink:doCreate');
 
 			$h .= $form->hidden('farm', $eElement['farm']['id']);
 			$h .= $form->hidden('customer', $eElement['customer']['id']);
-			$h .= $form->hidden('source', $eElement instanceof Invoice ? PaymentLink::INVOICE : PaymentLink::SALE);
+			$h .= $form->hidden('source', $source);
 			if($eElement instanceof Invoice) {
 				$h .= $form->hidden('invoice', $eElement['id']);
 			} else {
@@ -84,21 +98,20 @@ L'équipe {siteName}", ['customer' => $eElement['customer']->getName(), 'amount'
 		$h .= $form->close();
 
 		return new \Panel(
-			id: 'panel-invoice-create-payment-link',
+			id: 'panel-'.$source.'-update',
 			title: s("Créer un lien de paiement par carte bancaire en ligne"),
 			body: $h
 		);
 
 	}
 
-	public function showExistingPaymentLinks(\Collection $cPaymentLink, bool $showCreateButton): string{
+	public function showExistingPaymentLinks(\Collection $cPaymentLink): string{
 
 		if($cPaymentLink->empty()) {
 			return '';
 		}
 
 		$h = '<div class="util-block-optional">';
-			$h .= '<h4 class="color-warning">'.s("Attention !").'</h4>';
 			$h .= '<p>'.p("Vous avez un lien de paiement actif : ", "Vous avez {value} liens de paiement actifs :", $cPaymentLink->count()).'</p>';
 			$h .= '<table>';
 				$h .= '<tr>';
@@ -129,12 +142,6 @@ L'équipe {siteName}", ['customer' => $eElement['customer']->getName(), 'amount'
 
 				}
 			$h .= '</table>';
-
-			$eElement = $ePaymentLink->getElement();
-			$h .= '<div class="text-end">';
-				$h .= '<a href="/selling/paymentLink:create?'.($eElement instanceof Sale ? 'sale' : 'invoice').'='.$eElement['id'].'" class="btn btn-xs btn-outline-primary">';
-					$h .= s("Créer un autre lien de paiement");
-				$h .= '</a>';
 
 			$h .= '</div>';
 		$h .= '</div>';

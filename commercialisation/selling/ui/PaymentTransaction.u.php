@@ -141,31 +141,6 @@ class PaymentTransactionUi {
 
 	}
 
-	public function getCreatePaymentLink(Sale|Invoice $e): string {
-
-		if($e->acceptStripeLink() === FALSE or LIME_ENV !== 'dev') {
-			return '';
-		}
-
-		$url = '/selling/paymentLink:create?'.($e instanceof Sale ? 'sale' : 'invoice').'='.$e['id'];
-
-		if(array_key_exists('cPaymentLink', $e->getArrayCopy()) and $e['cPaymentLink']->notEmpty()) {
-
-			$h = new PaymentLinkUi()->showExistingPaymentLinks($e['cPaymentLink'], TRUE);
-
-		} else {
-
-			$h = '<div class="util-info">';
-				$h .= s("Vous avez la possibilité de créer un lien de paiement par Stripe pour faciliter le recouvrement de vos créances :");
-				$h .= '&nbsp;<a href="'.$url.'" class="btn btn-xs btn-outline-primary">';
-					$h .= s("Créer un lien de paiement");
-				$h .= '</a>';
-			$h .= '</div>';
-
-		}
-
-		return $h;
-	}
 	public function getOnlinePayment(Sale|Invoice $e): string {
 
 		if($e instanceof Sale) {

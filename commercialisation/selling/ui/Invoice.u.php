@@ -324,6 +324,12 @@ class InvoiceUi {
 										$h .= '</a>';
 									}
 
+									if($eInvoice->acceptStripeLink()) {
+										$h .= '<a href="/selling/paymentLink:create?invoice='.$eInvoice['id'].'" class="dropdown-item">';
+											$h .= s("Créer un lien de paiement");
+										$h .= '</a>';
+									}
+
 									$h .= '<a href="/selling/invoice:updateComment?id='.$eInvoice['id'].'" class="dropdown-item">';
 										$h .= $eInvoice['comment'] === NULL ? s("Ajouter un commentaire") : s("Modifier le commentaire");
 									$h .= '</a>';
@@ -975,7 +981,7 @@ class InvoiceUi {
 
 	public function updatePayment(Invoice $eInvoice): \Panel {
 
-		$h = new PaymentTransactionUi()->getCreatePaymentLink($eInvoice);
+		$h = new PaymentLinkUi()->showExistingPaymentLinks($eInvoice['cPaymentLink']);
 
 		if($eInvoice->isPaymentOnline(Payment::FAILED)) {
 			$h .= new PaymentTransactionUi()->getOnlinePayment($eInvoice);
