@@ -282,7 +282,8 @@ class ImportLib extends ImportCrud {
 
 				$eAccount = BankAccountLib::createBankAccountAccount();
 				BankAccount::model()->update($e['newAccount'], ['account' => $eAccount]);
-				$e['account'] = $eAccount;
+				$e['account'] = $e['newAccount'];
+				BankAccount::model()->update($e['account'], ['bankId' => $e['bankId'], 'accountId' => $e['accountId']]);
 
 			} else {
 
