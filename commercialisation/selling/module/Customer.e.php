@@ -531,7 +531,7 @@ class Customer extends CustomerElement {
 					return TRUE;
 				}
 
-				if($p->isBuilt('siret') === FALSE) {
+				if($p->isBuilt('siret') === FALSE or $this['siret'] === NULL) {
 					return TRUE;
 				}
 
