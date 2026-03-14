@@ -8,7 +8,7 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 
 	$t->menuSelected = 'sellingMarket';
 
-	echo '<div class="util-block">';
+	echo '<div class="doc-intro">';
 
 		echo '<h2>'.s("À quoi sert le logiciel de caisse ?").'</h2>';
 		echo '<p>'.s("Le logiciel de caisse proposé par {siteName} vous permet d'enregistrer les ventes que vous réalisez pendant vos marchés avec une tablette ou un téléphone. C'est une solution simple et efficace qui permet de gérer un grand nombre de clients par heure.").'</p>';
@@ -36,11 +36,121 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 
 	echo '</div>';
 
+	echo '<h2>'.s("Utiliser le logiciel de caisse pas à pas").'</h2>';
+
+	echo '<h3>'.s("Activer le logiciel de caisse").'</h3>';
+
+	echo '<h4>'.Asset::icon('1-circle').' '.s("Allez sur la page du logiciel de caisse").'</h4>';
+
+	echo '<h4>'.Asset::icon('2-circle').' '.s("Créez un point de vente").'</h4>';
+
+	echo '<p>'.s("Vous devez créer un client de type <b>Point de vente pour les particuliers</b> en indiquant le nom de votre marché comme nom de client.").'</p>';
+	echo Asset::image('main', 'doc/market-customer.png');
+
+	echo '<h4>'.Asset::icon('3-circle').' '.s("Créez une première vente").'</h4>';
+
+	echo '<p>'.s("Une fois le client créé, vous pouvez maintenant lui créer une vente en veillant à activer le logiciel de caisse pour cette vente.").'</p>';
+	echo Asset::image('main', 'doc/market-sale.png');
+
+	echo '<p>'.s("Vous pouvez en profiter pour sélectionner les produits que vous voulez proposer à la vente. Il n'est pas indispensable de sélectionner les produits à cette étape, vous pourrez également le faire à l'étape suivante.").'</p>';
+	echo Asset::image('main', 'doc/market-product.png');
+
+	echo '<h4>'.Asset::icon('4-circle').' '.s("Terminez de configurer votre vente").'</h4>';
+
+	echo '<p>'.s("Une fois la vente créée, vous pouvez encore compléter votre gamme. Pour chaque produit, vous pouvez indiquer la quantité que vous souhaitez emporter au marché. Cela peut vous être notamment utile pour préparer vos récoltes ou vos conditionnements.").'</p>';
+	echo Asset::image('main', 'doc/market-configure.png');
+
+	echo '<h4>'.Asset::icon('5-circle').' '.s("Démarrer la vente").'</h4>';
+
+	echo '<p>'.s("Vous avez complété votre gamme ? Votre étal est prêt ?").'</p>';
+	echo '<p>'.s("Il ne vous reste plus qu'à cliquer sur le bouton <link>Ouvrir le logiciel de caisse</link> pour commencer à vendre !", ['link' => '<a class="btn btn-selling btn-xs">'.Asset::icon('cart4').' ']).'</p>';
+	echo Asset::image('main', 'doc/market-welcome.png');
+
+
+	echo '<h3>'.s("Face au client").'</h3>';
+
+	echo '<p>'.s("Utilisez tout simplement le bouton <i>Créer une vente</i> pour commencer à saisir les produits achetés par un client.").'</p>';
+	echo '<p>';
+		echo s("Pour chaque produit, un clavier numérique vous permet d'effectuer une saisie rapide, et vous avez également la possibilité d'ajouter des remises pour vos clients préférés.");
+		echo Asset::image('main', 'doc/market-item.png');
+	echo '</p>';
+
+	echo '<p>'.s("Si vous connaissez votre client, vous avez la possibilité d'associer la vente à un client en cliquant sur <u>Anonyme</u> puis en tapant le nom du client. Par la suite, les prix personnalisés pour le client s'appliquent dans le logiciel de caisse.").'</p>';
+	echo '<p>'.s("Pour terminer une vente avec un client avec le bouton <u>Vente payée</u>, vous devez préalablement indiquer au moins un moyen de paiement, ce qui est une obligation légale.").'</p>';
+
+	echo '<h3>'.s("Clôturer la caisse").'</h3>';
+
+	echo '<p>'.s("Lorsque votre marché est terminé, vous avez l'obligation de clôturer la caisse. Une fois la clôture réalisée, les données de vente sont figées et peuvent être intégrées à votre comptabilité.").'</p>';
+
+	echo '<h2>'.s("Astuces").'</h2>';
+
+	echo '<h3>'.s("Configurer les marchés suivants en un clic").'</h3>';
+	echo '<div class="util-info">';
+		echo '<p>'.s("Créer votre premier marché avec le logiciel de caisse va prendre un peu de temps, car vous devrez ajouter manuellement les produits que vous souhaitez vendre dans le logiciel. Pour les marchés suivants, nous vous recommandons d'utiliser la fonctionnalité qui permet de repartir d'une vente précédente.").'</p>';
+		echo '<p>'.s("En dupliquant votre marché précédent, vous n'avez plus qu'à choisir la nouvelle date de vente et la liste des produits que vous avez vendus la dernière fois est automatiquement reportée. Il vous restera éventuellement à supprimer les quelques produits que vous avez sortis de la vente et ajouter ceux qui entrent dans la gamme !").'</p>';
+	echo '</div>';
+	echo Asset::image('main', 'doc/market-duplicate.png');
+
+	echo '<h3>'.s("Vendre à plusieurs").'</h3>';
+	echo '<p class="util-info">'.s("Vous pouvez être plusieurs à utiliser le logiciel de caisse simultanément sur un même marché. Dans ce cas, nous vous suggérons de vous connecter avec des comptes différents pour que chacun puisse retrouver facilement les ventes qu'il gère avec son avatar.").'</p>';
+
+	echo '<h3>'.s("Ajouter un produit au dernier moment dans le logiciel de caisse").'</h3>';
+	echo '<p class="util-info">'.s("Si vous avez oublié d'ajouter un produit à votre caisse, utilisez l'onglet <u>Articles</u> pour ajouter le produit manquant. Cet onglet vous permet également de modifier les prix de vente.").'</p>';
+
+	echo '<h3>'.s("Vous permettez à certains clients de payer plus tard ?").'</h3>';
+	echo '<p class="util-info">';
+		echo s("Si vous permettez à certains clients de payer plus tard (par exemple sur facture en fin de mois), vous avez la possibilité de sélectionner l'option <i>Vente en paiement différé</i> à la place de <i>Vente payée</i>. En choisissant cette option, la vente sera sortie du logiciel de caisse et sera intégrée à la page des ventes de votre ferme.");
+	echo '</p>';
+	echo Asset::image('main', 'doc/market-later.png');
+
+	echo '<h3>'.s("Mettre le curseur sur la quantité par défaut").'</h3>';
+	echo '<p class="util-info">';
+		echo s("Par défaut, c'est le champ de <u>Prix</u> qui est sélectionné pour les produits vendus au poids. Si cela nous vous convient pas, vous pouvez sélectionner le champ <u>Quantité</u> par défaut dans les réglages de base du module <u>Vendre</u>.");
+	echo '</p>';
+	echo Asset::image('main', 'doc/market-settings.png');
+
+	echo '<h3>'.s("Compléter automatiquement votre journal de caisse").'</h3>';
+	echo '<p class="util-info">';
+		echo s("Si vous utilisez {siteName} pour réaliser le journal de caisse de votre ferme, vous pouvez automatiquement y reporter le montant des ventes réalisées lors de vos marchés.");
+	echo '</p>';
+	echo Asset::image('main', 'doc/market-register.png');
+
+});
+
+new AdaptativeView('invoicing', function($data, DocTemplate $t) {
+
+	$t->template = 'doc';
+
+	$t->title = s("La facturation");
+
+	$t->menuSelected = 'sellingInvoicing';
+
+	echo '<div class="doc-intro">';
+
+		echo '<h2><div class="doc-title-before">'.s("Introduction à la facturation").'</div>'.s("Comment facturer mes clients avec {siteName} ?").'</h2>';
+		echo '<p>'.s("Le logiciel de caisse proposé par {siteName} vous permet d'enregistrer les ventes que vous réalisez pendant vos marchés avec une tablette ou un téléphone. C'est une solution simple et efficace qui permet de gérer un grand nombre de clients par heure.").'</p>';
+
+		echo '<ol>';
+			echo '<li>'.s("Vous créez une nouvelle vente en activant le logiciel de caisse").'</li>';
+			echo '<li>'.s("Vous choisissez la gamme de produits disponibles à la vente").'</li>';
+			echo '<li>'.s("Vous amenez une tablette ou votre téléphone au marché").'</li>';
+			echo '<li>'.s("Lorsque les ventes démarrent, vous saisissez les commandes de vos clients directement sur votre tablette").'</li>';
+			echo '<li>'.s("Une fois le marché terminé, vous clôturez la caisse").'</li>';
+			echo '<li>'.s("En fin de saison, vous retrouvez dans l'analyse des ventes une synthèse complète de ce que vous avez vendu dans l'année").'</li>';
+		echo '</ol>';
+
+		echo '<p>'.s("Le logiciel de caisse est pleinement utilisable pour toutes les productions.<br/>Il est utilisé quotidiennement par des paysans boulangers, des apiculteurs, des éleveurs ou des maraîchers...").'</p>';
+
+		echo '<div class="util-block-side">';
+			echo '<p>'.s("Les factures générées par Ouvretaferme sont conformes à la réglementation en vigueur en <b>FRANCE</b>. Elles comportent l'ensemble des mentions obligatoires demandées par l'administration fiscale, sous réserve que vous ayez correctement paramétré votre compte évidemment.").'</p>';
+			echo '<a href="https://entreprendre.service-public.gouv.fr/vosdroits/F31808">'.s("Consulter la liste des mentions obligatoires").'</a>';
+		echo '</div>';
+
+	echo '</div>';
+
 	echo '<div class="util-block">';
 
-		echo '<h2>'.s("Utiliser le logiciel de caisse pas à pas").'</h2>';
-
-		echo '<h3>'.s("Activer le logiciel de caisse").'</h3>';
+		echo '<h2>'.s("Créer une facture").'</h2>';
 
 		echo '<h4>'.Asset::icon('1-circle').' '.s("Allez sur la page du logiciel de caisse").'</h4>';
 
@@ -68,21 +178,37 @@ new AdaptativeView('market', function($data, DocTemplate $t) {
 		echo '<p>'.s("Il ne vous reste plus qu'à cliquer sur le bouton <link>Ouvrir le logiciel de caisse</link> pour commencer à vendre !", ['link' => '<a class="btn btn-selling btn-xs">'.Asset::icon('cart4').' ']).'</p>';
 		echo Asset::image('main', 'doc/market-welcome.png');
 
+	echo '</div>';
 
-		echo '<h3>'.s("Face au client").'</h3>';
+	echo '<div class="util-block">';
 
-		echo '<p>'.s("Utilisez tout simplement le bouton <i>Créer une vente</i> pour commencer à saisir les produits achetés par un client.").'</p>';
-		echo '<p>';
-			echo s("Pour chaque produit, un clavier numérique vous permet d'effectuer une saisie rapide, et vous avez également la possibilité d'ajouter des remises pour vos clients préférés.");
-			echo Asset::image('main', 'doc/market-item.png');
-		echo '</p>';
+		echo '<h2>'.s("Créer les factures pour un mois de vente").'</h2>';
 
-		echo '<p>'.s("Si vous connaissez votre client, vous avez la possibilité d'associer la vente à un client en cliquant sur <u>Anonyme</u> puis en tapant le nom du client. Par la suite, les prix personnalisés pour le client s'appliquent dans le logiciel de caisse.").'</p>';
-		echo '<p>'.s("Pour terminer une vente avec un client avec le bouton <u>Vente payée</u>, vous devez préalablement indiquer au moins un moyen de paiement, ce qui est une obligation légale.").'</p>';
+		echo '<h4>'.Asset::icon('1-circle').' '.s("Allez sur la page du logiciel de caisse").'</h4>';
 
-		echo '<h3>'.s("Clôturer la caisse").'</h3>';
+		echo '<h4>'.Asset::icon('2-circle').' '.s("Créez un point de vente").'</h4>';
 
-		echo '<p>'.s("Lorsque votre marché est terminé, vous avez l'obligation de clôturer la caisse. Une fois la clôture réalisée, les données de vente sont figées et peuvent être intégrées à votre comptabilité.").'</p>';
+		echo '<p>'.s("Vous devez créer un client de type <b>Point de vente pour les particuliers</b> en indiquant le nom de votre marché comme nom de client.").'</p>';
+		echo Asset::image('main', 'doc/market-customer.png');
+
+		echo '<h4>'.Asset::icon('3-circle').' '.s("Créez une première vente").'</h4>';
+
+		echo '<p>'.s("Une fois le client créé, vous pouvez maintenant lui créer une vente en veillant à activer le logiciel de caisse pour cette vente.").'</p>';
+		echo Asset::image('main', 'doc/market-sale.png');
+
+		echo '<p>'.s("Vous pouvez en profiter pour sélectionner les produits que vous voulez proposer à la vente. Il n'est pas indispensable de sélectionner les produits à cette étape, vous pourrez également le faire à l'étape suivante.").'</p>';
+		echo Asset::image('main', 'doc/market-product.png');
+
+		echo '<h4>'.Asset::icon('4-circle').' '.s("Terminez de configurer votre vente").'</h4>';
+
+		echo '<p>'.s("Une fois la vente créée, vous pouvez encore compléter votre gamme. Pour chaque produit, vous pouvez indiquer la quantité que vous souhaitez emporter au marché. Cela peut vous être notamment utile pour préparer vos récoltes ou vos conditionnements.").'</p>';
+		echo Asset::image('main', 'doc/market-configure.png');
+
+		echo '<h4>'.Asset::icon('5-circle').' '.s("Démarrer la vente").'</h4>';
+
+		echo '<p>'.s("Vous avez complété votre gamme ? Votre étal est prêt ?").'</p>';
+		echo '<p>'.s("Il ne vous reste plus qu'à cliquer sur le bouton <link>Ouvrir le logiciel de caisse</link> pour commencer à vendre !", ['link' => '<a class="btn btn-selling btn-xs">'.Asset::icon('cart4').' ']).'</p>';
+		echo Asset::image('main', 'doc/market-welcome.png');
 
 	echo '</div>';
 
@@ -135,7 +261,7 @@ new AdaptativeView('product', function($data, DocTemplate $t) {
 	$t->title = s("Photos libres de droit");
 	$t->subTitle = s("Nous mettons à votre disposition des photos libres de droit pour les principaux légumes cultivés dans les systèmes maraîchers. Vous pouvez notamment les utiliser pour vos produits sur Ouvretaferme !");
 
-	$t->subTitle .= '<div class="mt-3"><a href="'.\main\MainSetting::URL_PHOTOS.'" target="_blank" class="btn btn-transparent btn-xl">'.s("Accéder aux photos").'</a></div>';
+	$t->subTitle .= '<div class="mt-3"><a href="'.\main\MainSetting::URL_PHOTOS.'" target="_blank" class="btn btn-secondary btn-xl">'.s("Accéder aux photos").'</a></div>';
 
 	$t->menuSelected = 'sellingProduct';
 
@@ -153,10 +279,9 @@ new AdaptativeView('pricing', function($data, DocTemplate $t) {
 
 	$t->menuSelected = 'sellingPricing';
 
-	echo '<div class="util-block">';
+	echo '<div class="doc-intro">';
 
-		echo '<h5 style="text-transform: uppercase">'.s("Introduction à la gestion des prix").'</h5>';
-		echo '<h2>'.s("Distinguer les ventes aux professionnels et aux particuliers").'</h2>';
+		echo '<h2>'.s("Introduction à la gestion des prix").'</h2>';
 		echo '<p>'.s("Nous avons fait le choix sur Ouvretaferme de découpler les prix de vente pour vos clients professionnels et vos clients particuliers, ce qui signifie concrètement que :").'</p>';
 		echo '<ul>';
 			echo '<li>'.s("Vous choisissez pour chaque produit un prix pour les professionnels et un prix pour les particuliers").'</li>';
@@ -168,51 +293,33 @@ new AdaptativeView('pricing', function($data, DocTemplate $t) {
 
 	echo '</div>';
 
-	echo '<div class="util-block">';
+	echo '<h2>'.s("Comprendre les pratiques des producteurs").'</h2>';
 
-		echo '<h2>'.s("Comprendre les pratiques des producteurs").'</h2>';
+	echo '<p>'.s("Les producteurs adoptent des politiques tarifaires très différentes.").'</p>';
+	echo '<p>'.s("Vous êtes nombreux à n'avoir qu'un seul prix pour chacun de produits, et dans ce cas, cet article ne vous sera pas forcément utile ! Dans d'autres fermes, il peut y avoir autant de prix que de clients, notamment dans le cas où les débouchés sont très diversifiés ou bien parce que des accords commerciaux particuliers ont été passés avec les clients en question.").'</p>';
+	echo '<p>';
+		echo s("Nous avons essayé sur Ouvretaferme de garder un système simple pour les producteurs qui ont des prix simples, mais également hautement personnalisable pour les autres.");
+	echo '</p>';
 
-		echo '<p>'.s("Les producteurs adoptent des politiques tarifaires très différentes.").'</p>';
-		echo '<p>'.s("Vous êtes nombreux à n'avoir qu'un seul prix pour chacun de produits, et dans ce cas, cet article ne vous sera pas forcément utile ! Dans d'autres fermes, il peut y avoir autant de prix que de clients, notamment dans le cas où les débouchés sont très diversifiés ou bien parce que des accords commerciaux particuliers ont été passés avec les clients en question.").'</p>';
-		echo '<p>';
-			echo s("Nous avons essayé sur Ouvretaferme de garder un système simple pour les producteurs qui ont des prix simples, mais également hautement personnalisable pour les autres.");
-		echo '</p>';
+	echo '<h2>'.s("Quelques définitions").'</h2>';
 
-	echo '</div>';
+	echo '<ul>';
+		echo '<li>'.s("<b>Prix de base.</b> Le prix que vous choisissez lorsque vous configurez un produit.").'</li>';
+		echo '<li>'.s("<b>Prix catalogue.</b> Le prix d'un produit dans un catalogue donné. Lorsque vous modifiez un prix catalogue, le prix de base n'est pas impacté !").'</li>';
+		echo '<li>'.s("<b>Prix personnalisé</b> Le prix d'un produit que vous avez personnalisé pour un client ou un groupe de clients").'</li>';
+	echo '</ul>';
 
-	echo '<div class="util-block">';
+	echo '<h2><div class="doc-title-before">'.s("Cas n°1").'</div>'.s("Mes prix sont les mêmes pour tout le monde (ou presque)").'</h2>';
 
-		echo '<h2>'.s("Quelques définitions").'</h2>';
+	echo '<p>'.s("Vous avez une seule grille tarifaire ? Éventuellement quelques exceptions ?<br/>Nous vous conseillons de :").'</p>';
+	echo '<ul>';
+		echo '<li>'.s("Choisir pour chaque produit un prix de base pour vos clients particuliers et / ou vos clients professionnels").'</li>';
+		echo '<li>'.s("Utiliser les prix personnalisés pour vos quelques clients ou groupes de clients pour lesquels vous avez fait des exceptions").'</li>';
+	echo '</ul>';
 
-		echo '<ul>';
-			echo '<li>'.s("<b>Prix de base.</b> Le prix que vous choisissez lorsque vous configurez un produit.").'</li>';
-			echo '<li>'.s("<b>Prix catalogue.</b> Le prix d'un produit dans un catalogue donné. Lorsque vous modifiez un prix catalogue, le prix de base n'est pas impacté !").'</li>';
-			echo '<li>'.s("<b>Prix personnalisé</b> Le prix d'un produit que vous avez personnalisé pour un client ou un groupe de clients").'</li>';
-		echo '</ul>';
+	echo '<h2><div class="doc-title-before">'.s("Cas n°2").'</div>'.s("J'ai (presque) autant de prix que de clients").'</h2>';
 
-	echo '</div>';
-
-	echo '<br/>';
-	echo '<h4>'.s("Cas n°1").'</h4>';
-	echo '<h2>'.s("Mes prix sont les mêmes pour tout le monde (ou presque)").'</h2>';
-
-	echo '<div class="util-block">';
-
-		echo '<p>'.s("Vous avez une seule grille tarifaire ? Éventuellement quelques exceptions ?<br/>Nous vous conseillons de :").'</p>';
-		echo '<ul>';
-			echo '<li>'.s("Choisir pour chaque produit un prix de base pour vos clients particuliers et / ou vos clients professionnels").'</li>';
-			echo '<li>'.s("Éviter d'utiliser les catalogues dont les prix sont découplés des prix de base").'</li>';
-			echo '<li>'.s("Utiliser les prix personnalisés pour vos quelques clients ou groupes de clients pour lesquels vous avez fait des exceptions").'</li>';
-		echo '</ul>';
-
-	echo '</div>';
-
-	echo '<br/>';
-	echo '<h4>'.s("Cas n°2").'</h4>';
-	echo '<h2>'.s("J'ai (presque) autant de prix que de clients").'</h2>';
-
-
-	echo '<div class="util-block">';
+	echo '<div class="doc-intro">';
 
 		echo '<h3>'.s("Comprendre la hiérarchie des prix des produits").'</h3>';
 
@@ -224,26 +331,19 @@ new AdaptativeView('pricing', function($data, DocTemplate $t) {
 			echo '<li>'.s("<b>Le prix personnalisé d'un groupe de clients.</b> Si vous avez personnalisé un prix pour un groupe de clients, celui-ci est toujours prioritaire par rapport au prix de base ou au prix catalogue. Si un client appartient à plusieurs groupes qui ont chacun un prix personnalisé pour un produit donné, alors on applique au client le prix du groupe le moins cher.").'</li>';
 			echo '<li>'.s("<b>Le prix personnalisé pour un client.</b> Il est prioritaire à tous les autres.").'</li>';
 		echo '</ol>';
-
-		echo '<p>'.s("À vous de jouer maintenant !").'</p>';
-
 	echo '</div>';
 
-	echo '<div class="util-block">';
+	echo '<h3>'.s("Quelques situations concrètes et solutions imaginables").'</h3>';
 
-		echo '<h3>'.s("Quelques situations concrètes et solutions imaginables").'</h3>';
+	echo '<h4>'.Asset::icon('1-circle').'<br/>'.s("Je vends mes produits à 50 % en AMAP et le reste sur des marchés. J'applique le même prix sur tous mes marchés, mais des prix différents en AMAP.").'</h4>';
+	echo '<p>'.s("Vous pouvez renseigner comme prix de base de vos produits le prix que vous appliquez aux marchés. Pour vos amapiens, vous pourriez créer un groupe de clients <b>AMAP</b> auquel ils seraient rattachés, et définir ensuite des prix personnalisés pour ce groupe.").'</p>';
 
-		echo '<h4>'.Asset::icon('1-circle').'<br/>'.s("Je vends mes produits à 50 % en AMAP et le reste sur des marchés. J'applique le même prix sur tous mes marchés, mais des prix différents en AMAP.").'</h4>';
-		echo '<p>'.s("Vous pouvez renseigner comme prix de base de vos produits le prix que vous appliquez aux marchés. Pour vos amapiens, vous pourriez créer un groupe de clients <b>AMAP</b> auquel ils seraient rattachés, et définir ensuite des prix personnalisés pour ce groupe.").'</p>';
-
-		echo '<h4>'.Asset::icon('2-circle').'<br/>'.s("Je vends exclusivement aux professionnels, et j'ai des prix différents pour les restaurants et les magasins spécialisés.").'</h4>';
-		echo '<p>'.s("Vous avez plusieurs options :").'</p>';
-		echo '<ol>';
-			echo '<li>'.s("Créer un groupe de clients <b>Restaurateur</b> et un groupe de clients <b>Magasin</b>. Pour chacun des groupes, vous définissez les prix que vous voulez personnaliser par rapport aux prix de base.").'</li>';
-			echo '<li>'.s("Créer un catalogue pour les restaurants et un catalogue pour les magasins spécialisés, ce qui vous permettra d'appliquer des prix différents pour leurs commandes sur les boutiques en ligne.").'</li>';
-		echo '</ol>';
-
-	echo '</div>';
+	echo '<h4>'.Asset::icon('2-circle').'<br/>'.s("Je vends exclusivement aux professionnels, et j'ai des prix différents pour les restaurants et les magasins spécialisés.").'</h4>';
+	echo '<p>'.s("Vous avez plusieurs options :").'</p>';
+	echo '<ol>';
+		echo '<li>'.s("Créer un groupe de clients <b>Restaurateur</b> et un groupe de clients <b>Magasin</b>. Pour chacun des groupes, vous définissez les prix que vous voulez personnaliser par rapport aux prix de base.").'</li>';
+		echo '<li>'.s("Créer un catalogue pour les restaurants et un catalogue pour les magasins spécialisés, ce qui vous permettra d'appliquer des prix différents pour leurs commandes sur les boutiques en ligne.").'</li>';
+	echo '</ol>';
 
 	echo '<br/>';
 	echo '<br/>';

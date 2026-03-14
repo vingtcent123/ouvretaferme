@@ -38,7 +38,7 @@ class HelpUi {
 					$h .= '<p class="mb-2">'.s("L'objectif est de lever des fonds pour financer et pérenniser l'association sur 2026 !").'</p>';
 					$h .= '<div class="game-home-links">';
 						$h .= '<a href="'.\Lime::getUrl().'/jouer" data-ajax-navigation="never" class="btn btn-xl game-home-button">'.s("Commencer à jouer").'</a> ';
-						$h .= '<a href="'.\association\AssociationSetting::URL.'" data-ajax-navigation="never" class="btn btn-xl game-home-button">'.s("Découvrir l'association").'</a> ';
+						$h .= '<a href="'.\association\AssociationSetting::URL.'" data-ajax-navigation="never" class="btn btn-xl game-home-button">'.s("En savoir plus").'</a> ';
 						if($ePlayer->getRole() === 'customer') {
 							$h .= '<a href="'.\Lime::getUrl().'/donner" data-ajax-navigation="never" class="btn btn-xl game-home-button">'.s("Faire un don").'</a>';
 						} else {
