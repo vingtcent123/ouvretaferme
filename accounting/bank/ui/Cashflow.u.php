@@ -792,14 +792,17 @@ class CashflowUi {
 			'cJournalCode' => $cJournalCode,
 		]);
 		if($eFinancialYear->isCashReceipts()) {
+			$hasVat = \farm\ConfigurationLib::getConfigurationForDate($eFarm, 'hasVatAccounting', $eCashflow['date']);
 			if($eCashflow['type'] === Cashflow::DEBIT) {
 				$eAccount = $cAccount->find(fn($e) => \account\AccountLabelLib::isFromClass($e['class'], \account\AccountSetting::CHARGE_BUY_ACCOUNT_CLASS), limit: 1);
 				$eOperation['account'] = $eAccount;
-				$eOperation['vatRate'] = ($eAccount['vatRate'] ?? 0);
+				$eOperation['vatRate'] = $hasVat ? ($eAccount['vatRate'] ?? 0) : 0.0;
+				$eOperation['vatRule'] = $hasVat ? \journal\Operation::VAT_STD_DEDUCTIBLE : \journal\Operation::VAT_0;
 			} else {
 				$eAccount = $cAccount->find(fn($e) => \account\AccountLabelLib::isFromClass($e['class'], \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS), limit: 1);
 				$eOperation['account'] = $eAccount;
-				$eOperation['vatRate'] = ($eAccount['vatRate'] ?? 0);
+				$eOperation['vatRate'] = $hasVat ? ($eAccount['vatRate'] ?? 0) : 0.0;
+				$eOperation['vatRule'] = $hasVat ? \journal\Operation::VAT_STD_DEDUCTIBLE : \journal\Operation::VAT_0;
 			}
 		}
 
