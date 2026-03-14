@@ -18,8 +18,17 @@ class SaleUi {
 
 	}
 
-	public static function link(Sale $eSale, bool $newTab = FALSE, string $size = 'btn-sm'): string {
-		return '<a href="'.self::url($eSale).'" class="btn '.$size.' btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>'.$eSale['document'].'</a>';
+	public static function link(Sale $eSale, bool $newTab = FALSE, string $content = 'id', string $size = 'btn-sm'): string {
+
+		$h = '<a href="'.self::url($eSale).'" class="btn '.$size.' btn-outline-primary" '.($newTab ? 'target="_blank"' : '').'>';
+			$h .= match($content) {
+				'id' => $eSale['document'],
+				'name' => self::getName($eSale)
+			};
+		$h .= '</a>';
+
+		return $h;
+
 	}
 
 	public static function urlMarket(Sale $eSale): string {
@@ -37,13 +46,17 @@ class SaleUi {
 		if($eSale->isComposition()) {
 			return s("Composition du {value}", \util\DateUi::numeric($eSale['deliveredAt']));
 		} else if($eSale->isPurchase()) {
-			return s("Achat n°{value}", $eSale['document']);
-		} else if($eSale->isMarket()) {
-			return s("Vente n°{value}", $eSale['document']);
-		} else if($eSale['priceExcludingVat'] < 0) {
-			return s("Avoir n°{value}", $eSale['document']);
+			if($eSale['priceExcludingVat'] < 0) {
+				return s("Avoir sur achat n°{value}", $eSale['document']);
+			} else {
+				return s("Achat n°{value}", $eSale['document']);
+			}
 		} else {
-			return s("Vente n°{value}", $eSale['document']);
+			if($eSale['priceExcludingVat'] < 0) {
+				return s("Avoir sur vente n°{value}", $eSale['document']);
+			} else {
+				return s("Vente n°{value}", $eSale['document']);
+			}
 		}
 
 	}

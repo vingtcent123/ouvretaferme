@@ -859,7 +859,7 @@ class InvoiceUi {
 				if($canCreateInvoice) {
 
 					$h .= $form->group(
-						s("Ventes à inclure dans la facture").
+						s("Inclure dans la facture").
 						\util\FormUi::info(s("Notez qu'une facture d'avoir est générée lorsque le montant total à facturer est négatif.")),
 						$sales($form)
 					);
@@ -941,7 +941,7 @@ class InvoiceUi {
 					}
 
 				$h .= '</th>';
-				$h .= '<th class="text-center">#</th>';
+				$h .= '<th></th>';
 				$h .= '<th>'.s("Date").'</th>';
 				$h .= '<th>'.s("Règlement").'</th>';
 				$h .= '<th class="text-end">'.s("Montant").'</th>';
@@ -951,11 +951,15 @@ class InvoiceUi {
 
 			$h .= '<tr>';
 				$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['id'], ['checked' => $checked, 'data-invoice-checked' => (int)$checked]).'</td>';
-				$h .= '<td class="td-min-content text-center">'.SaleUi::link($eSale, newTab: TRUE).'</td>';
+				$h .= '<td class="td-min-content text-center">';
+					$h .= SaleUi::link($eSale, newTab: TRUE, content: 'name', size: 'btn-xs');
+				$h .= '</td>';
 				$h .= '<td>'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
 				$h .= '<td>';
-					$h .= PaymentTransactionUi::getPaymentMethodName($eSale);
-					$h .= ' '.PaymentTransactionUi::getPaymentStatusBadge($eSale);
+					if($eSale->isPurchase() === FALSE) {
+						$h .= PaymentTransactionUi::getPaymentMethodName($eSale);
+						$h .= ' '.PaymentTransactionUi::getPaymentStatusBadge($eSale);
+					}
 				$h .= '</td>';
 				$h .= '<td class="text-end">';
 				$h .= SaleUi::getTotal($eSale);
