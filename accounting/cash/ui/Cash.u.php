@@ -642,8 +642,8 @@ class CashUi {
 			$h .= '</table>';
 		$h .= '</div>';
 
-		if($cCash->getFound() !== NULL and $page !== NULL) {
-			$h .= \util\TextUi::pagination($page, $cCash->getFound() / 100);
+		if($ccCash->getFound() !== NULL and $page !== NULL) {
+			$h .= \util\TextUi::pagination($page, $ccCash->getFound() / 200);
 		}
 
 		return $h;

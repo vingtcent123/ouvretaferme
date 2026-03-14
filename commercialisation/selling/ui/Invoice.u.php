@@ -416,7 +416,7 @@ class InvoiceUi {
 						$h .= '<td class="text-end invoice-item-amount">';
 							$h .= SaleUi::getIncludingTaxesTotal($eInvoice);
 							$h .= '<div class="util-annotation">';
-								$h .= '<a href="/facture/'.$eInvoice['id'].'#sales-list">'.p("{value} vente", "{value} ventes", count($eInvoice['sales'])).'</a>';
+								$h .= '<a href="/facture/'.$eInvoice['id'].'">'.p("{value} vente", "{value} ventes", count($eInvoice['sales'])).'</a>';
 							$h .= '</div>';
 						$h .= '</td>';
 
@@ -666,20 +666,20 @@ class InvoiceUi {
 
 	}
 
-	public function create(Invoice $eInvoice, \Collection $cSale, \Collection $cSaleMore, \Search $search): \Panel {
+	public function create(Invoice $eInvoice, Sale $eSaleFirst, \Collection $cSaleMore, \Search $search): \Panel {
 
 		$eInvoice->expects(['lastDate']);
 		
 		$body = $this->getGenerateBody(
 			$eInvoice,
 			'/selling/invoice:doCreate',
-			function(\util\FormUi $form) use($cSale, $cSaleMore, $search) {
+			function(\util\FormUi $form) use($eSaleFirst, $cSaleMore, $search) {
 	
-				$sales = '';
+				$sales = '<div id="invoice-create-sales">';
 
-				if($cSale->count() > 0) {
+				if($eSaleFirst->notEmpty()) {
 
-					$sales .= $this->getSales($form, $cSale, TRUE);
+					$sales .= $this->getSales($form, new \Collection([$eSaleFirst]), TRUE);
 
 				}
 
@@ -689,20 +689,30 @@ class InvoiceUi {
 					$sales .= '</div>';
 				} else {
 
-					if($cSale->notEmpty()) {
-						$sales .= '<h3>'.s("Ajouter d'autres ventes à la facture").'</h3>';
-					}
+					$sales .= '<div class="util-title">';
 
-					$sales .= '<div style="display: flex; column-gap: 1rem" class="mb-1">';
-						$sales .= $form->inputGroup(
-							$form->addon(s("Ventes de moins de")).
-							$form->number('delivered', $search->get('delivered'), ['onkeypress' => 'return event.keyCode != 13;']).
-							$form->inputAddon(s("jours")).
-							$form->button(\Asset::icon('search'), ['onclick' => 'Sale.submitInvoiceSearch(this)'])
-						);
+						if($eSaleFirst->notEmpty()) {
+							$sales .= '<h3>'.s("Ajouter d'autres ventes à la facture").'</h3>';
+						} else {
+							$sales .= '<h3>'.s("Sélectionner les ventes").'</h3>';
+						}
+
+						$sales .= '<div class="invoice-create-search">';
+							$sales .= $form->inputGroup(
+								$form->addon(s("Ventes de moins de")).
+								$form->number('delivered', $search->get('delivered'), ['onkeypress' => 'return event.keyCode != 13;']).
+								$form->inputAddon(s("jours")).
+								$form->button(\Asset::icon('search'), ['onclick' => 'Sale.submitInvoiceSearch(this)'])
+							);
+						$sales .= '</div>';
+
 					$sales .= '</div>';
 
 					if($cSaleMore->notEmpty()) {
+
+						if($cSaleMore->notEmpty()) {
+							$sales .= '<p class="color-muted">'.s("Vous pouvez intégrer dans une seule facture les transactions avec le même mode de règlement, le même mois et avec le même régime TVA. En outre, les ventes ne doivent pas avoir été réglées.").'</p>';
+						}
 
 						$sales .= $this->getSales($form, $cSaleMore, FALSE);
 
@@ -711,6 +721,8 @@ class InvoiceUi {
 					}
 
 				}
+
+				$sales .= '</div>';
 
 				return $sales;
 
@@ -765,7 +777,7 @@ class InvoiceUi {
 
 		$form = new \util\FormUi();
 
-		$h = '';
+		$h = $this->getHelp($eFarm);
 
 		$h .= $form->openAjax('/selling/invoice:doCreateCollection');
 
@@ -866,13 +878,13 @@ class InvoiceUi {
 
 	protected function getCustomers(\util\FormUi $form, \farm\Farm $eFarm, \Collection $cSale): string {
 
-		$h = '<table class="tr-even">';
+		$h = '<table class="tr-bordered">';
 			$h .= '<tr>';
 				$h .= '<th>';
 					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[name^="sales"]\')').'"/>';
 				$h .= '</th>';
 				$h .= '<th>'.s("Client").'</th>';
-				$h .= '<th class="text-end">'.s("Ventes").'</th>';
+				$h .= '<th></th>';
 				$h .= '<th class="text-end">';
 					$h .= s("Montant");
 				$h .= '</th>';
@@ -884,7 +896,12 @@ class InvoiceUi {
 				$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['list']).'</td>';
 				$h .= '<td>'.CustomerUi::link($eSale['customer'], newTab: TRUE).'</td>';
 				$h .= '<td class="text-end">';
-					$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eFarm, \farm\Farmer::SALE).'?ids='.$eSale['list'].'" class="btn btn-sm btn-outline-secondary" target="_blank">'.$eSale['number'].'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eFarm, \farm\Farmer::SALE).'?ids='.$eSale['list'].'" class="btn btn-sm btn-outline-secondary" target="_blank">';
+						$h .= match($eSale['profile']) {
+							Sale::SALE => p("{value} vente", "{value} ventes", $eSale['number']),
+							Sale::PURCHASE => p("{value} achat", "{value} achats", $eSale['number']),
+						};
+					$h .= '</a>';
 				$h .= '</td>';
 				$h .= '<td class="text-end">';
 				$h .= SaleUi::getTotal($eSale);
@@ -919,7 +936,17 @@ class InvoiceUi {
 
 		$form = new \util\FormUi();
 
-		$h = '';
+		$h = '<h4>';
+
+			$h .= encode($eInvoice['customer']->getName());
+
+			if($eInvoice->exists() === FALSE) {
+				$h .= '<a href="/selling/invoice:create?farm='.$eInvoice['farm']['id'].'" class="btn btn-sm btn-secondary ml-1">'.s("Changer").'</a>';
+			}
+
+		$h .= '</h4>';
+
+		$h .= $this->getHelp($eInvoice['farm']);
 
 		$h .= $form->openAjax($page);
 
@@ -936,17 +963,6 @@ class InvoiceUi {
 				$h .= $form->hidden('id', $eInvoice);
 
 			}
-
-			$customer = '<b>'.$eInvoice['customer']->getName().'</b>';
-
-			if($eInvoice->exists() === FALSE) {
-				$customer .= '<a href="/selling/invoice:create?farm='.$eInvoice['farm']['id'].'" class="btn btn-sm btn-secondary ml-1">'.s("Changer").'</a>';
-			}
-
-			$h .= $form->group(
-				s("Client"),
-				 $customer
-			);
 
 			if($sales !== NULL) {
 
@@ -1023,11 +1039,7 @@ class InvoiceUi {
 
 				if($canCreateInvoice) {
 
-					$h .= $form->group(
-						s("Inclure dans la facture").
-						\util\FormUi::info(s("Notez qu'une facture d'avoir est générée lorsque le montant total à facturer est négatif.")),
-						$sales($form)
-					);
+					$h .= $sales($form);
 
 				}
 			}
@@ -1075,6 +1087,23 @@ class InvoiceUi {
 
 	}
 
+	protected function getHelp(\farm\Farm $eFarm): string {
+
+		$h = '';
+
+		if($eFarm['hasInvoices'] === FALSE) {
+
+			$h .= '<div class="util-block-help">';
+				$h .= '<p>'.s("Vous voulez tout savoir de la facturation avec Ouvretaferme avant de générer votre première facture ?").'</p>';
+				$h .= '<a href="/doc/selling:invoicing" target="_blank" class="btn btn-secondary">'.s("Lire la documentation").'</a>';
+			$h .= '</div>';
+
+		}
+
+		return $h;
+
+	}
+
 	protected function getStatusField(\util\FormUi $form): string {
 
 		$confirmed = '<span class="btn btn-sm invoice-status-'.Invoice::GENERATED.'-button">'.s("Oui, générer la facture").'</span>';
@@ -1095,53 +1124,6 @@ class InvoiceUi {
 
 	}
 
-	public function getSalesList(Invoice $eInvoice): string {
-
-		if(count($eInvoice['sales']) === 0) {
-			return '';
-		}
-
-		$h = '<div class="mb-2" id="sales-list">';
-
-			$h .= '<h3>';
-				$h .= s("Ventes");
-				$h .= '  <span class="util-badge bg-primary" id="item-count">'.count($eInvoice['sales']).'</span>';
-			$h .= '</h3>';
-
-			$h .= '<table class="tr-even">';
-
-				$h .= '<thead>';
-					$h .= '<tr>';
-
-						$h .= '<th>'.s("Date").'</th>';
-						$h .= '<th class="text-end">'.s("Montant").'</th>';
-					$h .= '</tr>';
-				$h .= '</thead>';
-
-				$h .= '<tbody>';
-					foreach($eInvoice['cSale'] as $eSale) {
-
-						$h .= '<tr>';
-
-							$h .= '<td class="td-min-content text-center">';
-								$h .= SaleUi::link($eSale, newTab: FALSE, content: 'name', size: 'btn-xs');
-							$h .= '</td>';
-							$h .= '<td>'.\util\DateUi::numeric($eSale['deliveredAt']).'</td>';
-							$h .= '<td class="text-end">';
-							$h .= SaleUi::getTotal($eSale);
-							$h .= '</td>';
-						$h .= '</tr>';
-					}
-
-				$h .= '</tbody>';
-
-			$h .= '</table>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
 	protected function getSales(\util\FormUi $form, \Collection $cSale, bool $checked): string {
 
 
@@ -1151,7 +1133,7 @@ class InvoiceUi {
 
 				$h .= '<th>';
 					if($checked === FALSE) {
-						$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[data-invoice-checked="0"]\')').'"/>';
+						$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[data-invoice-checked="0"]\', () => Invoice.checkSales())').'"/>';
 					}
 				$h .= '</th>';
 
@@ -1163,7 +1145,7 @@ class InvoiceUi {
 
 		foreach($cSale as $eSale) {
 
-			$h .= '<tr>';
+			$h .= '<tr data-profile="'.$eSale['profile'].'" data-vat="'.(int)$eSale['hasVat'].'" data-taxes="'.$eSale['taxes'].'" data-month="'.substr($eSale['deliveredAt'], 0, 7).'" data-payment-status="'.$eSale['paymentStatus'].'">';
 
 				$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['id'], ['checked' => $checked, 'data-invoice-checked' => (int)$checked]).'</td>';
 				$h .= '<td class="td-min-content text-center">';

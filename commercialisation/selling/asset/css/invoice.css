@@ -107,3 +107,12 @@ td.invoice-item-amount {
 	padding-bottom: 0.25rem;
 	text-align: left;
 }
+
+.invoice-create-sales-disabled {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+.invoice-create-search {
+	max-width: 30rem;
+}

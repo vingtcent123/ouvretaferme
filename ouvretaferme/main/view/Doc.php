@@ -30,6 +30,7 @@ class DocTemplate extends MainTemplate {
 				$h .= '<div class="doc-menu-title">'.s("Commercialisation").'</div>';
 				$h .= '<a href="/doc/selling:pricing" '.$this->menuSelected('sellingPricing').'>'.s("La gestion des prix").'</a>';
 				$h .= '<a href="/doc/selling:market" '.$this->menuSelected('sellingMarket').'>'.s("Le logiciel de caisse").'</a>';
+				$h .= '<a href="/doc/selling:invoicing" '.$this->menuSelected('sellingInvoicing').'>'.s("La facturation").'</a>';
 				$h .= '<a href="/doc/selling:product" '.$this->menuSelected('sellingProduct').'>'.s("Photos libres de droits pour vos produits").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Boutiques en ligne").'</div>';
 				$h .= '<a href="/doc/shop:shared" '.$this->menuSelected('shopShared').'>'.s("Les boutiques collectives").'</a>';

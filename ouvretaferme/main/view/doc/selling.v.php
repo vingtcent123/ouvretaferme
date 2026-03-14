@@ -128,18 +128,8 @@ new AdaptativeView('invoicing', function($data, DocTemplate $t) {
 	echo '<div class="doc-intro">';
 
 		echo '<h2><div class="doc-title-before">'.s("Introduction à la facturation").'</div>'.s("Comment facturer mes clients avec {siteName} ?").'</h2>';
-		echo '<p>'.s("Le logiciel de caisse proposé par {siteName} vous permet d'enregistrer les ventes que vous réalisez pendant vos marchés avec une tablette ou un téléphone. C'est une solution simple et efficace qui permet de gérer un grand nombre de clients par heure.").'</p>';
-
-		echo '<ol>';
-			echo '<li>'.s("Vous créez une nouvelle vente en activant le logiciel de caisse").'</li>';
-			echo '<li>'.s("Vous choisissez la gamme de produits disponibles à la vente").'</li>';
-			echo '<li>'.s("Vous amenez une tablette ou votre téléphone au marché").'</li>';
-			echo '<li>'.s("Lorsque les ventes démarrent, vous saisissez les commandes de vos clients directement sur votre tablette").'</li>';
-			echo '<li>'.s("Une fois le marché terminé, vous clôturez la caisse").'</li>';
-			echo '<li>'.s("En fin de saison, vous retrouvez dans l'analyse des ventes une synthèse complète de ce que vous avez vendu dans l'année").'</li>';
-		echo '</ol>';
-
-		echo '<p>'.s("Le logiciel de caisse est pleinement utilisable pour toutes les productions.<br/>Il est utilisé quotidiennement par des paysans boulangers, des apiculteurs, des éleveurs ou des maraîchers...").'</p>';
+		echo '<p>'.s("Vous pouvez éditer des factures à partir des ventes que vous avez renseignées sur {siteName}.<br/>Pour éditer des factures, le préalable est donc d'enregistrer vos ventes.").'</p>';
+		echo '<p>'.s("Pour les factures à destination de vos clients professionnels, Ouvretaferme sera pleinement compatible avec la facturation électronique dès le lancement de la réforme.").'</p>';
 
 		echo '<div class="util-block-side">';
 			echo '<p>'.s("Les factures générées par Ouvretaferme sont conformes à la réglementation en vigueur en <b>FRANCE</b>. Elles comportent l'ensemble des mentions obligatoires demandées par l'administration fiscale, sous réserve que vous ayez correctement paramétré votre compte évidemment.").'</p>';
@@ -150,33 +140,19 @@ new AdaptativeView('invoicing', function($data, DocTemplate $t) {
 
 	echo '<div class="util-block">';
 
-		echo '<h2>'.s("Créer une facture").'</h2>';
+		echo '<h2>'.s("Créer une facture pour un client").'</h2>';
 
-		echo '<h4>'.Asset::icon('1-circle').' '.s("Allez sur la page du logiciel de caisse").'</h4>';
+		echo '<h4>'.Asset::icon('1-circle').' '.s("Depuis la page des ventes").'</h4>';
 
-		echo '<h4>'.Asset::icon('2-circle').' '.s("Créez un point de vente").'</h4>';
+		echo '<p>'.s("Vous pouvez créer une facture pour chaque vente à l'état <b>LIVRÉ</b> directement depuis la page des ventes. Pour cela il suffit de cliquer sur le bouton <b>FA</b> :").'</p>';
+		echo Asset::image('main', 'doc/invoice-create-sale.png');
 
-		echo '<p>'.s("Vous devez créer un client de type <b>Point de vente pour les particuliers</b> en indiquant le nom de votre marché comme nom de client.").'</p>';
-		echo Asset::image('main', 'doc/market-customer.png');
+		echo '<h4>'.Asset::icon('2-circle').' '.s("Depuis la page des factures").'</h4>';
 
-		echo '<h4>'.Asset::icon('3-circle').' '.s("Créez une première vente").'</h4>';
-
-		echo '<p>'.s("Une fois le client créé, vous pouvez maintenant lui créer une vente en veillant à activer le logiciel de caisse pour cette vente.").'</p>';
-		echo Asset::image('main', 'doc/market-sale.png');
-
-		echo '<p>'.s("Vous pouvez en profiter pour sélectionner les produits que vous voulez proposer à la vente. Il n'est pas indispensable de sélectionner les produits à cette étape, vous pourrez également le faire à l'étape suivante.").'</p>';
-		echo Asset::image('main', 'doc/market-product.png');
-
-		echo '<h4>'.Asset::icon('4-circle').' '.s("Terminez de configurer votre vente").'</h4>';
-
-		echo '<p>'.s("Une fois la vente créée, vous pouvez encore compléter votre gamme. Pour chaque produit, vous pouvez indiquer la quantité que vous souhaitez emporter au marché. Cela peut vous être notamment utile pour préparer vos récoltes ou vos conditionnements.").'</p>';
-		echo Asset::image('main', 'doc/market-configure.png');
-
-		echo '<h4>'.Asset::icon('5-circle').' '.s("Démarrer la vente").'</h4>';
-
-		echo '<p>'.s("Vous avez complété votre gamme ? Votre étal est prêt ?").'</p>';
-		echo '<p>'.s("Il ne vous reste plus qu'à cliquer sur le bouton <link>Ouvrir le logiciel de caisse</link> pour commencer à vendre !", ['link' => '<a class="btn btn-selling btn-xs">'.Asset::icon('cart4').' ']).'</p>';
-		echo Asset::image('main', 'doc/market-welcome.png');
+		echo '<p>'.s("Vous pouvez créez votre facture avec le bouton de création").'</p>';
+		echo Asset::image('main', 'doc/invoice-create.png');
+		echo '<p>'.s("Vous saisissez le nom de votre client à l'étape suivante. La liste des ventes éligibles à la facturation vous sera alors proposée.").'</p>';
+		echo Asset::image('main', 'doc/invoice-create-list.png');
 
 	echo '</div>';
 
@@ -184,73 +160,81 @@ new AdaptativeView('invoicing', function($data, DocTemplate $t) {
 
 		echo '<h2>'.s("Créer les factures pour un mois de vente").'</h2>';
 
-		echo '<h4>'.Asset::icon('1-circle').' '.s("Allez sur la page du logiciel de caisse").'</h4>';
-
-		echo '<h4>'.Asset::icon('2-circle').' '.s("Créez un point de vente").'</h4>';
-
-		echo '<p>'.s("Vous devez créer un client de type <b>Point de vente pour les particuliers</b> en indiquant le nom de votre marché comme nom de client.").'</p>';
-		echo Asset::image('main', 'doc/market-customer.png');
-
-		echo '<h4>'.Asset::icon('3-circle').' '.s("Créez une première vente").'</h4>';
-
-		echo '<p>'.s("Une fois le client créé, vous pouvez maintenant lui créer une vente en veillant à activer le logiciel de caisse pour cette vente.").'</p>';
-		echo Asset::image('main', 'doc/market-sale.png');
-
-		echo '<p>'.s("Vous pouvez en profiter pour sélectionner les produits que vous voulez proposer à la vente. Il n'est pas indispensable de sélectionner les produits à cette étape, vous pourrez également le faire à l'étape suivante.").'</p>';
-		echo Asset::image('main', 'doc/market-product.png');
-
-		echo '<h4>'.Asset::icon('4-circle').' '.s("Terminez de configurer votre vente").'</h4>';
-
-		echo '<p>'.s("Une fois la vente créée, vous pouvez encore compléter votre gamme. Pour chaque produit, vous pouvez indiquer la quantité que vous souhaitez emporter au marché. Cela peut vous être notamment utile pour préparer vos récoltes ou vos conditionnements.").'</p>';
-		echo Asset::image('main', 'doc/market-configure.png');
-
-		echo '<h4>'.Asset::icon('5-circle').' '.s("Démarrer la vente").'</h4>';
-
-		echo '<p>'.s("Vous avez complété votre gamme ? Votre étal est prêt ?").'</p>';
-		echo '<p>'.s("Il ne vous reste plus qu'à cliquer sur le bouton <link>Ouvrir le logiciel de caisse</link> pour commencer à vendre !", ['link' => '<a class="btn btn-selling btn-xs">'.Asset::icon('cart4').' ']).'</p>';
-		echo Asset::image('main', 'doc/market-welcome.png');
+		echo '<p>'.s("Depuis la page des factures, le logiciel vous propose de générer toutes vos factures pour un mois donné. Cette fonctionnalité peut vous être utile notamment si vous faites le choix de facturer vos ventes mensuellement.").'</p>';
+		echo Asset::image('main', 'doc/invoice-create-month.png');
 
 	echo '</div>';
 
-	echo '<div class="util-block">';
+	echo '<h2>'.s("Créer une facture d'avoir").'</h2>';
 
-		echo '<h2>'.s("Astuces").'</h2>';
+	echo '<p>'.s("Lorsque vous générez une facture à partir d'une ou plusieurs ventes, et que le montant de la facture est négatif, une facture d'avoir est automatiquement générée sans intervention de votre part.").'</p>';
+	echo '<p>'.s("Si vous souhaitez faire un avoir pour un client, il vous suffit donc de créer une vente avec un montant négatif, par exemple en indiquant une quantité négative pour un produit si vous souhaitez effectuer un remboursement suite à un retour client.").'</p>';
 
-		echo '<h3>'.s("Configurer les marchés suivants en un clic").'</h3>';
-		echo '<div class="util-info">';
-			echo '<p>'.s("Créer votre premier marché avec le logiciel de caisse va prendre un peu de temps, car vous devrez ajouter manuellement les produits que vous souhaitez vendre dans le logiciel. Pour les marchés suivants, nous vous recommandons d'utiliser la fonctionnalité qui permet de repartir d'une vente précédente.").'</p>';
-			echo '<p>'.s("En dupliquant votre marché précédent, vous n'avez plus qu'à choisir la nouvelle date de vente et la liste des produits que vous avez vendus la dernière fois est automatiquement reportée. Il vous restera éventuellement à supprimer les quelques produits que vous avez sortis de la vente et ajouter ceux qui entrent dans la gamme !").'</p>';
-		echo '</div>';
-		echo Asset::image('main', 'doc/market-duplicate.png');
+	echo '<h2>'.s("Paramétrer une facture avant sa création").'</h2>';
 
-		echo '<h3>'.s("Vendre à plusieurs").'</h3>';
-		echo '<p class="util-info">'.s("Vous pouvez être plusieurs à utiliser le logiciel de caisse simultanément sur un même marché. Dans ce cas, nous vous suggérons de vous connecter avec des comptes différents pour que chacun puisse retrouver facilement les ventes qu'il gère avec son avatar.").'</p>';
+	echo '<p>'.s("Avant de générer votre facture, vous devez vérifier et modifier si besoin :").'</p>';
 
-		echo '<h3>'.s("Ajouter un produit au dernier moment dans le logiciel de caisse").'</h3>';
-		echo '<p class="util-info">'.s("Si vous avez oublié d'ajouter un produit à votre caisse, utilisez l'onglet <u>Articles</u> pour ajouter le produit manquant. Cet onglet vous permet également de modifier les prix de vente.").'</p>';
+	echo '<ol>';
+		echo '<li>'.s("La date de facturation (en sachant que vous ne pouvez pas facture antérieurement à une facture déjà émise)").'</li>';
+		echo '<li>'.s("La date d'échéance").'</li>';
+		echo '<li>'.s("Les entêtes et pieds de page en activant l'option <i>Personnaliser avant de générer</i>").'</li>';
+	echo '</ol>';
 
-		echo '<h3>'.s("Vous permettez à certains clients de payer plus tard ?").'</h3>';
-		echo '<p class="util-info">';
-			echo s("Si vous permettez à certains clients de payer plus tard (par exemple sur facture en fin de mois), vous avez la possibilité de sélectionner l'option <i>Vente en paiement différé</i> à la place de <i>Vente payée</i>. En choisissant cette option, la vente sera sortie du logiciel de caisse et sera intégrée à la page des ventes de votre ferme.");
-		echo '</p>';
-		echo Asset::image('main', 'doc/market-later.png');
+	echo Asset::image('main', 'doc/invoice-create-customize.png');
 
-		echo '<h3>'.s("Mettre le curseur sur la quantité par défaut").'</h3>';
-		echo '<p class="util-info">';
-			echo s("Par défaut, c'est le champ de <u>Prix</u> qui est sélectionné pour les produits vendus au poids. Si cela nous vous convient pas, vous pouvez sélectionner le champ <u>Quantité</u> par défaut dans les réglages de base du module <u>Vendre</u>.");
-		echo '</p>';
-		echo Asset::image('main', 'doc/market-settings.png');
+	echo '<p>'.s("Si vous n'êtes pas certain du caractère définitif de cette facture, vous pouvez la laissez en brouillon. Elle restera modifiable et pourra toujours être supprimé. Si vous la générez immédiatement, elle se verra attribuer un numéro de facture et deviendra inaltérable.").'</p>';
 
-		echo '<h3>'.s("Compléter automatiquement votre journal de caisse").'</h3>';
-		echo '<p class="util-info">';
-			echo s("Si vous utilisez {siteName} pour réaliser le journal de caisse de votre ferme, vous pouvez automatiquement y reporter le montant des ventes réalisées lors de vos marchés.");
-		echo '</p>';
-		echo Asset::image('main', 'doc/market-register.png');
+	echo '<h2>'.s("Gestion des factures émises").'</h2>';
 
-	echo '</div>';
+	echo '<p>'.s("Pour chaque facture émise, vous pouvez renseigner un ou plusieurs moyens de paiement. Si vous avez activé le module de <b>GESTION</b>, vous pouvez également télécharger vos relevés bancaires pour que {siteName} marque automatiquement les factures réglées par virement comme payée !").'</p>';
 
-	echo '<br/>';
-	echo '<br/>';
+	echo Asset::image('main', 'doc/invoice-list.png');
+
+	echo '<p>'.s("Vous pouvez à tout instant contrôler les factures émises qui n'ont pas été réglées avant la date d'échéance. Le logiciel vous permet également d'envoyer un e-mail de relance pour ces factures.").'</p>';
+
+	echo Asset::image('main', 'doc/invoice-delayed.png');
+
+	echo '<h2>'.s("Configuration de la facturation").'</h2>';
+
+	echo '<p>'.s("Il existe de multiples possibilités de personnalisation pour vos factures :").'</p>';
+
+	echo '<ul>';
+		echo '<li>'.s("Modifier la numérotation").'</li>';
+		echo '<li>'.s("Indiquer vos conditions de paiement").'</li>';
+		echo '<li>'.s("Définir des entêtes et pieds de pages").'</li>';
+		echo '<li>'.s("Personnaliser les e-mails envoyés aux clients").'</li>';
+		echo '<li>'.s("Choisir une date d'échéance par défaut").'</li>';
+		echo '<li>'.s("...").'</li>';
+	echo '</ul>';
+
+	echo '<p>'.s("Ce paramétrage s'effectue depuis la section <b>PARAMÉTRAGE</b>.").'</p>';
+
+	echo '<h2>'.s("Questions / réponses").'</h2>';
+
+	echo '<h3>'.s("Dans quels cas puis-je créer une facture pour plusieurs ventes ?").'</h3>';
+	echo '<p>'.s("Vous pouvez générez une facture avec plusieurs ventes sous réserve que les conditions cumulatives suivantes soient respectés :").'</p>';
+
+	echo '<ol>';
+		echo '<li>'.s("Les ventes doivent avoir été réalisées le même mois").'</li>';
+		echo '<li>'.s("Les ventes doivent toutes être soumises au même régime de TVA").'</li>';
+		echo '<li>'.s("Les ventes ne doivent pas avoir été réglées, même partiellement").'</li>';
+	echo '</ol>';
+
+	echo '<p>'.s("Ces contraintes permettent de respecter le cadre fixé par le législateur.").'</p>';
+
+	echo '<h3>'.s("Puis-je générer une facture à partir d'une vente réalisée dans le logiciel de caisse ?").'</h3>';
+	echo '<p>'.s("Non, ce n'est pas possible.").'</p>';
+	echo '<p>'.s("Par contre, vous pouvez utiliser l'option de <b>Vente en paiement différé</b> qui permet de sortir une vente du logiciel de caisse. La vente pourra ensuite être facturée normalement.").'</p>';
+
+	echo '<h3>'.s("Est-il possible de supprimer une facture ?").'</h3>';
+	echo '<p>'.s("Vous ne pouvez pas supprimer une facture numérotée. La loi interdit de supprimer une facture et les documents comptables doivent être tenus sans altération d’aucune sorte. L’administration fiscale a besoin de vérifier la bonne continuité de votre numérotation de facturation. Un trou dans la numérotation constitue une infraction fiscale.").'</p>';
+	echo '<p>'.s("Ce que vous pouvez faire :").'</p>';
+
+	echo '<ul>';
+		echo '<li>'.s("Laisser vos factures en brouillon le plus longtemps possible. Une facture en brouillon peut être supprimée car elle ne s'est pas vu attribuer de numéro.").'</li>';
+		echo '<li>'.s("Générer une facture d'avoir pour corriger la facture originale qui pose problème.").'</li>';
+	echo '</ul>';
+
 
 });
 
@@ -264,9 +248,6 @@ new AdaptativeView('product', function($data, DocTemplate $t) {
 	$t->subTitle .= '<div class="mt-3"><a href="'.\main\MainSetting::URL_PHOTOS.'" target="_blank" class="btn btn-secondary btn-xl">'.s("Accéder aux photos").'</a></div>';
 
 	$t->menuSelected = 'sellingProduct';
-
-	echo '<br/>';
-	echo '<br/>';
 
 });
 
@@ -344,9 +325,6 @@ new AdaptativeView('pricing', function($data, DocTemplate $t) {
 		echo '<li>'.s("Créer un groupe de clients <b>Restaurateur</b> et un groupe de clients <b>Magasin</b>. Pour chacun des groupes, vous définissez les prix que vous voulez personnaliser par rapport aux prix de base.").'</li>';
 		echo '<li>'.s("Créer un catalogue pour les restaurants et un catalogue pour les magasins spécialisés, ce qui vous permettra d'appliquer des prix différents pour leurs commandes sur les boutiques en ligne.").'</li>';
 	echo '</ol>';
-
-	echo '<br/>';
-	echo '<br/>';
 
 });
 ?>

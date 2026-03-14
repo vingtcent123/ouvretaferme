@@ -32,13 +32,13 @@ div.doc-wrapper {
 
 	#doc-menu {
 		position: absolute;
+		background-color: var(--secondary);
 		top: 10rem;
-		left: 2rem;
-		right: 2rem;
+		left: 1rem;
+		width: calc(var(--screen-width) - 2rem);
+		max-width: 30rem;
 		border-radius: var(--radius);
-		border: 2px solid var(--primary);
 		box-shadow: 0 0 2rem #0009;
-		background-color: white;
 		font-size: 1.2rem;
 	}
 

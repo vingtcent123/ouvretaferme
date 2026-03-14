@@ -38,7 +38,77 @@ document.delegateEventListener('input', '#invoice-dates [name="dueDate"]', funct
 
 });
 
+document.delegateEventListener('input', '#invoice-create-sales [name="sales[]"]', function(e) {
+
+	Invoice.checkSales();
+
+});
+
 class Invoice {
+
+	static checkSales() {
+
+		const selectedSales = qsa('#invoice-create-sales [name="sales[]"]:checked');
+
+		switch(selectedSales.length) {
+
+			case 0 :
+				this.acceptSales();
+				break;
+
+			case 1 :
+				this.updateSales(selectedSales[0]);
+				break;
+
+		}
+
+	}
+
+	static acceptSales(target) {
+
+		qsa('#invoice-create-sales [name="sales[]"]', (sale) => {
+
+			const wrapper = sale.firstParent('tr');
+
+			sale.disabled = false;
+			wrapper.classList.remove('invoice-create-sales-disabled');
+
+		});
+
+	}
+
+	static updateSales(selectedSale) {
+
+		qsa('#invoice-create-sales [name="sales[]"]', (sale) => {
+
+			if(sale === selectedSale) {
+				return;
+			}
+
+			const wrapper = sale.firstParent('tr');
+			const selectedWrapper = selectedSale.firstParent('tr');
+
+			if(
+				wrapper.dataset.vat !== selectedWrapper.dataset.vat ||
+				wrapper.dataset.profile !== selectedWrapper.dataset.profile ||
+				wrapper.dataset.month !== selectedWrapper.dataset.month ||
+				wrapper.dataset.taxes !== selectedWrapper.dataset.taxes ||
+				wrapper.dataset.paymentStatus !== selectedWrapper.dataset.paymentStatus ||
+				(wrapper.dataset.paymentStatus !== 'not-paid' && wrapper.dataset.paymentStatus !== '') ||
+				(selectedWrapper.dataset.paymentStatus !== 'not-paid' && selectedWrapper.dataset.paymentStatus !== '')
+			) {
+
+				sale.disabled = true;
+				wrapper.classList.add('invoice-create-sales-disabled');
+
+			} else {
+				sale.disabled = false;
+				wrapper.classList.remove('invoice-create-sales-disabled');
+			}
+
+		});
+
+	}
 
 	static customize(target) {
 

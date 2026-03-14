@@ -441,7 +441,7 @@ class SaleLib extends SaleCrud {
 					->delegateCollection('sale', ['type', NULL]),
 			])
 			->option('count')
-			->where('m1.id', 'NOT IN', $search->get('notId'), if: $search->get('notId')?->notEmpty())
+			->where('m1.id', 'NOT IN', $search->get('notIds'), if: $search->get('notIds'))
 			->whereDocument($search->get('document'), if: $search->get('document'))
 			->where('m1.id', 'IN', fn() => explode(',', $search->get('ids')), if: $search->get('ids'))
 			->where('m1.farm', $eFarm)
@@ -667,7 +667,7 @@ class SaleLib extends SaleCrud {
 
 	}
 
-	public static function getForInvoice(Customer $eCustomer, array $ids, bool $checkInvoice = TRUE): Sale|\Collection {
+	public static function getForInvoice(Customer $eCustomer, array $ids, bool $checkInvoice = TRUE): \Collection {
 
 		$cSale = Sale::model()
 			->select(Sale::getSelection())
@@ -681,7 +681,7 @@ class SaleLib extends SaleCrud {
 			->whereId('IN', $ids)
 			->whereItems('>', 0)
 			->whereInvoice(NULL, if: $checkInvoice)
-			->whereProfile(Sale::SALE)
+			->whereProfile('IN', [Sale::SALE, Sale::PURCHASE])
 			->wherePreparationStatus(Sale::DELIVERED)
 			->sort(['id' => SORT_ASC])
 			->getCollection();
@@ -702,7 +702,7 @@ class SaleLib extends SaleCrud {
 
 		$properties = [
 			'customer' => ['type', 'name'],
-			'hasVat', 'taxes',
+			'hasVat', 'taxes', 'profile',
 			'priceExcludingVat' => new \Sql('SUM(priceExcludingVat)', 'float'),
 			'priceIncludingVat' => new \Sql('SUM(priceIncludingVat)', 'float'),
 			'number' => new \Sql('COUNT(*)'),
@@ -720,13 +720,14 @@ class SaleLib extends SaleCrud {
 			->whereType($type, if: in_array($type, [Customer::PRIVATE, Customer::PRO]))
 			->whereDeliveredAt('LIKE', $month.'%')
 			->where('m1.invoice',NULL)
-			->whereProfile('IN', [Sale::SALE, Sale::SALE_MARKET])
+			->whereProfile('IN', [Sale::SALE, Sale::PURCHASE])
 			->wherePreparationStatus(Sale::DELIVERED)
 			->or(
 				fn() => $this->wherePaymentStatus(Sale::NOT_PAID),
+				fn() => $this->wherePaymentStatus(Sale::FAILED),
 				fn() => $this->wherePaymentStatus(NULL)
 			)
-			->group(['m1.customer', 'taxes', 'hasVat']);
+			->group(['m1.customer', 'taxes', 'hasVat', 'profile']);
 
 		if($type === \payment\MethodLib::TRANSFER) {
 			$eMethodTransfer = \payment\MethodLib::getByFqn($eFarm, \payment\MethodLib::TRANSFER);

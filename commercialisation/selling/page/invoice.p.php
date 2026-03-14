@@ -26,18 +26,19 @@ new \selling\InvoicePage()
 	})
 	->create(function($data) {
 
-		$data->cSale = \selling\SaleLib::getForInvoice($data->e['customer'], GET('sales', 'array'));
+		$cSale = \selling\SaleLib::getForInvoice($data->e['customer'], GET('firstSale', 'array'));
+		$data->eSaleFirst = $cSale->empty() ? new \selling\Sale() : $cSale->first();
 
 		if(
 			GET('more') or
-			$data->cSale->empty()
+			$data->eSaleFirst->empty()
 		) {
 
 			$data->search = new Search([
 				'delivered' => GET('delivered', 'int', 60),
 				'customer' => $data->e['customer'],
 				'invoicing' => TRUE,
-				'notId' => $data->cSale
+				'notIds' => $data->eSaleFirst->empty() ? [] : [$data->eSaleFirst['id']]
 			]);
 
 			$data->cSaleMore = \selling\SaleLib::getByFarm($data->e['farm'], search: $data->search);
@@ -176,6 +177,8 @@ new Page(function($data) {
 		$fw->validate();
 
 		$cInvoice = \selling\InvoiceLib::buildCollectionForInvoice($data->eFarm, $eInvoice, POST('sales', 'array', []));
+
+		$fw->validate();
 
 		\selling\InvoiceLib::createCollection($cInvoice);
 

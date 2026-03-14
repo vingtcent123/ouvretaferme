@@ -124,6 +124,7 @@ Farm:
   stockNotesUpdatedBy: ?user\User
   hasShops: bool = FALSE
   hasSales: bool = FALSE
+  hasInvoices: bool = FALSE
   hasPurchases: bool = FALSE
   hasCultivations: bool = FALSE
   hasAccounting: bool = FALSE

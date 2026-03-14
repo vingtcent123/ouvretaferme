@@ -496,7 +496,7 @@ class SaleUi {
 							$h .= '</td>';
 						}
 
-						if(in_array('status', $hide) === FALSE) {
+						if(in_array('preparationStatus', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-status">';
 								$h .= $this->getPreparationStatusForUpdate($eSale, 'btn-xs');
@@ -519,18 +519,7 @@ class SaleUi {
 									}
 								$h .= '</div>';
 								$h .= '<div class="sale-item-delivery-source util-annotation">';
-									if($eSale['shop']->notEmpty()) {
-										$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
-										if($eSale['shopShared']) {
-											$h .= '  <span class="util-badge bg-secondary">'.\Asset::icon('people-fill').'</span>';
-										}
-									} else if($eSale->isMarketSale()) {
-										$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']->getName()).'</a>';;
-									} else if($eSale->isMarket()) {
-										if($eSale['marketSales'] > 0) {
-											$h .= \Asset::icon('cart4').' '.p("{value} vente", "{value} ventes", $eSale['marketSales']);
-										}
-									}
+									$h .= $this->getDeliverySource($eSale);
 								$h .= '</div>';
 							$h .= '</td>';
 
@@ -617,6 +606,27 @@ class SaleUi {
 
 		if($hasBatch) {
 			$h .= $this->getBatch($eFarm, $cPaymentMethod);
+		}
+
+		return $h;
+
+	}
+
+	public function getDeliverySource(Sale $eSale): string {
+
+		$h = '';
+
+		if($eSale['shop']->notEmpty()) {
+			$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
+			if($eSale['shopShared']) {
+				$h .= '  <span class="util-badge bg-secondary">'.\Asset::icon('people-fill').'</span>';
+			}
+		} else if($eSale->isMarketSale()) {
+			$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']->getName()).'</a>';;
+		} else if($eSale->isMarket()) {
+			if($eSale['marketSales'] > 0) {
+				$h .= \Asset::icon('cart4').' '.p("{value} vente", "{value} ventes", $eSale['marketSales']);
+			}
 		}
 
 		return $h;
@@ -1176,7 +1186,7 @@ class SaleUi {
 				if($eSale['farm']->hasInvoicingMentions() === FALSE) {
 					$link = '/farm/configuration:updateInvoiceMentions?id='.$eSale['farm']['id'];
 				} else {
-					$link = '/selling/invoice:create?customer='.$eSale['customer']['id'].'&sales[]='.$eSale['id'].'&origin=sales';
+					$link = '/selling/invoice:create?customer='.$eSale['customer']['id'].'&firstSale='.$eSale['id'].'&origin=sales';
 				}
 				$document = '<a href="'.$link.'" class="btn btn-sm sale-document sale-document-new" title="'.s("Créer une facture").'">';
 					$document .= '<div class="sale-document-name">'.\selling\SellingSetting::INVOICE.'</div>';

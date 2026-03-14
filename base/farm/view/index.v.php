@@ -816,16 +816,18 @@ new AdaptativeView('/ferme/{id}/factures', function($data, FarmTemplate $t) {
 	$h = '<div class="util-action">';
 		$h .= '<h1>'.s("Factures").'</h1>';
 
-		$h .= '<div class="flex-align-center">';
+		$h .= '<div>';
 			if($data->nSuggestion > 0) {
 				$h .= new \preaccounting\PreaccountingUi()->getLinkToReconciliate($data->eFarm, $data->nSuggestion);
 			}
 
+			$h .= ' <a href="/doc/selling:invoicing" class="btn btn-outline-primary">'.\asset::Icon('person-raised-hand').' '.s("Aide").'</a> ';
+
 			if($data->hasInvoices) {
-				$h .= '<a '.attr('onclick', 'Lime.Search.toggle("#invoice-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
+				$h .= ' <a '.attr('onclick', 'Lime.Search.toggle("#invoice-search")').' class="btn btn-primary">'.\Asset::icon('search').'</a> ';
 			}
 			if($data->hasSales) {
-				$h .= '<a class="btn btn-primary" data-dropdown="bottom-end">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle facture").'</span></a> ';
+				$h .= ' <a class="btn btn-primary" data-dropdown="bottom-end">'.\Asset::icon('plus-circle').'<span class="hide-xs-down"> '.s("Nouvelle facture").'</span></a> ';
 				$h .= '<div class="dropdown-list">';
 					$h .= '<div class="dropdown-title">'.s("Facturer les ventes").'</div> ';
 					$h .= '<a href="/selling/invoice:create?farm='.$data->eFarm['id'].'" class="dropdown-item">'.s("D'un seul client").'</a> ';

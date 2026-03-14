@@ -273,7 +273,7 @@ new AdaptativeView('receipts', function($data, DocTemplate $t) {
 
 	echo '<h2>'.s("Comment utiliser {siteName} pour mon livre des recettes et mon registre des achats ?").'</h2>';
 	echo '<p>'.s("Il s'agit tout simplement d'utiliser le logiciel comptable proposé par {siteName}, mais dans sa version ultra-simplifiée").'</p>';
-	echo '<p>'.s("Dès que possible, {siteName} indique pour vous les numéros de compte afin que vous ne vous occupiez que des informations réellement importantes.").'</p>';
+	echo '<p>'.s("Dès que possible, {siteName} pré-remplit pour vous les numéros de compte afin que vous ne vous occupiez que des informations réellement importantes.").'</p>';
 	echo '<p>'.s("Vous enregistrez donc :").'</p>';
 	echo '<ul>';
 		echo '<li>'.s("vos <b>ventes</b> avec le numéro de compte {value}", \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS).'</li>';
