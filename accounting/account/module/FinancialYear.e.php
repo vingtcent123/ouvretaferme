@@ -35,7 +35,7 @@ class FinancialYear extends FinancialYearElement {
 
 	// Livre des recettes
 	public function isCashReceipts() {
-		return $this['accountingMode'] === FinancialYear::CASH_RECEIPTS;
+		return $this->exists() and $this['accountingMode'] === FinancialYear::CASH_RECEIPTS;
 	}
 
 	// Comptabilité à l'engagement
