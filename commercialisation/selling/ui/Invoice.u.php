@@ -23,9 +23,11 @@ class InvoiceUi {
 
 	}
 
-	public static function downloadUrl(Invoice $e): string {
+	public static function downloadUrl(Invoice $eInvoice): string {
 
-		return '/facture/'.$e['id'].'/telecharger';
+		return '/facture/'.$eInvoice['id'].'/telecharger';
+
+
 
 	}
 
@@ -115,11 +117,19 @@ class InvoiceUi {
 
 	public function getButtons(Invoice $eInvoice): string {
 
+		if($eInvoice->acceptDownload()) {
+			$text = s("Télécharger le PDF");
+		} else if($eInvoice['status'] === Invoice::DRAFT) {
+			$text = s("Télécharger un proforma");
+		} else {
+			return '';
+		}
+
 		$h = '<div class="mb-1">';
 
-			if($eInvoice->acceptDownload()) {
-				$h .= '<a href="'.InvoiceUi::downloadUrl($eInvoice).'" data-ajax-navigation="never" class="btn btn-primary btn-xl">'.\Asset::icon('download').' '.s("Télécharger le PDF").'</a>';
-			}
+			$h .= '<a href="'.InvoiceUi::downloadUrl($eInvoice).'" data-ajax-navigation="never" class="btn btn-primary btn-xl">'.\Asset::icon('download').' ';
+				$h .= $text;
+			$h .= '</a>';
 
 		$h .= '</div>';
 
@@ -353,7 +363,7 @@ class InvoiceUi {
 									if($eInvoice->canRead() === FALSE) {
 										$h .= '<span class="btn btn-sm disabled">'.$eInvoice['number'].'</span>';
 									} else {
-										$h .= '<a href="/facture/'.$eInvoice['id'].'" class="btn btn-sm '.($eInvoice['date'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.$eInvoice['number'].'</a>';
+										$h .= '<a href="/facture/'.$eInvoice['id'].'" class="btn btn-sm '.($eInvoice['date'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.($eInvoice['document'] === NULL ? 'PROFORMA' : encode($eInvoice['number'])).'</a>';
 									}
 								}
 							}
@@ -470,11 +480,14 @@ class InvoiceUi {
 
 			if(
 				$eInvoice->acceptDownload() or
-				$eInvoice->acceptSend()
+				$eInvoice->acceptSend() or
+				$eInvoice['status'] === Invoice::DRAFT
 			) {
 
 				if($eInvoice->acceptDownload()) {
 					$h .= '<a href="'.self::downloadUrl($eInvoice).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger la facture").'</a>';
+				} else if($eInvoice['status'] === Invoice::DRAFT) {
+					$h .= '<a href="'.self::downloadUrl($eInvoice).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger un proforma").'</a>';
 				}
 
 				if($eInvoice->acceptSend()) {
