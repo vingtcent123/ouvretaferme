@@ -94,13 +94,20 @@ class RawLib {
 
 	public static function otherNonTaxable(\Search $search, int $precision): float {
 
+		$subventionsFilter =  'accountLabel LIKE "'.join('%" OR accountLabel LIKE "', \account\AccountSetting::TURNOVER_SUBVENTION_CLASSES).'%"';
+
 		return round(
 			\journal\OperationLib::applySearch($search)
 				->select([
 				'amount' => new \Sql('SUM(IF(type = "credit", amount, -1 * amount))', 'float'),
 				])
-				->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS.'%')
-				->whereVatRule(\journal\Operation::VAT_0)
+				->or(
+					fn() => $this
+						->whereAccountLabel('LIKE', \account\AccountSetting::PRODUCT_SOLD_ACCOUNT_CLASS.'%')
+						->whereVatRule(\journal\Operation::VAT_0),
+					fn() => $this
+						->where(new \Sql($subventionsFilter)),
+				)
 				->get()['amount'] ?? 0.0,
 			$precision
 		);
