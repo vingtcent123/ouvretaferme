@@ -754,8 +754,9 @@ div.input-group > .input-group-addon.input-group-addon-for-input {
 	--container-xs-padding: 0.5rem;
 	--container-sm-padding: 1rem;
 	--container-md-padding: 1.5rem;
-	--container-lg-padding: 2rem;
-	--container-xl-padding: 2rem;
+	--container-lg-padding: 1.5rem;
+	--container-xl-padding: 1.5rem;
+	--container-xxl-padding: 2rem;
 
 	--container-width: calc(var(--screen-width) - 2 * var(--container-padding) - var(--nav-width));
 
@@ -793,10 +794,18 @@ div.input-group > .input-group-addon.input-group-addon-for-input {
 
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1200px) and (max-width: 1599px) {
 
 	:root {
 		--container-padding: var(--container-xl-padding);
+	}
+
+}
+
+@media (min-width: 1600px) {
+
+	:root {
+		--container-padding: var(--container-xxl-padding);
 	}
 
 }
@@ -2101,7 +2110,7 @@ td.util-manage-vignette {
 }
 
 .btn.btn-xs {
-	padding: 0.375rem 0.5rem;
+	padding: 0.3rem 0.5rem;
 	font-size: 0.85rem;
 	border-radius: var(--radius);
 }

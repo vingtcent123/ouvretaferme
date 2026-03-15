@@ -4,13 +4,6 @@
 	font-size: 1.1rem;
 }
 
-div.product-item-wrapper {
-	overflow-x: auto;
-}
-
-table.product-item-table {
-	min-width: calc(599px);
-}
 td.product-item-actions {
 	text-align: right;
 }

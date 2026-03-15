@@ -227,9 +227,21 @@ class ProductUi {
 		$displayStock = $cProduct->match(fn($eProduct) => $eProduct['stock'] !== NULL);
 		$displayAccounts = ($eFarm->hasAccounting() and $cProduct->match(fn($eProduct) => ($eProduct['proAccount']->notEmpty() or $eProduct['privateAccount']->notEmpty())));
 
-		$h .= '<div class="product-item-wrapper stick-md">';
+		$columns = [\farm\Farmer::TURNOVER];
 
-		$h .= '<table class="product-item-table tbody-even" data-batch="#batch-product">';
+		if($displayAccounts) {
+			$columns[] = \farm\Farmer::ACCOUNT;
+		}
+
+		$displayColumn = $eFarm->getView('viewSellingProductsColumn');
+
+		if(in_array($displayColumn, $columns) === FALSE) {
+			$displayColumn = first($columns);
+		}
+
+		$h .= '<div class="util-overflow-md stick-md">';
+
+		$h .= '<table class="tbody-even" data-batch="#batch-product">';
 
 			$h .= '<thead>';
 
@@ -247,26 +259,58 @@ class ProductUi {
 						$h .= '<th rowspan="2" class="text-end hide-xl-down">'.$search->linkSort('stock', s("Stock"), SORT_DESC).'</th>';
 					}
 					$h .= '<th rowspan="2">'.s("Unité").'</th>';
-					$h .= '<th colspan="2" class="text-center hide-lg-down">'.s("Ventes").'</th>';
 					$h .= '<th colspan="2" class="text-center t-highlight">'.s("Prix de base").'</th>';
 					if($eFarm->getConf('hasVat')) {
 						$h .= '<th rowspan="2" class="text-center product-item-vat">'.s("TVA").'</th>';
 					}
-					if($displayAccounts) {
-						$h .= '<th colspan="2" class="text-center t-highlight hide-xl-down">'.s("Comptes").'</th>';
-					}
+					$h .= '<th colspan="2" class="text-center t-highlight hide-lg-down">';
+
+						$label = match($displayColumn) {
+							\farm\Farmer::TURNOVER => s("Ventes"),
+							\farm\Farmer::ACCOUNT => s("Comptes")
+						};
+
+						if(count($columns) > 1) {
+
+							$h .= '<a class="dropdown-toggle btn btn-xs btn-outline-primary" data-dropdown="bottom-end">'.$label.'</a>';
+							$h .= '<div class="dropdown-list">';
+								foreach($columns as $column) {
+
+									$description = match($column) {
+										\farm\Farmer::TURNOVER => s("Afficher les ventes"),
+										\farm\Farmer::ACCOUNT => s("Afficher les numéros de compte")
+									};
+
+									$h .= '<a href="'.\util\HttpUi::setArgument(LIME_REQUEST, 'column', $column).'" class="dropdown-item">'.$description.'</a>';
+
+								}
+							$h .= '</div>';
+
+						} else {
+							$h .= $label;
+						}
+					$h .= '</th>';
 					$h .= '<th rowspan="2" class="text-center">'.s("Activé").'</th>';
 					$h .= '<th rowspan="2"></th>';
 				$h .= '</tr>';
 
 				$h .= '<tr>';
-					$h .= '<th class="text-end hide-lg-down">'.$year.'</th>';
-					$h .= '<th class="text-end product-item-year-before hide-lg-down">'.$yearBefore.'</th>';
+
 					$h .= '<th class="text-end t-highlight">'.s("particulier").'</th>';
 					$h .= '<th class="text-end t-highlight">'.s("pro").'</th>';
-					if($displayAccounts) {
-						$h .= '<th class="text-end t-highlight hide-xl-down">'.s("particulier").'</th>';
-						$h .= '<th class="text-end t-highlight hide-xl-down">'.s("pro").'</th>';
+
+					switch($displayColumn) {
+
+						case \farm\Farmer::TURNOVER :
+							$h .= '<th class="text-end t-highlight hide-lg-down">'.$year.'</th>';
+							$h .= '<th class="text-end t-highlight product-item-year-before hide-lg-down">'.$yearBefore.'</th>';
+							break;
+
+						case \farm\Farmer::ACCOUNT :
+							$h .= '<th class="text-end t-highlight hide-lg-down">'.s("particulier").'</th>';
+							$h .= '<th class="text-end t-highlight hide-lg-down">'.s("pro").'</th>';
+							break;
+
 					}
 				$h .= '</tr>';
 
@@ -305,24 +349,6 @@ class ProductUi {
 
 						$h .= '<td class="product-item-unit">';
 							$h .= \selling\UnitUi::getSingular($eProduct['unit']);
-						$h .= '</td>';
-
-						$h .= '<td class="text-end hide-lg-down">';
-							if($eItemTotal->notEmpty() and $eItemTotal['year']) {
-								$amount = \util\TextUi::money($eItemTotal['year'], precision: 0);
-								$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
-							} else {
-								$h .= '-';
-							}
-						$h .= '</td>';
-
-						$h .= '<td class="text-end hide-lg-down customer-item-year-before">';
-							if($eItemTotal->notEmpty() and $eItemTotal['yearBefore']) {
-								$amount = \util\TextUi::money($eItemTotal['yearBefore'], precision: 0);
-								$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;
-							} else {
-								$h .= '-';
-							}
 						$h .= '</td>';
 
 						$h .= '<td class="product-item-price t-highlight text-end">';
@@ -387,49 +413,74 @@ class ProductUi {
 
 						}
 
-						if($displayAccounts) {
-							$h .= '<td class="text-end t-highlight hide-xl-down">';
-								if($eProduct['private'] === FALSE) {
-									$h .= \Asset::icon('x');
-								} else if($eProduct['privateAccount']->notEmpty()) {
-									$value = '<span title="'.encode($eProduct['privateAccount']['description']).'">';
-										$value .= $eProduct['privateAccount']['class'];
-									$value .= '</span>';
-									$h .= $eProduct->quick('privateAccount', $value);
-								}
-							$h .= '</td>';
-							$h .= '<td class="text-end t-highlight hide-xl-down td-min-content">';
+						switch($displayColumn) {
 
-								if($eProduct['proAccount']->notEmpty()) {
+							case \farm\Farmer::TURNOVER :
 
-									$eAccount = $eProduct['proAccount'];
-									$details = encode($eAccount['class']);
+								$h .= '<td class="text-end t-highlight hide-lg-down">';
+									if($eItemTotal->notEmpty() and $eItemTotal['year']) {
+										$amount = \util\TextUi::money($eItemTotal['year'], precision: 0);
+										$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$year.'">'.$amount.'</a>' : $amount;
+									} else {
+										$h .= '-';
+									}
+								$h .= '</td>';
 
-								} else if($eProduct['privateAccount']->notEmpty()) {
+								$h .= '<td class="text-end t-highlight hide-lg-down customer-item-year-before">';
+									if($eItemTotal->notEmpty() and $eItemTotal['yearBefore']) {
+										$amount = \util\TextUi::money($eItemTotal['yearBefore'], precision: 0);
+										$h .= $eFarm->canAnalyze() ? '<a href="/selling/product:analyze?id='.$eProduct['id'].'&year='.$yearBefore.'">'.$amount.'</a>' : $amount;
+									} else {
+										$h .= '-';
+									}
+								$h .= '</td>';
+								break;
 
-									$eAccount = $eProduct['privateAccount'];
-									$details = '<span class="color-muted" title="'.s("Numéro de compte pour particuliers utilisé pour les professionnels").'">'.\Asset::icon('magic').' ';
-										$details .= encode($eAccount['class']);
-									$details .= '</span>';
+							case \farm\Farmer::ACCOUNT :
+								$h .= '<td class="text-end t-highlight hide-xl-down">';
+									if($eProduct['private'] === FALSE) {
+										$h .= \Asset::icon('x');
+									} else if($eProduct['privateAccount']->notEmpty()) {
+										$value = '<span title="'.encode($eProduct['privateAccount']['description']).'">';
+											$value .= $eProduct['privateAccount']['class'];
+										$value .= '</span>';
+										$h .= $eProduct->quick('privateAccount', $value);
+									}
+								$h .= '</td>';
+								$h .= '<td class="text-end t-highlight hide-xl-down td-min-content">';
 
-								} else {
-									$eAccount = new \account\Account();
-								}
+									if($eProduct['proAccount']->notEmpty()) {
 
-								if($eProduct['pro'] === FALSE) {
-									$h .= \Asset::icon('x');
-								} else if($eAccount->notEmpty()) {
+										$eAccount = $eProduct['proAccount'];
+										$details = encode($eAccount['class']);
 
-									$value = '<span title="'.encode($eAccount['description']).'">';
-										$value .= $details;
-									$value .= '</span>';
+									} else if($eProduct['privateAccount']->notEmpty()) {
 
-									$h .= $eProduct->quick('proAccount', $value);
+										$eAccount = $eProduct['privateAccount'];
+										$details = '<span class="color-muted" title="'.s("Numéro de compte pour particuliers utilisé pour les professionnels").'">'.\Asset::icon('magic').' ';
+											$details .= encode($eAccount['class']);
+										$details .= '</span>';
 
-								}
-							$h .= '</td>';
+									} else {
+										$eAccount = new \account\Account();
+									}
+
+									if($eProduct['pro'] === FALSE) {
+										$h .= \Asset::icon('x');
+									} else if($eAccount->notEmpty()) {
+
+										$value = '<span title="'.encode($eAccount['description']).'">';
+											$value .= $details;
+										$value .= '</span>';
+
+										$h .= $eProduct->quick('proAccount', $value);
+
+									}
+								$h .= '</td>';
+								break;
 
 						}
+
 						$h .= '<td class="product-item-status td-min-content">';
 							$h .= $this->toggle($eProduct);
 						$h .= '</td>';

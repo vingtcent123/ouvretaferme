@@ -181,6 +181,10 @@ new Page(function($data) {
 
 		\farm\FarmerLib::setView('viewSellingProducts', $data->eFarm, \farm\Farmer::PRODUCT);
 
+		if(get_exists('column')) {
+			\farm\FarmerLib::setView('viewSellingProductsColumn', $data->eFarm, GET('column', [\farm\Farmer::TURNOVER, \farm\Farmer::ACCOUNT], \farm\Farmer::LENGTH));
+		}
+
 		$data->cCategory = \selling\CategoryLib::getByFarm($data->eFarm, index: 'id');
 
 		if(get_exists('category')) {

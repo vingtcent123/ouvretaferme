@@ -161,6 +161,7 @@ Farmer:
   viewSoilTasks: bool = FALSE
   viewSellingSales: enum(SALE, SALE_PRIVATE, SALE_PRO, LABEL, PURCHASE, ARCHIVES) = SALE
   viewSellingProducts: enum(PRODUCT, CATEGORY) = PRODUCT
+  viewSellingProductsColumn: enum(TURNOVER, ACCOUNT) = TURNOVER
   viewSellingCustomers: enum(CUSTOMER, CUSTOMER_PRIVATE, CUSTOMER_PRO, GROUP) = CUSTOMER
   viewSellingCategory: enum(ITEM, CUSTOMER, SHOP, PERIOD) = ITEM
   viewSellingCategoryCurrent: ?selling\Category
