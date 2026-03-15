@@ -150,6 +150,10 @@ div.product-vignette-profile {
 	display: block;
 }
 
+.product-write-profile:has(input[name="profile"][value="other"]:checked) [data-profile~="other"] {
+	display: block;
+}
+
 .product-write-profile:has(input[name="profile"][value="composition"]:checked) [data-not-profile~="composition"] {
 	display: none;
 }

@@ -19,6 +19,10 @@ abstract class ProductElement extends \Element {
 	const PUBLIC = 'public';
 	const PRIVATE = 'private';
 
+	const PRODUCTION = 'production';
+	const CONSIGNMENT = 'consignment';
+	const RESALE = 'resale';
+
 	const NO = 'no';
 	const ORGANIC = 'organic';
 	const NATURE_PROGRES = 'nature-progres';
@@ -77,6 +81,7 @@ class ProductModel extends \ModuleModel {
 			'processedAllergen' => ['text8', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'processedComposition' => ['text16', 'min' => 1, 'max' => NULL, 'null' => TRUE, 'cast' => 'string'],
 			'compositionVisibility' => ['enum', [\selling\Product::PUBLIC, \selling\Product::PRIVATE], 'null' => TRUE, 'cast' => 'enum'],
+			'distribution' => ['enum', [\selling\Product::PRODUCTION, \selling\Product::CONSIGNMENT, \selling\Product::RESALE], 'null' => TRUE, 'cast' => 'enum'],
 			'origin' => ['text8', 'min' => 1, 'max' => NULL, 'collate' => 'general', 'null' => TRUE, 'cast' => 'string'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'unit' => ['element32', 'selling\Unit', 'null' => TRUE, 'cast' => 'element'],
@@ -101,7 +106,7 @@ class ProductModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'additional', 'description', 'vignette', 'profile', 'category', 'reference', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'privateAccount', 'proAccount', 'status'
+			'id', 'name', 'additional', 'description', 'vignette', 'profile', 'category', 'reference', 'unprocessedPlant', 'unprocessedVariety', 'mixedFrozen', 'processedPackaging', 'processedAllergen', 'processedComposition', 'compositionVisibility', 'distribution', 'origin', 'farm', 'unit', 'private', 'privatePrice', 'privatePriceInitial', 'privateStep', 'pro', 'proPrice', 'proPriceInitial', 'proPackaging', 'proStep', 'vat', 'quality', 'stock', 'stockLast', 'stockUpdatedAt', 'createdAt', 'privateAccount', 'proAccount', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -163,6 +168,9 @@ class ProductModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'compositionVisibility' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'distribution' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'quality' :
@@ -244,6 +252,10 @@ class ProductModel extends \ModuleModel {
 
 	public function whereCompositionVisibility(...$data): ProductModel {
 		return $this->where('compositionVisibility', ...$data);
+	}
+
+	public function whereDistribution(...$data): ProductModel {
+		return $this->where('distribution', ...$data);
 	}
 
 	public function whereOrigin(...$data): ProductModel {

@@ -392,10 +392,9 @@ class ProductUi {
 								if($eProduct['private'] === FALSE) {
 									$h .= \Asset::icon('x');
 								} else if($eProduct['privateAccount']->notEmpty()) {
-									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
+									$value = '<span title="'.encode($eProduct['privateAccount']['description']).'">';
 										$value .= $eProduct['privateAccount']['class'];
 									$value .= '</span>';
-									$value .= new \account\AccountUi()->getDropdownTitle($eProduct['privateAccount']);
 									$h .= $eProduct->quick('privateAccount', $value);
 								}
 							$h .= '</td>';
@@ -421,10 +420,9 @@ class ProductUi {
 									$h .= \Asset::icon('x');
 								} else if($eAccount->notEmpty()) {
 
-									$value = '<span data-dropdown="bottom" data-dropdown-hover="true">';
+									$value = '<span title="'.encode($eAccount['description']).'">';
 										$value .= $details;
 									$value .= '</span>';
-									$value .= new \account\AccountUi()->getDropdownTitle($eAccount);
 
 									$h .= $eProduct->quick('proAccount', $value);
 
@@ -1081,6 +1079,11 @@ class ProductUi {
 
 
 			$h .= $form->dynamicGroup($eProduct, 'profile');
+
+			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('distribution')).'">';
+				$h .= $form->dynamicGroup($eProduct, 'distribution');
+			$h .= '</div>';
+
 			$h .= $form->dynamicGroups($eProduct, ['name*', 'reference']);
 
 			if($eProduct['cCategory']->notEmpty()) {
@@ -1169,6 +1172,11 @@ class ProductUi {
 			$h .= $form->hidden('id', $eProduct['id']);
 
 			$h .= $form->dynamicGroup($eProduct, 'profile');
+
+			$h .= '<div data-profile="'.implode(' ', Product::getProfiles('distribution')).'">';
+				$h .= $form->dynamicGroup($eProduct, 'distribution');
+			$h .= '</div>';
+
 			$h .= $form->dynamicGroup($eProduct, 'name');
 			$h .= $form->dynamicGroup($eProduct, 'reference');
 
@@ -1480,6 +1488,7 @@ class ProductUi {
 			'processedPackaging' => s("Conditionnement"),
 			'processedAllergen' => s("Allergènes"),
 			'profile' => s("Type"),
+			'distribution' => s("Distribution"),
 			'origin' => s("Origine"),
 			'description' => s("Présentation du produit"),
 			'quality' => s("Signe de qualité"),
@@ -1743,6 +1752,16 @@ class ProductUi {
 				];
 				$d->default = Product::PRIVATE;
 				$d->required = TRUE;
+				break;
+
+			case 'distribution' :
+				$d->field = 'select';
+				$d->required = TRUE;
+				$d->values = [
+					Product::PRODUCTION => s("Votre production"),
+					Product::RESALE => s("Produit en achat-revente"),
+					Product::CONSIGNMENT => s("Produit en dépôt-vente"),
+				];
 				break;
 
 			case 'origin' :

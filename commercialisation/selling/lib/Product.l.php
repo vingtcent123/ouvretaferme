@@ -7,7 +7,7 @@ class ProductLib extends ProductCrud {
 		return [
 			'unit', 'name', 'category', 'profile', 'reference',
 			'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'processedPackaging', 'processedComposition', 'mixedFrozen', 'processedAllergen',
-			'origin', 'additional', 'description', 'quality',
+			'distribution', 'origin', 'additional', 'description', 'quality',
 			'pro', 'private', 'proOrPrivate',
 			'proPrice', 'proPriceDiscount', 'proPackaging', 'privatePrice', 'privatePriceDiscount', 'vat',
 			'proOrPrivatePrice',
@@ -82,7 +82,7 @@ class ProductLib extends ProductCrud {
 			$properties = array_merge($properties, [
 				'name', 'category', 'reference',
 				'compositionVisibility', 'unprocessedPlant', 'unprocessedVariety', 'processedComposition', 'mixedFrozen', 'processedPackaging', 'processedAllergen',
-				'origin', 'additional', 'description', 'quality',
+				'distribution', 'origin', 'additional', 'description', 'quality',
 				'proPrice', 'proPriceDiscount', 'proPackaging', 'proStep', 'privatePrice', 'privatePriceDiscount', 'privateStep', 'vat',
 				'proOrPrivatePrice',
 			]);
@@ -483,10 +483,7 @@ class ProductLib extends ProductCrud {
 					->whereProduct($e)
 					->getCollection();
 
-				foreach($cProductShop as $eProductShop) {
-					\shop\ProductLib::deleteCollection($cProductShop);
-				}
-
+				\shop\ProductLib::deleteCollection($cProductShop);
 
 				Product::model()->update($e, [
 					'status' => Product::DELETED
