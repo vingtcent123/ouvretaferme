@@ -64,7 +64,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		if($eAsset[$type.'Mode'] === Asset::LINEAR) {
 
 			$startDate = $eAsset['startDate'];
-			$daysFirstMonth = max(1, self::DAYS_IN_MONTH - (int)mb_substr($startDate, -2) + 1);
+			$daysFirstMonth = max(0, self::DAYS_IN_MONTH - (int)mb_substr($startDate, -2) + 1);
 
 		} else {
 
@@ -83,7 +83,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		// Nombre de mois dans cet exercice comptable (gère le cas où l'exercice comptable dure + que 1 an)
 		$monthsInFinancialYear = self::getMonthsBetweenTwoDates($eFinancialYear['startDate'], $eFinancialYear['endDate']);
 
-		return min(1, $days / (self::DAYS_IN_MONTH * $monthsInFinancialYear));
+		return $days / (self::DAYS_IN_MONTH * $monthsInFinancialYear);
 
 	}
 
@@ -396,7 +396,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	private static function computeLinearTable(Asset $eAsset, string $type): array {
 
-		$durationInYears = floor($eAsset[$type.'Duration'] / 12);
+		$durationInYears = $eAsset[$type.'Duration'] / 12;
 		$rate = self::getLinearRate($durationInYears);
 
 		$cFinancialYearAll = \account\FinancialYearLib::getAll();
@@ -434,11 +434,11 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			} else {
 
 				switch($i) {
+					case $durationInYears: // Cas doit arriver AVANT au cas où la durée d'amortissement est < 1 an (ex. DJA)
+						$amortization = round($amortizableBase - $amortizationCumulated, 2);
+						break;
 					case 0:
 						$amortization = round($amortizableBase * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset, $type) / 100, 2);
-						break;
-					case $durationInYears:
-						$amortization = round($amortizableBase - $amortizationCumulated, 2);
 						break;
 					default:
 						$amortization = round($amortizableBase * $rate / 100, 2);
@@ -476,13 +476,13 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	}
 
-	private static function getLinearRate(int $duration): float {
+	private static function getLinearRate(float $duration): float {
 
 		if($duration === 0) {
 			return 100;
 		}
 
-		return 1 / $duration * 100;
+		return 100 / $duration;
 
 	}
 
