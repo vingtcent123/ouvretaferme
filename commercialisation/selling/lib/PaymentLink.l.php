@@ -66,12 +66,16 @@ class PaymentLinkLib extends PaymentLinkCrud {
 
 	public static function getValidByElement(Invoice|Sale $eElement): \Collection {
 
+		if($eElement->acceptStripeLink() === FALSE) {
+			return new \Collection();
+		}
+
 		return PaymentLink::model()
 			->select(PaymentLink::getSelection())
 			->whereFarm($eElement['farm'])
 			->whereSale($eElement, if: $eElement instanceof Sale)
 			->whereInvoice($eElement, if: $eElement instanceof Invoice)
-			->whereStatus(PaymentLink::ACTIVE)
+			->whereStatus('IN', [PaymentLink::ACTIVE, PaymentLink::PAID])
 			->where(new \Sql('validUntil > CURDATE()'))
 			->getCollection();
 
@@ -104,7 +108,14 @@ class PaymentLinkLib extends PaymentLinkCrud {
 
 		new \mail\SendLib()
 			->setTo($eElement['farm']['legalEmail'])
-			->setContent(...PaymentLinkUi::getPaymentEmail($ePaymentLink))
+			->setTo('emilie.guth@gmail.com') // TODO ne pas commiter
+			->setContent(...PaymentLinkUi::getPaymentReceivedEmail($ePaymentLink))
+			->send();
+
+		new \mail\SendLib()
+			->setTo($eElement['customer']['invoiceEmail'] ?? $eElement['customer']['email'])
+			->setTo('emilie.guth@gmail.com') // TODO ne pas commiter
+			->setContent(...PaymentLinkUi::getPaymentConfirmationEmail($ePaymentLink))
 			->send();
 
 	}

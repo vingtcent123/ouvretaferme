@@ -269,6 +269,7 @@ new \selling\SalePage()
 
 		$data->e['invoice'] = \selling\InvoiceLib::getById($data->e['invoice']);
 		$data->e['shopPoint'] = \shop\PointLib::getById($data->e['shopPoint']);
+		$data->e['cPaymentLink'] = \selling\PaymentLinkLib::getValidByElement($data->e);
 
 		if($data->e->isMarket()) {
 

@@ -9,9 +9,7 @@ class PaymentPageLib {
 
 			$data->e['cPaymentMethod'] = \payment\MethodLib::getByFarm($data->e['farm'], NULL);
 
-			if($data->e->acceptStripeLink()) {
-				$data->e['cPaymentLink'] = PaymentLinkLib::getValidByElement($data->e);
-			}
+			$data->e['cPaymentLink'] = PaymentLinkLib::getValidByElement($data->e);
 
 			throw new \ViewAction($data);
 

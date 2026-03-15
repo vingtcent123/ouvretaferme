@@ -3,7 +3,22 @@ namespace selling;
 
 class PaymentLinkUi {
 
-	public static function getPaymentEmail(PaymentLink $ePaymentLink): array {
+	public static function getList(Sale|Invoice $eElement): string {
+
+		if($eElement['cPaymentLink']->empty()) {
+			return '';
+		}
+
+		$h = '<h3>';
+			$h .= s("Liens de paiement").'  <span class="util-badge bg-primary">'.$eElement['cPaymentLink']->count().'</span>';
+		$h .= '</h3>';
+		$h .= new PaymentLinkUi()->showExistingPaymentLinks($eElement['cPaymentLink']);
+
+		return $h;
+
+	}
+
+	public static function getPaymentReceivedEmail(PaymentLink $ePaymentLink): array {
 
 		if($ePaymentLink['source'] === PaymentLink::SALE) {
 
@@ -47,6 +62,42 @@ L'équipe {siteName}", [
 
 	}
 
+	public static function getPaymentConfirmationEmail(PaymentLink $ePaymentLink): array {
+
+		if($ePaymentLink['source'] === PaymentLink::SALE) {
+
+			$eElement = $ePaymentLink['sale'];
+			$reference = s("commande {value}", $eElement['document']);
+
+		} else if($ePaymentLink['source'] === PaymentLink::INVOICE) {
+
+			$eElement = $ePaymentLink['invoice'];
+			$reference = s("facture {value}", $eElement['number']);
+
+		}
+
+		$title = s("Confirmation de paiement pour la {value}", $reference);
+
+		$content = s("Bonjour,
+		
+Nous vous confirmons que le paiement d'un montant de {amount} depuis un lien Stripe a bien été enregistré pour la {reference}. 
+
+Merci et à bientôt,
+{farmName}", [
+			'amount' => \util\TextUi::money($ePaymentLink['amountIncludingVat']),
+			'reference' => $reference,
+			'farmName' => $eElement['farmName'],
+		]);
+
+
+		return [
+			$title,
+			\mail\DesignUi::encapsulateText($eElement['farm'], $content),
+			\mail\DesignUi::encapsulateHtml($eElement['farm'], nl2br($content))
+		];
+
+	}
+
 	public function create(Invoice|Sale $eElement, \Collection $cPaymentLink): \Panel {
 
 		$form = new \util\FormUi();
@@ -72,8 +123,17 @@ L'équipe {siteName}", [
 		$source = $eElement instanceof Invoice ? PaymentLink::INVOICE : PaymentLink::SALE;
 
 		$h = '<h4>'.$title.'</h4>';
+		if($eElement['paymentAmount'] !== NULL and $eElement['priceIncludingVat'] - $eElement['paymentAmount'] > 0) {
+			$h .= '<div class="util-info">';
+				if($eElement instanceof Sale) {
+					$h .= s("Il reste {value} à régler sur cette vente.", \util\TextUi::money($eElement['priceIncludingVat'] - $eElement['paymentAmount']));
+				} else {
+					$h .= s("Il reste {value} à régler sur cette facture.", \util\TextUi::money($eElement['priceIncludingVat'] - $eElement['paymentAmount']));
+				}
+				$h .= '</div>';
+		}
 
-		$h .= new PaymentLinkUi()->showExistingPaymentLinks($cPaymentLink);
+		$h .= new PaymentLinkUi()->showExistingPaymentLinksBlock($cPaymentLink);
 
 		$h .= $form->openAjax('/selling/paymentLink:doCreate');
 
@@ -99,13 +159,13 @@ L'équipe {siteName}", [
 
 		return new \Panel(
 			id: 'panel-'.$source.'-update',
-			title: s("Créer un lien de paiement par carte bancaire en ligne"),
+			title: s("  Créer un lien de paiement par carte bancaire en ligne"),
 			body: $h
 		);
 
 	}
 
-	public function showExistingPaymentLinks(\Collection $cPaymentLink): string{
+	public function showExistingPaymentLinksBlock(\Collection $cPaymentLink): string {
 
 		if($cPaymentLink->empty()) {
 			return '';
@@ -113,38 +173,49 @@ L'équipe {siteName}", [
 
 		$h = '<div class="util-block-optional">';
 			$h .= '<p>'.p("Vous avez un lien de paiement actif : ", "Vous avez {value} liens de paiement actifs :", $cPaymentLink->count()).'</p>';
-			$h .= '<table>';
+			$h .= new PaymentLinkUi()->showExistingPaymentLinks($cPaymentLink);
+		$h .= '</div>';
+
+		return $h;
+	}
+
+	public function showExistingPaymentLinks(\Collection $cPaymentLink): string {
+
+		if($cPaymentLink->empty()) {
+			return '';
+		}
+
+		$h = '<table class="tbody-even">';
+			$h .= '<thead>';
 				$h .= '<tr>';
 					$h .= '<th>'.self::p('url')->label.'</th>';
-					$h .= '<th>'.self::p('validUntil')->label.'</th>';
 					$h .= '<th>'.self::p('status')->label.'</th>';
-					$h .= '<th>'.self::p('amountIncludingVat')->label.'</th>';
+					$h .= '<th class="text-center">'.self::p('validUntil')->label.'</th>';
+					$h .= '<th class="text-end t-highlight">'.self::p('amountIncludingVat')->label.'</th>';
 					$h .= '<th></th>';
 				$h .= '</tr>';
-				foreach($cPaymentLink as $ePaymentLink) {
-					$h .= '<tr>';
-						$h .= '<td>';
-							$h .= '<a href="'.$ePaymentLink['url'].'" id="payment-url-'.$ePaymentLink['id'].'">'.$ePaymentLink['url'].'</a>';
-						$h .= '</td>';
-						$h .= '<td>';
-							$h .= \util\DateUi::numeric($ePaymentLink['validUntil']);
-						$h .= '</td>';
-						$h .= '<td>';
-							$h .= self::p('status')->values[$ePaymentLink['status']];
-						$h .= '</td>';
-						$h .= '<td class="text-end">';
-							$h .= \util\TextUi::money($ePaymentLink['amountIncludingVat']);
-						$h .= '</td>';
-						$h .= '<td class="text-center">';
-							$h .= '<a onclick="doCopy(this)" data-selector="#payment-url-'.$ePaymentLink['id'].'" data-message="'.s("Copié !").'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('clipboard').' '.s("Copier le lien").'</a>';
-						$h .= '</td>';
-					$h .= '</tr>';
+			$h .= '</thead>';
+			foreach($cPaymentLink as $ePaymentLink) {
+				$h .= '<tr>';
+					$h .= '<td>';
+						$h .= '<a href="'.$ePaymentLink['url'].'" id="payment-url-'.$ePaymentLink['id'].'">'.$ePaymentLink['url'].'</a>';
+					$h .= '</td>';
+					$h .= '<td>';
+						$h .= self::p('status')->values[$ePaymentLink['status']];
+					$h .= '</td>';
+					$h .= '<td class="text-center">';
+						$h .= \util\DateUi::numeric($ePaymentLink['validUntil']);
+					$h .= '</td>';
+					$h .= '<td class="text-end t-highlight">';
+						$h .= \util\TextUi::money($ePaymentLink['amountIncludingVat']);
+					$h .= '</td>';
+					$h .= '<td class="text-center">';
+						$h .= '<a onclick="doCopy(this)" data-selector="#payment-url-'.$ePaymentLink['id'].'" data-message="'.s("Copié !").'" class="btn btn-sm btn-outline-primary">'.\Asset::icon('clipboard').' '.s("Copier le lien").'</a>';
+					$h .= '</td>';
+				$h .= '</tr>';
 
-				}
-			$h .= '</table>';
-
-			$h .= '</div>';
-		$h .= '</div>';
+			}
+		$h .= '</table>';
 
 		return$h;
 	}

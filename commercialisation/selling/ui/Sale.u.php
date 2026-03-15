@@ -2711,7 +2711,11 @@ class SaleUi {
 
 	public function updatePayment(Sale $eSale): \Panel {
 
-		$h = new PaymentLinkUi()->showExistingPaymentLinks($eSale['cPaymentLink']);
+		$h = '';
+
+		if($eSale->acceptStripeLink()) {
+			$h .= new PaymentLinkUi()->showExistingPaymentLinksBlock($eSale['cPaymentLink']);
+		}
 
 		if($eSale->isPaymentOnline(Payment::FAILED)) {
 			$h .= new PaymentTransactionUi()->getOnlinePayment($eSale);

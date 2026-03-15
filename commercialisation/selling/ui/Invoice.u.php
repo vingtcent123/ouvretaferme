@@ -1178,7 +1178,11 @@ class InvoiceUi {
 
 	public function updatePayment(Invoice $eInvoice): \Panel {
 
-		$h = new PaymentLinkUi()->showExistingPaymentLinks($eInvoice['cPaymentLink']);
+		$h = '';
+
+		if($eInvoice->acceptStripeLink() and $eInvoice['cPaymentLink']->count() > 0) {
+			$h .= new PaymentLinkUi()->showExistingPaymentLinksBlock($eInvoice['cPaymentLink']);
+		}
 
 		if($eInvoice->isPaymentOnline(Payment::FAILED)) {
 			$h .= new PaymentTransactionUi()->getOnlinePayment($eInvoice);

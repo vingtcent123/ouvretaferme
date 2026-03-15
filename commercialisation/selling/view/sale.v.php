@@ -27,6 +27,7 @@ new AdaptativeView('salePlain', function($data, FarmTemplate $t) {
 	$t->mainTitle = new \selling\SaleUi()->getHeader($data->e);
 
 	echo new \selling\SaleUi()->getContent($data->e, $data->ccSaleMarket, $data->ccPdf);
+	echo new \selling\PaymentLinkUi()->getList($data->e);
 	echo new \selling\ItemUi()->getBySale($data->e, $data->cItem);
 	echo new \selling\SaleUi()->getMarket($data->eFarm, $data->ccSaleMarket, $data->cPaymentMethod);
 	echo new \selling\HistoryUi()->getList($data->e, $data->cHistory);
