@@ -2853,7 +2853,7 @@ class FarmUi {
 				$h .= '<div class="util-action-navigation-list dropdown-list bg-primary">';
 					$h .= '<div class="dropdown-title">'.s("Paramétrage").'</div>';
 					$h .= '<a href="/farm/farm:update?id='.$eFarm['id'].'" class="dropdown-item">'.\Asset::icon('gear-fill').'  '.s("Paramétrer la ferme").'</a>';
-					$h .= '<a href="/farm/farmer:manage?farm='.$eFarm['id'].' '.($selected === 'team' ? 'selected' : '').'" class="dropdown-item">'.\Asset::icon('people-fill').'  '.s("Gérer l'équipe de la ferme").'</a>';
+					$h .= '<a href="/farm/farmer:manage?farm='.$eFarm['id'].' '.($selected === 'team' ? 'selected' : '').'" class="dropdown-item">'.\Asset::icon('people-fill').'  '.s("Gérer l'équipe").'</a>';
 					$h .= '<a href="'.self::urlSettingsProduction($eFarm).'" class="dropdown-item '.($selected === 'production' ? 'selected' : '').'">'.\Asset::icon('leaf').'  '.s("Paramétrer la production").'</a>';
 					$h .= '<a href="'.self::urlSettingsCommercialisation($eFarm).'" class="dropdown-item '.($selected === 'commercialisation' ? 'selected' : '').'">'.\Asset::icon('basket3').'  '.s("Paramétrer la vente").'</a>';
 					if($eFarm->hasAccounting()) {

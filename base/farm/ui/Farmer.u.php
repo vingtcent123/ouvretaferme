@@ -149,7 +149,7 @@ class FarmerUi {
 			$actions .= '<a href="/farm/farmer:create?farm='.$eFarm['id'].'" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Inviter un utilisateur dans l'équipe").'</a>';
 		$actions .= '</div>';
 		
-		return new \farm\FarmUi()->getSettingsTitle($eFarm, s("Gérer l'équipe de la ferme"), 'team', $actions).'</h1>';
+		return new \farm\FarmUi()->getSettingsTitle($eFarm, s("Gérer l'équipe"), 'team', $actions).'</h1>';
 
 	}
 
@@ -448,7 +448,7 @@ class FarmerUi {
 			$h .= $form->hidden('farm', $eFarmer['farm']['id']);
 
 			$description = '<div class="util-block-help">';
-				$description .= '<p>'.s("En invitant un utilisateur à rejoindre l'équipe de votre ferme, vous lui permettrez d'accéder à un grand nombre de données sur votre ferme. Choisissez le rôle que vous donnez à vos invités avec soin :").'</p>';
+				$description .= '<p>'.s("En invitant un utilisateur à rejoindre votre équipe, vous lui permettrez d'accéder à un grand nombre de données. Choisissez le rôle que vous donnez à vos invités avec soin :").'</p>';
 				$description .= $this->getRoles();
 				$description .= '<p>'.s("Pour inviter un utilisateur, saisissez son adresse e-mail. Il recevra un e-mail lui donnant les instructions à suivre, et devra les réaliser dans un délai de {value} jours.", FarmSetting::INVITE_DELAY).'</p>';
 			$description .= '</div>';

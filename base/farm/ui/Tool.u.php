@@ -179,7 +179,7 @@ class ToolUi {
 		if($this->isEmpty($tools, $cTool, $search)) {
 
 			$h = '<div class="util-block-help">';
-				$h .= ($routineName ? RoutineUi::getProperty($routineName, 'nothing') : s("Vous n'avez pas encore ajouté de matériel à votre ferme. Ajouter du matériel peut être très utile pour suivre les stocks et indiquer le matériel à utiliser pour les interventions !"));
+				$h .= ($routineName ? RoutineUi::getProperty($routineName, 'nothing') : s("Vous n'avez pas encore ajouté de matériel. Ajouter du matériel peut être très utile pour suivre les stocks et indiquer le matériel à utiliser pour les interventions !"));
 			$h .= '</div>';
 
 			$h .= '<h4>'.($routineName ? RoutineUi::getProperty($routineName, 'createTitle') : s("Ajouter un matériel")).'</h4>';

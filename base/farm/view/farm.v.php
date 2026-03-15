@@ -180,7 +180,7 @@ new AdaptativeView('export', function($data, PanelTemplate $t) {
 
 new AdaptativeView('surveyAnalyze', function($data, MainTemplate $t) {
 
-	$t->title = s("Enquête auprès des fermes adhérentes");
+	$t->title = s("Enquête auprès des adhérents");
 
 
 	foreach($data->cSurvey as $eSurvey) {
@@ -205,7 +205,7 @@ new AdaptativeView('surveyAnalyze', function($data, MainTemplate $t) {
 
 new AdaptativeView('surveyMain', function($data, MainTemplate $t) {
 
-	$t->title = s("Enquête auprès des fermes adhérentes");
+	$t->title = s("Enquête auprès des adhérents");
 
 	if($data->cFarm->empty()) {
 		echo '<p>'.s("Vous n'êtes exploitant d'aucune ferme sur {siteName}.").'</p>';

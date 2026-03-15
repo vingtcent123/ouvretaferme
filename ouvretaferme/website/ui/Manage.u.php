@@ -22,7 +22,7 @@ class ManageUi {
 		$h = '<div class="util-block-help">';
 			$h .= '<p>'.s("{siteName} vous permet de créer très facilement un site internet pour votre ferme avec quelques fonctionnalité de base :").'</p>';
 			$h .= '<ul>';
-				$h .= '<li>'.s("Publication des actualités de votre ferme").'</li>';
+				$h .= '<li>'.s("Publication des actualités de votre activité").'</li>';
 				$h .= '<li>'.s("Possibilité de créer un nombre illimité de pages").'</li>';
 				$h .= '<li>'.s("Compatibilité avec les ordinateurs et les mobiles").'</li>';
 				$h .= '<li>'.s("Ajout d'un module de vente en ligne").'</li>';
@@ -77,7 +77,7 @@ class ManageUi {
 
 		$farmEmail = $eWebsite['farm']['legalEmail'];
 
-		$h = '<p>'.s("Vous pouvez facilement intégrer un formulaire de contact sur le site internet de votre ferme. Lorsqu'un client vous contactera par ce biais, vous recevrez un e-mail avec le message laissé par le client.").'</p>';
+		$h = '<p>'.s("Vous pouvez facilement intégrer un formulaire de contact sur le site internet de votre activité. Lorsqu'un client vous contactera par ce biais, vous recevrez un e-mail avec le message laissé par le client.").'</p>';
 
 
 		$h .= '<dl class="util-presentation util-presentation-1 mb-2">';
@@ -90,7 +90,7 @@ class ManageUi {
 		if($farmEmail === NULL) {
 
 			$h .= '<div class="util-block-danger">';
-				$h .= '<p>'.s("Pour intégrer un formulaire de contact sur votre site internet, veuillez d'abord renseigner l'adresse e-mail de votre ferme.").'</p>';
+				$h .= '<p>'.s("Pour intégrer un formulaire de contact sur votre site internet, veuillez d'abord renseigner l'adresse e-mail de votre structure.").'</p>';
 				$h .= '<a href="/farm/farm:update?id='.$eWebsite['farm']['id'].'" class="btn btn-transparent">'.s("Configurer maintenant").'</a>';
 			$h .= '</div>';
 
@@ -126,7 +126,7 @@ class ManageUi {
 
 		$farmEmail = $eWebsite['farm']['legalEmail'];
 
-		$h = '<p>'.s("Vous pouvez facilement intégrer un formulaire d'inscription à votre lettre d'information sur le site internet de votre ferme. Lorsqu'un client s'inscrira à votre lettre d'information, vous recevrez un e-mail avec les coordonnées laissées par le client et celui-ci sera ajouté à <link>votre liste de contacts</link>.", ['link' => '<a href="'.\farm\FarmUi::urlCommunicationsContact($eWebsite['farm']).'">']).'</p>';
+		$h = '<p>'.s("Vous pouvez facilement intégrer un formulaire d'inscription à votre lettre d'information sur le site internet de votre activité. Lorsqu'un client s'inscrira à votre lettre d'information, vous recevrez un e-mail avec les coordonnées laissées par le client et celui-ci sera ajouté à <link>votre liste de contacts</link>.", ['link' => '<a href="'.\farm\FarmUi::urlCommunicationsContact($eWebsite['farm']).'">']).'</p>';
 
 
 		$h .= '<dl class="util-presentation util-presentation-1 mb-2">';
@@ -139,7 +139,7 @@ class ManageUi {
 		if($farmEmail === NULL) {
 
 			$h .= '<div class="util-block-danger">';
-				$h .= '<p>'.s("Pour intégrer un formulaire d'inscription à votre lettre d'information sur votre site internet, veuillez d'abord renseigner l'adresse e-mail de votre ferme.").'</p>';
+				$h .= '<p>'.s("Pour intégrer un formulaire d'inscription à votre lettre d'information sur votre site internet, veuillez d'abord renseigner l'adresse e-mail de votre activité.").'</p>';
 				$h .= '<a href="/farm/farm:update?id='.$eWebsite['farm']['id'].'" class="btn btn-transparent">'.s("Configurer maintenant").'</a>';
 			$h .= '</div>';
 

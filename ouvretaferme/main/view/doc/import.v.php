@@ -4,7 +4,7 @@ new AdaptativeView('series', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 
 	$t->title = s("Importer un plan de culture");
-	$t->subTitle = s("Vous pouvez importer un plan de culture au format CSV sur votre ferme. C'est une fonctionnalité bien pratique si vous préférez concevoir votre plan de culture avec un tableur et le visualiser ensuite sur {siteName} !");
+	$t->subTitle = s("Vous pouvez importer un plan de culture au format CSV. C'est une fonctionnalité bien pratique si vous préférez concevoir votre plan de culture avec un tableur et le visualiser ensuite sur {siteName} !");
 
 	$t->menuSelected = 'importSeries';
 
@@ -235,7 +235,7 @@ new AdaptativeView('products', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 
 	$t->title = s("Importer des produits");
-	$t->subTitle = s("Vous pouvez importer des produits au format CSV sur votre ferme. Cette fonctionnalité peut vous être utile si vous utilisiez d'autres logiciels avant {siteName} ou si vous voulez concevoir plus facilement votre gamme de produits sur tableur !");
+	$t->subTitle = s("Vous pouvez importer des produits au format CSV. Cette fonctionnalité peut vous être utile si vous utilisiez d'autres logiciels avant {siteName} ou si vous voulez concevoir plus facilement votre gamme de produits sur tableur !");
 
 	$t->menuSelected = 'importProducts';
 
@@ -408,7 +408,7 @@ new AdaptativeView('customers', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 
 	$t->title = s("Importer des clients");
-	$t->subTitle = s("Vous pouvez importer des clients au format CSV sur votre ferme. Cette fonctionnalité peut vous être utile si vous utilisiez d'autres logiciels ou un tableur pour gérer votre commercialisation avant {siteName} !");
+	$t->subTitle = s("Vous pouvez importer des clients au format CSV. Cette fonctionnalité peut vous être utile si vous utilisiez d'autres logiciels ou un tableur pour gérer votre commercialisation avant {siteName} !");
 
 	$t->menuSelected = 'importCustomers';
 
@@ -581,7 +581,7 @@ new AdaptativeView('prices', function($data, DocTemplate $t) {
 	$t->template = 'doc';
 
 	$t->title = s("Importer des prix");
-	$t->subTitle = s("Vous pouvez importer vos prix de vente au format CSV sur votre ferme. Cette fonctionnalité peut vous être utile si vous souhaitez maintenir votre grille tarifaire dans un tableur !");
+	$t->subTitle = s("Vous pouvez importer vos prix de vente au format CSV. Cette fonctionnalité peut vous être utile si vous souhaitez maintenir votre grille tarifaire dans un tableur !");
 
 	$t->menuSelected = 'importPrices';
 
