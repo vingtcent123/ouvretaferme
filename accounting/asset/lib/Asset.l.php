@@ -208,7 +208,12 @@ class AssetLib extends \asset\AssetCrud {
 		return Asset::model()
       ->whereStartDate('<=', $eFinancialYear['endDate'])
 			->where('endedDate IS NULL or endedDate >= '.Asset::model()->format($eFinancialYear['startDate']))
-			->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%');
+			->whereAccountLabel('LIKE', \account\AccountSetting::GRANT_ASSET_CLASS.'%')
+			->or(
+				fn() => $this->whereResumeDate(NULL),
+				fn() => $this->whereResumeDate('<=', $eFinancialYear['startDate']),
+			)
+		;
 
 	}
 
@@ -230,7 +235,12 @@ class AssetLib extends \asset\AssetCrud {
 
 		return Asset::model()
 			->where('endedDate IS NULL or endedDate >= '.Asset::model()->format($eFinancialYear['startDate']))
-			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%');
+			->whereAccountLabel('LIKE', \account\AccountSetting::ASSET_GENERAL_CLASS.'%')
+			->or(
+				fn() => $this->whereResumeDate(NULL),
+				fn() => $this->whereResumeDate('<=', $eFinancialYear['startDate']),
+			)
+		;
 
 	}
 
