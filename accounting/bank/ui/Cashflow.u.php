@@ -225,7 +225,7 @@ class CashflowUi {
 					) {
 
 						$details[] = match($eCashflow['payment']['source']) {
-							\selling\Payment::INVOICE => '<a href="/ferme/'.$eFarm['id'].'/factures?name='.$eCashflow['payment']['invoice']['number'].'" class="btn btn-outline-primary btn-xs">'.\Asset::icon('fire').' '.s("Facture {value}", encode($eCashflow['payment']['invoice']['number'])).'</a>',
+							\selling\Payment::INVOICE => '<a href="'.\selling\InvoiceUi::url($eCashflow['payment']['invoice']).'" class="btn btn-outline-primary btn-xs">'.\Asset::icon('fire').' '.s("Facture {value}", encode($eCashflow['payment']['invoice']['number'])).'</a>',
 							\selling\Payment::SALE => '<a href="'.\selling\SaleUi::url($eCashflow['payment']['sale']).'" class="btn btn-outline-primary btn-xs">'.\Asset::icon('fire').' '.s("Vente {value}", encode($eCashflow['payment']['sale']['document'])).'</a>',
 							NULL => '',
 						};
@@ -662,7 +662,7 @@ class CashflowUi {
 			$eInvoice = $cInvoice->first();
 
 				$h .= '<div class="util-info">';
-					$h .= s("Cette opération bancaire est rapprochée avec la facture {name}.", ['name' => '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?invoice='.$eInvoice['id'].'">'.encode($eInvoice['number']).'</a>']);
+					$h .= s("Cette opération bancaire est rapprochée avec la facture {name}.", ['name' => '<a href="'.\selling\InvoiceUi::url($eInvoice).'">'.encode($eInvoice['number']).'</a>']);
 					$h .= ' '.s("Ce rapprochement entre la facture et l'opération bancaire sera conservé.");
 				$h .= '</div>';
 

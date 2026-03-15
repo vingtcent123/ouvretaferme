@@ -475,7 +475,7 @@ class OperationUi {
 			$document = $eOperation['document'] ? $eOperation['document'] : '<i>'.s("Non indiqué").'</i>';
 			if($eOperation['document'] and $eOperation['payment']->notEmpty()) {
 				$url = match($eOperation['payment']['source']) {
-					\selling\Payment::INVOICE => '/ferme/'.$eFarm['id'].'/factures?invoice='.encode($eOperation['payment']['invoice']['id']).'&customer='.encode($eOperation['payment']['invoice']['customer']['name']),
+					\selling\Payment::INVOICE => \selling\InvoiceUi::url($eOperation['payment']['invoice']),
 					\selling\Payment::SALE => \selling\SaleUi::url($eOperation['payment']['sale']),
 				};
 				$h .= '<a href="'.$url.'" target="_blank">'.$document.'</a>';

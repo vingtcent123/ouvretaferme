@@ -181,7 +181,7 @@ Class ImportUi {
 						}
 
 						if($eOperation['source'] === \selling\Payment::INVOICE) {
-							$reference = '<a class="btn btn-outline-primary btn-xs" href="/ferme/'.$eFarm['id'].'/factures?name='.encode($eOperation['invoice']['number']).'">';
+							$reference = '<a class="btn btn-outline-primary btn-xs" href="'.\selling\InvoiceUi::url($eElement).'">';
 								$reference .= encode($eElement['number']);
 							$reference .= '</a>';
 						} else {

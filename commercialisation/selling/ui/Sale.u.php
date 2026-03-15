@@ -2729,7 +2729,7 @@ class SaleUi {
 				'invoiceNumber' => encode($eSale['invoice']['number']),
 			]);
 			$h .= '</p>';
-			$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" class="btn btn-transparent">';
+			$h .= '<a href="'.\selling\InvoiceUi::url($eSale['invoice']).'" class="btn btn-transparent">';
 				$h .= s("Consulter la facture");
 			$h .= '</a>';
 		$h .= '</div>';

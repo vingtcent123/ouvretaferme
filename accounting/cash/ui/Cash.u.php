@@ -309,7 +309,7 @@ class CashUi {
 
 			Cash::BUY_MANUAL => \Asset::icon('wallet').'  '.self::getText($source, $type),
 			Cash::SELL_MANUAL => \Asset::icon('wallet').'  '.self::getText($source, $type),
-			Cash::SELL_INVOICE => \Asset::icon('wallet').'  <u class="mr-1">'.encode($e['customer']->getName()).'</u><a href="'.\farm\FarmUi::urlSellingInvoices(\farm\Farm::getConnected()).'?invoice='.$e['invoice']['id'].'" class="btn btn-outline-primary btn-xs">'.\selling\InvoiceUi::getName($e['invoice']).'</a>',
+			Cash::SELL_INVOICE => \Asset::icon('wallet').'  <u class="mr-1">'.encode($e['customer']->getName()).'</u><a href="'.\selling\InvoiceUi::url($e['invoice']).'" class="btn btn-outline-primary btn-xs">'.\selling\InvoiceUi::getName($e['invoice']).'</a>',
 			Cash::SELL_SALE => \Asset::icon('wallet').'  <u class="mr-1">'.encode($e['customer']->getName()).'</u><a href="'.\selling\SaleUi::url($e['sale']).'" class="btn btn-outline-primary btn-xs">'.\selling\SaleUi::getName($e['sale']).'</a>'
 
 		};
