@@ -452,11 +452,58 @@ class CashLib extends CashCrud {
 
 		Cash::model()->beginTransaction();
 
-			switch($e['source']) {
+			self::cleanLinkedElements($e);
+
+			$cCash = self::getImpactedCashes($e);
+
+			foreach($cCash as $eCash) {
+
+				$affected = Cash::model()->update($eCash, ['status' => Cash::DELETED]);
+
+				if($affected > 0) {
+					\securing\SignatureLib::signDeletedCash($eCash);
+				}
+
+			}
+
+		Cash::model()->commit();
+
+	}
+
+	private static function getImpactedCashes(Cash $eCash): \Collection {
+
+		switch($eCash['source']) {
+
+			case Cash::SELL_INVOICE :
+				return Cash::model()
+					->select(Cash::getSelection())
+					->whereStatus(Cash::DRAFT)
+					->whereInvoice($eCash['invoice'])
+					->whereRegister($eCash['register'])
+					->getCollection();
+
+			case Cash::SELL_SALE :
+				return Cash::model()
+					->select(Cash::getSelection())
+					->whereStatus(Cash::DRAFT)
+					->whereSale($eCash['sale'])
+					->whereRegister($eCash['register'])
+					->getCollection();
+
+			default:
+				return new \Collection([$eCash]);
+
+		}
+
+	}
+
+	private static function cleanLinkedElements(Cash $eCash): void {
+
+			switch($eCash['source']) {
 
 				case Cash::BANK_CASHFLOW :
 					\bank\Cashflow::model()
-						->whereCash($e)
+						->whereCash($eCash)
 						->update([
 							'cash' => new Cash(),
 							'cashStatus' => \selling\Payment::IGNORED
@@ -466,58 +513,25 @@ class CashLib extends CashCrud {
 				case Cash::SELL_INVOICE :
 					\selling\Payment::model()
 						->whereFarm(\farm\Farm::getConnected())
-						->whereInvoice($e['invoice'])
-						->whereMethod($e['register']['paymentMethod'])
+						->whereInvoice($eCash['invoice'])
+						->whereMethod($eCash['register']['paymentMethod'])
 						->update([
 							'cash' => new Cash(),
 							'cashStatus' => \selling\Payment::IGNORED
-						]);
-					Cash::model()
-						->whereStatus(Cash::DRAFT)
-						->whereId('!=', $e['id']) // sera supprimé juste après
-						->whereInvoice($e['invoice'])
-						->whereRegister($e['register'])
-						->update([
-							'status' => Cash::DELETED
 						]);
 					break;
 
 				case Cash::SELL_SALE :
 					\selling\Payment::model()
 						->whereFarm(\farm\Farm::getConnected())
-						->whereSale($e['sale'])
-						->whereMethod($e['register']['paymentMethod'])
+						->whereSale($eCash['sale'])
+						->whereMethod($eCash['register']['paymentMethod'])
 						->update([
 							'cash' => new Cash(),
 							'cashStatus' => \selling\Payment::IGNORED
 						]);
-
-				Cash::model()
-					->whereStatus(Cash::DRAFT)
-					->whereId('!=', $e['id']) // sera supprimé juste après
-					->whereSale($e['sale'])
-					->whereRegister($e['register'])
-					->update([
-						'status' => Cash::DELETED
-					]);
 					break;
-
 			}
-
-		$affected = Cash::model()
-			->whereStatus(Cash::DRAFT)
-			->whereId($e['id'])
-			->whereRegister($e['register'])
-			->update([
-				'status' => Cash::DELETED
-			]);
-
-			if($affected > 0) {
-				\securing\SignatureLib::signDeletedCash($e);
-			}
-
-		Cash::model()->commit();
-
 	}
 
 }
