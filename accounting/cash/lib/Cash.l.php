@@ -458,13 +458,7 @@ class CashLib extends CashCrud {
 
 			foreach($cCash as $eCash) {
 
-				$affected = Cash::model()
-					->whereStatus(Cash::DRAFT)
-					->whereId($eCash['id'])
-					->whereRegister($eCash['register'])
-					->update([
-						'status' => Cash::DELETED
-					]);
+				$affected = Cash::model()->update($eCash, ['status' => Cash::DELETED]);
 
 				if($affected > 0) {
 					\securing\SignatureLib::signDeletedCash($eCash);
@@ -478,27 +472,29 @@ class CashLib extends CashCrud {
 
 	private static function getImpactedCashes(Cash $eCash): \Collection {
 
-			switch($eCash['source']) {
+		switch($eCash['source']) {
 
-				case Cash::SELL_INVOICE :
-					return Cash::model()
-						->select(Cash::getSelection())
-						->whereStatus(Cash::DRAFT)
-						->whereInvoice($eCash['invoice'])
-						->whereRegister($eCash['register'])
-						->getCollection();
+			case Cash::SELL_INVOICE :
+				return Cash::model()
+					->select(Cash::getSelection())
+					->whereStatus(Cash::DRAFT)
+					->whereInvoice($eCash['invoice'])
+					->whereRegister($eCash['register'])
+					->getCollection();
 
-				case Cash::SELL_SALE :
-					return Cash::model()
-						->select(Cash::getSelection())
-						->whereStatus(Cash::DRAFT)
-						->whereSale($eCash['sale'])
-						->whereRegister($eCash['register'])
-						->getCollection();
+			case Cash::SELL_SALE :
+				return Cash::model()
+					->select(Cash::getSelection())
+					->whereStatus(Cash::DRAFT)
+					->whereSale($eCash['sale'])
+					->whereRegister($eCash['register'])
+					->getCollection();
 
-			}
+			default:
+				return new \Collection([$eCash]);
 
-			return new \Collection([$eCash]);
+		}
+
 	}
 
 	private static function cleanLinkedElements(Cash $eCash): void {
