@@ -443,7 +443,7 @@ class OperationUi {
 			$h .= '<h3>'.s("Informations générales").'</h3>';
 		$h .= '</div>';
 
-		if(\asset\AssetLib::isAsset($eOperation['accountLabel']) and $eOperation['asset']->empty()) {
+		if(\asset\AssetLib::isAsset($eOperation['accountLabel']) and $eOperation['asset']->empty() and $eOperation->acceptWrite()) {
 			$h .= '<div class="mt-1 mb-1">';
 				$h .= '<span class="color-warning">'.\Asset::icon('exclamation-triangle').' '.s("Attention, l'immobilisation correspondante n'a pas encore été créée ou rattachée.").'</span>';
 				$h .= '<br />';

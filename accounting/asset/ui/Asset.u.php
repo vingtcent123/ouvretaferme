@@ -39,6 +39,10 @@ Class AssetUi {
 
 		} else {
 
+			$h .= '<div class="util-info">';
+				$h .= s("En rattachant votre immobilisation à une écriture, le <b>montant de l'écriture sera ajoutée à la valeur d'acquisition</b> de votre immobilisation automatiquement.");
+			$h .= '</div>';
+
 			$cAsset = $cAssetAll->find(fn($e) => AssetLib::isAsset($e['accountLabel']));
 			$cGrant = $cAssetAll->find(fn($e) => AssetLib::isGrant($e['accountLabel']));
 
