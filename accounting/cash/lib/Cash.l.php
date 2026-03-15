@@ -504,13 +504,13 @@ class CashLib extends CashCrud {
 
 			}
 
-		$affected = Cash::model()
-			->whereStatus(Cash::DRAFT)
-			->whereId($e['id'])
-			->whereRegister($e['register'])
-			->update([
-				'status' => Cash::DELETED
-			]);
+			$affected = Cash::model()
+				->whereStatus(Cash::DRAFT)
+				->whereId($e['id'])
+				->whereRegister($e['register'])
+				->update([
+					'status' => Cash::DELETED
+				]);
 
 			if($affected > 0) {
 				\securing\SignatureLib::signDeletedCash($e);
