@@ -65,7 +65,9 @@ class Operation extends OperationElement {
 		return (
 			$this['number'] === NULL and
 			mb_substr($this['hash'], -1) !== JournalSetting::HASH_LETTER_RETAINED and
+			mb_substr($this['hash'], -1) !== JournalSetting::HASH_LETTER_FEC_IMPORT and
 			$this['financialYear']->acceptAdd()
+
 		);
 
 	}
