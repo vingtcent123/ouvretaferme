@@ -12,25 +12,29 @@ class PaymentLinkLib extends PaymentLinkCrud {
 
 		$eElement->expects(['farm']);
 
-		$ePaymentLink = PaymentLink::model()
+		$cPaymentLink = PaymentLink::model()
 			->select(PaymentLink::getSelection())
 			->whereInvoice($eElement, if: $eElement instanceof Invoice)
 			->whereSale($eElement, if: $eElement instanceof Sale)
 			->whereStatus(PaymentLink::ACTIVE)
-			->get();
+			->getCollection();
 
-		if($ePaymentLink->empty()) {
+		if($cPaymentLink->empty()) {
 			return;
 		}
 
-		PaymentLink::model()->beginTransaction();
+		foreach($cPaymentLink as $ePaymentLink) {
 
-			PaymentLink::model()->update($ePaymentLink, ['status' => PaymentLink::INACTIVE]);
+			PaymentLink::model()->beginTransaction();
 
-			$eStripeFarm = \payment\StripeLib::getByFarm($eElement['farm']);
-			\payment\StripeLinkLib::toggleActivation($eStripeFarm, $ePaymentLink, FALSE);
+				PaymentLink::model()->update($ePaymentLink, ['status' => PaymentLink::INACTIVE]);
 
-		PaymentLink::model()->commit();
+				$eStripeFarm = \payment\StripeLib::getByFarm($eElement['farm']);
+				\payment\StripeLinkLib::toggleActivation($eStripeFarm, $ePaymentLink, FALSE);
+
+			PaymentLink::model()->commit();
+
+		}
 
 	}
 
@@ -94,9 +98,7 @@ class PaymentLinkLib extends PaymentLinkCrud {
 
 			\selling\PaymentLink::model()->update($ePaymentLink, ['status' => \selling\PaymentLink::PAID, 'paidAt' => currentDate()]);
 
-			if($eElement instanceof Sale) {
-				\selling\HistoryLib::createBySale($eElement, 'shop-payment-link-succeeded', 'Stripe event #'.$object['payment_intent']);
-			}
+			\selling\HistoryLib::createByElement($eElement, 'shop-payment-link-succeeded', 'Stripe event #'.$object['payment_intent']);
 
 		PaymentLink::model()->commit();
 
