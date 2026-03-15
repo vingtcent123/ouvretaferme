@@ -1344,7 +1344,7 @@ class SaleLib extends SaleCrud {
 				NULL => 'price'
 			};
 
-			$newItems['netPriceExcludingVat'] = new \Sql('ROUND('.$priceExcludingVat.' * (100 - '.$e['discount'].') / 100 * 100) / 100');
+			$newItems['netPriceExcludingVat'] = new \Sql('ROUND('.$priceExcludingVat.' * (100 - '.$e['discount'].') / 100, 4)');
 
 		}
 
@@ -1370,6 +1370,7 @@ class SaleLib extends SaleCrud {
 
 		if(
 			in_array('shipping', $properties) or
+			in_array('discount', $properties) or
 			($e['secured'] and in_array('paidAt', $properties)) or
 			($e['secured'] and $updatePreparationStatus)
 		) {
