@@ -13,7 +13,7 @@ class AlertUi {
 			'Configuration::invoiceDueMonth.consistency' => s("Vous devez préciser la date d'échéance par rapport à la date de facturation"),
 			'Configuration::saleClosing.check' => s("La clôture automatique peut être configurée entre 7 et 90 jours"),
 			'Configuration::vatNumber.check' => fn() => \farm\AlertUi::getErrorVatNumber($options[0]),
-			'Configuration::vatNumber.country' => s("Vous ne pouvez pas saisir de numéro de TVA intracommunautaire si votre ferme n'est ni en France, ni en Belgique."),
+			'Configuration::vatNumber.country' => s("Vous ne pouvez pas saisir de numéro de TVA intracommunautaire si votre structure n'est ni en France, ni en Belgique."),
 			'Configuration::fullElectronicAddress.check' => s("L'adresse de facturation électronique saisie ne respecte pas la norme. Elle doit comprendre un identifiant sur 4 chiffres et une adresse de facturation qui commence par les 9 premiers chiffres du SIRET."),
 
 			'Farm::disabled' => s("Vous avez désactivé cette fonctionnalité sur votre ferme."),
@@ -48,9 +48,9 @@ class AlertUi {
 			'Tool::routineValue.tray' => s("Vous devez indiquer un nombre de mottes par plateau."),
 
 			'Invite::email.duplicate' => s("Une invitation a déjà été lancée pour cette adresse e-mail..."),
-			'Invite::email.duplicateCustomer' => s("Cette adresse e-mail est déjà utilisée pour un autre client de votre ferme..."),
+			'Invite::email.duplicateCustomer' => s("Cette adresse e-mail est déjà utilisée pour un autre de vos clients..."),
 
-			'Survey::farm.duplicate' => s("Vous avez déjà répondu pour cette ferme"),
+			'Survey::farm.duplicate' => s("Vous avez déjà répondu pour cette structure"),
 
 			default => null
 

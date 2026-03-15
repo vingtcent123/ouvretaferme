@@ -306,6 +306,7 @@ Product:
   processedAllergen: ?text8(1, null)
   processedComposition: ?text16(1, null)
   compositionVisibility: ?enum(PUBLIC, PRIVATE)
+  distribution: ?enum(PRODUCTION, CONSIGNMENT, RESALE)
   origin: ?text8(1, null) @collate(general)
   farm: farm\Farm
   unit: ?selling\Unit = PHP(\selling\SellingSetting::UNIT_DEFAULT_ID)

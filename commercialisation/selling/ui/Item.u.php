@@ -891,7 +891,7 @@ class ItemUi {
 		if($e['cProduct']->empty()) {
 
 			$h = '<div class="util-block-help">';
-				$h .= '<p>'.s("Vous devez d'abord renseigner les produits que vous souhaitez proposer à la vente dans votre ferme !").'</p>';
+				$h .= '<p>'.s("Vous devez d'abord renseigner les produits que vous souhaitez proposer à la vente !").'</p>';
 				$h .= '<a href="'.\farm\FarmUi::urlSellingProducts($eFarm).'" class="btn btn-secondary">'.s("Renseigner mes produits").'</a>';
 			$h .= '</div>';
 
@@ -1525,7 +1525,7 @@ class ItemUi {
 
 			case 'origin' :
 				$d->attributes = [
-					'placeholder' => s("Ex. : Ferme d'à côté (63)"),
+					'placeholder' => s("Ex. : Producteur d'à côté (63)"),
 				];
 				break;
 

@@ -1,7 +1,7 @@
 <?php
 new AdaptativeView('manage', function($data, FarmTemplate $t) {
 
-	$t->title = s("Gérer l'équipe de la ferme");
+	$t->title = s("Gérer l'équipe");
 	$t->nav = 'settings-commercialisation';
 
 	$t->mainTitle = new \farm\FarmerUi()->getManageTitle($data->eFarm);

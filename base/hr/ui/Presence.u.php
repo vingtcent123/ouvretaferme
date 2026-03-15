@@ -83,14 +83,14 @@ class PresenceUi {
 			$h .= $form->dynamicGroups($ePresence, ['user', 'from', 'to']);
 
 			$h .= $form->group(
-				content: $form->submit(s("Ajouter la présence"))
+				content: $form->submit(s("Ajouter la période"))
 			);
 
 		$h .= $form->close();
 
 		return new \Panel(
 			id: 'panel-presence-create',
-			title: s("Ajouter une présence à la ferme"),
+			title: s("Ajouter une période de présence"),
 			body: $h,
 			close: 'reload'
 		);
@@ -178,7 +178,7 @@ class PresenceUi {
 
 		return new \Panel(
 			id: 'panel-presence-update',
-			title: s("Modifier une présence à la ferme"),
+			title: s("Modifier une période de présence"),
 			body: $h,
 			close: 'reload'
 		);
@@ -188,8 +188,8 @@ class PresenceUi {
 	public static function p(string $property): \PropertyDescriber {
 
 		$d = Presence::model()->describer($property, [
-			'from' => s("Jour d'arrivée à la ferme"),
-			'to' => s("Jour de départ de la ferme"),
+			'from' => s("Jour d'arrivée"),
+			'to' => s("Jour de départ"),
 			'user' => s("Utilisateur"),
 		]);
 

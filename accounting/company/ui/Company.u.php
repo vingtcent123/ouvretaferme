@@ -52,7 +52,7 @@ class CompanyUi {
 
 				}
 
-				$h .= '<dt>'.s("Siège social de la ferme").'</dt>';
+				$h .= '<dt>'.s("Siège social de la structure").'</dt>';
 				$h .= '<dd>'.$eFarm->getLegalAddress('html').'</dd>';
 
 			$h .= '</dl>';

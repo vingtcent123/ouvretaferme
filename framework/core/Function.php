@@ -767,6 +767,13 @@ function toPeriod(string $pattern, int|string $timestamp): string {
 
 }
 
+function is_week(mixed $week): bool {
+	return (
+		is_string($week) and
+		preg_match('/^[0-9]{4}\-W[0-9]{2}$/', $week) > 0
+	);
+}
+
 function week_year(string $week): ?int {
 	return (strlen($week) >= 4) ? (int)substr($week, 0, 4) : NULL;
 }

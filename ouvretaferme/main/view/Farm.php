@@ -214,7 +214,7 @@ class FarmTemplate extends MainTemplate {
 
 								if($this->data->eFarm->canManage()) {
 									$farm .= '<a href="/farm/farm:update?id='.$this->data->eFarm['id'].'" class="dropdown-item">'.Asset::icon('gear-fill').'  '.s("Paramétrer la ferme").'</a>';
-									$farm .= '<a href="'.\farm\FarmerUi::urlManage($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('people-fill').'  '.s("Gérer l'équipe de la ferme").'</a>';
+									$farm .= '<a href="'.\farm\FarmerUi::urlManage($this->data->eFarm).'" class="dropdown-item">'.Asset::icon('people-fill').'  '.s("Gérer l'équipe").'</a>';
 								}
 
 								if($this->data->eFarm->canPersonalData()) {

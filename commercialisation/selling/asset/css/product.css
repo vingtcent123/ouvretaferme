@@ -4,13 +4,6 @@
 	font-size: 1.1rem;
 }
 
-div.product-item-wrapper {
-	overflow-x: auto;
-}
-
-table.product-item-table {
-	min-width: calc(599px);
-}
 td.product-item-actions {
 	text-align: right;
 }
@@ -147,6 +140,10 @@ div.product-vignette-profile {
 }
 
 .product-write-profile:has(input[name="profile"][value="composition"]:checked) [data-profile~="composition"] {
+	display: block;
+}
+
+.product-write-profile:has(input[name="profile"][value="other"]:checked) [data-profile~="other"] {
 	display: block;
 }
 

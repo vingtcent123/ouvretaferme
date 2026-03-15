@@ -134,12 +134,12 @@ new AdaptativeView('/comptabilite/parametrer', function($data, FarmTemplate $t) 
 	// Première étape : les infos légales
 	if($data->eFarm->isLegal() === FALSE) {
 
-		echo '<h3>'.s("Informations requises sur votre ferme").'</h3>';
+		echo '<h3>'.s("Informations requises sur votre structure").'</h3>';
 		echo new \farm\FarmUi()->getLegalForm($data->eFarm);
 
 	} else if($data->eFarm->isVatAccountingConfigured() === FALSE) {
 
-		echo '<h3>'.s("Informations requises par rapport à la TVA pour votre ferme").'</h3>';
+		echo '<h3>'.s("Informations requises par rapport à la TVA pour votre structure").'</h3>';
 		echo new \farm\ConfigurationUi()->updateVat($data->eFarm);
 
 	} else { // 2è étape : l'exercice
@@ -167,7 +167,7 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 	Asset::css('main', 'home.css');
 
 	$t->header = '<h1>'.encode($data->eFarm['name']).'</h1>';
-	$t->header .= '<h2>'.Asset::icon('check-lg').' '.s("La comptabilité a bien été activée pour votre ferme !").'</h2>';
+	$t->header .= '<h2>'.Asset::icon('check-lg').' '.s("La comptabilité a bien été activée !").'</h2>';
 
 	echo '<div class="home-features home-features-3">';
 
@@ -216,7 +216,7 @@ new AdaptativeView('/comptabilite/demarrer', function($data, MainTemplate $t) {
 			echo '</h2>';
 			echo '<ul>';
 				echo '<li>'.s("Je suis en comptabilité de trésorerie").'</li>';
-				echo '<li>'.s("Je veux tenir la comptabilité de ma ferme avec Ouvretaferme").'</li>';
+				echo '<li>'.s("Je veux tenir la comptabilité de ma structure avec Ouvretaferme").'</li>';
 				echo '<li>'.s("En version {value} pour le moment", '<span class="util-badge bg-primary">BETA</span>').'</li>';
 			echo '</ul>';
 			echo '<div class="home-feature-buttons">';

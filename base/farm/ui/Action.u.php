@@ -374,7 +374,7 @@ class ActionUi {
 
 			case 'soil' :
 				$d->field = 'yesNo';
-				$d->after = \util\FormUi::info(s("Si vous modifiez ce paramètre, seuls les plans d'assolement des saisons {value} et suivantes de votre ferme seront mis à jour.", currentYear()));
+				$d->after = \util\FormUi::info(s("Si vous modifiez ce paramètre, seuls les plans d'assolement des saisons {value} et suivantes seront mis à jour.", currentYear()));
 				break;
 
 			case 'favorite' :

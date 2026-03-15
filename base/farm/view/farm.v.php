@@ -180,7 +180,7 @@ new AdaptativeView('export', function($data, PanelTemplate $t) {
 
 new AdaptativeView('surveyAnalyze', function($data, MainTemplate $t) {
 
-	$t->title = s("Enquête auprès des fermes adhérentes");
+	$t->title = s("Enquête auprès des adhérents");
 
 
 	foreach($data->cSurvey as $eSurvey) {
@@ -205,7 +205,7 @@ new AdaptativeView('surveyAnalyze', function($data, MainTemplate $t) {
 
 new AdaptativeView('surveyMain', function($data, MainTemplate $t) {
 
-	$t->title = s("Enquête auprès des fermes adhérentes");
+	$t->title = s("Enquête auprès des adhérents");
 
 	if($data->cFarm->empty()) {
 		echo '<p>'.s("Vous n'êtes exploitant d'aucune ferme sur {siteName}.").'</p>';
@@ -251,8 +251,8 @@ new AdaptativeView('surveyFarm', function($data, FarmTemplate $t) {
 		echo '<div class="util-block-gradient mb-2">';
 			echo '<p>'.s("En vue d'améliorer le logiciel dans les semaines à venir, nous menons une enquête jusqu'au 15 mars auprès de toutes les fermes qui ont adhéré à l'association Ouvretaferme pour comprendre vos besoins sur les sujets suivants :").'</p>';
 			echo '<ul>';
-				echo '<li>'.s("Achat / revente").'</li>';
-				echo '<li>'.s("Dépôt / vente").'</li>';
+				echo '<li>'.s("Achat-revente").'</li>';
+				echo '<li>'.s("Dépôt-vente").'</li>';
 				echo '<li>'.s("Autofacturation").'</li>';
 				echo '<li>'.s("Encours clients").'</li>';
 			echo '</ul>';

@@ -418,7 +418,7 @@ class LegalUi {
 	public function formation() : string {
 
 		$h = '<div class="home-features home-features-2 mt-2">';
-			$h .= '<div class="home-feature"><h3>'.s("Pourquoi plus de 2500 producteurs utilisent Ouvretaferme ?").'</h3><p>'.s("Nous avons bâti Ouvretaferme avec la promesse faite aux producteurs et productrices de leur proposer pour un prix minimal une solution qui permette de piloter dans un seul logiciel leur production, leur commercialisation et leur comptabilité.").'</p></div>';
+			$h .= '<div class="home-feature"><h3>'.s("Pourquoi plus de 3000 producteurs utilisent Ouvretaferme ?").'</h3><p>'.s("Nous avons bâti Ouvretaferme avec la promesse faite aux producteurs et productrices de leur proposer pour un prix minimal une solution qui permette de piloter dans un seul logiciel leur production, leur commercialisation et leur comptabilité.").'</p></div>';
 			$h .= '<div class="home-feature"><h3>'.s("Pourquoi travailler avec Ouvretaferme ?").'</h3><p>'.s("Nous constatons une forte demande de formation sur Ouvretaferme, que ce soit sur la production, la commercialisation ou la comptabilité et c'est pourquoi nous cherchons à travailler avec des partenaires qui partagent nos valeurs pour couvrir ces besoins.").'</p></div>';
 		$h .= '</div>';
 

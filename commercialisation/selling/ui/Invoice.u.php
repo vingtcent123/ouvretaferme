@@ -989,7 +989,7 @@ class InvoiceUi {
 							$list[] = s("Numéro d'immatriculation SIRET");
 						}
 
-						$warning = '<h5>'.s("Certaines informations légales de votre ferme sont nécessaires pour établir une facture").'</h5>';
+						$warning = '<h5>'.s("Certaines informations légales de votre structure sont nécessaires pour établir une facture").'</h5>';
 						$warning .= '<ul><li>'.join('</li><li>', $list).'</li></ul>';
 						$warning .= '<a href="/farm/farm:updateForElectronicInvoicing?id='.$eFarm['id'].'" class="btn btn-primary">'.s("Compléter ces informations").'</a>';
 						$canCreateInvoice = FALSE;
@@ -1004,7 +1004,7 @@ class InvoiceUi {
 							$list[] = s("Adresse de facturation électronique");
 						}
 
-						$warning = '<h5>'.s("Certaines informations de facturation de votre ferme sont nécessaires pour établir une facture").'</h5>';
+						$warning = '<h5>'.s("Certaines informations de facturation de votre structure sont nécessaires pour établir une facture").'</h5>';
 						$warning .= '<ul><li>'.join('</li><li>', $list).'</li></ul>';
 						$warning .= '<a href="/farm/configuration:updateForElectronicInvoicing?id='.$eFarm['id'].'" class="btn btn-primary">'.s("Compléter ces informations").'</a>';
 						$canCreateInvoice = FALSE;
@@ -1100,7 +1100,7 @@ class InvoiceUi {
 		if($eFarm['hasInvoices'] === FALSE) {
 
 			$h .= '<div class="util-block-help">';
-				$h .= '<p>'.s("Vous voulez tout savoir de la facturation avec Ouvretaferme avant de générer votre première facture ?").'</p>';
+				$h .= '<p>'.s("Vous voulez tout savoir de la facturation avec {siteName} avant de générer votre première facture ?").'</p>';
 				$h .= '<a href="/doc/selling:invoicing" target="_blank" class="btn btn-secondary">'.s("Lire la documentation").'</a>';
 			$h .= '</div>';
 

@@ -186,6 +186,7 @@ class Product extends ProductElement {
 			'import' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::SERVICE],
 			'characteristics' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
 			'quality' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
+			'distribution' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION, Product::OTHER],
 			'origin' => [Product::UNPROCESSED_PLANT, Product::UNPROCESSED_ANIMAL, Product::PROCESSED_FOOD, Product::PROCESSED_PRODUCT, Product::COMPOSITION],
 			'compositionVisibility' => [Product::COMPOSITION],
 			'unprocessedPlant' => [Product::UNPROCESSED_PLANT],
@@ -234,6 +235,17 @@ class Product extends ProductElement {
 					$reference === NULL or
 					Product::checkReference($reference)
 				);
+
+			})
+			->setCallback('distribution.prepare', function(?string &$distribution): bool {
+
+				if(in_array($this['profile'], Product::getProfiles('distribution')) === FALSE) {
+					$distribution = NULL;
+					return TRUE;
+				} else {
+					return ($distribution !== NULL);
+				}
+
 
 			})
 			->setCallback('origin.prepare', function(?string &$origin): bool {

@@ -105,7 +105,7 @@ class SaleLib extends SaleCrud {
 		$eSale['deliveryPostcode'] = $eSale['customer']['invoicePostcode'];
 		$eSale['deliveryCity'] = $eSale['customer']['invoiceCity'];
 		$eSale['deliveryCountry'] = $eSale['customer']['invoiceCountry'];
-		$eSale['customer']['name'] = 'Julien Laferme';
+		$eSale['customer']['name'] = 'Julien Lepois';
 		$eSale['customer']['email'] = 'client@email.com';
 		$eSale['deliveryNoteDate'] = currentDate();
 		$eSale['deliveryNoteHeader'] = $eFarm->getConf('deliveryNoteHeader');

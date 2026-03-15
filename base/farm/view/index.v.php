@@ -388,7 +388,7 @@ new AdaptativeView('sellingSales', function($data, FarmTemplate $t) {
 
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur la page pour gérer vos ventes").'</h4>';
-			echo '<p>'.s("Avec {siteName}, vous allez gérer facilement toute la commercialisation dans votre ferme :").'</p>';
+			echo '<p>'.s("Avec {siteName}, vous allez gérer facilement toute votre commercialisation :").'</p>';
 			echo '<ul>';
 				echo '<li>'.s("Référencez <link>votre gamme de produits</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingProducts($data->eFarm).'">']).'</li>';
 				echo '<li>'.s("Créez les ventes de vos <link>clients particuliers et professionnels</link>", ['link' => '<a href="'.\farm\FarmUi::urlSellingCustomers($data->eFarm).'">']).'</li>';
@@ -540,7 +540,7 @@ new AdaptativeView('sellingCustomers', function($data, FarmTemplate $t) {
 		$data->search->empty()
 	) {
 
-		$t->mainTitle = '<h1>'.s("Clients de la ferme").'</h1>';
+		$t->mainTitle = '<h1>'.s("Clients").'</h1>';
 
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur la page pour gérer votre clientèle").'</h4>';
@@ -592,7 +592,7 @@ new AdaptativeView('/ferme/{id}/produits', function($data, FarmTemplate $t) {
 		$data->search->empty()
 	) {
 
-		$t->mainTitle = '<h1>'.s("Produits de la ferme").'</h1>';
+		$t->mainTitle = '<h1>'.s("Produits").'</h1>';
 
 		echo '<div class="util-block-help">';
 			echo '<h4>'.s("Vous êtes sur la page pour gérer votre gamme de produits").'</h4>';

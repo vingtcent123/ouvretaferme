@@ -758,6 +758,10 @@ Class AssetUi {
 				$h .= '<dd>'.encode($eAsset['description']).'</dd>';
 				$h .= '<dt>'.self::p('acquisitionDate')->label.'</dt>';
 				$h .= '<dd>'.\util\DateUi::numeric($eAsset['acquisitionDate'], \util\DateUi::DATE).'</dd>';
+				if($eAsset['resumeDate'] !== NULL) {
+					$h .= '<dt>'.self::p('resumeDate')->label.'</dt>';
+					$h .= '<dd>'.\util\DateUi::numeric($eAsset['resumeDate'], \util\DateUi::DATE).'</dd>';
+				}
 				$h .= '<dt>'.self::p('value')->label.'</dt>';
 				$h .= '<dd>'.\util\TextUi::money($eAsset['value']).'</dd>';
 				$h .= '<dt>'.self::p('startDate')->label.'</dt>';
@@ -796,7 +800,15 @@ Class AssetUi {
 					} else {
 						$h .= s("n/a");
 					}
-					$h .= '</dd>';
+				$h .= '</dd>';
+
+				$h .= '<dt>'.self::p('status')->label.'</dt>';
+				$h .= '<dd>';
+					$h .= self::p('status')->values[$eAsset['status']];
+					if($eAsset['endedDate'] !== NULL) {
+						$h .= ' '.s("le {value}", \util\DateUi::numeric($eAsset['endedDate']));
+					}
+				$h .= '</dd>';
 
 				$vncVal = '<dd>'.\util\TextUi::money(round($amortizableBase - $amortizationCumulated, 2)).'</dd>';
 				if($eAsset['endedDate'] !== NULL) {
@@ -810,13 +822,6 @@ Class AssetUi {
 					$h .= $vncVal;
 				}
 
-				$h .= '<dt>'.self::p('status')->label.'</dt>';
-				$h .= '<dd>';
-					$h .= self::p('status')->values[$eAsset['status']];
-					if($eAsset['endedDate'] !== NULL) {
-						$h .= ' '.s("le {value}", \util\DateUi::numeric($eAsset['endedDate']));
-					}
-				$h .= '</dd>';
 			$h .= '</dl>';
 		$h .= '</div>';
 
@@ -1346,6 +1351,7 @@ Class AssetUi {
 			'duration' => s("Durée"),
 			'status' => s("Statut"),
 			'endDate' => s('Date de fin'),
+			'resumeDate' => s('Date de reprise sur {siteName}'),
 			'description' => s('Libellé'),
 			'residualValue' => s('Valeur résiduelle'),
 			'resumeFinancialYear' => s("Exercice de reprise sur {siteName}"),

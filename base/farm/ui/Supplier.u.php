@@ -58,7 +58,7 @@ class SupplierUi {
 		if($cSupplier->empty()) {
 
 			$h = '<div class="util-info">';
-				$h .= s("Vous n'avez pas encore ajouté de fournisseur de semences et plants à votre ferme. Ajouter des fournisseurs peut être très utile pour faciliter vos commandes !");
+				$h .= s("Vous n'avez pas encore ajouté de fournisseur de semences et plants. Ajouter des fournisseurs peut être très utile pour faciliter vos commandes !");
 			$h .= '</div>';
 
 		} else {

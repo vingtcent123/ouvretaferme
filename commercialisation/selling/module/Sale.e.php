@@ -364,7 +364,7 @@ class Sale extends SaleElement {
 		$this->expects(['customer', 'farm']);
 
 		return in_array($this['profile'], Sale::getStatsProfiles()) and (
-			// Ferme
+			// Producteur
 			$this->canRead() or
 			// Client
 			(

@@ -58,6 +58,9 @@ abstract class FarmerElement extends \Element {
 	const PRODUCT = 'product';
 	const CATEGORY = 'category';
 
+	const TURNOVER = 'turnover';
+	const ACCOUNT = 'account';
+
 	const CUSTOMER = 'customer';
 	const CUSTOMER_PRIVATE = 'customer-private';
 	const CUSTOMER_PRO = 'customer-pro';
@@ -71,7 +74,6 @@ abstract class FarmerElement extends \Element {
 
 	const POINT = 'point';
 
-	const TURNOVER = 'turnover';
 	const QUANTITY = 'quantity';
 
 	const COMPOSITION = 'composition';
@@ -135,6 +137,7 @@ class FarmerModel extends \ModuleModel {
 			'viewSoilTasks' => ['bool', 'cast' => 'bool'],
 			'viewSellingSales' => ['enum', [\farm\Farmer::SALE, \farm\Farmer::SALE_PRIVATE, \farm\Farmer::SALE_PRO, \farm\Farmer::LABEL, \farm\Farmer::PURCHASE, \farm\Farmer::ARCHIVES], 'cast' => 'enum'],
 			'viewSellingProducts' => ['enum', [\farm\Farmer::PRODUCT, \farm\Farmer::CATEGORY], 'cast' => 'enum'],
+			'viewSellingProductsColumn' => ['enum', [\farm\Farmer::TURNOVER, \farm\Farmer::ACCOUNT], 'cast' => 'enum'],
 			'viewSellingCustomers' => ['enum', [\farm\Farmer::CUSTOMER, \farm\Farmer::CUSTOMER_PRIVATE, \farm\Farmer::CUSTOMER_PRO, \farm\Farmer::GROUP], 'cast' => 'enum'],
 			'viewSellingCategory' => ['enum', [\farm\Farmer::ITEM, \farm\Farmer::CUSTOMER, \farm\Farmer::SHOP, \farm\Farmer::PERIOD], 'cast' => 'enum'],
 			'viewSellingCategoryCurrent' => ['element32', 'selling\Category', 'null' => TRUE, 'cast' => 'element'],
@@ -151,7 +154,7 @@ class FarmerModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningAction', 'viewPlanningPlant', 'viewPlanningUser', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningUserDaily', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSoilColor', 'viewSoilOverlay', 'viewSoilTasks', 'viewSellingSales', 'viewSellingProducts', 'viewSellingCustomers', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewSellingPreparing', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewShopSort', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewSeason', 'createdAt'
+			'id', 'user', 'farm', 'farmGhost', 'farmStatus', 'status', 'role', 'viewPlanning', 'viewPlanningAction', 'viewPlanningPlant', 'viewPlanningUser', 'viewPlanningCategory', 'viewPlanningYear', 'viewPlanningHarvestExpected', 'viewPlanningField', 'viewPlanningArea', 'viewPlanningUserDaily', 'viewCultivationCategory', 'viewSeries', 'viewSoil', 'viewSoilColor', 'viewSoilOverlay', 'viewSoilTasks', 'viewSellingSales', 'viewSellingProducts', 'viewSellingProductsColumn', 'viewSellingCustomers', 'viewSellingCategory', 'viewSellingCategoryCurrent', 'viewSellingPreparing', 'viewMailingCategory', 'viewShopCatalogCurrent', 'viewShopSort', 'viewAnalyzeChart', 'viewAnalyzeComposition', 'viewAnalyzeYear', 'viewAccountingYear', 'viewSeason', 'createdAt'
 		]);
 
 		$this->propertiesToModule += [
@@ -223,6 +226,9 @@ class FarmerModel extends \ModuleModel {
 
 			case 'viewSellingProducts' :
 				return Farmer::PRODUCT;
+
+			case 'viewSellingProductsColumn' :
+				return Farmer::TURNOVER;
 
 			case 'viewSellingCustomers' :
 				return Farmer::CUSTOMER;
@@ -296,6 +302,9 @@ class FarmerModel extends \ModuleModel {
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewSellingProducts' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			case 'viewSellingProductsColumn' :
 				return ($value === NULL) ? NULL : (string)$value;
 
 			case 'viewSellingCustomers' :
@@ -446,6 +455,10 @@ class FarmerModel extends \ModuleModel {
 
 	public function whereViewSellingProducts(...$data): FarmerModel {
 		return $this->where('viewSellingProducts', ...$data);
+	}
+
+	public function whereViewSellingProductsColumn(...$data): FarmerModel {
+		return $this->where('viewSellingProductsColumn', ...$data);
 	}
 
 	public function whereViewSellingCustomers(...$data): FarmerModel {

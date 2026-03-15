@@ -19,7 +19,7 @@ class AlertUi {
 			'Bed::names.size' => s("Le nom des planches doit faire doit entre 1 et {value} lettres.", BedUi::p('name')->range[1]),
 			'Bed::names.check' => s("Vous devez donner un nom à chaque planche."),
 			'Bed::names.different' => s("Vous devez donner un nom différent à chaque planche."),
-			'Bed::names.duplicate' => fn($names) => p("Le nom {value} est déjà utilisé par une autre planche de votre ferme.", "Les noms {value} sont déjà utilisés par d'autres planches de votre ferme.", count($names), ['value' => implode(', ', $names)]),
+			'Bed::names.duplicate' => fn($names) => p("Le nom {value} est déjà utilisé par une autre planche.", "Les noms {value} sont déjà utilisés par d'autres planches.", count($names), ['value' => implode(', ', $names)]),
 			'Bed::ids.check' => s("Veuillez sélectionner au moins une planche."),
 			'Bed::seasonLast.consistency' => s("Merci d'être cohérent entre la saison de début et la saison de fin."),
 			'Bed::canNotDraw' => s("Vous ne pouvez pas dessiner ces planches car le jardin ou la parcelle ne sont pas cartographiés."),

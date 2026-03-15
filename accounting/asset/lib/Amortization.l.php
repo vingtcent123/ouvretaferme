@@ -64,7 +64,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		if($eAsset[$type.'Mode'] === Asset::LINEAR) {
 
 			$startDate = $eAsset['startDate'];
-			$daysFirstMonth = max(1, self::DAYS_IN_MONTH - (int)mb_substr($startDate, -2) + 1);
+			$daysFirstMonth = max(0, self::DAYS_IN_MONTH - (int)mb_substr($startDate, -2) + 1);
 
 		} else {
 
@@ -83,7 +83,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 		// Nombre de mois dans cet exercice comptable (gère le cas où l'exercice comptable dure + que 1 an)
 		$monthsInFinancialYear = self::getMonthsBetweenTwoDates($eFinancialYear['startDate'], $eFinancialYear['endDate']);
 
-		return min(1, $days / (self::DAYS_IN_MONTH * $monthsInFinancialYear));
+		return $days / (self::DAYS_IN_MONTH * $monthsInFinancialYear);
 
 	}
 
@@ -396,19 +396,26 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	private static function computeLinearTable(Asset $eAsset, string $type): array {
 
-		$durationInYears = floor($eAsset[$type.'Duration'] / 12);
+		$durationInYears = $eAsset[$type.'Duration'] / 12;
 		$rate = self::getLinearRate($durationInYears);
 
 		$cFinancialYearAll = \account\FinancialYearLib::getAll();
 
 		$table = [];
-		$amortizationCumulated = 0;
 
 		$eFinancialYear = self::findFirstFinancialYearForAsset($eAsset, $cFinancialYearAll);
 
 		$currentDate = $eAsset['startDate'];
 
 		$amortizableBase = AssetLib::getAmortizableBase($eAsset, $type);
+
+
+		// On a une reprise à faire
+		if($eAsset['resumeDate'] !== NULL) {
+			$amortizationCumulated = $eAsset['economicAmortization'];
+		} else {
+			$amortizationCumulated = 0;
+		}
 
 		for($i = 0; $i <= $durationInYears; $i++) {
 
@@ -427,6 +434,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 				}
 			}
+
 			if(isset($amortization) and isset($eAsset['cAmortization'][$i])) {
 
 				$amortization = $eAsset['cAmortization'][$i]['amount'];
@@ -434,30 +442,34 @@ class AmortizationLib extends \asset\AmortizationCrud {
 			} else {
 
 				switch($i) {
+					case $durationInYears: // Cas doit arriver AVANT au cas où la durée d'amortissement est < 1 an (ex. DJA)
+						$amortization = round($amortizableBase - $amortizationCumulated, 2);
+						break;
 					case 0:
 						$amortization = round($amortizableBase * $rate * AmortizationLib::computeProrataTemporis($eFinancialYear, $eAsset, $type) / 100, 2);
-						break;
-					case $durationInYears:
-						$amortization = round($amortizableBase - $amortizationCumulated, 2);
 						break;
 					default:
 						$amortization = round($amortizableBase * $rate / 100, 2);
 				}
 			}
 
-			$amortizationCumulated += $amortization;
+			if($eAsset['resumeDate'] === NULL or $eFinancialYear['endDate'] >= $eAsset['resumeDate']) {
 
-			$table[] = [
-				'year' => $i,
-				'financialYear' => $eFinancialYear,
-				'base' => $amortizableBase,
-				'rate' => $rate,
-				'amortizationValue' => $amortization,
-				'amortizationValueCumulated' => round($amortizationCumulated, 2),
-				'endValue' => round($amortizableBase - $amortizationCumulated, 2),
-			];
+				$amortizationCumulated += $amortization;
 
-			$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));
+				$table[] = [
+					'year' => $i,
+					'financialYear' => $eFinancialYear,
+					'base' => $amortizableBase,
+					'rate' => $rate,
+					'amortizationValue' => $amortization,
+					'amortizationValueCumulated' => round($amortizationCumulated, 2),
+					'endValue' => round($amortizableBase - $amortizationCumulated, 2),
+				];
+
+				$currentDate = date('Y-m-d', strtotime($currentDate.' + 1 YEAR'));
+
+			}
 
 			// On n'amortit pas + que la valeur initiale
 			if($amortizationCumulated >= $amortizableBase) {
@@ -476,13 +488,13 @@ class AmortizationLib extends \asset\AmortizationCrud {
 
 	}
 
-	private static function getLinearRate(int $duration): float {
+	private static function getLinearRate(float $duration): float {
 
 		if($duration === 0) {
 			return 100;
 		}
 
-		return 1 / $duration * 100;
+		return 100 / $duration;
 
 	}
 
@@ -1194,7 +1206,7 @@ class AmortizationLib extends \asset\AmortizationCrud {
 				$table = self::computeTable($eAsset);
 				$accountLabel = $eAsset['accountLabel'];
 
-				$alreadyAmortized = 0;
+				$alreadyAmortized = $eAsset['economicAmortization'];
 				$alreadyExcessAmortized = 0;
 
 				$currentAmortization = 0;

@@ -53,7 +53,7 @@ class CsvUi {
 			$h .= '<div class="util-block">';
 				$h .= '<h4>'.s("Vos données sont prêtes à être importées").'</h4>';
 				$h .= '<ul>';
-					$h .= '<li>'.s("Les produits présents dans le tableau ci-dessous seront créés et associés à votre ferme.").'</li>';
+					$h .= '<li>'.s("Les produits présents dans le tableau ci-dessous seront créés.").'</li>';
 					$h .= '<li>'.s("Il est encore temps de faire des modifications dans votre fichier CSV si vous n'êtes pas totalement satisfait de la version actuelle").'</li>';
 					$h .= '<li>'.s("Si vous changez d'avis, vous pourrez toujours supprimer ultérieurement les produits que vous importez maintenant").'</li>';
 				$h .= '</ul>';
@@ -292,7 +292,7 @@ class CsvUi {
 					array_walk($values, 'encode');
 					$h .= '<div class="util-block">';
 						$h .= '<h4 class="color-danger">'.s("Unités manquantes").'</h4>';
-						$h .= '<p>'.s("Les unités suivantes n'existent pas sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une unité existante ou ajoutez-les à votre ferme. Pour rappel, vous devez utiliser <link>le nom des unités au singulier</link> pour qu'elles soient reconnues.", ['link' => '<a href="'.UnitUi::urlManage($eFarm).'" target="_blank">']).'</p>';
+						$h .= '<p>'.s("Les unités suivantes n'existent pas, corrigez votre fichier CSV pour les faire correspondre à une unité existante ou ajoutez-les. Pour rappel, vous devez utiliser <link>le nom des unités au singulier</link> pour qu'elles soient reconnues.", ['link' => '<a href="'.UnitUi::urlManage($eFarm).'" target="_blank">']).'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 						$h .= '<a href="'.UnitUi::urlManage($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des unités").'</a>';
 					$h .= '</div>';
@@ -302,7 +302,7 @@ class CsvUi {
 					array_walk($values, 'encode');
 					$h .= '<div class="util-block">';
 						$h .= '<h4 class="color-danger">'.s("Espèces manquantes").'</h4>';
-						$h .= '<p>'.s("Les espèces suivantes n'existent pas ou sont désactivées sur votre ferme, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les à votre ferme :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
+						$h .= '<p>'.s("Les espèces suivantes n'existent pas ou sont désactivées, corrigez votre fichier CSV pour les faire correspondre à une espèce existante ou ajoutez-les :", ['link' => '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank">']).'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 						$h .= '<a href="'.\plant\PlantUi::urlManage($eFarm).'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des espèces").'</a>';
 					$h .= '</div>';
@@ -330,7 +330,7 @@ class CsvUi {
 					array_walk($values, 'encode');
 					$h .= '<div class="util-block">';
 						$h .= '<h4 class="color-danger">'.s("Groupes de clients non reconnus").'</h4>';
-						$h .= '<p>'.s("Les groupes de clients suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un groupe existant ou ajoutez-les d'abord à votre ferme.").'</p>';
+						$h .= '<p>'.s("Les groupes de clients suivants ne peuvent pas être importés, corrigez votre fichier CSV pour les faire correspondre à un groupe existant ou ajoutez-les d'abord.").'</p>';
 						$h .= '<p style="font-style: italic">'.encode(implode(', ', $values)).'</p>';
 						$h .= '<a href="/selling/customerGroup:manage?farm='.$eFarm['id'].'" target="_blank" class="btn btn-primary">'.\Asset::icon('plus-circle').' '.s("Ajouter des groupes de clients").'</a>';
 					$h .= '</div>';

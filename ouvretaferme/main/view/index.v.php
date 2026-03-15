@@ -95,7 +95,7 @@ new AdaptativeView('anonymous', function($data, MainTemplate $t) {
 			echo '</div>';
 		echo '</div>';
 		echo '<div class="home-feature home-feature-other">';
-			echo '<div class="home-feature-subtitle">'.s("Ouvretaferme est un logiciel gratuit qui contribue à l'autonomie de plus de 2500 producteurs").'</div>';
+			echo '<div class="home-feature-subtitle">'.s("Ouvretaferme est un logiciel gratuit qui contribue à l'autonomie de plus de 3000 producteurs").'</div>';
 			echo '<div>';
 				echo '<a href="/user/signUp" class="btn btn-xl btn-outline-primary" style="font-weight: bold;">'.s("Créer un compte").'</a>';
 			echo '</div>';
