@@ -472,6 +472,14 @@ class CashLib extends CashCrud {
 							'cash' => new Cash(),
 							'cashStatus' => \selling\Payment::IGNORED
 						]);
+					Cash::model()
+						->whereStatus(Cash::DRAFT)
+						->whereId('!=', $e['id']) // sera supprimé juste après
+						->whereInvoice($e['invoice'])
+						->whereRegister($e['register'])
+						->update([
+							'status' => Cash::DELETED
+						]);
 					break;
 
 				case Cash::SELL_SALE :
@@ -483,22 +491,26 @@ class CashLib extends CashCrud {
 							'cash' => new Cash(),
 							'cashStatus' => \selling\Payment::IGNORED
 						]);
+
+				Cash::model()
+					->whereStatus(Cash::DRAFT)
+					->whereId('!=', $e['id']) // sera supprimé juste après
+					->whereSale($e['sale'])
+					->whereRegister($e['register'])
+					->update([
+						'status' => Cash::DELETED
+					]);
 					break;
 
 			}
 
-			$affected = Cash::model()
-				->whereStatus(Cash::DRAFT)
-				->or(
-					fn() => $this->whereId($e['id']),
-					fn() => $this
-						->whereInvoice($e['invoice'])
-						->whereSale($e['sale'])
-				)
-				->whereRegister($e['register'])
-				->update([
-					'status' => Cash::DELETED
-				]);
+		$affected = Cash::model()
+			->whereStatus(Cash::DRAFT)
+			->whereId($e['id'])
+			->whereRegister($e['register'])
+			->update([
+				'status' => Cash::DELETED
+			]);
 
 			if($affected > 0) {
 				\securing\SignatureLib::signDeletedCash($e);
