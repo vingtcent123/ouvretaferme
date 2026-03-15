@@ -653,7 +653,7 @@ class CustomerUi {
 			$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'" class="dropdown-item">'.s("Saisir une vente").'</a>';
 
 			if($eCustomer->acceptPurchase()) {
-				$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'&purchase" class="dropdown-item">'.s("Saisir un achat").'</a>';
+				$h .= '<a href="/selling/sale:create?farm='.$eCustomer['farm']['id'].'&customer='.$eCustomer['id'].'&purchase=1" class="dropdown-item">'.s("Saisir un achat").'</a>';
 			}
 
 			$h .= '<div class="dropdown-divider"></div>';

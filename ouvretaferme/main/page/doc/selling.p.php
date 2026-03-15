@@ -7,6 +7,7 @@
 
 	}))
 	->get('pricing', fn($data) => throw new ViewAction($data))
+	->get('invoicing', fn($data) => throw new ViewAction($data))
 	->get('product', fn($data) => throw new ViewAction($data))
 	->get('market', fn($data) => throw new ViewAction($data));
 ?>

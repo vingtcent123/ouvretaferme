@@ -30,14 +30,10 @@ class DocTemplate extends MainTemplate {
 				$h .= '<div class="doc-menu-title">'.s("Commercialisation").'</div>';
 				$h .= '<a href="/doc/selling:pricing" '.$this->menuSelected('sellingPricing').'>'.s("La gestion des prix").'</a>';
 				$h .= '<a href="/doc/selling:market" '.$this->menuSelected('sellingMarket').'>'.s("Le logiciel de caisse").'</a>';
+				$h .= '<a href="/doc/selling:invoicing" '.$this->menuSelected('sellingInvoicing').'>'.s("La facturation").'</a>';
 				$h .= '<a href="/doc/selling:product" '.$this->menuSelected('sellingProduct').'>'.s("Photos libres de droits pour vos produits").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Boutiques en ligne").'</div>';
 				$h .= '<a href="/doc/shop:shared" '.$this->menuSelected('shopShared').'>'.s("Les boutiques collectives").'</a>';
-				$h .= '<div class="doc-menu-title">'.s("Importer des données").'</div>';
-				$h .= '<a href="/doc/import:series" '.$this->menuSelected('importSeries').'>'.s("Importer un plan de culture").'</a>';
-				$h .= '<a href="/doc/import:products" '.$this->menuSelected('importProducts').'>'.s("Importer des produits").'</a>';
-				$h .= '<a href="/doc/import:customers" '.$this->menuSelected('importCustomers').'>'.s("Importer des clients").'</a>';
-				$h .= '<a href="/doc/import:prices" '.$this->menuSelected('importPrices').'>'.s("Importer des prix").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Comptabilité").'</div>';
 				$h .= '<a href="/doc/accounting" '.$this->menuSelected('accounting').'>'.s("Prendre en main le logiciel").'</a>';
 				$h .= '<a href="/doc/accounting:bank" '.$this->menuSelected('accounting:bank').'>'.s("Les opérations bancaires").'</a>';
@@ -47,17 +43,24 @@ class DocTemplate extends MainTemplate {
 				$h .= '<a href="/doc/accounting:vat" '.$this->menuSelected('accounting:vat').'>'.s("La TVA").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Comptabilité simplifiée").'</div>';
 				$h .= '<a href="/doc/accounting:receipts" '.$this->menuSelected('accounting:receipts').'>'.s("Livre des recettes pour le micro-BA").'</a>';
+				$h .= '<div class="doc-menu-title">'.s("Importer des données").'</div>';
+				$h .= '<a href="/doc/import:series" '.$this->menuSelected('importSeries').'>'.s("Importer un plan de culture").'</a>';
+				$h .= '<a href="/doc/import:products" '.$this->menuSelected('importProducts').'>'.s("Importer des produits").'</a>';
+				$h .= '<a href="/doc/import:customers" '.$this->menuSelected('importCustomers').'>'.s("Importer des clients").'</a>';
+				$h .= '<a href="/doc/import:prices" '.$this->menuSelected('importPrices').'>'.s("Importer des prix").'</a>';
 				$h .= '<div class="doc-menu-title">'.s("Divers").'</div>';
 				$h .= '<a href="/doc/editor" '.$this->menuSelected('editor').'>'.s("Utiliser l'éditeur de texte").'</a>';
 			$h .= '</div>';
-			$h .= '<div class="doc-header">';
-				$h .= '<h1>'.$this->title.'</h1>';
-				if($this->subTitle !== NULL) {
-					$h .= '<h4>'.$this->subTitle.'</h4>';
-				}
-			$h .= '</div>';
-			$h .= '<div class="doc-content">';
-				$h .= parent::getMain($stream);
+			$h .= '<div class="doc-main">';
+				$h .= '<div class="doc-header">';
+					$h .= '<h1>'.$this->title.'</h1>';
+					if($this->subTitle !== NULL) {
+						$h .= '<h4>'.$this->subTitle.'</h4>';
+					}
+				$h .= '</div>';
+				$h .= '<div class="doc-content">';
+					$h .= parent::getMain($stream);
+				$h .= '</div>';
 			$h .= '</div>';
 		$h .= '</div>';
 

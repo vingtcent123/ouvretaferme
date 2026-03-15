@@ -339,6 +339,16 @@ class InvoiceLib extends InvoiceCrud {
 					'invoice' => $e
 				]);
 
+			if($e['farm']['hasInvoices'] === FALSE) {
+
+				\farm\Farm::model()->update($e['farm'], [
+					'hasInvoices' => TRUE
+				]);
+
+			}
+
+			HistoryLib::createByElement($e, 'invoice-created');
+
 		Invoice::model()->commit();
 
 		if($e['generation'] === Invoice::NOW) {
@@ -448,6 +458,8 @@ class InvoiceLib extends InvoiceCrud {
 							]);
 
 						PaymentLinkLib::deactivate($e);
+
+						HistoryLib::createByElement($e, 'invoice-canceled');
 
 						break;
 
@@ -612,18 +624,11 @@ class InvoiceLib extends InvoiceCrud {
 				->getValue('customer')
 				->validate('acceptInvoice');
 
-			$cSale = SaleLib::getForInvoice($eCustomer, $ids);
-
-			if($cSale->count() !== count($ids)) {
-				Invoice::fail('sales.check');
-				return new \Collection();
-			}
-
 			$eInvoice = (clone $eInvoiceBase);
 			$eInvoice['customer'] = $eCustomer;
 			$eInvoice['farm'] = $eFarm;
-			$eInvoice['cSale'] = $cSale;
-			$eInvoice['sales'] = $cSale->getIds();
+
+			$eInvoice->build(['sales'], ['sales' => $ids]);
 
 			$cInvoice[] = $eInvoice;
 

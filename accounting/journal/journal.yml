@@ -39,7 +39,7 @@ Operation:
   account: account\Account
   accountLabel: text8(1, null) @collate(general)
   thirdParty: ?account\ThirdParty
-  date: date(PHP(toDate('NOW - 2 YEARS')), PHP(toDate('NOW + 1 YEARS')))
+  date: date
   # Libellé de l'opération
   description: text8(1, null) @collate(general)
   document: ?text8(1, null) @collate(general)

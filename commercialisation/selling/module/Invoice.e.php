@@ -194,7 +194,10 @@ class Invoice extends InvoiceElement {
 	}
 
 	public function acceptStatusCanceled(): bool {
-		return ($this['closed'] === FALSE);
+		return (
+			$this['status'] !== Invoice::DRAFT and
+			$this['closed'] === FALSE
+		);
 	}
 
 	public function acceptStatusConfirmed(): bool {
@@ -240,6 +243,15 @@ class Invoice extends InvoiceElement {
 				return ($this['cSale']->count() === count($sales));
 
 			})
+			->setCallback('sales.profiles', function(): bool {
+
+				$this->expects(['cSale']);
+
+				$profiles = $this['cSale']->getColumn('profile');
+
+				return (count(array_unique($profiles)) === 1);
+
+			})
 			->setCallback('sales.taxes', function(): bool {
 
 				$this->expects(['cSale']);
@@ -249,6 +261,16 @@ class Invoice extends InvoiceElement {
 				return (count(array_unique($taxes)) === 1);
 
 			})
+			->setCallback('sales.month', function(): bool {
+
+				$this->expects(['cSale']);
+
+				$dates = $this['cSale']->getColumn('deliveredAt');
+				array_walk($dates, fn(&$date) => $date = substr($date, 0, 7));
+
+				return (count(array_unique($dates)) === 1);
+
+			})
 			->setCallback('sales.paid', function(): bool {
 
 				$this->expects(['cSale']);
@@ -256,38 +278,7 @@ class Invoice extends InvoiceElement {
 				if($this['cSale']->count() < 2) {
 					return TRUE;
 				} else {
-					return $this['cSale']->contains(fn($eSale) => $eSale['paymentStatus'] === Sale::PAID) === FALSE;
-				}
-
-			})
-			->setCallback('sales.methods', function(): bool {
-
-				$this->expects(['cSale']);
-
-				if($this['cSale']->count() < 2) {
-					return TRUE;
-				} else {
-
-					$eMethod = $this['cSale']->first()['cPayment']->first()['method'] ?? new \payment\Method();
-
-					foreach($this['cSale'] as $eSale) {
-
-						if($eMethod->empty()) {
-
-							// Pas de moyen de paiement pour les 2
-							if($eSale['cPayment']->count() === 0) {
-								continue;
-							}
-
-							return FALSE;
-						}
-
-						if($eSale['cPayment']->count() !== 1 or $eSale['cPayment']->first()['method']->is($eMethod) === FALSE) {
-							return FALSE;
-						}
-					}
-
-					return TRUE;
+					return $this['cSale']->contains(fn($eSale) => in_array($eSale['paymentStatus'], [NULL, Sale::NOT_PAID, Sale::FAILED]) === FALSE) === FALSE;
 				}
 
 			})

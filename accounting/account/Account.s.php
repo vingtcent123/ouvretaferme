@@ -75,7 +75,6 @@ class AccountSetting extends \Settings {
 	const EXCESS_AMORTIZATION_CLASS = 145;
 	const INVESTMENT_GRANT_AMORTIZATION_CLASS = '139'; // Subventions d'investissement inscrites au CdR
 	const INVESTMENT_GRANT_TO_RESULT_CLASS = '747'; // Quote-part des subventions d'investissement virées au résultat de l'exercice
-	const INCOME_GRANT_CLASS = '745'; // Subventions au revenu
 	const ASSET_AMORTIZATION_GENERAL_CLASS = 28;
 	const ASSET_AMORTIZATION_INTANGIBLE_CLASS = 280;
 	const ASSET_AMORTIZATION_TANGIBLE_CLASS = 281;
@@ -149,7 +148,10 @@ class AccountSetting extends \Settings {
 	const PRODUCT_SHIPPING_ACCOUNT_CLASS = 7085;
 	const PRODUCT_SUBVENTION_ACCOUNT_CLASS = 74;
 	const PRODUCT_OPERATING_SUBVENTION_ACCOUNT_CLASS = 741;
+	const PRODUCT_PAC_DIRECT_ACCOUNT_CLASS = 744;
+	const INCOME_GRANT_CLASS = '745'; // Subventions au revenu
 	const CAPITALIZED_PRODUCTION_ACCOUNT_CLASS = 72;
+	const PRODUCT_OTHER_SUBVENTION_CLASS = 748;
 	const PRODUCT_SELF_CONSUMPTION_ACCOUNT_CLASS = 73;
 	const OLD_PRODUCT_SELF_CONSUMPTION_ACCOUNT_CLASS = 726;
 	const PRODUCT_OTHER_ACCOUNT_CLASS = 75;
@@ -195,6 +197,11 @@ class AccountSetting extends \Settings {
 	// Charges et produits constatés d'avance
 	const PREPAID_EXPENSE_CLASS = '486';  // Charge constatée d'avance
 	const ACCRUED_EXPENSE_CLASS = '487'; // Produit constaté d'avance
+
+	const TURNOVER_SUBVENTION_CLASSES = [
+		self::PRODUCT_OPERATING_SUBVENTION_ACCOUNT_CLASS, self::PRODUCT_PAC_DIRECT_ACCOUNT_CLASS,
+		self::INCOME_GRANT_CLASS, self::PRODUCT_OTHER_SUBVENTION_CLASS
+	];
 
 	// Compte de stock => Compte de variation correspondant
 	const STOCK_VARIATION_CLASSES = [ // Réfléchir à supprimer cette const au profit de 3* et 603*

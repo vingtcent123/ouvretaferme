@@ -23,6 +23,14 @@ class InvoiceUi {
 
 	}
 
+	public static function downloadUrl(Invoice $eInvoice): string {
+
+		return '/facture/'.$eInvoice['id'].'/telecharger';
+
+
+
+	}
+
 	public static function getName(Invoice $e): string {
 
 		$number = encode($e['number'] ?? '');
@@ -42,6 +50,154 @@ class InvoiceUi {
 
 		return $h;
 			
+	}
+
+	public function getHeader(Invoice $eInvoice): string {
+
+		$h = '<div class="util-title">';
+			$h .= '<div>';
+				$h .= '<h1>';
+					$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eInvoice['farm']).'"  class="h-back">'.\Asset::icon('arrow-left').'</a>';
+					$h .= InvoiceUi::getName($eInvoice).'  '.$this->getStatusForUpdate($eInvoice);
+				$h .= '</h1>';
+			$h .= '</div>';
+			$h .= '<div>';
+				$h .= $this->getUpdate($eInvoice, 'btn-primary');
+			$h .= '</div>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getContent(Invoice $eInvoice): string {
+
+		$h = $this->getPresentation($eInvoice);
+		$h .= $this->getButtons($eInvoice);
+		$h .= $this->getSummary($eInvoice);
+
+		return $h;
+
+	}
+
+	public function getPresentation(Invoice $eInvoice): string {
+
+		$h = '<div class="sale-presentation util-block stick-xs">';
+			$h .= '<dl class="util-presentation util-presentation-2">';
+				$h .= '<dt>'.s("Client").'</dt>';
+				$h .= '<dd>'.CustomerUi::link($eInvoice['customer']).'</dd>';
+
+				$h .= '<dt>'.s("Date de facture").'</dt>';
+				$h .= '<dd>';
+					$h .= \util\DateUi::numeric($eInvoice['date'], \util\DateUi::DATE);
+				$h .= '</dd>';
+
+				$h .= '<dt>'.s("Moyen de paiement").'</dt>';
+				$h .= '<dd>';
+					$h .= PaymentTransactionUi::getPaymentBox($eInvoice, optimize: TRUE);
+				$h .= '</dd>';
+
+				$h .= '<dt>'.s("Date d'échéance").'</dt>';
+				$h .= '<dd>';
+					if($eInvoice['dueDate'] === NULL) {
+						$h .= s("Aucune");
+					} else {
+						$h .= \util\DateUi::numeric($eInvoice['dueDate'], \util\DateUi::DATE);
+					}
+				$h .= '</dd>';
+
+			$h .= '</dl>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getButtons(Invoice $eInvoice): string {
+
+		if($eInvoice->acceptDownload()) {
+			$text = s("Télécharger le PDF");
+		} else if($eInvoice['status'] === Invoice::DRAFT) {
+			$text = s("Télécharger un proforma");
+		} else {
+			return '';
+		}
+
+		$h = '<div class="mb-1">';
+
+			$h .= '<a href="'.InvoiceUi::downloadUrl($eInvoice).'" data-ajax-navigation="never" class="btn btn-primary btn-xl">'.\Asset::icon('download').' ';
+				$h .= $text;
+			$h .= '</a>';
+
+		$h .= '</div>';
+
+		return $h;
+
+	}
+
+	public function getSummary(Invoice $eInvoice): string {
+
+		$h = '<table class="tr-bordered sale-summary">';
+
+			if($eInvoice['hasVat']) {
+
+				switch($eInvoice['taxes']) {
+
+					case Sale::INCLUDING :
+
+						$h .= '<tr>';
+							$h .= '<td>'.s("Montant total TTC").'</td>';
+							$h .= '<td class="sale-summary-value sale-summary-value-highlight">'.\util\TextUi::money($eInvoice['priceIncludingVat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						$h .= '<tr class="color-muted">';
+							$h .= '<td style="padding-left: 2rem">'.s("Dont TVA").'</td>';
+							$h .= '<td class="sale-summary-value">'.\util\TextUi::money($eInvoice['vat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						$h .= '<tr class="color-muted">';
+							$h .= '<td style="padding-left: 2rem">'.s("Dont montant HT").'</td>';
+							$h .= '<td class="sale-summary-value">'.\util\TextUi::money($eInvoice['priceExcludingVat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						break;
+
+					case Sale::EXCLUDING :
+
+						$h .= '<tr>';
+							$h .= '<td>'.s("Montant total HT").'</td>';
+							$h .= '<td class="sale-summary-value sale-summary-value-highlight">'.\util\TextUi::money($eInvoice['priceExcludingVat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						$h .= '<tr>';
+							$h .= '<td>'.s("TVA").'</td>';
+							$h .= '<td class="sale-summary-value">'.\util\TextUi::money($eInvoice['vat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						$h .= '<tr>';
+							$h .= '<td>'.s("Montant total TTC").'</td>';
+							$h .= '<td class="sale-summary-value">'.\util\TextUi::money($eInvoice['priceIncludingVat'] ?? 0).'</td>';
+						$h .= '</tr>';
+
+						break;
+
+				}
+
+			} else {
+
+				$h .= '<tr>';
+					$h .= '<td>'.s("Montant total").'</td>';
+					$h .= '<td class="sale-summary-value sale-summary-value-highlight">'.\util\TextUi::money($eInvoice['priceIncludingVat'] ?? 0).'</td>';
+				$h .= '</tr>';
+
+			}
+
+		$h .= '</table>';
+
+		return $h;
+
 	}
 
 	public function getSearch(\Search $search): string {
@@ -203,11 +359,14 @@ class InvoiceUi {
 								if($eInvoice['generation'] === Invoice::FAIL) {
 									$h .= '<div class="invoice-item-generation color-danger">'.s("Génération<br/>échouée").'</div>';
 								} else {
-									$h .= InvoiceUi::link($eInvoice);
+
+									if($eInvoice->canRead() === FALSE) {
+										$h .= '<span class="btn btn-sm disabled">'.$eInvoice['number'].'</span>';
+									} else {
+										$h .= '<a href="/facture/'.$eInvoice['id'].'" class="btn btn-sm '.($eInvoice['date'] === currentDate() ? 'btn-primary' : 'btn-outline-primary').'">'.($eInvoice['document'] === NULL ? 'PROFORMA' : encode($eInvoice['number'])).'</a>';
+									}
 								}
 							}
-
-
 						$h .= '</td>';
 
 						if(in_array('customer', $hide) === FALSE) {
@@ -257,7 +416,7 @@ class InvoiceUi {
 						$h .= '<td class="text-end invoice-item-amount">';
 							$h .= SaleUi::getIncludingTaxesTotal($eInvoice);
 							$h .= '<div class="util-annotation">';
-								$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eInvoice['farm'], \farm\Farmer::SALE).'?ids='.implode(',', $eInvoice['sales']).'">'.p("{value} vente", "{value} ventes", count($eInvoice['sales'])).'</a>';
+								$h .= '<a href="/facture/'.$eInvoice['id'].'">'.p("{value} vente", "{value} ventes", count($eInvoice['sales'])).'</a>';
 							$h .= '</div>';
 						$h .= '</td>';
 
@@ -287,78 +446,7 @@ class InvoiceUi {
 
 						$h .= '</td>';
 						$h .= '<td class="text-end td-min-content">';
-
-							if(
-								$eInvoice->canUpdate() and
-								$eInvoice['status'] !== Invoice::CONFIRMED
-							) {
-
-								$h .= '<a data-dropdown="bottom-end" class="dropdown-toggle btn btn-outline-secondary">'.\Asset::icon('gear-fill').'</a>';
-								$h .= '<div class="dropdown-list">';
-									$h .= '<div class="dropdown-title">'.self::getName($eInvoice).'</div>';
-
-									if(
-										$eInvoice->acceptDownload() or
-										$eInvoice->acceptSend()
-									) {
-
-										if($eInvoice->acceptDownload()) {
-											$h .= '<a href="'.self::url($eInvoice).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger la facture").'</a>';
-										}
-
-										if($eInvoice->acceptSend()) {
-											$h .= '<a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eInvoice['id'].'" data-confirm="'.s("Envoyez cette facture au client par e-mail ?").'" class="dropdown-item">'.s("Envoyer au client par e-mail").'</a>';
-										}
-
-										$h .= '<div class="dropdown-divider"></div>';
-
-									}
-
-									if($eInvoice->acceptRegenerate()) {
-										$h .= '<a href="/selling/invoice:regenerate?id='.$eInvoice['id'].'" class="dropdown-item">'.s("Modifier la facture").'</a>';
-									}
-
-									if($eInvoice->acceptUpdatePayment()) {
-										$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="dropdown-item">';
-											$h .= $eInvoice['cPayment']->empty() ? s("Choisir le règlement") : s("Changer le règlement");
-										$h .= '</a>';
-									}
-
-									if($eInvoice->acceptStripeLink()) {
-										$h .= '<a href="/selling/paymentLink:create?invoice='.$eInvoice['id'].'" class="dropdown-item">';
-											$h .= s("Créer un lien de paiement");
-										$h .= '</a>';
-									}
-
-									$h .= '<a href="/selling/invoice:updateComment?id='.$eInvoice['id'].'" class="dropdown-item">';
-										$h .= $eInvoice['comment'] === NULL ? s("Ajouter un commentaire") : s("Modifier le commentaire");
-									$h .= '</a>';
-
-
-									if(
-										$eInvoice->acceptDelete() and
-										$eInvoice->canDelete()
-									) {
-
-										$h .= '<div class="dropdown-divider"></div>';
-										$h .= '<a data-ajax="/selling/invoice:doDelete" post-id="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("La suppression d'une facture est définitive. Voulez-vous continuer ?").'">'.s("Supprimer la facture").'</a>';
-
-									}
-
-									if(
-										$eInvoice->acceptStatusCanceled()
-									) {
-
-										$h .= '<div class="dropdown-divider"></div>';
-										$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
-										$h .= '<a data-ajax="/selling/invoice:doUpdateCanceledCollection" post-ids="'.$eInvoice['id'].'" data-confirm="'.s("L'annulation d'une facture est définitive. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Annuler la facture").'</a>';
-
-									}
-
-								$h .= '</div>';
-
-							}
-
+							$h .= $this->getUpdate($eInvoice, 'btn-outline-secondary');
 						$h .= '</td>';
 
 					$h .= '</tr>';
@@ -375,6 +463,83 @@ class InvoiceUi {
 		}
 
 		$h .= $this->getBatch($cPaymentMethod);
+
+		return $h;
+
+	}
+
+	public function getUpdate(Invoice $eInvoice, string $btn): string {
+
+		if($eInvoice->canUpdate() === FALSE or $eInvoice['status'] === Invoice::CONFIRMED) {
+			return '';
+		}
+
+		$h = '<a data-dropdown="bottom-end" class="dropdown-toggle btn '.$btn.'">'.\Asset::icon('gear-fill').'</a>';
+		$h .= '<div class="dropdown-list">';
+			$h .= '<div class="dropdown-title">'.self::getName($eInvoice).'</div>';
+
+			if(
+				$eInvoice->acceptDownload() or
+				$eInvoice->acceptSend() or
+				$eInvoice['status'] === Invoice::DRAFT
+			) {
+
+				if($eInvoice->acceptDownload()) {
+					$h .= '<a href="'.self::downloadUrl($eInvoice).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger la facture").'</a>';
+				} else if($eInvoice['status'] === Invoice::DRAFT) {
+					$h .= '<a href="'.self::downloadUrl($eInvoice).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger un proforma").'</a>';
+				}
+
+				if($eInvoice->acceptSend()) {
+					$h .= '<a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eInvoice['id'].'" data-confirm="'.s("Envoyez cette facture au client par e-mail ?").'" class="dropdown-item">'.s("Envoyer au client par e-mail").'</a>';
+				}
+
+				$h .= '<div class="dropdown-divider"></div>';
+
+			}
+
+			if($eInvoice->acceptRegenerate()) {
+				$h .= '<a href="/selling/invoice:regenerate?id='.$eInvoice['id'].'" class="dropdown-item">'.s("Modifier la facture").'</a>';
+			}
+
+			if($eInvoice->acceptUpdatePayment()) {
+				$h .= '<a href="/selling/invoice:updatePayment?id='.$eInvoice['id'].'" class="dropdown-item">';
+					$h .= $eInvoice['cPayment']->empty() ? s("Choisir le règlement") : s("Changer le règlement");
+				$h .= '</a>';
+			}
+
+			if($eInvoice->acceptStripeLink()) {
+				$h .= '<a href="/selling/paymentLink:create?invoice='.$eInvoice['id'].'" class="dropdown-item">';
+					$h .= s("Créer un lien de paiement");
+				$h .= '</a>';
+			}
+
+			$h .= '<a href="/selling/invoice:updateComment?id='.$eInvoice['id'].'" class="dropdown-item">';
+				$h .= $eInvoice['comment'] === NULL ? s("Ajouter un commentaire") : s("Modifier le commentaire");
+			$h .= '</a>';
+
+
+			if(
+				$eInvoice->acceptDelete() and
+				$eInvoice->canDelete()
+			) {
+
+				$h .= '<div class="dropdown-divider"></div>';
+				$h .= '<a data-ajax="/selling/invoice:doDelete" post-id="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("La suppression d'une facture est définitive. Voulez-vous continuer ?").'">'.s("Supprimer la facture").'</a>';
+
+			}
+
+			if(
+				$eInvoice->acceptStatusCanceled()
+			) {
+
+				$h .= '<div class="dropdown-divider"></div>';
+				$h .= '<div class="dropdown-subtitle">'.\Asset::icon('exclamation-circle').'  '.s("Zone de danger").'  '.\Asset::icon('exclamation-circle').'</div>';
+				$h .= '<a data-ajax="/selling/invoice:doUpdateCanceledCollection" post-ids="'.$eInvoice['id'].'" data-confirm="'.s("L'annulation d'une facture est définitive. Voulez-vous continuer ?").'" class="dropdown-item">'.s("Annuler la facture").'</a>';
+
+			}
+
+		$h .= '</div>';
 
 		return $h;
 
@@ -507,20 +672,20 @@ class InvoiceUi {
 
 	}
 
-	public function create(Invoice $eInvoice, \Collection $cSale, \Collection $cSaleMore, \Search $search): \Panel {
+	public function create(Invoice $eInvoice, Sale $eSaleFirst, \Collection $cSaleMore, \Search $search): \Panel {
 
 		$eInvoice->expects(['lastDate']);
 		
 		$body = $this->getGenerateBody(
 			$eInvoice,
 			'/selling/invoice:doCreate',
-			function(\util\FormUi $form) use($cSale, $cSaleMore, $search) {
+			function(\util\FormUi $form) use($eSaleFirst, $cSaleMore, $search) {
 	
-				$sales = '';
+				$sales = '<div id="invoice-create-sales">';
 
-				if($cSale->count() > 0) {
+				if($eSaleFirst->notEmpty()) {
 
-					$sales .= $this->getSales($form, $cSale, TRUE);
+					$sales .= $this->getSales($form, new \Collection([$eSaleFirst]), TRUE);
 
 				}
 
@@ -530,28 +695,40 @@ class InvoiceUi {
 					$sales .= '</div>';
 				} else {
 
-					if($cSale->notEmpty()) {
-						$sales .= '<h3>'.s("Ajouter d'autres ventes à la facture").'</h3>';
-					}
+					$sales .= '<div class="util-title">';
 
-					$sales .= '<div style="display: flex; column-gap: 1rem" class="mb-1">';
-						$sales .= $form->inputGroup(
-							$form->addon(s("Ventes de moins de")).
-							$form->number('delivered', $search->get('delivered'), ['onkeypress' => 'return event.keyCode != 13;']).
-							$form->inputAddon(s("jours")).
-							$form->button(\Asset::icon('search'), ['onclick' => 'Sale.submitInvoiceSearch(this)'])
-						);
+						if($eSaleFirst->notEmpty()) {
+							$sales .= '<h3>'.s("Ajouter d'autres ventes à la facture").'</h3>';
+						} else {
+							$sales .= '<h3>'.s("Sélectionner les ventes").'</h3>';
+						}
+
+						$sales .= '<div class="invoice-create-search">';
+							$sales .= $form->inputGroup(
+								$form->addon(s("Ventes de moins de")).
+								$form->number('delivered', $search->get('delivered'), ['onkeypress' => 'return event.keyCode != 13;']).
+								$form->inputAddon(s("jours")).
+								$form->button(\Asset::icon('search'), ['onclick' => 'Sale.submitInvoiceSearch(this)'])
+							);
+						$sales .= '</div>';
+
 					$sales .= '</div>';
 
 					if($cSaleMore->notEmpty()) {
 
+						if($cSaleMore->notEmpty()) {
+							$sales .= '<p class="color-muted">'.s("Vous pouvez intégrer dans une seule facture les transactions avec le même mode de règlement, le même mois et avec le même régime TVA. En outre, les ventes ne doivent pas avoir été réglées.").'</p>';
+						}
+
 						$sales .= $this->getSales($form, $cSaleMore, FALSE);
 
 					} else {
-						$sales .= '<div class="util-empty">'.s("Il n'y a aucune vente de moins de {value} jours à afficher pour ce client. Seules les ventes déjà livrées et pour lesquelles aucune facture n'a été éditée par ailleurs peuvent être facturées.", $search->get('delivered')).'</div>';
+						$sales .= '<div class="util-empty">'.s("Il n'y a aucune vente de moins de {value} jours à afficher pour ce client.<br/>Seules les ventes déjà livrées et pour lesquelles aucune facture n'a été éditée par ailleurs peuvent être facturées.", $search->get('delivered')).'</div>';
 					}
 
 				}
+
+				$sales .= '</div>';
 
 				return $sales;
 
@@ -606,7 +783,7 @@ class InvoiceUi {
 
 		$form = new \util\FormUi();
 
-		$h = '';
+		$h = $this->getHelp($eFarm);
 
 		$h .= $form->openAjax('/selling/invoice:doCreateCollection');
 
@@ -707,13 +884,13 @@ class InvoiceUi {
 
 	protected function getCustomers(\util\FormUi $form, \farm\Farm $eFarm, \Collection $cSale): string {
 
-		$h = '<table class="tr-even">';
+		$h = '<table class="tr-bordered">';
 			$h .= '<tr>';
 				$h .= '<th>';
 					$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[name^="sales"]\')').'"/>';
 				$h .= '</th>';
 				$h .= '<th>'.s("Client").'</th>';
-				$h .= '<th class="text-end">'.s("Ventes").'</th>';
+				$h .= '<th></th>';
 				$h .= '<th class="text-end">';
 					$h .= s("Montant");
 				$h .= '</th>';
@@ -725,7 +902,12 @@ class InvoiceUi {
 				$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['list']).'</td>';
 				$h .= '<td>'.CustomerUi::link($eSale['customer'], newTab: TRUE).'</td>';
 				$h .= '<td class="text-end">';
-					$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eFarm, \farm\Farmer::SALE).'?ids='.$eSale['list'].'" class="btn btn-sm btn-outline-secondary" target="_blank">'.$eSale['number'].'</a>';
+					$h .= '<a href="'.\farm\FarmUi::urlSellingSales($eFarm, \farm\Farmer::SALE).'?ids='.$eSale['list'].'" class="btn btn-sm btn-outline-secondary" target="_blank">';
+						$h .= match($eSale['profile']) {
+							Sale::SALE => p("{value} vente", "{value} ventes", $eSale['number']),
+							Sale::PURCHASE => p("{value} achat", "{value} achats", $eSale['number']),
+						};
+					$h .= '</a>';
 				$h .= '</td>';
 				$h .= '<td class="text-end">';
 				$h .= SaleUi::getTotal($eSale);
@@ -760,7 +942,17 @@ class InvoiceUi {
 
 		$form = new \util\FormUi();
 
-		$h = '';
+		$h = '<h4>';
+
+			$h .= encode($eInvoice['customer']->getName());
+
+			if($eInvoice->exists() === FALSE) {
+				$h .= '<a href="/selling/invoice:create?farm='.$eInvoice['farm']['id'].'" class="btn btn-sm btn-secondary ml-1">'.s("Changer").'</a>';
+			}
+
+		$h .= '</h4>';
+
+		$h .= $this->getHelp($eInvoice['farm']);
 
 		$h .= $form->openAjax($page);
 
@@ -777,17 +969,6 @@ class InvoiceUi {
 				$h .= $form->hidden('id', $eInvoice);
 
 			}
-
-			$customer = '<b>'.$eInvoice['customer']->getName().'</b>';
-
-			if($eInvoice->exists() === FALSE) {
-				$customer .= '<a href="/selling/invoice:create?farm='.$eInvoice['farm']['id'].'" class="btn btn-sm btn-secondary ml-1">'.s("Changer").'</a>';
-			}
-
-			$h .= $form->group(
-				s("Client"),
-				 $customer
-			);
 
 			if($sales !== NULL) {
 
@@ -864,11 +1045,7 @@ class InvoiceUi {
 
 				if($canCreateInvoice) {
 
-					$h .= $form->group(
-						s("Inclure dans la facture").
-						\util\FormUi::info(s("Notez qu'une facture d'avoir est générée lorsque le montant total à facturer est négatif.")),
-						$sales($form)
-					);
+					$h .= $sales($form);
 
 				}
 			}
@@ -916,6 +1093,23 @@ class InvoiceUi {
 
 	}
 
+	protected function getHelp(\farm\Farm $eFarm): string {
+
+		$h = '';
+
+		if($eFarm['hasInvoices'] === FALSE) {
+
+			$h .= '<div class="util-block-help">';
+				$h .= '<p>'.s("Vous voulez tout savoir de la facturation avec Ouvretaferme avant de générer votre première facture ?").'</p>';
+				$h .= '<a href="/doc/selling:invoicing" target="_blank" class="btn btn-secondary">'.s("Lire la documentation").'</a>';
+			$h .= '</div>';
+
+		}
+
+		return $h;
+
+	}
+
 	protected function getStatusField(\util\FormUi $form): string {
 
 		$confirmed = '<span class="btn btn-sm invoice-status-'.Invoice::GENERATED.'-button">'.s("Oui, générer la facture").'</span>';
@@ -935,27 +1129,30 @@ class InvoiceUi {
 		);
 
 	}
-	
+
 	protected function getSales(\util\FormUi $form, \Collection $cSale, bool $checked): string {
-		
+
+
 		$h = '<table class="tr-even">';
-			$h .= '<tr>';
+
+			$h .=  '<tr>';
+
 				$h .= '<th>';
-
 					if($checked === FALSE) {
-						$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[data-invoice-checked="0"]\')').'"/>';
+						$h .= '<input type="checkbox" '.attr('onclick', 'CheckboxField.all(this.firstParent(\'form\'), this.checked, \'[data-invoice-checked="0"]\', () => Invoice.checkSales())').'"/>';
 					}
-
 				$h .= '</th>';
+
 				$h .= '<th></th>';
 				$h .= '<th>'.s("Date").'</th>';
 				$h .= '<th>'.s("Règlement").'</th>';
 				$h .= '<th class="text-end">'.s("Montant").'</th>';
-			$h .= '</tr>';
+			$h .= '</tr>';;
 
 		foreach($cSale as $eSale) {
 
-			$h .= '<tr>';
+			$h .= '<tr data-profile="'.$eSale['profile'].'" data-vat="'.(int)$eSale['hasVat'].'" data-taxes="'.$eSale['taxes'].'" data-month="'.substr($eSale['deliveredAt'], 0, 7).'" data-payment-status="'.$eSale['paymentStatus'].'">';
+
 				$h .= '<td class="td-min-content">'.$form->inputCheckbox('sales[]', $eSale['id'], ['checked' => $checked, 'data-invoice-checked' => (int)$checked]).'</td>';
 				$h .= '<td class="td-min-content text-center">';
 					$h .= SaleUi::link($eSale, newTab: TRUE, content: 'name', size: 'btn-xs');

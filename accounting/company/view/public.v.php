@@ -37,7 +37,7 @@ new AdaptativeView('/comptabilite/decouvrir', function($data, FarmTemplate $t) {
 					s("Adhérer à l'association pour seulement {value} €", \association\AssociationSetting::getFee($this->data->eFarm)) :
 					s("Adhérer à l'association");
 			echo '</a> ';
-			echo '<a href="'.\association\AssociationSetting::URL.'" class="btn btn-outline-primary btn-xl">'.s("Découvrir l'association").'</a>';
+			echo '<a href="'.\association\AssociationSetting::URL.'" class="btn btn-outline-primary btn-xl">'.s("En savoir plus").'</a>';
 		echo '</div>';
 	}
 

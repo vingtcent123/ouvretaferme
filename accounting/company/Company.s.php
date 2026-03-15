@@ -52,6 +52,8 @@ class CompanySetting extends \Settings {
 		494, 3764, // 11 mars
 		580, // 13 mars
 		2939, // 14 mars
+		3839, // 15 mars - micro BIC test (2è ferme)
+		3172, 1832,
 	];
 
 	// Est-ce qu'on exclut les autoconso des bilans et CdR (pour le micro BA) ?

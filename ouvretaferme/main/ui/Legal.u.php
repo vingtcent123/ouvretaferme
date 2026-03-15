@@ -162,7 +162,7 @@ class LegalUi {
 		$h .= '<div class="home-category">';
 
 			$h .= '<p>'.s("Initialement créé par un maraîcher bénévole, Ouvretaferme est géré par une association depuis 2025.<br/>Ouvretaferme est donc un projet collectif au service des producteurs et productrices en circuits courts.").'</p>';
-			$h .= '<a href="'.\association\AssociationSetting::URL.'" class="btn btn-secondary">'.s("Découvrir l'association").'</a>';
+			$h .= '<a href="'.\association\AssociationSetting::URL.'" class="btn btn-secondary">'.s("En savoir plus").'</a>';
 
 		$h .= '</div>';
 

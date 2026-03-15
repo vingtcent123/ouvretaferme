@@ -496,7 +496,7 @@ class SaleUi {
 							$h .= '</td>';
 						}
 
-						if(in_array('status', $hide) === FALSE) {
+						if(in_array('preparationStatus', $hide) === FALSE) {
 
 							$h .= '<td class="sale-item-status">';
 								$h .= $this->getPreparationStatusForUpdate($eSale, 'btn-xs');
@@ -519,18 +519,7 @@ class SaleUi {
 									}
 								$h .= '</div>';
 								$h .= '<div class="sale-item-delivery-source util-annotation">';
-									if($eSale['shop']->notEmpty()) {
-										$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
-										if($eSale['shopShared']) {
-											$h .= '  <span class="util-badge bg-secondary">'.\Asset::icon('people-fill').'</span>';
-										}
-									} else if($eSale->isMarketSale()) {
-										$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']->getName()).'</a>';;
-									} else if($eSale->isMarket()) {
-										if($eSale['marketSales'] > 0) {
-											$h .= \Asset::icon('cart4').' '.p("{value} vente", "{value} ventes", $eSale['marketSales']);
-										}
-									}
+									$h .= $this->getDeliverySource($eSale);
 								$h .= '</div>';
 							$h .= '</td>';
 
@@ -617,6 +606,27 @@ class SaleUi {
 
 		if($hasBatch) {
 			$h .= $this->getBatch($eFarm, $cPaymentMethod);
+		}
+
+		return $h;
+
+	}
+
+	public function getDeliverySource(Sale $eSale): string {
+
+		$h = '';
+
+		if($eSale['shop']->notEmpty()) {
+			$h .= '<a href="'.\shop\ShopUi::adminDateUrl($eSale['farm'], $eSale['shopDate']).'">'.encode($eSale['shop']['name']).'</a>';
+			if($eSale['shopShared']) {
+				$h .= '  <span class="util-badge bg-secondary">'.\Asset::icon('people-fill').'</span>';
+			}
+		} else if($eSale->isMarketSale()) {
+			$h .= '<a href="'.SaleUi::url($eSale['marketParent']).'">'.encode($eSale['marketParent']['customer']->getName()).'</a>';;
+		} else if($eSale->isMarket()) {
+			if($eSale['marketSales'] > 0) {
+				$h .= \Asset::icon('cart4').' '.p("{value} vente", "{value} ventes", $eSale['marketSales']);
+			}
 		}
 
 		return $h;
@@ -1176,7 +1186,7 @@ class SaleUi {
 				if($eSale['farm']->hasInvoicingMentions() === FALSE) {
 					$link = '/farm/configuration:updateInvoiceMentions?id='.$eSale['farm']['id'];
 				} else {
-					$link = '/selling/invoice:create?customer='.$eSale['customer']['id'].'&sales[]='.$eSale['id'].'&origin=sales';
+					$link = '/selling/invoice:create?customer='.$eSale['customer']['id'].'&firstSale='.$eSale['id'].'&origin=sales';
 				}
 				$document = '<a href="'.$link.'" class="btn btn-sm sale-document sale-document-new" title="'.s("Créer une facture").'">';
 					$document .= '<div class="sale-document-name">'.\selling\SellingSetting::INVOICE.'</div>';
@@ -1233,34 +1243,10 @@ class SaleUi {
 					$document .= '</div>';
 				$document .= '</div>';
 
-				$document .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" data-ajax-navigation="never" class="dropdown-item">'.s("Consulter la facture").'</a>';
+				$document .= '<a href="/facture/'.($eSale['invoice']['id']).'" class="dropdown-item">'.s("Consulter la facture").'</a>';
 
 				if($eInvoice->acceptDownload()) {
 					$document .= '<a href="'.InvoiceUi::url($eSale['invoice']).'" data-ajax-navigation="never" class="dropdown-item">'.s("Télécharger le PDF").'</a>';
-				}
-
-				if($eSale['invoice']->acceptSend()) {
-
-					$document .= '<div class="dropdown-divider"></div>';
-
-					if($eSale['invoice']->acceptSend()) {
-						$text = s("Envoyer au client par e-mail").'</a>';
-					} else {
-						$text = '<span class="sale-document-forbidden">'.s("Envoyer au client par e-mail").'</span>';
-					}
-
-					$document .= '<a data-ajax="/selling/invoice:doSendCollection" post-ids="'.$eSale['invoice']['id'].'" data-confirm="'.s("Confirmer l'envoi de la facture au client par e-mail ? Une facture envoyée par e-mail n'est plus annulable.").'" class="dropdown-item">'.$text.'</a>';
-
-				}
-
-				if(
-					$eInvoice->acceptDelete() and
-					$eSale->canWrite()
-				) {
-
-					$document .= '<div class="dropdown-divider"></div>';
-					$document .= '<a data-ajax="/selling/invoice:doDelete" post-id="'.$eInvoice['id'].'" class="dropdown-item" data-confirm="'.s("La suppression d'une facture est définitive. Voulez-vous continuer ?").'">'.s("Supprimer la facture").'</a>';
-
 				}
 
 			$document .= '</div>';
@@ -2240,65 +2226,6 @@ class SaleUi {
 
 	}
 
-	public function getHistory(Sale $eSale, \Collection $cHistory) {
-
-		if(
-			$eSale->isComposition() or
-			$cHistory->empty()
-		) {
-			return '';
-		}
-
-		$h = '<h3>'.s("Historique").'</h3>';
-
-		$h .= '<div class="util-overflow-sm stick-xs">';
-
-			$h .= '<table>';
-
-				$h .= '<thead>';
-					$h .= '<tr>';
-						$h .= '<th>'.s("Date").'</th>';
-						$h .= '<th>'.s("Événement").'</th>';
-						$h .= '<th>'.s("Par").'</th>';
-					$h .= '</tr>';
-				$h .= '</thead>';
-				$h .= '<tbody>';
-
-					foreach($cHistory as $eHistory) {
-
-						$h .= '<tr>';
-
-							$h .= '<td class="td-min-content">';
-								$h .= \util\DateUi::numeric($eHistory['date']);
-							$h .= '</td>';
-
-							$h .= '<td>';
-								$h .= $eHistory['event']['name'];
-								if($eHistory['comment']) {
-									$h .= '<div class="util-annotation color-muted">';
-										$h .= encode($eHistory['comment']);
-									$h .= '</div>';
-								}
-							$h .= '</td>';
-
-							$h .= '<td>';
-								$h .= $eHistory['user']->empty() ? '-' : $eHistory['user']->getName();
-							$h .= '</td>';
-
-						$h .= '</tr>';
-
-					}
-
-				$h .= '</tbody>';
-
-			$h .= '</table>';
-
-		$h .= '</div>';
-
-		return $h;
-
-	}
-
 	public function create(Sale $eSale): \Panel {
 
 		if($eSale['profile'] === Sale::COMPOSITION) {
@@ -2786,14 +2713,10 @@ class SaleUi {
 
 		$h = new PaymentLinkUi()->showExistingPaymentLinks($eSale['cPaymentLink']);
 
-		if($eSale['invoice']->notEmpty()) {
-			$h .= $this->getInvoicePayment($eSale);
+		if($eSale->isPaymentOnline(Payment::FAILED)) {
+			$h .= new PaymentTransactionUi()->getOnlinePayment($eSale);
 		} else {
-			if($eSale->isPaymentOnline(Payment::FAILED)) {
-				$h .= new PaymentTransactionUi()->getOnlinePayment($eSale);
-			} else {
-				$h .= new PaymentTransactionUi()->getPaymentForm($eSale);
-			}
+			$h .= new PaymentTransactionUi()->getPaymentForm($eSale);
 		}
 
 		return new \Panel(
@@ -2814,7 +2737,7 @@ class SaleUi {
 				'invoiceNumber' => encode($eSale['invoice']['number']),
 			]);
 			$h .= '</p>';
-			$h .= '<a href="'.\farm\FarmUi::urlSellingInvoices($eSale['farm']).'?invoice='.$eSale['invoice']['id'].'" class="btn btn-transparent">';
+			$h .= '<a href="'.\selling\InvoiceUi::url($eSale['invoice']).'" class="btn btn-transparent">';
 				$h .= s("Consulter la facture");
 			$h .= '</a>';
 		$h .= '</div>';

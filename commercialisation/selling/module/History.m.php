@@ -7,6 +7,9 @@ abstract class HistoryElement extends \Element {
 
 	private static ?HistoryModel $model = NULL;
 
+	const SALE = 'sale';
+	const INVOICE = 'invoice';
+
 	public static function getSelection(): array {
 		return History::model()->getProperties();
 	}
@@ -41,7 +44,9 @@ class HistoryModel extends \ModuleModel {
 
 		$this->properties = array_merge($this->properties, [
 			'id' => ['serial32', 'cast' => 'int'],
-			'sale' => ['element32', 'selling\Sale', 'cast' => 'element'],
+			'sale' => ['element32', 'selling\Sale', 'null' => TRUE, 'cast' => 'element'],
+			'invoice' => ['element32', 'selling\Invoice', 'null' => TRUE, 'cast' => 'element'],
+			'source' => ['enum', [\selling\History::SALE, \selling\History::INVOICE], 'cast' => 'enum'],
 			'farm' => ['element32', 'farm\Farm', 'cast' => 'element'],
 			'event' => ['element32', 'selling\Event', 'cast' => 'element'],
 			'payment' => ['element32', 'selling\Payment', 'null' => TRUE, 'cast' => 'element'],
@@ -51,11 +56,12 @@ class HistoryModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'sale', 'farm', 'event', 'payment', 'comment', 'date', 'user'
+			'id', 'sale', 'invoice', 'source', 'farm', 'event', 'payment', 'comment', 'date', 'user'
 		]);
 
 		$this->propertiesToModule += [
 			'sale' => 'selling\Sale',
+			'invoice' => 'selling\Invoice',
 			'farm' => 'farm\Farm',
 			'event' => 'selling\Event',
 			'payment' => 'selling\Payment',
@@ -85,6 +91,20 @@ class HistoryModel extends \ModuleModel {
 
 	}
 
+	public function encode(string $property, $value) {
+
+		switch($property) {
+
+			case 'source' :
+				return ($value === NULL) ? NULL : (string)$value;
+
+			default :
+				return parent::encode($property, $value);
+
+		}
+
+	}
+
 	public function select(...$fields): HistoryModel {
 		return parent::select(...$fields);
 	}
@@ -99,6 +119,14 @@ class HistoryModel extends \ModuleModel {
 
 	public function whereSale(...$data): HistoryModel {
 		return $this->where('sale', ...$data);
+	}
+
+	public function whereInvoice(...$data): HistoryModel {
+		return $this->where('invoice', ...$data);
+	}
+
+	public function whereSource(...$data): HistoryModel {
+		return $this->where('source', ...$data);
 	}
 
 	public function whereFarm(...$data): HistoryModel {

@@ -5,7 +5,7 @@ new AdaptativeView('createCustomer', function($data, PanelTemplate $t) {
 
 new AdaptativeView('create', function($data, PanelTemplate $t) {
 
-	return new \selling\InvoiceUi()->create($data->e, $data->cSale, $data->cSaleMore, $data->search);
+	return new \selling\InvoiceUi()->create($data->e, $data->eSaleFirst, $data->cSaleMore, $data->search);
 
 });
 
@@ -49,4 +49,32 @@ new AdaptativeView('createCollection', function($data, PanelTemplate $t) {
 
 });
 
+
+new AdaptativeView('/facture/{id}', function($data, FarmTemplate $t) {
+
+	$t->title = \selling\InvoiceUi::getName($data->e);
+
+	$t->nav = 'selling';
+	$t->subNav = 'invoice';
+
+	$t->mainTitle = new \selling\InvoiceUi()->getHeader($data->e);
+
+	echo new \selling\InvoiceUi()->getContent($data->e);
+
+	if($data->e['cSale']->notEmpty()) {
+
+		echo '<div class="mb-2">';
+
+			echo '<h3>';
+				echo s("Ventes");
+				echo '  <span class="util-badge bg-primary" id="item-count">'.$data->e['cSale']->count().'</span>';
+			echo '</h3>';
+			echo new \selling\SaleUi()->getListSales($data->e['farm'], $data->e['cSale'], hide: ['customer', 'batch', 'paymentMethod', 'documents', 'preparationStatus']);
+		echo '</div>';
+
+	}
+
+	echo new \selling\HistoryUi()->getList($data->e, $data->cHistory);
+
+});
 ?>

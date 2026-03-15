@@ -26,18 +26,19 @@ new \selling\InvoicePage()
 	})
 	->create(function($data) {
 
-		$data->cSale = \selling\SaleLib::getForInvoice($data->e['customer'], GET('sales', 'array'));
+		$cSale = \selling\SaleLib::getForInvoice($data->e['customer'], GET('firstSale', 'array'));
+		$data->eSaleFirst = $cSale->empty() ? new \selling\Sale() : $cSale->first();
 
 		if(
 			GET('more') or
-			$data->cSale->empty()
+			$data->eSaleFirst->empty()
 		) {
 
 			$data->search = new Search([
 				'delivered' => GET('delivered', 'int', 60),
 				'customer' => $data->e['customer'],
 				'invoicing' => TRUE,
-				'notId' => $data->cSale
+				'notIds' => $data->eSaleFirst->empty() ? [] : [$data->eSaleFirst['id']]
 			]);
 
 			$data->cSaleMore = \selling\SaleLib::getByFarm($data->e['farm'], search: $data->search);
@@ -88,6 +89,17 @@ new \selling\InvoicePage()
 
 	}, propertiesUpdate: ['dueDate', 'paymentCondition', 'header', 'footer'], page: 'doRegenerate', validate: ['canWrite', 'acceptRegenerate'])
 	->read('/facture/{id}', function($data) {
+
+		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
+
+		$data->e['cSale'] = \selling\SaleLib::getByIds($data->e['sales'], sort: ['deliveredAt' => SORT_ASC]);
+
+		$data->cHistory = \selling\HistoryLib::getByInvoice($data->e);
+
+		throw new ViewAction($data);
+
+	}, validate: ['canPublicRead'])
+	->read('/facture/{id}/telecharger', function($data) {
 
 		switch($data->e['status']) {
 
@@ -165,6 +177,8 @@ new Page(function($data) {
 		$fw->validate();
 
 		$cInvoice = \selling\InvoiceLib::buildCollectionForInvoice($data->eFarm, $eInvoice, POST('sales', 'array', []));
+
+		$fw->validate();
 
 		\selling\InvoiceLib::createCollection($cInvoice);
 

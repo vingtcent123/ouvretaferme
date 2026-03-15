@@ -13,9 +13,19 @@ class HistoryLib extends HistoryCrud {
 
 	}
 
-	public static function createBySale(Sale $eSale, string $fqn, ?string $comment = NULL, Payment $ePayment = new Payment()): void {
+	public static function getByInvoice(Invoice $eInvoice): \Collection {
 
-		$eSale->expects(['farm']);
+		return History::model()
+			->select(History::getSelection())
+			->whereInvoice($eInvoice)
+			->sort(['id' => SORT_DESC])
+			->getCollection();
+
+	}
+
+	public static function createByElement(Sale|Invoice $eElement, string $fqn, ?string $comment = NULL, Payment $ePayment = new Payment()): void {
+
+		$eElement->expects(['farm']);
 
 		$eEvent = Event::model()
 			->select('id')
@@ -27,12 +37,19 @@ class HistoryLib extends HistoryCrud {
 		}
 
 		$e = new History([
-			'sale' => $eSale,
-			'farm' => $eSale['farm'],
+			'farm' => $eElement['farm'],
 			'event' => $eEvent,
 			'payment' => $ePayment,
 			'comment' => $comment
 		]);
+
+		if($eElement instanceof Sale) {
+			$e['sale'] = $eElement;
+			$e['source'] = History::SALE;
+		} else {
+			$e['invoice'] = $eElement;
+			$e['source'] = History::INVOICE;
+		}
 
 		History::model()->insert($e);
 

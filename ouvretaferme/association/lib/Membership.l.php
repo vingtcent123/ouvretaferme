@@ -75,7 +75,6 @@ class MembershipLib {
 			History::model()->beginTransaction();
 
 				$pdfContent = HistoryLib::getPdfContent($eHistory['document']);
-				$eHistory['customer']['invoiceEmail'] = 'emilie.guth@gmail.com';
 
 				// Envoi d'un email
 				new \mail\SendLib()
@@ -301,8 +300,6 @@ class MembershipLib {
 				'customer'=> $eCustomer,
 				'profile' => \selling\Sale::SALE,
 			]);
-
-			$eSale->validate('canCreate');
 
 			$fw = new \FailWatch();
 

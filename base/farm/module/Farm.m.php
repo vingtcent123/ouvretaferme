@@ -91,6 +91,7 @@ class FarmModel extends \ModuleModel {
 			'stockNotesUpdatedBy' => ['element32', 'user\User', 'null' => TRUE, 'cast' => 'element'],
 			'hasShops' => ['bool', 'cast' => 'bool'],
 			'hasSales' => ['bool', 'cast' => 'bool'],
+			'hasInvoices' => ['bool', 'cast' => 'bool'],
 			'hasPurchases' => ['bool', 'cast' => 'bool'],
 			'hasCultivations' => ['bool', 'cast' => 'bool'],
 			'hasAccounting' => ['bool', 'cast' => 'bool'],
@@ -103,7 +104,7 @@ class FarmModel extends \ModuleModel {
 		]);
 
 		$this->propertiesList = array_merge($this->propertiesList, [
-			'id', 'name', 'type', 'legalName', 'legalEmail', 'legalCountry', 'siret', 'verified', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'legalCategory', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasPurchases', 'hasCultivations', 'hasAccounting', 'hasFinancialYears', 'hasPdp', 'membership', 'startedAt', 'createdAt', 'status'
+			'id', 'name', 'type', 'legalName', 'legalEmail', 'legalCountry', 'siret', 'verified', 'legalStreet1', 'legalStreet2', 'legalPostcode', 'legalCity', 'legalCategory', 'vignette', 'url', 'description', 'logo', 'emailBanner', 'emailFooter', 'emailDefaultTime', 'cultivationPlace', 'cultivationLngLat', 'seasonFirst', 'seasonLast', 'rotationYears', 'rotationExclude', 'quality', 'defaultBedLength', 'defaultBedWidth', 'defaultAlleyWidth', 'calendarMonthStart', 'calendarMonthStop', 'planningDelayedMax', 'featureTime', 'featureStock', 'stockNotes', 'stockNotesUpdatedAt', 'stockNotesUpdatedBy', 'hasShops', 'hasSales', 'hasInvoices', 'hasPurchases', 'hasCultivations', 'hasAccounting', 'hasFinancialYears', 'hasPdp', 'membership', 'startedAt', 'createdAt', 'status'
 		]);
 
 		$this->propertiesToModule += [
@@ -148,6 +149,9 @@ class FarmModel extends \ModuleModel {
 				return FALSE;
 
 			case 'hasSales' :
+				return FALSE;
+
+			case 'hasInvoices' :
 				return FALSE;
 
 			case 'hasPurchases' :
@@ -390,6 +394,10 @@ class FarmModel extends \ModuleModel {
 
 	public function whereHasSales(...$data): FarmModel {
 		return $this->where('hasSales', ...$data);
+	}
+
+	public function whereHasInvoices(...$data): FarmModel {
+		return $this->where('hasInvoices', ...$data);
 	}
 
 	public function whereHasPurchases(...$data): FarmModel {

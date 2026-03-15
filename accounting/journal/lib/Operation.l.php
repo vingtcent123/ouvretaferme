@@ -514,7 +514,7 @@ class OperationLib extends OperationCrud {
 
 		$accounts = var_filter($input['account'] ?? [], 'array');
 		$vatValues = var_filter($input['vatValue'] ?? [], 'array');
-		$indexes = count($input['account'] ?? []);
+		$indexes = count($input['amount'] ?? []);
 
 		$fw = new \FailWatch();
 

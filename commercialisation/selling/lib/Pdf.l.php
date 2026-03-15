@@ -240,6 +240,8 @@ class PdfLib extends PdfCrud {
 
 		$pdf = self::getContentByPdf($ePdfContent);
 
+		HistoryLib::createByElement($eInvoice, 'invoice-delivered');
+
 		$libSend
 			->setFarm($eFarm)
 			->setCustomer($eCustomer)

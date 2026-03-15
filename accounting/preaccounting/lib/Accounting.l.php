@@ -515,8 +515,10 @@ Class AccountingLib {
 
 				$paymentName = $ePayment->notEmpty() ? $ePayment['methodName'] : '';
 
-				if($ePayment->notEmpty() and $ePayment['status'] === \selling\Payment::PAID) {
-					$date = $ePayment['paidAt'];
+				if($ePayment->notEmpty() and $ePayment['status'] === \selling\Payment::PAID and $ePayment['paidAt'] !== NULL) {
+					$currentDate = $ePayment['paidAt'];
+				} else {
+					$currentDate = $date;
 				}
 
 				foreach($ratioByPayment['splitByAccounts'] as $accountId => $splitByAccount) {
@@ -535,7 +537,7 @@ Class AccountingLib {
 
 						$fecDataItem = self::getFecLine(
 							eAccount    : $eAccount,
-							date        : $date,
+							date        : $currentDate,
 							eCode       : $eJournalCode,
 							ecritureLib : $description,
 							document    : $document,
@@ -547,7 +549,7 @@ Class AccountingLib {
 							compAuxLib  : $compAuxLib,
 							number      : $forImport ? ++$number : NULL,
 							origin      : $origin,
-							sortDate    : $date,
+							sortDate    : $currentDate,
 						);
 
 						$lastNumber = $number;
@@ -564,7 +566,7 @@ Class AccountingLib {
 
 							$fecDataItem = self::getFecLine(
 								eAccount    : $eAccountVat,
-								date        : $date,
+								date        : $currentDate,
 								eCode       : $eJournalCode,
 								ecritureLib : $description,
 								document    : $document,
@@ -576,7 +578,7 @@ Class AccountingLib {
 								compAuxLib  : $compAuxLib,
 								number      : $forImport ? ++$number : NULL,
 								origin      : $origin,
-								sortDate    : $date,
+								sortDate    : $currentDate,
 							);
 
 							if($forImport) {
@@ -627,7 +629,7 @@ Class AccountingLib {
 
 					$fecDataItem = self::getFecLine(
 						eAccount    : $eAccountCounterpart->notEmpty() ? $eAccountCounterpart : $eAccountWaiting,
-						date        : $date,
+						date        : $currentDate,
 						eCode       : $eJournalCode,
 						ecritureLib : $description,
 						document    : $document,
@@ -640,7 +642,7 @@ Class AccountingLib {
 						number      : $forImport ? ++$number : NULL,
 						isSummed    : FALSE,
 						origin      : $origin,
-						sortDate    : $date,
+						sortDate    : $currentDate,
 					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataItem);
@@ -655,7 +657,7 @@ Class AccountingLib {
 
 					$fecDataItem = self::getFecLine(
 						eAccount    : $eAccountCounterpart->notEmpty() ? $eAccountCounterpart : $eAccountWaiting,
-						date        : $date,
+						date        : $currentDate,
 						eCode       : $eJournalCode,
 						ecritureLib : $description,
 						document    : $document,
@@ -668,7 +670,7 @@ Class AccountingLib {
 						number      : $forImport ? ++$number : NULL,
 						isSummed    : FALSE,
 						origin      : $origin,
-						sortDate    : $date,
+						sortDate    : $currentDate,
 					);
 
 					self::mergeFecLineIntoItemData($items, $fecDataItem);

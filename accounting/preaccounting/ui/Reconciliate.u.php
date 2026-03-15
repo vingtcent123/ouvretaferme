@@ -23,14 +23,14 @@ Class ReconciliateUi {
 			if($eSuggestion['invoice']->notEmpty()) {
 
 				$eCustomer = $eSuggestion['invoice']['customer'];
-				$reference = '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?invoice='.$eSuggestion['invoice']['id'].'">'.s("Facture {value}", encode($eSuggestion['invoice']['number'])).'</a>';
+				$reference = '<a href="'.\selling\InvoiceUi::url($eSuggestion['invoice']).'">'.\selling\InvoiceUi::getName($eSuggestion['invoice']).'</a>';
 				$date = $eSuggestion['invoice']['date'];
 				$amount = $eSuggestion['invoice']['priceIncludingVat'];
 
 			} else if($eSuggestion['payment']['source'] === \selling\Payment::INVOICE) {
 
 				$eCustomer = $eSuggestion['payment']['invoice']['customer'];
-				$reference = '<a href="'.\farm\FarmUi::urlSellingInvoices($eFarm).'?invoice='.$eSuggestion['payment']['invoice']['id'].'">'.s("Facture {value}", encode($eSuggestion['payment']['invoice']['number'])).'</a>';
+				$reference = '<a href="'.\selling\InvoiceUi::url($eSuggestion['payment']['invoice']).'">'.\selling\InvoiceUi::getName($eSuggestion['payment']['invoice']).'</a>';
 				$date = $eSuggestion['payment']['invoice']['date'];
 				$amount = $eSuggestion['payment']['invoice']['priceIncludingVat'];
 
