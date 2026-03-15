@@ -108,13 +108,11 @@ class PaymentLinkLib extends PaymentLinkCrud {
 
 		new \mail\SendLib()
 			->setTo($eElement['farm']['legalEmail'])
-			->setTo('emilie.guth@gmail.com') // TODO ne pas commiter
 			->setContent(...PaymentLinkUi::getPaymentReceivedEmail($ePaymentLink))
 			->send();
 
 		new \mail\SendLib()
 			->setTo($eElement['customer']['invoiceEmail'] ?? $eElement['customer']['email'])
-			->setTo('emilie.guth@gmail.com') // TODO ne pas commiter
 			->setContent(...PaymentLinkUi::getPaymentConfirmationEmail($ePaymentLink))
 			->send();
 

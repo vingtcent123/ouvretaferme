@@ -60,6 +60,7 @@ new AdaptativeView('/facture/{id}', function($data, FarmTemplate $t) {
 	$t->mainTitle = new \selling\InvoiceUi()->getHeader($data->e);
 
 	echo new \selling\InvoiceUi()->getContent($data->e);
+	echo new \selling\PaymentLinkUi()->getList($data->e);
 
 	if($data->e['cSale']->notEmpty()) {
 

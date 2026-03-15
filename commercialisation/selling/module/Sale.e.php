@@ -307,7 +307,7 @@ class Sale extends SaleElement {
 
 		return (
 			$this['invoice']->empty() and
-			$this->acceptReplacePayment() and
+			$this->acceptUpdatePayment() and
 			$this['preparationStatus'] === Sale::DELIVERED and
 			\payment\StripeLib::getByFarm($this['farm'])->notEmpty()
 		);

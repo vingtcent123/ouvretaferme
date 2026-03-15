@@ -93,6 +93,7 @@ new \selling\InvoicePage()
 		$data->eFarm = \farm\FarmLib::getById($data->e['farm']);
 
 		$data->e['cSale'] = \selling\SaleLib::getByIds($data->e['sales'], sort: ['deliveredAt' => SORT_ASC]);
+		$data->e['cPaymentLink'] = \selling\PaymentLinkLib::getValidByElement($data->e);
 
 		$data->cHistory = \selling\HistoryLib::getByInvoice($data->e);
 

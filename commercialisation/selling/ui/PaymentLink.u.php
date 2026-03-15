@@ -43,8 +43,6 @@ Un lien de paiement a été payé :
 - Client : {customer}
 - Montant payé : {amount} 
 
-{customer} vient de payer {amount} depuis le lien de paiement que vous lui avez transmis pour la référence : {name}.
-
 À bientôt,
 L'équipe {siteName}", [
 			'customer' => $eElement['customer']->getName(),
@@ -86,7 +84,7 @@ Merci et à bientôt,
 {farmName}", [
 			'amount' => \util\TextUi::money($ePaymentLink['amountIncludingVat']),
 			'reference' => $reference,
-			'farmName' => $eElement['farmName'],
+			'farmName' => $eElement['farm']['name'],
 		]);
 
 

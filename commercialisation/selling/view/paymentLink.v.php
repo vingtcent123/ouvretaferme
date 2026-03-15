@@ -6,11 +6,3 @@ new AdaptativeView('create', function($data, PanelTemplate $t) {
 
 });
 
-new AdaptativeView('doCreate', function($data, AjaxTemplate $t) {
-
-	$t->ajaxReload();
-	$t->js()->success('selling', 'PaymentLink::created', [
-		'actions' => new \selling\PaymentLinkUi()->getSuccessActions($data->e)
-	]);
-
-});

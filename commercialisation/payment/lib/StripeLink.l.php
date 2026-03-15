@@ -40,7 +40,7 @@ class StripeLinkLib extends StripeLib {
 						'product_data' => [
 							'name' => $ePaymentLink->getElementName(),
 						],
-					'unit_amount' => ($eElement['priceIncludingVat'] * 100), // in cents, how much to charge
+					'unit_amount' => ($ePaymentLink['amountIncludingVat'] * 100), // in cents, how much to charge
 					],
 				],
 			],
@@ -53,9 +53,7 @@ class StripeLinkLib extends StripeLib {
 
 	public static function toggleActivation(StripeFarm $eStripeFarm, \selling\PaymentLink $ePaymentLink, bool $value): array {
 
-		$arguments = ['active' => $value ? 'true' : 'false'];
-
-		return self::sendStripeRequest($eStripeFarm, 'payment_links/'.$ePaymentLink['paymentLinkId'], $arguments);
+		return self::sendStripeRequest($eStripeFarm, 'payment_links/'.$ePaymentLink['paymentLinkId'].'?active='.($value ? 'true': 'false'));
 
 	}
 

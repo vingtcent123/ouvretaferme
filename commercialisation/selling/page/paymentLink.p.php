@@ -19,7 +19,7 @@ new \selling\PaymentLinkPage()
 		throw new ViewAction($data);
 
 	})
-	->doCreate(fn($data) => throw new ViewAction($data))
+	->doCreate(fn($data) => throw new ReloadAction( 'selling', 'PaymentLink::created'))
 	->read('success', function($data) {
 
 		throw new ViewAction($data);
