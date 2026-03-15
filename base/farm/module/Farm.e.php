@@ -315,7 +315,7 @@ class Farm extends FarmElement {
 
 	public function isMembership(): bool {
 
-		return ($this['membership'] === TRUE);
+		return ($this['membership'] === TRUE or in_array($this['id'], \company\CompanySetting::ACCOUNTING_FARM_BETA));
 
 	}
 
