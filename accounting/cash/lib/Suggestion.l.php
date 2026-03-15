@@ -37,6 +37,14 @@ class SuggestionLib {
 
 				break;
 
+			case \payment\MethodLib::CARD :
+
+				\bank\Cashflow::model()->or(
+					fn() => $this->whereMemo('LIKE', 'remise%carte%'),
+				);
+
+				break;
+
 			default :
 				return new \Collection();
 
